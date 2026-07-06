@@ -42,6 +42,22 @@
     .then((data) => buildGraph(data))
     .catch((err) => console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err));
 
+  let sirlarData = null;
+  fetch("data/ibn-arabi/sirlar.json")
+    .then((r) => r.json())
+    .then((data) => { sirlarData = data; })
+    .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
+
+  const sirlarBtn = document.getElementById("sirlar-btn");
+  if (sirlarBtn) {
+    sirlarBtn.addEventListener("click", () => {
+      currentDetailNode = null;
+      currentDetailEdge = null;
+      currentDetailView = "sirlar";
+      showSirlarPanel();
+    });
+  }
+
   let simulation, nodeSel, pathSel, labelSel, nodeById;
 
   function buildGraph(data) {
@@ -153,10 +169,35 @@
   }
 
   function render() {
+    if (currentDetailView === "sirlar") showSirlarPanel();
     if (!labelSel) return;
     labelSel.text((d) => labelFor(d));
     if (currentDetailNode) showNodeDetail(currentDetailNode);
     else if (currentDetailEdge) showEdgeDetail(currentDetailEdge);
+  }
+
+  function sirlarEntryHtml(entry, i) {
+    return `
+      <details class="insight" ${i === 0 ? "open" : ""}>
+        <summary>${volumeLabel(entry.volume)} — ${I18n.pick3(entry.topic)}</summary>
+        <div class="detail-block detail-block--sir">
+          <blockquote>${I18n.pick3(entry.quote)}</blockquote>
+          <p>${I18n.pick3(entry.note)}</p>
+          <cite>${entry.source}</cite>
+        </div>
+      </details>
+    `;
+  }
+
+  function showSirlarPanel() {
+    if (!sirlarData) return;
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow">${tt({ tr: "İşaret Edilen, Açıklanmayan", en: "Pointed To, Not Explained", pt: "Apontado, Não Explicado" })}</p>
+      <h2 class="detail-title">${tt({ tr: "Sırlar", en: "Mysteries", pt: "Mistérios" })}</h2>
+      <p class="detail-resonance">${I18n.pick3(sirlarData.intro)}</p>
+      ${sirlarData.entries.map((e, i) => sirlarEntryHtml(e, i)).join("")}
+    `;
+    detailPanel.hidden = false;
   }
 
   function radiusFor(d) {
@@ -210,10 +251,12 @@
 
   let currentDetailNode = null;
   let currentDetailEdge = null;
+  let currentDetailView = null;
 
   function onNodeClick(d) {
     currentDetailNode = d;
     currentDetailEdge = null;
+    currentDetailView = null;
     showNodeDetail(d);
   }
 
