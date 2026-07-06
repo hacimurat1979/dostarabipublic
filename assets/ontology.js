@@ -208,13 +208,28 @@
     showNodeDetail(d);
   }
 
+  function volumeLabel(n) {
+    return tt({ tr: `Cilt ${n}`, en: `Volume ${n}`, pt: `Volume ${n}` });
+  }
+
+  function insightsHtml(insights) {
+    if (!insights || !insights.length) return "";
+    return insights.map((ins, i) => `
+      <details class="insight" ${i === 0 ? "open" : ""}>
+        <summary>${volumeLabel(ins.volume)}</summary>
+        <p>${I18n.pick3(ins.text)}</p>
+      </details>
+    `).join("");
+  }
+
   function showNodeDetail(d) {
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Varlık Mertebesi", en: "Level of Being", pt: "Nível do Ser" })}</p>
       <h2 class="detail-title">${I18n.pick3(d.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(d.short)}</h3>
-        <p>${I18n.pick3(d.definition)}</p>
+        <p>${I18n.pick3(d.summary)}</p>
+        ${insightsHtml(d.insights)}
         <cite>${(d.sources || []).join(" · ")}</cite>
       </div>
       ${relatedEdgesHtml(d)}
@@ -244,6 +259,7 @@
       <h2 class="detail-title">${I18n.pick3(l.source.name)} → ${I18n.pick3(l.target.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <p>${I18n.pick3(l.nature)}</p>
+        ${insightsHtml(l.insights)}
       </div>
     `;
     detailPanel.hidden = false;
