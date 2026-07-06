@@ -19,6 +19,12 @@
     detailPanel.hidden = true;
   });
 
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !detailPanel.hidden) {
+      detailPanel.hidden = true;
+    }
+  });
+
   const TARGET = {
     "dhat": { x: 0.5, y: 0.09 },
     "sifat-asma": { x: 0.5, y: 0.21 },

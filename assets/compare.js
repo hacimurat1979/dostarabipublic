@@ -20,7 +20,12 @@
   });
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") window.location.href = "index.html";
+    if (e.key !== "Escape") return;
+    if (!detailPanel.hidden) {
+      detailPanel.hidden = true;
+    } else {
+      window.location.href = "index.html";
+    }
   });
 
   Promise.all([
