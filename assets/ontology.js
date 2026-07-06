@@ -260,7 +260,12 @@
     showNodeDetail(d);
   }
 
+  const VOLUME_LABEL_OVERRIDE = {
+    "fusus-konuk": { tr: "Füsûsu'l-Hikem", en: "Fusus al-Hikam", pt: "Fusus al-Hikam" },
+  };
+
   function volumeLabel(n) {
+    if (VOLUME_LABEL_OVERRIDE[n]) return tt(VOLUME_LABEL_OVERRIDE[n]);
     return tt({ tr: `Cilt ${n}`, en: `Volume ${n}`, pt: `Volume ${n}` });
   }
 
