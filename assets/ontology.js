@@ -248,6 +248,7 @@
       return `<div class="detail-block detail-block--edge">
         <h3>${arrow} ${I18n.pick3(other.name)} — <em>${I18n.pick3(l.relation)}</em></h3>
         <p>${I18n.pick3(l.nature)}</p>
+        ${insightsHtml(l.insights)}
       </div>`;
     }).join("");
     return `<p class="detail-eyebrow" style="margin-top:18px;">${tt({ tr: "İlişkiler", en: "Relations", pt: "Relações" })}</p>${items}`;
