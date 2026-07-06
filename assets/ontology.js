@@ -128,10 +128,18 @@
     window.__ontologyApp = { nodes, links, nodeById };
   }
 
+  function pullBack(fromX, fromY, toX, toY, dist) {
+    const dx = toX - fromX, dy = toY - fromY;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    return { x: toX - (dx / len) * dist, y: toY - (dy / len) * dist };
+  }
+
   function edgePath(d) {
     const s = d.source, t = d.target;
+    const pad = radiusFor(t) + 2;
     if (d.kind === "descent" || d.kind === "gather") {
-      return `M${s.x},${s.y}L${t.x},${t.y}`;
+      const e = pullBack(s.x, s.y, t.x, t.y, pad);
+      return `M${s.x},${s.y}L${e.x},${e.y}`;
     }
     // curved bow for "return" (bow right) and "paradox" (bow left)
     const dx = t.x - s.x, dy = t.y - s.y;
@@ -140,7 +148,8 @@
     const bow = d.kind === "return" ? 90 : -70;
     const mx = (s.x + t.x) / 2 + nx * bow;
     const my = (s.y + t.y) / 2 + ny * bow;
-    return `M${s.x},${s.y}Q${mx},${my} ${t.x},${t.y}`;
+    const e = pullBack(mx, my, t.x, t.y, pad);
+    return `M${s.x},${s.y}Q${mx},${my} ${e.x},${e.y}`;
   }
 
   function render() {
