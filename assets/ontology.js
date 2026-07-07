@@ -13,7 +13,10 @@
   }
 
   I18n.applyStatic();
-  I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => render());
+  I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
+    render();
+    if (currentMainView === "esma") window.__esmaApp && window.__esmaApp.onLangChange();
+  });
 
   detailClose.addEventListener("click", () => {
     detailPanel.hidden = true;
@@ -57,6 +60,37 @@
       showSirlarPanel();
     });
   }
+
+  let currentMainView = "ontology";
+  const ontologyBtn = document.getElementById("ontology-btn");
+  const esmaBtn = document.getElementById("esma-btn");
+  const ontologyWrap = document.getElementById("ontology-wrap");
+  const esmaWrap = document.getElementById("esma-wrap");
+
+  function setMainView(view) {
+    if (currentMainView === view) return;
+    currentMainView = view;
+    if (ontologyBtn) ontologyBtn.classList.toggle("btn-ghost--active", view === "ontology");
+    if (esmaBtn) esmaBtn.classList.toggle("btn-ghost--active", view === "esma");
+    if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
+    if (esmaWrap) esmaWrap.hidden = view !== "esma";
+    const introOntology = document.getElementById("intro-ontology");
+    const introEsma = document.getElementById("intro-esma");
+    if (introOntology) introOntology.hidden = view !== "ontology";
+    if (introEsma) introEsma.hidden = view !== "esma";
+    currentDetailNode = null;
+    currentDetailEdge = null;
+    if (view === "esma") {
+      currentDetailView = "esma";
+      window.__esmaApp && window.__esmaApp.activate();
+    } else {
+      currentDetailView = null;
+      detailPanel.hidden = true;
+    }
+  }
+
+  if (ontologyBtn) ontologyBtn.addEventListener("click", () => setMainView("ontology"));
+  if (esmaBtn) esmaBtn.addEventListener("click", () => setMainView("esma"));
 
   let simulation, nodeSel, pathSel, labelSel, nodeById;
 

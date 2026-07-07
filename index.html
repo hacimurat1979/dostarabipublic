@@ -59,6 +59,10 @@
          data-pt="O mundo interior de Muhyiddin Ibn Arabi, visualizado através dos níveis do Ser">Muhyiddîn İbnü'l-Arabî'nin iç dünyasının, varlık mertebeleri üzerinden görselleştirilmesi</p>
     </div>
     <div class="app-header__controls">
+      <div class="view-switch" id="view-switch">
+        <button class="btn-ghost btn-ghost--active" id="ontology-btn" type="button" data-tr="Ontoloji" data-en="Ontology" data-pt="Ontologia">Ontoloji</button>
+        <button class="btn-ghost" id="esma-btn" type="button" data-tr="Esmâü'l-Hüsnâ" data-en="The Beautiful Names" data-pt="Os Belos Nomes">Esmâü'l-Hüsnâ</button>
+      </div>
       <button class="btn-ghost" id="sirlar-btn" type="button" data-tr="Sırlar" data-en="Mysteries" data-pt="Mistérios">Sırlar</button>
       <div class="lang-switch" id="lang-switch"></div>
     </div>
@@ -66,18 +70,30 @@
 
   <main>
     <section class="intro" id="intro-text">
-      <p data-tr="Bu harita, İbn Arabî'nin 'vahdet-i vücûd' anlayışında varlığın Zât'tan görünen âleme, oradan da tekrar Zât'a nasıl döndüğünü izler. Her düğüm bir mertebeyi, her çizgi ikisi arasındaki ilişkinin tabiatını gösterir. Bir düğüme tıklayın; bağlantılarını takip edin."
+      <p id="intro-ontology" data-tr="Bu harita, İbn Arabî'nin 'vahdet-i vücûd' anlayışında varlığın Zât'tan görünen âleme, oradan da tekrar Zât'a nasıl döndüğünü izler. Her düğüm bir mertebeyi, her çizgi ikisi arasındaki ilişkinin tabiatını gösterir. Bir düğüme tıklayın; bağlantılarını takip edin."
          data-en="This map traces how, in Ibn Arabi's understanding of the Unity of Being, existence flows from the Essence to the visible world — and back again. Each node is a level; each line names the nature of the relation between two levels. Click a node and follow its connections."
          data-pt="Este mapa acompanha como, na compreensão de Ibn Arabi sobre a Unidade do Ser, a existência flui da Essência para o mundo visível — e retorna outra vez. Cada nó é um nível; cada linha nomeia a natureza da relação entre dois níveis. Clique em um nó e siga suas conexões.">
       </p>
+      <p id="intro-esma" hidden data-tr="Bu harita, Fütûhât-ı Mekkiyye'nin kendi metnine dayanarak, Esmâü'l-Hüsnâ'nın Zât'tan başlayıp aşağıya doğru inen mertebelerini izler. Bir isme tıklayın; kaynağını ve İbn Arabî'nin kendi ifadesini görün."
+         data-en="Drawing on the Futuhat al-Makkiyya's own text, this map traces the ranks of the Beautiful Names as they descend from the Essence. Click a name to see its source and Ibn Arabi's own words."
+         data-pt="Baseando-se no próprio texto do Futuhat al-Makkiyya, este mapa acompanha as hierarquias dos Belos Nomes conforme descem da Essência. Clique num nome para ver sua fonte e as próprias palavras de Ibn Arabi.">
+      </p>
     </section>
 
-    <section class="graph-wrap">
+    <section class="graph-wrap" id="ontology-wrap">
       <svg id="graph"></svg>
       <div class="legend" id="legend">
         <div class="legend__item"><span class="legend__dot legend__dot--descent"></span><span data-tr="Tenezzül (iniş / tecellî)" data-en="Descent (self-disclosure)" data-pt="Descida (autorrevelação)">Tenezzül</span></div>
         <div class="legend__item"><span class="legend__dot legend__dot--return"></span><span data-tr="Rücû (dönüş)" data-en="Return" data-pt="Retorno">Rücû</span></div>
         <div class="legend__item"><span class="legend__dot legend__dot--paradox"></span><span data-tr="Tenzîh-Teşbîh" data-en="Tanzih-Tashbih" data-pt="Tanzih-Tashbih">Tenzîh-Teşbîh</span></div>
+      </div>
+    </section>
+
+    <section class="graph-wrap" id="esma-wrap" hidden>
+      <svg id="esma-graph"></svg>
+      <div class="legend" id="esma-legend">
+        <div class="legend__item"><span class="legend__dot legend__dot--celal"></span><span data-tr="Celâl (Yücelik)" data-en="Jalal (Majesty)" data-pt="Jalal (Majestade)">Celâl</span></div>
+        <div class="legend__item"><span class="legend__dot legend__dot--cemal"></span><span data-tr="Cemâl (Güzellik)" data-en="Jamal (Beauty)" data-pt="Jamal (Beleza)">Cemâl</span></div>
       </div>
     </section>
 
@@ -100,6 +116,7 @@
 
   <script src="assets/vendor/d3.min.js"></script>
   <script src="assets/i18n.js"></script>
+  <script src="assets/esma.js"></script>
   <script src="assets/ontology.js"></script>
   <script src="assets/secret-nav.js"></script>
 </body>
