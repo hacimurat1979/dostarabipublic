@@ -54,8 +54,18 @@
     .then((data) => {
       sirlarData = data;
       if (pendingSirlarId) goToSirlar(pendingSirlarId);
+      maybeInitLandingQuote();
     })
     .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
+
+  let landingQuoteIds = null;
+  fetch("data/ibn-arabi/quotes.json")
+    .then((r) => r.json())
+    .then((data) => {
+      landingQuoteIds = data.ids;
+      maybeInitLandingQuote();
+    })
+    .catch((err) => console.error("Alıntılar yüklenemedi / Failed to load quotes", err));
 
   const sirlarBtn = document.getElementById("sirlar-btn");
   if (sirlarBtn) {
@@ -269,10 +279,59 @@
 
   function render() {
     if (currentDetailView === "sirlar") showSirlarPanel();
+    if (landingQuoteEntries.length) renderLandingQuote(true);
     if (!labelSel) return;
     labelSel.text((d) => labelFor(d));
     if (currentDetailNode) showNodeDetail(currentDetailNode);
     else if (currentDetailEdge) showEdgeDetail(currentDetailEdge);
+  }
+
+  // --- Rotating landing quote ---
+  let landingQuoteEntries = [];
+  let landingQuoteIndex = 0;
+  let landingQuoteInited = false;
+
+  function maybeInitLandingQuote() {
+    if (landingQuoteInited || !sirlarData || !landingQuoteIds) return;
+    landingQuoteInited = true;
+    landingQuoteEntries = landingQuoteIds
+      .map((id) => sirlarData.entries.find((e) => e.id === id))
+      .filter(Boolean);
+    if (!landingQuoteEntries.length) return;
+    landingQuoteIndex = Math.floor(Math.random() * landingQuoteEntries.length);
+    const el = document.getElementById("landing-quote");
+    if (!el) return;
+    el.addEventListener("click", () => {
+      const entry = landingQuoteEntries[landingQuoteIndex];
+      if (entry) window.__dostNav.goTo("sirlar", entry.id);
+    });
+    renderLandingQuote(true);
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduceMotion) {
+      setInterval(() => {
+        landingQuoteIndex = (landingQuoteIndex + 1) % landingQuoteEntries.length;
+        renderLandingQuote(false);
+      }, 9000);
+    }
+  }
+
+  function renderLandingQuote(immediate) {
+    const el = document.getElementById("landing-quote");
+    if (!el || !landingQuoteEntries.length) return;
+    const paint = () => {
+      const entry = landingQuoteEntries[landingQuoteIndex];
+      el.innerHTML = `<blockquote>${I18n.pick3(entry.quote)}</blockquote><cite>${entry.source}</cite>`;
+    };
+    if (immediate) {
+      paint();
+      el.classList.add("landing-quote--visible");
+      return;
+    }
+    el.classList.remove("landing-quote--visible");
+    setTimeout(() => {
+      paint();
+      el.classList.add("landing-quote--visible");
+    }, 400);
   }
 
   const SIRLAR_THEME_LABELS = {
