@@ -12,8 +12,12 @@
 
   let esmaData = null;
   let built = false;
-  let nodeSel, linkSel, relationSel;
+  let root = null;
+  let zoomLayer, linkGroup, relationGroup, nodeGroup;
+  let zoomBehavior;
   let nodeById = new Map();
+  let currentDetailNode = null;
+  let currentDetailRelation = null;
 
   function fetchData() {
     if (esmaData) return Promise.resolve(esmaData);
@@ -30,9 +34,9 @@
 
   function radiusFor(d) {
     const depth = d.depth;
-    if (depth === 0) return 20;
-    if (depth === 1) return 17;
-    return Math.max(9, 14 - depth);
+    if (depth === 0) return 34;
+    if (depth === 1) return 22;
+    return Math.max(9, 16 - depth);
   }
 
   const LAYER_COLOR = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#2a78d6", "#1c5cab", "#0d366b"];
@@ -60,93 +64,185 @@
     return idx === -1 ? full : full.slice(0, idx);
   }
 
-  function buildGraph(data) {
-    const width = svg.node().clientWidth || 800;
-    const height = svg.node().clientHeight || 600;
+  function collapseAll(d) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(collapseAll);
+      d.children = null;
+    }
+  }
 
+  function buildGraph(data) {
     svg.selectAll("*").remove();
 
-    const root = d3.stratify()
+    root = d3.stratify()
       .id((d) => d.id)
       .parentId((d) => d.parent)(data.nodes);
 
-    const dx = 108;
-    const dy = 78;
-    const treeLayout = d3.tree().nodeSize([dx, dy]);
-    treeLayout(root);
+    nodeById = new Map();
+    root.each((d) => nodeById.set(d.id, d));
 
-    let xMin = Infinity, xMax = -Infinity;
-    root.each((d) => {
-      xMin = Math.min(xMin, d.x);
-      xMax = Math.max(xMax, d.x);
+    collapseAll(root);
+    root.x0 = 0;
+    root.y0 = 0;
+
+    zoomLayer = svg.append("g").attr("class", "esma-canvas");
+    relationGroup = zoomLayer.append("g").attr("class", "esma-relations");
+    linkGroup = zoomLayer.append("g").attr("class", "esma-links");
+    nodeGroup = zoomLayer.append("g").attr("class", "esma-nodes");
+
+    const width = svg.node().clientWidth || 800;
+    const height = svg.node().clientHeight || 600;
+    svg.attr("viewBox", `0 0 ${width} ${height}`).attr("preserveAspectRatio", "xMidYMid meet");
+
+    zoomBehavior = d3.zoom()
+      .scaleExtent([0.35, 2.5])
+      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
+    svg.call(zoomBehavior).on("dblclick.zoom", null);
+
+    update(root, false);
+    built = true;
+  }
+
+  const dx = 108;
+  const dy = 92;
+  const treeLayout = d3.tree().nodeSize([dx, dy]);
+
+  function zoomToFit(animate) {
+    const nodes = root.descendants();
+    const width = svg.node().clientWidth || 800;
+    const height = svg.node().clientHeight || 600;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    nodes.forEach((d) => {
+      x0 = Math.min(x0, d.x);
+      x1 = Math.max(x1, d.x);
+      y0 = Math.min(y0, d.y);
+      y1 = Math.max(y1, d.y);
     });
-    const treeWidth = xMax - xMin || 1;
-    const canvasWidth = Math.max(width, treeWidth + 120);
-    const offsetX = canvasWidth / 2 - (xMin + treeWidth / 2);
-    const offsetY = 46;
+    x0 -= 70; x1 += 70; y0 -= 50; y1 += 60;
+    const treeW = Math.max(1, x1 - x0);
+    const treeH = Math.max(1, y1 - y0);
+    const topMargin = 70;
+    const [minScale, maxScale] = zoomBehavior.scaleExtent();
+    const scale = Math.min(maxScale, 1.3, width / treeW, (height - topMargin) / treeH);
+    const clampedScale = Math.max(minScale, scale);
+    const tx = width / 2 - clampedScale * (x0 + treeW / 2);
+    const ty = topMargin - clampedScale * y0;
+    const transform = d3.zoomIdentity.translate(tx, ty).scale(clampedScale);
+    const sel = animate ? svg.transition().duration(400) : svg;
+    sel.call(zoomBehavior.transform, transform);
+  }
 
-    nodeById = new Map(root.descendants().map((d) => [d.id, d]));
+  function update(source, animate) {
+    treeLayout(root);
+    const nodes = root.descendants();
+    const links = root.links();
 
-    const g = svg.append("g").attr("class", "esma-canvas");
+    const nodeSet = new Set(nodes);
+    const relations = (esmaData.relations || []).filter((r) => {
+      const s = nodeById.get(r.from);
+      const t = nodeById.get(r.to);
+      return s && t && nodeSet.has(s) && nodeSet.has(t);
+    });
 
-    linkSel = g.append("g")
-      .attr("class", "esma-links")
-      .selectAll("path")
-      .data(root.links())
-      .join("path")
+    const linkGen = d3.linkVertical().x((d) => d.x).y((d) => d.y);
+
+    // links
+    const link = linkGroup.selectAll("path.esma-link").data(links, (d) => d.target.id);
+    link.exit()
+      .transition().duration(300)
+      .attr("d", () => linkGen({ source: { x: source.x, y: source.y }, target: { x: source.x, y: source.y } }))
+      .remove();
+    link.enter().append("path")
       .attr("class", "esma-link")
-      .attr("d", d3.linkVertical()
-        .x((d) => d.x + offsetX)
-        .y((d) => d.y + offsetY));
+      .attr("d", () => linkGen({ source: { x: source.x0, y: source.y0 }, target: { x: source.x0, y: source.y0 } }))
+      .merge(link)
+      .transition().duration(300)
+      .attr("d", linkGen);
 
-    const relations = data.relations || [];
-    relationSel = g.append("g")
-      .attr("class", "esma-relations")
-      .selectAll("path")
-      .data(relations.filter((r) => nodeById.has(r.from) && nodeById.has(r.to)))
-      .join("path")
+    // cross-relations (dashed) — only drawn once both endpoints are visible
+    const relSel = relationGroup.selectAll("path.esma-relation")
+      .data(relations, (r) => `${r.from}->${r.to}`);
+    relSel.exit().remove();
+    const relEnter = relSel.enter().append("path")
       .attr("class", (r) => `esma-relation esma-relation--${r.type}`)
-      .attr("d", (r) => {
-        const s = nodeById.get(r.from);
-        const t = nodeById.get(r.to);
-        return d3.linkVertical()
-          .x((p) => p.x + offsetX)
-          .y((p) => p.y + offsetY)({ source: s, target: t });
-      })
-      .on("click", (event, r) => showRelationDetail(r));
-    relationSel.append("title").text((r) => I18n.pick3(r.label));
+      .on("click", (event, r) => {
+        event.stopPropagation();
+        showRelationDetail(r);
+      });
+    relEnter.append("title").text((r) => I18n.pick3(r.label));
+    relEnter.merge(relSel)
+      .attr("d", (r) => linkGen({ source: nodeById.get(r.from), target: nodeById.get(r.to) }));
+    relationGroup.selectAll("path.esma-relation title").text((r) => I18n.pick3(r.label));
 
-    const nodeGroup = g.append("g").attr("class", "esma-nodes");
+    // nodes
+    const node = nodeGroup.selectAll("g.esma-node").data(nodes, (d) => d.id);
 
-    nodeSel = nodeGroup.selectAll("g.esma-node")
-      .data(root.descendants())
-      .join("g")
+    const nodeEnter = node.enter().append("g")
       .attr("class", "node esma-node")
-      .attr("transform", (d) => `translate(${d.x + offsetX},${d.y + offsetY})`)
-      .on("click", (event, d) => showDetail(d))
+      .attr("transform", `translate(${source.x0},${source.y0})`)
+      .style("opacity", 0)
+      .on("click", (event, d) => {
+        event.stopPropagation();
+        toggle(d);
+      })
       .on("mouseenter", (event, d) => highlight(d))
       .on("mouseleave", () => highlight(null));
 
-    nodeSel.append("circle")
+    nodeEnter.append("circle")
       .attr("r", (d) => radiusFor(d))
       .attr("fill", (d) => colorFor(d));
 
-    nodeSel.append("text")
+    nodeEnter.append("text")
       .attr("class", "node-label")
       .attr("dy", (d) => radiusFor(d) + 13)
       .attr("text-anchor", "middle")
       .text((d) => labelFor(d));
 
-    // size the viewBox to the actual content so the SVG scales the whole
-    // tree to fit within the container instead of clipping wide branches
-    const treeHeight = d3.max(root.descendants(), (d) => d.y) + offsetY + 40;
-    svg.attr("viewBox", `0 0 ${canvasWidth} ${Math.max(height, treeHeight)}`)
-      .attr("preserveAspectRatio", "xMidYMin meet");
+    nodeEnter.append("text")
+      .attr("class", "esma-expand-badge")
+      .attr("dy", 4)
+      .attr("text-anchor", "middle")
+      .text((d) => (d._children ? "+" : ""));
 
-    built = true;
+    node.merge(nodeEnter)
+      .transition().duration(300)
+      .style("opacity", 1)
+      .attr("transform", (d) => `translate(${d.x},${d.y})`);
+
+    node.merge(nodeEnter).select("text.esma-expand-badge")
+      .text((d) => (d._children ? "+" : ""));
+
+    node.exit()
+      .transition().duration(300)
+      .style("opacity", 0)
+      .attr("transform", `translate(${source.x},${source.y})`)
+      .remove();
+
+    nodes.forEach((d) => {
+      d.x0 = d.x;
+      d.y0 = d.y;
+    });
+
+    zoomToFit(animate !== false);
+  }
+
+  function toggle(d) {
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+    } else if (d._children) {
+      d.children = d._children;
+      d._children = null;
+    }
+    update(d, true);
+    showDetail(d);
   }
 
   function highlight(d) {
+    const nodeSel = nodeGroup.selectAll("g.esma-node");
+    const linkSel = linkGroup.selectAll("path.esma-link");
+    const relationSel = relationGroup.selectAll("path.esma-relation");
     if (!d) {
       nodeSel.style("opacity", 1);
       linkSel.classed("esma-link--highlight", false);
@@ -173,7 +269,8 @@
   function relatedNamesHtml(d) {
     const rows = [];
     if (d.parent) rows.push({ other: d.parent, arrow: "↑", note: null });
-    (d.children || []).forEach((c) => rows.push({ other: c, arrow: "↓", note: null }));
+    const kids = d.children || d._children || [];
+    kids.forEach((c) => rows.push({ other: c, arrow: "↓", note: null }));
     const relations = (esmaData.relations || []).filter(
       (r) => r.from === d.id || r.to === d.id
     );
@@ -193,7 +290,12 @@
   }
 
   function showDetail(d) {
+    currentDetailNode = d;
+    currentDetailRelation = null;
     const n = d.data;
+    const hint = d._children
+      ? `<p class="detail-resonance">${tt({ tr: "Devamı için düğüme tekrar tıklayın.", en: "Click the node again to reveal what follows.", pt: "Clique no nó novamente para revelar o que se segue." })}</p>`
+      : "";
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" })}</p>
       <h2 class="detail-title">${I18n.pick3(n.name)}</h2>
@@ -203,12 +305,15 @@
         ${insightsHtml(n.insights)}
         <cite>${(n.sources || []).join(" · ")}</cite>
       </div>
+      ${hint}
       ${relatedNamesHtml(d)}
     `;
     detailPanel.hidden = false;
   }
 
   function showRelationDetail(r) {
+    currentDetailNode = null;
+    currentDetailRelation = r;
     const from = nodeById.get(r.from);
     const to = nodeById.get(r.to);
     detailContent.innerHTML = `
@@ -223,8 +328,10 @@
 
   function render() {
     if (!built || !esmaData) return;
-    nodeSel.select("text.node-label").text((d) => labelFor(d));
-    relationSel.select("title").text((r) => I18n.pick3(r.label));
+    nodeGroup.selectAll("g.esma-node text.node-label").text((d) => labelFor(d));
+    relationGroup.selectAll("path.esma-relation title").text((r) => I18n.pick3(r.label));
+    if (currentDetailNode) showDetail(currentDetailNode);
+    else if (currentDetailRelation) showRelationDetail(currentDetailRelation);
   }
 
   window.__esmaApp = {
