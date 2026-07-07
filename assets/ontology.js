@@ -16,6 +16,7 @@
   I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
     render();
     if (currentMainView === "esma") window.__esmaApp && window.__esmaApp.onLangChange();
+    else if (currentMainView === "hal") window.__halApp && window.__halApp.onLangChange();
   });
 
   detailClose.addEventListener("click", () => {
@@ -69,6 +70,14 @@
     })
     .catch((err) => console.error("Esmâ verisi (arama için) yüklenemedi / Failed to load Esma data for search", err));
 
+  fetch("data/ibn-arabi/hal.json")
+    .then((r) => r.json())
+    .then((data) => {
+      indexHalForSearch(data);
+      render();
+    })
+    .catch((err) => console.error("Hâller verisi (arama için) yüklenemedi / Failed to load States data for search", err));
+
   let landingQuoteIds = null;
   fetch("data/ibn-arabi/quotes.json")
     .then((r) => r.json())
@@ -86,26 +95,35 @@
   let currentMainView = "ontology";
   const ontologyBtn = document.getElementById("ontology-btn");
   const esmaBtn = document.getElementById("esma-btn");
+  const halBtn = document.getElementById("hal-btn");
   const ontologyWrap = document.getElementById("ontology-wrap");
   const esmaWrap = document.getElementById("esma-wrap");
+  const halWrap = document.getElementById("hal-wrap");
 
   function setMainView(view) {
     if (currentMainView === view) return;
     currentMainView = view;
     if (ontologyBtn) ontologyBtn.classList.toggle("btn-ghost--active", view === "ontology");
     if (esmaBtn) esmaBtn.classList.toggle("btn-ghost--active", view === "esma");
+    if (halBtn) halBtn.classList.toggle("btn-ghost--active", view === "hal");
     if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
     if (esmaWrap) esmaWrap.hidden = view !== "esma";
+    if (halWrap) halWrap.hidden = view !== "hal";
     const introOntology = document.getElementById("intro-ontology");
     const introEsma = document.getElementById("intro-esma");
+    const introHal = document.getElementById("intro-hal");
     if (introOntology) introOntology.hidden = view !== "ontology";
     if (introEsma) introEsma.hidden = view !== "esma";
+    if (introHal) introHal.hidden = view !== "hal";
     currentDetailNode = null;
     currentDetailEdge = null;
     detailPanel.hidden = true;
     if (view === "esma") {
       currentDetailView = "esma";
       window.__esmaApp && window.__esmaApp.activate();
+    } else if (view === "hal") {
+      currentDetailView = "hal";
+      window.__halApp && window.__halApp.activate();
     } else {
       currentDetailView = null;
     }
@@ -113,6 +131,7 @@
 
   if (ontologyBtn) ontologyBtn.addEventListener("click", () => { setMainView("ontology"); updateHash("ontoloji"); });
   if (esmaBtn) esmaBtn.addEventListener("click", () => { setMainView("esma"); updateHash("esma"); });
+  if (halBtn) halBtn.addEventListener("click", () => { setMainView("hal"); updateHash("hal"); });
 
   // --- Deep linking & cross-view navigation ---
   let pendingSirlarId = null;
@@ -133,6 +152,11 @@
     if (id) window.__esmaApp && window.__esmaApp.goToNode(id);
   }
 
+  function goToHal(id) {
+    setMainView("hal");
+    if (id) window.__halApp && window.__halApp.goToNode(id);
+  }
+
   function goToSirlar(id) {
     currentDetailNode = null;
     currentDetailEdge = null;
@@ -146,12 +170,13 @@
   }
 
   function parseHashAndGo() {
-    const m = /^#\/(ontoloji|esma|sirlar)(?:\/(.+))?$/.exec(location.hash);
+    const m = /^#\/(ontoloji|esma|sirlar|hal)(?:\/(.+))?$/.exec(location.hash);
     if (!m) return;
     const [, view, id] = m;
     if (view === "ontoloji") goToOntologyNode(id);
     else if (view === "esma") goToEsma(id);
     else if (view === "sirlar") goToSirlar(id);
+    else if (view === "hal") goToHal(id);
   }
 
   window.addEventListener("hashchange", parseHashAndGo);
@@ -161,6 +186,7 @@
       if (view === "ontoloji") goToOntologyNode(id);
       else if (view === "esma") goToEsma(id);
       else if (view === "sirlar") goToSirlar(id);
+      else if (view === "hal") goToHal(id);
       updateHash(view, id);
     },
     setHash: updateHash,
@@ -351,6 +377,7 @@
     ontoloji: { tr: "Ontoloji", en: "Ontology", pt: "Ontologia" },
     esma: { tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" },
     sirlar: { tr: "Sırlar", en: "Mysteries", pt: "Mistérios" },
+    hal: { tr: "Hâller Haritası", en: "Map of States", pt: "Mapa dos Estados" },
   };
   let searchIndex = [];
 
@@ -381,6 +408,16 @@
         .join(" ");
       searchIndex.push({ view: "esma", id: n.id, name: n.name, blob: normalizeSearch(blob) });
       registerCrossLinkTerm(n.name, "esma", n.id);
+    });
+  }
+
+  function indexHalForSearch(data) {
+    data.nodes.forEach((n) => {
+      const blob = [collectLangs(n.name), collectLangs(n.short), collectLangs(n.summary)]
+        .concat((n.insights || []).map((ins) => collectLangs(ins.text)))
+        .join(" ");
+      searchIndex.push({ view: "hal", id: n.id, name: n.name, blob: normalizeSearch(blob) });
+      registerCrossLinkTerm(n.name, "hal", n.id);
     });
   }
 
