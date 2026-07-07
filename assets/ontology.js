@@ -42,23 +42,24 @@
 
   fetch("data/ibn-arabi/ontology.json")
     .then((r) => r.json())
-    .then((data) => buildGraph(data))
+    .then((data) => {
+      buildGraph(data);
+      parseHashAndGo();
+    })
     .catch((err) => console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err));
 
   let sirlarData = null;
   fetch("data/ibn-arabi/sirlar.json")
     .then((r) => r.json())
-    .then((data) => { sirlarData = data; })
+    .then((data) => {
+      sirlarData = data;
+      if (pendingSirlarId) goToSirlar(pendingSirlarId);
+    })
     .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
 
   const sirlarBtn = document.getElementById("sirlar-btn");
   if (sirlarBtn) {
-    sirlarBtn.addEventListener("click", () => {
-      currentDetailNode = null;
-      currentDetailEdge = null;
-      currentDetailView = "sirlar";
-      showSirlarPanel();
-    });
+    sirlarBtn.addEventListener("click", () => goToSirlar());
   }
 
   let currentMainView = "ontology";
@@ -89,8 +90,60 @@
     }
   }
 
-  if (ontologyBtn) ontologyBtn.addEventListener("click", () => setMainView("ontology"));
-  if (esmaBtn) esmaBtn.addEventListener("click", () => setMainView("esma"));
+  if (ontologyBtn) ontologyBtn.addEventListener("click", () => { setMainView("ontology"); updateHash("ontoloji"); });
+  if (esmaBtn) esmaBtn.addEventListener("click", () => { setMainView("esma"); updateHash("esma"); });
+
+  // --- Deep linking & cross-view navigation ---
+  let pendingSirlarId = null;
+
+  function updateHash(view, id) {
+    const hash = "#/" + view + (id ? "/" + id : "");
+    if (location.hash !== hash) history.replaceState(null, "", hash);
+  }
+
+  function goToOntologyNode(id) {
+    setMainView("ontology");
+    const d = nodeById && nodeById.get(id);
+    if (d) onNodeClick(d);
+  }
+
+  function goToEsma(id) {
+    setMainView("esma");
+    if (id) window.__esmaApp && window.__esmaApp.goToNode(id);
+  }
+
+  function goToSirlar(id) {
+    currentDetailNode = null;
+    currentDetailEdge = null;
+    currentDetailView = "sirlar";
+    if (!sirlarData) {
+      pendingSirlarId = id || null;
+      return;
+    }
+    pendingSirlarId = null;
+    showSirlarPanel(id);
+  }
+
+  function parseHashAndGo() {
+    const m = /^#\/(ontoloji|esma|sirlar)(?:\/(.+))?$/.exec(location.hash);
+    if (!m) return;
+    const [, view, id] = m;
+    if (view === "ontoloji") goToOntologyNode(id);
+    else if (view === "esma") goToEsma(id);
+    else if (view === "sirlar") goToSirlar(id);
+  }
+
+  window.addEventListener("hashchange", parseHashAndGo);
+
+  window.__dostNav = {
+    goTo(view, id) {
+      if (view === "ontoloji") goToOntologyNode(id);
+      else if (view === "esma") goToEsma(id);
+      else if (view === "sirlar") goToSirlar(id);
+      updateHash(view, id);
+    },
+    setHash: updateHash,
+  };
 
   let simulation, nodeSel, pathSel, labelSel, nodeById;
 
@@ -144,7 +197,8 @@
       .attr("marker-end", (d) => "url(#arrow-" + (d.kind === "gather" ? "descent" : d.kind) + ")")
       .attr("fill", "none")
       .on("mouseenter", (event, d) => highlightEdge(d))
-      .on("mouseleave", () => highlight(null));
+      .on("mouseleave", () => highlight(null))
+      .on("click", (event, d) => onEdgeClick(d));
 
     const nodeGroup = svg.append("g").attr("class", "nodes");
 
@@ -210,9 +264,29 @@
     else if (currentDetailEdge) showEdgeDetail(currentDetailEdge);
   }
 
-  function sirlarEntryHtml(entry, i) {
+  const SIRLAR_THEME_LABELS = {
+    "suskunluk": { tr: "Suskunluk ve Perdeleme", en: "Silence and Veiling", pt: "Silêncio e Velamento" },
+    "peygamber-kissalari": { tr: "Peygamber Kıssalarındaki Sırlar", en: "Secrets in the Prophets' Stories", pt: "Segredos nas Histórias dos Profetas" },
+    "kader-tevhid": { tr: "Kader, Tevhid, Tenzih-Teşbih", en: "Destiny, Divine Unity, Tanzih-Tashbih", pt: "Destino, Unidade Divina, Tanzih-Tashbih" },
+    "dil-ve-kelime": { tr: "Dilde ve Kelimede Gizlenen Sırlar", en: "Secrets Hidden in Language and Words", pt: "Segredos Ocultos na Língua e nas Palavras" },
+    "insan-i-kamil": { tr: "İnsan-ı Kâmil ve Velâyet", en: "The Perfect Human and Sainthood", pt: "O Ser Humano Perfeito e a Santidade" },
+  };
+
+  let sirlarThemeFilter = null;
+
+  function sirlarThemeChipsHtml() {
+    const themes = Object.keys(SIRLAR_THEME_LABELS);
+    const allChip = `<button type="button" class="theme-chip${sirlarThemeFilter ? "" : " theme-chip--active"}" data-theme="">${tt({ tr: "Tümü", en: "All", pt: "Todos" })}</button>`;
+    const chips = themes.map((th) => {
+      const count = sirlarData.entries.filter((e) => e.theme === th).length;
+      return `<button type="button" class="theme-chip${sirlarThemeFilter === th ? " theme-chip--active" : ""}" data-theme="${th}">${tt(SIRLAR_THEME_LABELS[th])} <span class="theme-chip__count">${count}</span></button>`;
+    }).join("");
+    return `<div class="theme-chips">${allChip}${chips}</div>`;
+  }
+
+  function sirlarEntryHtml(entry, i, openFirst) {
     return `
-      <details class="insight" ${i === 0 ? "open" : ""}>
+      <details class="insight" id="sir-${entry.id}" ${i === 0 && openFirst ? "open" : ""}>
         <summary>${volumeLabel(entry.volume)} — ${I18n.pick3(entry.topic)}</summary>
         <div class="detail-block detail-block--sir">
           <blockquote>${I18n.pick3(entry.quote)}</blockquote>
@@ -223,15 +297,35 @@
     `;
   }
 
-  function showSirlarPanel() {
+  function showSirlarPanel(focusId) {
     if (!sirlarData) return;
+    if (focusId) sirlarThemeFilter = null;
+    const entries = sirlarThemeFilter
+      ? sirlarData.entries.filter((e) => e.theme === sirlarThemeFilter)
+      : sirlarData.entries;
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "İşaret Edilen, Açıklanmayan", en: "Pointed To, Not Explained", pt: "Apontado, Não Explicado" })}</p>
       <h2 class="detail-title">${tt({ tr: "Sırlar", en: "Mysteries", pt: "Mistérios" })}</h2>
       <p class="detail-resonance">${I18n.pick3(sirlarData.intro)}</p>
-      ${sirlarData.entries.map((e, i) => sirlarEntryHtml(e, i)).join("")}
+      ${sirlarThemeChipsHtml()}
+      ${entries.map((e, i) => sirlarEntryHtml(e, i, !focusId)).join("")}
     `;
+    detailContent.querySelectorAll(".theme-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        sirlarThemeFilter = chip.dataset.theme || null;
+        showSirlarPanel();
+      });
+    });
     detailPanel.hidden = false;
+    if (focusId) {
+      const el = document.getElementById("sir-" + focusId);
+      if (el) {
+        el.open = true;
+        el.classList.add("insight--focus");
+        setTimeout(() => el.scrollIntoView({ block: "start", behavior: "smooth" }), 50);
+        setTimeout(() => el.classList.remove("insight--focus"), 2600);
+      }
+    }
   }
 
   function radiusFor(d) {
@@ -292,6 +386,15 @@
     currentDetailEdge = null;
     currentDetailView = null;
     showNodeDetail(d);
+    updateHash("ontoloji", d.id);
+  }
+
+  function onEdgeClick(l) {
+    currentDetailNode = null;
+    currentDetailEdge = l;
+    currentDetailView = null;
+    showEdgeDetail(l);
+    updateHash("ontoloji", "edge/" + l.source.id + "-" + l.target.id);
   }
 
   const VOLUME_LABEL_OVERRIDE = {

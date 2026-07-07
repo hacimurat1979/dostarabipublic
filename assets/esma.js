@@ -11,6 +11,7 @@
   }
 
   let esmaData = null;
+  let esmaDataPromise = null;
   let built = false;
   let root = null;
   let zoomLayer, linkGroup, relationGroup, nodeGroup;
@@ -20,8 +21,8 @@
   let currentDetailRelation = null;
 
   function fetchData() {
-    if (esmaData) return Promise.resolve(esmaData);
-    return fetch("data/ibn-arabi/esma.json")
+    if (esmaDataPromise) return esmaDataPromise;
+    esmaDataPromise = fetch("data/ibn-arabi/esma.json")
       .then((r) => r.json())
       .then((data) => {
         esmaData = data;
@@ -29,7 +30,9 @@
       })
       .catch((err) => {
         console.error("Esmâ verisi yüklenemedi / Failed to load Esma data", err);
+        esmaDataPromise = null;
       });
+    return esmaDataPromise;
   }
 
   function radiusFor(d) {
@@ -237,6 +240,7 @@
     }
     update(d, true);
     showDetail(d);
+    window.__dostNav && window.__dostNav.setHash("esma", d.id);
   }
 
   function highlight(d) {
@@ -364,11 +368,33 @@
     else if (currentDetailRelation) showRelationDetail(currentDetailRelation);
   }
 
+  function revealPathTo(id) {
+    const target = nodeById.get(id);
+    if (!target) return;
+    let n = target.parent;
+    while (n) {
+      if (n._children) {
+        n.children = n._children;
+        n._children = null;
+      }
+      n = n.parent;
+    }
+    update(root, false);
+    showDetail(target);
+  }
+
   window.__esmaApp = {
     activate() {
       fetchData().then((data) => {
         if (!data) return;
         if (!built) buildGraph(data);
+      });
+    },
+    goToNode(id) {
+      fetchData().then((data) => {
+        if (!data) return;
+        if (!built) buildGraph(data);
+        revealPathTo(id);
       });
     },
     onLangChange() {
