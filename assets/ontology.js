@@ -187,7 +187,18 @@
       .force("y", d3.forceY((d) => d.ty).strength(0.85))
       .force("collide", d3.forceCollide().radius((d) => radiusFor(d) + 44));
 
-    const linkGroup = svg.append("g").attr("class", "links");
+    const zoomLayer = svg.append("g").attr("class", "zoom-layer");
+
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.5, 4])
+      .filter((event) => event.type === "wheel" || !event.target.closest(".node"))
+      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
+
+    svg.call(zoom).on("dblclick.zoom", null);
+    window.__ontologyZoom = { svg, zoom };
+
+    const linkGroup = zoomLayer.append("g").attr("class", "links");
 
     pathSel = linkGroup
       .selectAll("path")
@@ -200,7 +211,7 @@
       .on("mouseleave", () => highlight(null))
       .on("click", (event, d) => onEdgeClick(d));
 
-    const nodeGroup = svg.append("g").attr("class", "nodes");
+    const nodeGroup = zoomLayer.append("g").attr("class", "nodes");
 
     nodeSel = nodeGroup
       .selectAll("g.node")
