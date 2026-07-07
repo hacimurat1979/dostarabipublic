@@ -12,7 +12,8 @@
 
   let esmaData = null;
   let built = false;
-  let nodeSel, linkSel;
+  let nodeSel, linkSel, relationSel;
+  let nodeById = new Map();
 
   function fetchData() {
     if (esmaData) return Promise.resolve(esmaData);
@@ -54,7 +55,9 @@
   }
 
   function labelFor(d) {
-    return I18n.pick3(d.data.name);
+    const full = I18n.pick3(d.data.name);
+    const idx = full.indexOf(" (");
+    return idx === -1 ? full : full.slice(0, idx);
   }
 
   function buildGraph(data) {
@@ -67,8 +70,8 @@
       .id((d) => d.id)
       .parentId((d) => d.parent)(data.nodes);
 
-    const dx = 92;
-    const dy = 74;
+    const dx = 108;
+    const dy = 78;
     const treeLayout = d3.tree().nodeSize([dx, dy]);
     treeLayout(root);
 
@@ -82,6 +85,8 @@
     const offsetX = canvasWidth / 2 - (xMin + treeWidth / 2);
     const offsetY = 46;
 
+    nodeById = new Map(root.descendants().map((d) => [d.id, d]));
+
     const g = svg.append("g").attr("class", "esma-canvas");
 
     linkSel = g.append("g")
@@ -93,6 +98,23 @@
       .attr("d", d3.linkVertical()
         .x((d) => d.x + offsetX)
         .y((d) => d.y + offsetY));
+
+    const relations = data.relations || [];
+    relationSel = g.append("g")
+      .attr("class", "esma-relations")
+      .selectAll("path")
+      .data(relations.filter((r) => nodeById.has(r.from) && nodeById.has(r.to)))
+      .join("path")
+      .attr("class", (r) => `esma-relation esma-relation--${r.type}`)
+      .attr("d", (r) => {
+        const s = nodeById.get(r.from);
+        const t = nodeById.get(r.to);
+        return d3.linkVertical()
+          .x((p) => p.x + offsetX)
+          .y((p) => p.y + offsetY)({ source: s, target: t });
+      })
+      .on("click", (event, r) => showRelationDetail(r));
+    relationSel.append("title").text((r) => I18n.pick3(r.label));
 
     const nodeGroup = g.append("g").attr("class", "esma-nodes");
 
@@ -128,12 +150,14 @@
     if (!d) {
       nodeSel.style("opacity", 1);
       linkSel.classed("esma-link--highlight", false);
+      relationSel.style("opacity", null);
       return;
     }
     const ids = new Set(d.ancestors().map((a) => a.id));
     const descendantIds = new Set(d.descendants().map((a) => a.id));
     nodeSel.style("opacity", (n) => (ids.has(n.id) || descendantIds.has(n.id) ? 1 : 0.35));
     linkSel.classed("esma-link--highlight", (l) => l.target.id === d.id);
+    relationSel.style("opacity", (r) => (r.from === d.id || r.to === d.id ? 1 : 0.15));
   }
 
   function insightsHtml(insights) {
@@ -144,6 +168,28 @@
         <p>${I18n.pick3(ins.text)}</p>
       </details>
     `).join("");
+  }
+
+  function relatedNamesHtml(d) {
+    const rows = [];
+    if (d.parent) rows.push({ other: d.parent, arrow: "↑", note: null });
+    (d.children || []).forEach((c) => rows.push({ other: c, arrow: "↓", note: null }));
+    const relations = (esmaData.relations || []).filter(
+      (r) => r.from === d.id || r.to === d.id
+    );
+    relations.forEach((r) => {
+      const otherId = r.from === d.id ? r.to : r.from;
+      const other = nodeById.get(otherId);
+      if (other) rows.push({ other, arrow: "↔", note: I18n.pick3(r.label) });
+    });
+    if (!rows.length) return "";
+    const items = rows.map(({ other, arrow, note }) => `
+      <div class="detail-block detail-block--edge">
+        <h3>${arrow} ${I18n.pick3(other.data.name)}</h3>
+        ${note ? `<p>${note}</p>` : ""}
+      </div>
+    `).join("");
+    return `<p class="detail-eyebrow" style="margin-top:18px;">${tt({ tr: "İlişkiler", en: "Relations", pt: "Relações" })}</p>${items}`;
   }
 
   function showDetail(d) {
@@ -157,16 +203,20 @@
         ${insightsHtml(n.insights)}
         <cite>${(n.sources || []).join(" · ")}</cite>
       </div>
+      ${relatedNamesHtml(d)}
     `;
     detailPanel.hidden = false;
   }
 
-  function showDefaultPanel() {
-    if (!esmaData) return;
+  function showRelationDetail(r) {
+    const from = nodeById.get(r.from);
+    const to = nodeById.get(r.to);
     detailContent.innerHTML = `
-      <p class="detail-eyebrow">${tt({ tr: "Zât'tan Aşağıya", en: "Down from the Essence", pt: "Descendo da Essência" })}</p>
-      <h2 class="detail-title">${tt({ tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" })}</h2>
-      <p class="detail-resonance">${I18n.pick3(esmaData.intro)}</p>
+      <p class="detail-eyebrow">${tt({ tr: "İlişki", en: "Relation", pt: "Relação" })}</p>
+      <h2 class="detail-title">${I18n.pick3(from.data.name)} ↔ ${I18n.pick3(to.data.name)}</h2>
+      <div class="detail-block detail-block--ibnarabi">
+        <p>${I18n.pick3(r.label)}</p>
+      </div>
     `;
     detailPanel.hidden = false;
   }
@@ -174,6 +224,7 @@
   function render() {
     if (!built || !esmaData) return;
     nodeSel.select("text.node-label").text((d) => labelFor(d));
+    relationSel.select("title").text((r) => I18n.pick3(r.label));
   }
 
   window.__esmaApp = {
@@ -181,7 +232,6 @@
       fetchData().then((data) => {
         if (!data) return;
         if (!built) buildGraph(data);
-        showDefaultPanel();
       });
     },
     onLangChange() {

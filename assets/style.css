@@ -56,6 +56,7 @@ html, body {
   position: relative;
   z-index: 50;
   pointer-events: none;
+  background: var(--page-plane);
 }
 .app-header__title, .app-header__controls {
   pointer-events: auto;
@@ -164,6 +165,22 @@ html, body {
   stroke: var(--series-ibnarabi);
   stroke-width: 2.5px;
 }
+.esma-relation {
+  fill: none;
+  stroke: var(--series-theme);
+  stroke-width: 1.5px;
+  stroke-dasharray: 2 4;
+  opacity: 0.65;
+  cursor: pointer;
+  pointer-events: stroke;
+}
+.esma-relation:hover {
+  opacity: 1;
+  stroke-width: 2.5px;
+}
+.esma-relation--zid {
+  stroke: var(--series-daphne);
+}
 
 .legend {
   position: absolute;
@@ -189,6 +206,15 @@ html, body {
 .legend__dot--paradox  { background: var(--series-daphne); }
 .legend__dot--celal    { background: var(--series-celal); }
 .legend__dot--cemal    { background: var(--series-cemal); }
+.legend__line {
+  width: 16px;
+  height: 0;
+  border-top: 2px dashed var(--series-theme);
+  display: inline-block;
+}
+.legend__line--zid {
+  border-top-color: var(--series-daphne);
+}
 
 .node-label {
   font-size: 11px;
@@ -273,7 +299,7 @@ html, body {
   background: var(--surface-1);
   border-left: 1px solid var(--border);
   box-shadow: -8px 0 24px rgba(0,0,0,0.15);
-  padding: 24px;
+  padding: 128px 24px 24px;
   overflow-y: auto;
   z-index: 40;
 }
@@ -378,5 +404,5 @@ html, body {
 
 @media (max-width: 640px) {
   .app-header { flex-direction: column; }
-  .detail-panel { width: 100vw; }
+  .detail-panel { width: 100vw; padding-top: 168px; }
 }

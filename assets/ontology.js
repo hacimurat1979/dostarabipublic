@@ -80,12 +80,12 @@
     if (introEsma) introEsma.hidden = view !== "esma";
     currentDetailNode = null;
     currentDetailEdge = null;
+    detailPanel.hidden = true;
     if (view === "esma") {
       currentDetailView = "esma";
       window.__esmaApp && window.__esmaApp.activate();
     } else {
       currentDetailView = null;
-      detailPanel.hidden = true;
     }
   }
 
