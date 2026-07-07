@@ -44,8 +44,8 @@
     .then((r) => r.json())
     .then((data) => {
       buildGraph(data);
-      parseHashAndGo();
       indexOntologyForSearch(data);
+      parseHashAndGo();
     })
     .catch((err) => console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err));
 
@@ -54,15 +54,19 @@
     .then((r) => r.json())
     .then((data) => {
       sirlarData = data;
+      indexSirlarForSearch(data);
       if (pendingSirlarId) goToSirlar(pendingSirlarId);
       maybeInitLandingQuote();
-      indexSirlarForSearch(data);
+      render();
     })
     .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
 
   fetch("data/ibn-arabi/esma.json")
     .then((r) => r.json())
-    .then((data) => indexEsmaForSearch(data))
+    .then((data) => {
+      indexEsmaForSearch(data);
+      render();
+    })
     .catch((err) => console.error("Esmâ verisi (arama için) yüklenemedi / Failed to load Esma data for search", err));
 
   let landingQuoteIds = null;
@@ -366,6 +370,7 @@
         .concat((n.insights || []).map((ins) => collectLangs(ins.text)))
         .join(" ");
       searchIndex.push({ view: "ontoloji", id: n.id, name: n.name, blob: normalizeSearch(blob) });
+      registerCrossLinkTerm(n.name, "ontoloji", n.id);
     });
   }
 
@@ -375,8 +380,47 @@
         .concat((n.insights || []).map((ins) => collectLangs(ins.text)))
         .join(" ");
       searchIndex.push({ view: "esma", id: n.id, name: n.name, blob: normalizeSearch(blob) });
+      registerCrossLinkTerm(n.name, "esma", n.id);
     });
   }
+
+  // --- Cross-linking between insights ---
+  const crossLinkTermsByLang = { tr: [], en: [], pt: [] };
+
+  function escapeRegExp(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function registerCrossLinkTerm(nameDict, view, id) {
+    if (!nameDict) return;
+    ["tr", "en", "pt"].forEach((lang) => {
+      const term = nameDict[lang];
+      if (term && term.length >= 4) {
+        crossLinkTermsByLang[lang].push({ term, view, id });
+      }
+    });
+  }
+
+  function linkify(text, excludeView, excludeId) {
+    if (!text) return text;
+    const lang = I18n.getLang();
+    const terms = crossLinkTermsByLang[lang]
+      .filter((t) => !(t.view === excludeView && t.id === excludeId))
+      .sort((a, b) => b.term.length - a.term.length);
+    if (!terms.length) return text;
+    const pattern = terms.map((t) => `(?<![\\p{L}])${escapeRegExp(t.term)}(?![\\p{L}])`).join("|");
+    const re = new RegExp(pattern, "gu");
+    const seen = new Set();
+    return text.replace(re, (match) => {
+      if (seen.has(match)) return match;
+      const hit = terms.find((t) => t.term === match);
+      if (!hit) return match;
+      seen.add(match);
+      return `<a href="#/${hit.view}/${hit.id}" class="cross-link" data-view="${hit.view}" data-id="${hit.id}">${match}</a>`;
+    });
+  }
+
+  window.__dostCrossLink = { linkify };
 
   function indexSirlarForSearch(data) {
     data.entries.forEach((e) => {
@@ -491,7 +535,7 @@
         <summary>${volumeLabel(entry.volume)} — ${I18n.pick3(entry.topic)}</summary>
         <div class="detail-block detail-block--sir">
           <blockquote>${I18n.pick3(entry.quote)}</blockquote>
-          <p>${I18n.pick3(entry.note)}</p>
+          <p>${linkify(I18n.pick3(entry.note), null, null)}</p>
           <cite>${entry.source}</cite>
         </div>
       </details>
@@ -631,14 +675,14 @@
     return [];
   }
 
-  function insightsHtml(insights, sources) {
+  function insightsHtml(insights, sources, excludeView, excludeId) {
     if (!insights || !insights.length) return "";
     return `<div class="insight-group">${insights.map((ins, i) => {
       const cite = sourcesForInsight(ins, sources);
       return `
       <details class="insight" ${i === 0 ? "open" : ""}>
         <summary>${volumeLabel(ins.volume)}</summary>
-        <p>${I18n.pick3(ins.text)}</p>
+        <p>${linkify(I18n.pick3(ins.text), excludeView, excludeId)}</p>
         ${cite.length ? `<cite>${cite.join(" · ")}</cite>` : ""}
       </details>
     `;
@@ -651,9 +695,9 @@
       <h2 class="detail-title">${I18n.pick3(d.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(d.short)}</h3>
-        <p>${I18n.pick3(d.summary)}</p>
+        <p>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>
       </div>
-      ${insightsHtml(d.insights, d.sources)}
+      ${insightsHtml(d.insights, d.sources, "ontoloji", d.id)}
       ${relatedEdgesHtml(d)}
     `;
     detailPanel.hidden = false;
@@ -669,8 +713,8 @@
       const arrow = dir === "out" ? "→" : "←";
       return `<div class="detail-block detail-block--edge">
         <h3>${arrow} ${I18n.pick3(other.name)} — <em>${I18n.pick3(l.relation)}</em></h3>
-        <p>${I18n.pick3(l.nature)}</p>
-        ${insightsHtml(l.insights)}
+        <p>${linkify(I18n.pick3(l.nature), null, null)}</p>
+        ${insightsHtml(l.insights, null, null, null)}
       </div>`;
     }).join("");
     return `<p class="detail-eyebrow" style="margin-top:18px;">${tt({ tr: "İlişkiler", en: "Relations", pt: "Relações" })}</p>${items}`;
@@ -681,8 +725,8 @@
       <p class="detail-eyebrow">${I18n.pick3(l.relation)}</p>
       <h2 class="detail-title">${I18n.pick3(l.source.name)} → ${I18n.pick3(l.target.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
-        <p>${I18n.pick3(l.nature)}</p>
-        ${insightsHtml(l.insights)}
+        <p>${linkify(I18n.pick3(l.nature), null, null)}</p>
+        ${insightsHtml(l.insights, null, null, null)}
       </div>
     `;
     detailPanel.hidden = false;

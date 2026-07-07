@@ -10,6 +10,10 @@
     return I18n.pick3(dict);
   }
 
+  function linkify(text, view, id) {
+    return window.__dostCrossLink ? window.__dostCrossLink.linkify(text, view, id) : text;
+  }
+
   let esmaData = null;
   let esmaDataPromise = null;
   let built = false;
@@ -287,14 +291,14 @@
     return [];
   }
 
-  function insightsHtml(insights, sources) {
+  function insightsHtml(insights, sources, excludeId) {
     if (!insights || !insights.length) return "";
     return `<div class="insight-group">${insights.map((ins, i) => {
       const cite = sourcesForInsight(ins, sources);
       return `
       <details class="insight" ${i === 0 ? "open" : ""}>
         <summary>${volumeLabel(ins.volume)}</summary>
-        <p>${I18n.pick3(ins.text)}</p>
+        <p>${linkify(I18n.pick3(ins.text), "esma", excludeId)}</p>
         ${cite.length ? `<cite>${cite.join(" · ")}</cite>` : ""}
       </details>
     `;
@@ -336,9 +340,9 @@
       <h2 class="detail-title">${I18n.pick3(n.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(n.short)}</h3>
-        <p>${I18n.pick3(n.summary)}</p>
+        <p>${linkify(I18n.pick3(n.summary), "esma", d.id)}</p>
       </div>
-      ${insightsHtml(n.insights, n.sources)}
+      ${insightsHtml(n.insights, n.sources, d.id)}
       ${hint}
       ${relatedNamesHtml(d)}
     `;
