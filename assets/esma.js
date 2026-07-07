@@ -256,14 +256,45 @@
     relationSel.style("opacity", (r) => (r.from === d.id || r.to === d.id ? 1 : 0.15));
   }
 
-  function insightsHtml(insights) {
+  const VOLUME_LABEL_OVERRIDE = {
+    "izutsu-anahtar": { tr: "Anahtar-Kavramlar (İzutsu)", en: "Key Concepts (Izutsu)", pt: "Conceitos-Chave (Izutsu)" },
+  };
+
+  const VOLUME_SOURCE_MATCH = {
+    "izutsu-anahtar": "İbn Arabî'nin Fusûsu'ndaki Anahtar-Kavramlar (Toshihiko İzutsu",
+  };
+
+  function volumeLabel(v) {
+    if (VOLUME_LABEL_OVERRIDE[v]) return tt(VOLUME_LABEL_OVERRIDE[v]);
+    return tt({ tr: `Fütûhât, Cilt ${v}`, en: `Futuhat, Volume ${v}`, pt: `Futuhat, Volume ${v}` });
+  }
+
+  function sourcesForInsight(ins, sources) {
+    if (ins.source) return [ins.source];
+    if (!sources || !sources.length) return [];
+    const v = ins.volume;
+    if (typeof v === "number") {
+      const re = new RegExp(`Cilt ${v}\\b`);
+      return sources.filter((s) => re.test(s));
+    }
+    if (VOLUME_SOURCE_MATCH[v]) {
+      return sources.filter((s) => s.includes(VOLUME_SOURCE_MATCH[v]));
+    }
+    return [];
+  }
+
+  function insightsHtml(insights, sources) {
     if (!insights || !insights.length) return "";
-    return insights.map((ins, i) => `
+    return `<div class="insight-group">${insights.map((ins, i) => {
+      const cite = sourcesForInsight(ins, sources);
+      return `
       <details class="insight" ${i === 0 ? "open" : ""}>
-        <summary>${tt({ tr: `Fütûhât, Cilt ${ins.volume}`, en: `Futuhat, Volume ${ins.volume}`, pt: `Futuhat, Volume ${ins.volume}` })}</summary>
+        <summary>${volumeLabel(ins.volume)}</summary>
         <p>${I18n.pick3(ins.text)}</p>
+        ${cite.length ? `<cite>${cite.join(" · ")}</cite>` : ""}
       </details>
-    `).join("");
+    `;
+    }).join("")}</div>`;
   }
 
   function relatedNamesHtml(d) {
@@ -302,9 +333,8 @@
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(n.short)}</h3>
         <p>${I18n.pick3(n.summary)}</p>
-        ${insightsHtml(n.insights)}
-        <cite>${(n.sources || []).join(" · ")}</cite>
       </div>
+      ${insightsHtml(n.insights, n.sources)}
       ${hint}
       ${relatedNamesHtml(d)}
     `;

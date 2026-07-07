@@ -316,6 +316,7 @@ html, body {
 .detail-panel[hidden] { display: none; }
 
 .detail-panel__close {
+  display: none;
   position: fixed;
   top: 12px;
   right: 16px;
@@ -328,7 +329,12 @@ html, body {
   line-height: 1;
   color: var(--text-secondary);
   cursor: pointer;
-  z-index: 41;
+  z-index: 51;
+  align-items: center;
+  justify-content: center;
+}
+#detail-panel:not([hidden]) + .detail-panel__close {
+  display: flex;
 }
 
 .detail-title {
@@ -358,6 +364,24 @@ html, body {
 }
 .detail-block p { margin: 0; line-height: 1.55; font-size: 0.92rem; }
 
+.insight-group {
+  border-radius: 10px;
+  padding: 2px 16px 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gridline);
+}
+.insight-group .insight:first-child {
+  margin-top: 0;
+  padding-top: 10px;
+  border-top: none;
+}
+.detail-block .insight-group {
+  border: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+
 .insight {
   margin: 10px 0 0;
   padding-top: 10px;
@@ -383,6 +407,13 @@ html, body {
   margin: 8px 0 0;
   line-height: 1.55;
   font-size: 0.9rem;
+}
+.insight cite {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: normal;
 }
 .detail-block blockquote {
   margin: 0;
