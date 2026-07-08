@@ -46,8 +46,10 @@
 
   const STAGE_COLOR = {
     nefs: "--series-hal-nefs",
+    muameleler: "--series-hal-muameleler",
     cemfark: "--series-hal-cemfark",
     fenabeka: "--series-hal-fenabeka",
+    tevhit: "--series-hal-tevhit",
     hayret: "--series-hal-hayret",
   };
 
