@@ -45,7 +45,7 @@
     .then((r) => r.json())
     .then((data) => {
       buildGraph(data);
-      indexOntologyForSearch(data);
+      registerOntologyCrossLinks(data);
       parseHashAndGo();
     })
     .catch((err) => console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err));
@@ -55,7 +55,6 @@
     .then((r) => r.json())
     .then((data) => {
       sirlarData = data;
-      indexSirlarForSearch(data);
       if (pendingSirlarId) goToSirlar(pendingSirlarId);
       maybeInitLandingQuote();
       render();
@@ -65,18 +64,18 @@
   fetch("data/ibn-arabi/esma.json")
     .then((r) => r.json())
     .then((data) => {
-      indexEsmaForSearch(data);
+      registerEsmaCrossLinks(data);
       render();
     })
-    .catch((err) => console.error("Esmâ verisi (arama için) yüklenemedi / Failed to load Esma data for search", err));
+    .catch((err) => console.error("Esmâ verisi yüklenemedi / Failed to load Esma data", err));
 
   fetch("data/ibn-arabi/hal.json")
     .then((r) => r.json())
     .then((data) => {
-      indexHalForSearch(data);
+      registerHalCrossLinks(data);
       render();
     })
-    .catch((err) => console.error("Hâller verisi (arama için) yüklenemedi / Failed to load States data for search", err));
+    .catch((err) => console.error("Hâller verisi yüklenemedi / Failed to load States data", err));
 
   let landingQuoteIds = null;
   fetch("data/ibn-arabi/quotes.json")
@@ -321,7 +320,6 @@
   function render() {
     if (currentDetailView === "sirlar") showSirlarPanel();
     if (landingQuoteEntries.length) renderLandingQuote(true);
-    updateSearchPlaceholder();
     if (!labelSel) return;
     labelSel.text((d) => labelFor(d));
     if (currentDetailNode) showNodeDetail(currentDetailNode);
@@ -376,51 +374,20 @@
     }, 400);
   }
 
-  // --- Cross-tab search ---
-  const SEARCH_VIEW_LABEL = {
-    ontoloji: { tr: "Ontoloji", en: "Ontology", pt: "Ontologia" },
-    esma: { tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" },
-    sirlar: { tr: "Sırlar", en: "Mysteries", pt: "Mistérios" },
-    hal: { tr: "Hâller Haritası", en: "Map of States", pt: "Mapa dos Estados" },
-  };
-  let searchIndex = [];
-
-  function collectLangs(obj) {
-    if (!obj) return "";
-    return [obj.tr, obj.en, obj.pt].filter(Boolean).join(" ");
-  }
-
-  const NORMALIZE_MAP = { "â": "a", "î": "i", "û": "u", "ı": "i", "ş": "s", "ğ": "g", "ü": "u", "ö": "o", "ç": "c" };
-  function normalizeSearch(s) {
-    return s.toLowerCase().replace(/[âîûışğüöç]/g, (c) => NORMALIZE_MAP[c] || c);
-  }
-
-  function indexOntologyForSearch(data) {
+  function registerOntologyCrossLinks(data) {
     data.nodes.forEach((n) => {
-      const blob = [collectLangs(n.name), collectLangs(n.short), collectLangs(n.summary)]
-        .concat((n.insights || []).map((ins) => collectLangs(ins.text)))
-        .join(" ");
-      searchIndex.push({ view: "ontoloji", id: n.id, name: n.name, blob: normalizeSearch(blob) });
       registerCrossLinkTerm(n.name, "ontoloji", n.id);
     });
   }
 
-  function indexEsmaForSearch(data) {
+  function registerEsmaCrossLinks(data) {
     data.nodes.forEach((n) => {
-      const blob = [collectLangs(n.name), collectLangs(n.short), collectLangs(n.summary)]
-        .concat((n.insights || []).map((ins) => collectLangs(ins.text)))
-        .join(" ");
-      searchIndex.push({ view: "esma", id: n.id, name: n.name, blob: normalizeSearch(blob) });
       registerCrossLinkTerm(n.name, "esma", n.id);
     });
   }
 
-  function indexHalForSearch(data) {
+  function registerHalCrossLinks(data) {
     data.nodes.forEach((n) => {
-      const blob = [collectLangs(n.name), collectLangs(n.short), collectLangs(n.summary)]
-        .concat((n.insights || []).map((ins) => collectLangs(ins.text)))
-        .join(" ");
-      searchIndex.push({ view: "hal", id: n.id, name: n.name, blob: normalizeSearch(blob) });
       registerCrossLinkTerm(n.name, "hal", n.id);
     });
   }
@@ -462,93 +429,6 @@
   }
 
   window.__dostCrossLink = { linkify };
-
-  function indexSirlarForSearch(data) {
-    data.entries.forEach((e) => {
-      const blob = [collectLangs(e.topic), collectLangs(e.quote), collectLangs(e.note), e.source || ""]
-        .join(" ");
-      searchIndex.push({ view: "sirlar", id: e.id, name: e.topic, blob: normalizeSearch(blob) });
-    });
-  }
-
-  const searchInput = document.getElementById("search-input");
-  const searchResultsEl = document.getElementById("search-results");
-  const searchBox = document.getElementById("search-box");
-  let searchActiveIndex = -1;
-  let searchCurrentResults = [];
-
-  function updateSearchPlaceholder() {
-    if (searchInput) {
-      searchInput.placeholder = tt({ tr: "Ara…", en: "Search…", pt: "Buscar…" });
-    }
-  }
-
-  function runSearch(query) {
-    const q = normalizeSearch(query.trim());
-    if (!q) return [];
-    return searchIndex.filter((item) => item.blob.includes(q)).slice(0, 20);
-  }
-
-  function renderSearchResults(results) {
-    searchCurrentResults = results;
-    searchActiveIndex = -1;
-    if (!results.length) {
-      searchResultsEl.innerHTML = `<div class="search-result__empty">${tt({ tr: "Sonuç yok", en: "No results", pt: "Nenhum resultado" })}</div>`;
-      searchResultsEl.hidden = false;
-      return;
-    }
-    searchResultsEl.innerHTML = results.map((item, i) => `
-      <div class="search-result" data-index="${i}">
-        <span class="search-result__view">${tt(SEARCH_VIEW_LABEL[item.view])}</span>
-        <span class="search-result__name">${I18n.pick3(item.name)}</span>
-      </div>
-    `).join("");
-    searchResultsEl.hidden = false;
-    searchResultsEl.querySelectorAll(".search-result").forEach((el) => {
-      el.addEventListener("click", () => selectSearchResult(Number(el.dataset.index)));
-    });
-  }
-
-  function selectSearchResult(i) {
-    const item = searchCurrentResults[i];
-    if (!item) return;
-    window.__dostNav.goTo(item.view, item.id);
-    searchResultsEl.hidden = true;
-    searchInput.value = "";
-  }
-
-  function closeSearchResults() {
-    searchResultsEl.hidden = true;
-  }
-
-  if (searchInput) {
-    updateSearchPlaceholder();
-    searchInput.addEventListener("input", () => {
-      renderSearchResults(runSearch(searchInput.value));
-    });
-    searchInput.addEventListener("keydown", (e) => {
-      if (searchResultsEl.hidden) return;
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        searchActiveIndex = Math.min(searchActiveIndex + 1, searchCurrentResults.length - 1);
-        searchResultsEl.querySelectorAll(".search-result").forEach((el, i) => el.classList.toggle("search-result--active", i === searchActiveIndex));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        searchActiveIndex = Math.max(searchActiveIndex - 1, 0);
-        searchResultsEl.querySelectorAll(".search-result").forEach((el, i) => el.classList.toggle("search-result--active", i === searchActiveIndex));
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        if (searchActiveIndex >= 0) selectSearchResult(searchActiveIndex);
-        else if (searchCurrentResults.length) selectSearchResult(0);
-      } else if (e.key === "Escape") {
-        closeSearchResults();
-        searchInput.blur();
-      }
-    });
-    document.addEventListener("click", (e) => {
-      if (searchBox && !searchBox.contains(e.target)) closeSearchResults();
-    });
-  }
 
   const SIRLAR_THEME_LABELS = {
     "suskunluk": { tr: "Suskunluk ve Perdeleme", en: "Silence and Veiling", pt: "Silêncio e Velamento" },
