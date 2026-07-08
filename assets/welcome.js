@@ -108,6 +108,6 @@
     placeSpark(1);
     finish();
   } else {
-    runDraw(2400);
+    runDraw(4500);
   }
 })();
