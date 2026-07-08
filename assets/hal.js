@@ -254,6 +254,7 @@
     const items = rows.map(({ other, arrow }) => `
       <div class="detail-block detail-block--edge">
         <h3>${arrow} ${I18n.pick3(other.data.name)}</h3>
+        <p>${I18n.pick3(other.data.short)}</p>
       </div>
     `).join("");
     return `<p class="detail-eyebrow" style="margin-top:18px;">${tt({ tr: "Yolun Devamı", en: "Along the Path", pt: "Ao Longo do Caminho" })}</p>${items}`;

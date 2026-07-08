@@ -312,9 +312,9 @@
 
   function relatedNamesHtml(d) {
     const rows = [];
-    if (d.parent) rows.push({ other: d.parent, arrow: "↑", note: null });
+    if (d.parent) rows.push({ other: d.parent, arrow: "↑", note: I18n.pick3(d.parent.data.short) });
     const kids = d.children || d._children || [];
-    kids.forEach((c) => rows.push({ other: c, arrow: "↓", note: null }));
+    kids.forEach((c) => rows.push({ other: c, arrow: "↓", note: I18n.pick3(c.data.short) }));
     const relations = (esmaData.relations || []).filter(
       (r) => r.from === d.id || r.to === d.id
     );

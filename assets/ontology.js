@@ -353,7 +353,7 @@
       setInterval(() => {
         landingQuoteIndex = (landingQuoteIndex + 1) % landingQuoteEntries.length;
         renderLandingQuote(false);
-      }, 9000);
+      }, 22000);
     }
   }
 
