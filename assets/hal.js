@@ -96,6 +96,11 @@
 
     zoomBehavior = d3.zoom()
       .scaleExtent([0.4, 3])
+      .filter((event) => {
+        if (event.type === "wheel") return true;
+        if (event.touches) return event.touches.length > 1;
+        return true;
+      })
       .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
     svg.call(zoomBehavior).on("dblclick.zoom", null);
 

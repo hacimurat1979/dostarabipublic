@@ -239,7 +239,11 @@
     const zoom = d3
       .zoom()
       .scaleExtent([0.5, 4])
-      .filter((event) => event.type === "wheel" || !event.target.closest(".node"))
+      .filter((event) => {
+        if (event.type === "wheel") return true;
+        if (event.touches) return event.touches.length > 1;
+        return !event.target.closest(".node");
+      })
       .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
 
     svg.call(zoom).on("dblclick.zoom", null);
