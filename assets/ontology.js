@@ -730,6 +730,14 @@
     }).join("")}</div>`;
   }
 
+  function analogyHtml(analogy) {
+    if (!analogy) return "";
+    return `<div class="detail-analogy">
+      <p class="detail-analogy__label">${tt({ tr: "Bir benzetmeyle", en: "In one analogy", pt: "Numa analogia" })}</p>
+      <p>${I18n.pick3(analogy)}</p>
+    </div>`;
+  }
+
   function showNodeDetail(d) {
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Varlık Mertebesi", en: "Level of Being", pt: "Nível do Ser" })}</p>
@@ -738,6 +746,7 @@
         <h3>${I18n.pick3(d.short)}</h3>
         <p>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>
       </div>
+      ${analogyHtml(d.analogy)}
       ${insightsHtml(d.insights, d.sources, "ontoloji", d.id)}
       ${relatedEdgesHtml(d)}
     `;

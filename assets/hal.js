@@ -260,6 +260,14 @@
     return `<p class="detail-eyebrow" style="margin-top:18px;">${tt({ tr: "Yolun Devamı", en: "Along the Path", pt: "Ao Longo do Caminho" })}</p>${items}`;
   }
 
+  function analogyHtml(analogy) {
+    if (!analogy) return "";
+    return `<div class="detail-analogy">
+      <p class="detail-analogy__label">${tt({ tr: "Bir benzetmeyle", en: "In one analogy", pt: "Numa analogia" })}</p>
+      <p>${I18n.pick3(analogy)}</p>
+    </div>`;
+  }
+
   function showDetail(d) {
     currentDetailNode = d;
     const n = d.data;
@@ -273,6 +281,7 @@
         <h3>${I18n.pick3(n.short)}</h3>
         <p>${linkify(I18n.pick3(n.summary), "hal", d.id)}</p>
       </div>
+      ${analogyHtml(n.analogy)}
       ${insightsHtml(n.insights, d.id)}
       ${hint}
       ${relatedStepsHtml(d)}
