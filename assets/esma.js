@@ -105,12 +105,17 @@
     zoomBehavior = d3.zoom()
       .scaleExtent([0.35, 2.5])
       .filter((event) => {
-        if (event.type === "wheel") return true;
+        if (event.type === "wheel") return event.ctrlKey || event.metaKey;
         if (event.touches) return event.touches.length > 1;
         return true;
       })
       .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
     svg.call(zoomBehavior).on("dblclick.zoom", null);
+
+    const recenterBtn = document.getElementById("esma-recenter");
+    if (recenterBtn) {
+      recenterBtn.addEventListener("click", () => zoomToFit(true));
+    }
 
     update(root, false);
     built = true;

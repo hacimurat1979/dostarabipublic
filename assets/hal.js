@@ -107,12 +107,17 @@
     zoomBehavior = d3.zoom()
       .scaleExtent([0.4, 3])
       .filter((event) => {
-        if (event.type === "wheel") return true;
+        if (event.type === "wheel") return event.ctrlKey || event.metaKey;
         if (event.touches) return event.touches.length > 1;
         return true;
       })
       .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
     svg.call(zoomBehavior).on("dblclick.zoom", null);
+
+    const recenterBtn = document.getElementById("hal-recenter");
+    if (recenterBtn) {
+      recenterBtn.addEventListener("click", () => zoomToFit(true));
+    }
 
     const links = [];
     for (let i = 0; i < n - 1; i++) {

@@ -239,7 +239,7 @@
       .zoom()
       .scaleExtent([0.5, 4])
       .filter((event) => {
-        if (event.type === "wheel") return true;
+        if (event.type === "wheel") return event.ctrlKey || event.metaKey;
         if (event.touches) return event.touches.length > 1;
         return !event.target.closest(".node");
       })
@@ -247,6 +247,13 @@
 
     svg.call(zoom).on("dblclick.zoom", null);
     window.__ontologyZoom = { svg, zoom };
+
+    const recenterBtn = document.getElementById("ontology-recenter");
+    if (recenterBtn) {
+      recenterBtn.addEventListener("click", () => {
+        svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
+      });
+    }
 
     const linkGroup = zoomLayer.append("g").attr("class", "links");
 
