@@ -5,6 +5,8 @@
   const svg = d3.select("#esma-graph");
   const detailPanel = document.getElementById("detail-panel");
   const detailContent = document.getElementById("detail-content");
+  const tooltip = document.getElementById("esma-tooltip");
+  const wrapEl = document.getElementById("esma-wrap");
 
   function tt(dict) {
     return I18n.pick3(dict);
@@ -14,11 +16,41 @@
     return window.__dostCrossLink ? window.__dostCrossLink.linkify(text, view, id) : text;
   }
 
+  // İki ismin/kutbun ilişkisini tek bakışta gösteren küçük SVG şemalar
+  // (bkz. CLAUDE.md ikinci ilke — mümkün olan her yerde çizim kullan).
+  const relationDiagramRenderers = {
+    nested: (d) => `
+      <svg class="term-diagram__svg" viewBox="0 0 260 190" role="img" aria-label="${tt(d.note)}">
+        <circle class="term-diagram-node--accent" cx="130" cy="100" r="78"/>
+        <text class="term-diagram-label" x="130" y="34" text-anchor="middle">${tt(d.outer)}</text>
+        <circle class="term-diagram-node--dashed" cx="130" cy="112" r="34"/>
+        <text class="term-diagram-label term-diagram-label--small" x="130" y="117" text-anchor="middle">${tt(d.inner)}</text>
+      </svg>
+    `,
+    "split-disc": (d) => `
+      <svg class="term-diagram__svg" viewBox="0 0 240 160" role="img" aria-label="${tt(d.note)}">
+        <path class="term-diagram-node--accent" d="M120,20 A70,70 0 0,0 120,160 Z"/>
+        <path class="term-diagram-node--dashed" d="M120,20 A70,70 0 0,1 120,160 Z"/>
+        <text class="term-diagram-label" x="88" y="94" text-anchor="middle">${tt(d.left)}</text>
+        <text class="term-diagram-label" x="152" y="94" text-anchor="middle">${tt(d.right)}</text>
+      </svg>
+    `,
+  };
+
+  function relationDiagramHtml(r) {
+    const renderer = r.diagram && relationDiagramRenderers[r.diagram.type];
+    if (!renderer) return "";
+    return `<div class="term-diagram-row"><div class="term-diagram-card">
+      ${renderer(r.diagram)}
+      <p class="term-diagram-caption">${tt(r.diagram.note)}</p>
+    </div></div>`;
+  }
+
   let esmaData = null;
   let esmaDataPromise = null;
   let built = false;
   let root = null;
-  let zoomLayer, linkGroup, relationGroup, nodeGroup;
+  let zoomLayer, linkGroup, relationGroup, nodeGroup, ringGroup;
   let zoomBehavior;
   let nodeById = new Map();
   let currentDetailNode = null;
@@ -79,6 +111,27 @@
     }
   }
 
+  // Radial ("dairesel") düzen: İbn Arabî'nin İnşâü'd-Devâir'de tarif ettiği
+  // "feleklerin sûreti" gibi, merkezde Zât, dışa doğru iç içe mertebe halkaları.
+  let outerRadius = 320;
+  let maxDepth = 1;
+  let radiusScale = d3.scaleSqrt().domain([0, 1]).range([0, 320]);
+
+  function radialPoint(angle, radius) {
+    const a = angle - Math.PI / 2;
+    return [radius * Math.cos(a), radius * Math.sin(a)];
+  }
+
+  // Tek çocuklu zincirler (örn. Rab→Hayy→Alim→Mürîd→...) dallanma olmadığı
+  // için aynı açıda üst üste biner. Zincir boyunca hafif bir açısal kayma
+  // ekleyerek düğümleri okunur bir spiral hâline getiriyoruz.
+  function applySpiralOffset(node, inherited) {
+    const siblingCount = node.parent ? node.parent.children.length : 1;
+    const ownOffset = node.parent && siblingCount === 1 ? inherited + 0.16 : 0;
+    node.x += ownOffset;
+    (node.children || []).forEach((c) => applySpiralOffset(c, ownOffset));
+  }
+
   function buildGraph(data) {
     svg.selectAll("*").remove();
 
@@ -94,6 +147,7 @@
     root.y0 = 0;
 
     zoomLayer = svg.append("g").attr("class", "esma-canvas");
+    ringGroup = zoomLayer.append("g").attr("class", "esma-rings");
     relationGroup = zoomLayer.append("g").attr("class", "esma-relations");
     linkGroup = zoomLayer.append("g").attr("class", "esma-links");
     nodeGroup = zoomLayer.append("g").attr("class", "esma-nodes");
@@ -121,9 +175,20 @@
     built = true;
   }
 
-  const dx = 108;
-  const dy = 92;
-  const treeLayout = d3.tree().nodeSize([dx, dy]);
+  const treeLayout = d3.tree()
+    .size([2 * Math.PI, 1])
+    .separation((a, b) => (a.parent === b.parent ? 1.1 : 2.2) / a.depth || 1);
+
+  function drawRings() {
+    const depths = Array.from(new Set(root.descendants().map((d) => d.depth))).sort((a, b) => a - b);
+    const ringSel = ringGroup.selectAll("circle.esma-ring").data(depths, (d) => d);
+    ringSel.exit().remove();
+    ringSel.enter()
+      .append("circle")
+      .attr("class", "esma-ring")
+      .merge(ringSel)
+      .attr("r", (depth) => radiusScale(depth));
+  }
 
   function zoomToFit(animate) {
     const nodes = root.descendants();
@@ -131,20 +196,20 @@
     const height = svg.node().clientHeight || 600;
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     nodes.forEach((d) => {
-      x0 = Math.min(x0, d.x);
-      x1 = Math.max(x1, d.x);
-      y0 = Math.min(y0, d.y);
-      y1 = Math.max(y1, d.y);
+      const [cx, cy] = radialPoint(d.x, d.y);
+      x0 = Math.min(x0, cx);
+      x1 = Math.max(x1, cx);
+      y0 = Math.min(y0, cy);
+      y1 = Math.max(y1, cy);
     });
-    x0 -= 70; x1 += 70; y0 -= 50; y1 += 60;
+    x0 -= 70; x1 += 70; y0 -= 70; y1 += 70;
     const treeW = Math.max(1, x1 - x0);
     const treeH = Math.max(1, y1 - y0);
-    const topMargin = 70;
     const [minScale, maxScale] = zoomBehavior.scaleExtent();
-    const scale = Math.min(maxScale, 1.3, width / treeW, (height - topMargin) / treeH);
+    const scale = Math.min(maxScale, 1.3, width / treeW, height / treeH);
     const clampedScale = Math.max(minScale, scale);
     const tx = width / 2 - clampedScale * (x0 + treeW / 2);
-    const ty = topMargin - clampedScale * y0;
+    const ty = height / 2 - clampedScale * (y0 + treeH / 2);
     const transform = d3.zoomIdentity.translate(tx, ty).scale(clampedScale);
     const sel = animate ? svg.transition().duration(400) : svg;
     sel.call(zoomBehavior.transform, transform);
@@ -152,8 +217,18 @@
 
   function update(source, animate) {
     treeLayout(root);
+    applySpiralOffset(root, 0);
     const nodes = root.descendants();
     const links = root.links();
+
+    maxDepth = Math.max(1, d3.max(nodes, (d) => d.depth));
+    const width = svg.node().clientWidth || 800;
+    const height = svg.node().clientHeight || 600;
+    outerRadius = Math.max(120, Math.min(width, height) / 2 - 60);
+    radiusScale = d3.scaleSqrt().domain([0, maxDepth]).range([0, outerRadius]);
+    nodes.forEach((d) => { d.y = radiusScale(d.depth); });
+
+    drawRings();
 
     const nodeSet = new Set(nodes);
     const relations = (esmaData.relations || []).filter((r) => {
@@ -162,7 +237,7 @@
       return s && t && nodeSet.has(s) && nodeSet.has(t);
     });
 
-    const linkGen = d3.linkVertical().x((d) => d.x).y((d) => d.y);
+    const linkGen = d3.linkRadial().angle((d) => d.x).radius((d) => d.y);
 
     // links
     const link = linkGroup.selectAll("path.esma-link").data(links, (d) => d.target.id);
@@ -197,7 +272,7 @@
 
     const nodeEnter = node.enter().append("g")
       .attr("class", "node esma-node")
-      .attr("transform", `translate(${source.x0},${source.y0})`)
+      .attr("transform", () => `translate(${radialPoint(source.x0, source.y0).join(",")})`)
       .attr("tabindex", "0")
       .attr("role", "button")
       .attr("aria-label", (d) => labelFor(d))
@@ -213,10 +288,11 @@
           toggle(d);
         }
       })
-      .on("mouseenter", (event, d) => highlight(d))
-      .on("mouseleave", () => highlight(null))
-      .on("focus", (event, d) => highlight(d))
-      .on("blur", () => highlight(null));
+      .on("mouseenter", (event, d) => { highlight(d); showTooltip(d, event); })
+      .on("mousemove", (event) => moveTooltip(event))
+      .on("mouseleave", () => { highlight(null); hideTooltip(); })
+      .on("focus", (event, d) => { highlight(d); showTooltip(d, event); })
+      .on("blur", () => { highlight(null); hideTooltip(); });
 
     nodeEnter.append("circle")
       .attr("r", (d) => radiusFor(d))
@@ -224,8 +300,14 @@
 
     nodeEnter.append("text")
       .attr("class", "node-label")
-      .attr("dy", (d) => radiusFor(d) + 13)
-      .attr("text-anchor", "middle")
+      .attr("text-anchor", (d) => (d.depth === 0 ? "middle" : (d.x < Math.PI ? "start" : "end")))
+      .attr("transform", (d) => {
+        if (d.depth === 0) return `translate(0,${radiusFor(d) + 14})`;
+        const deg = (d.x * 180 / Math.PI) - 90;
+        const flip = d.x >= Math.PI;
+        const offset = radiusFor(d) + 8;
+        return `rotate(${deg}) translate(${offset},0) rotate(${flip ? 180 : 0})`;
+      })
       .text((d) => labelFor(d));
 
     nodeEnter.append("text")
@@ -237,7 +319,17 @@
     node.merge(nodeEnter)
       .transition().duration(300)
       .style("opacity", 1)
-      .attr("transform", (d) => `translate(${d.x},${d.y})`);
+      .attr("transform", (d) => `translate(${radialPoint(d.x, d.y).join(",")})`);
+
+    node.merge(nodeEnter).select("text.node-label")
+      .attr("text-anchor", (d) => (d.depth === 0 ? "middle" : (d.x < Math.PI ? "start" : "end")))
+      .attr("transform", (d) => {
+        if (d.depth === 0) return `translate(0,${radiusFor(d) + 14})`;
+        const deg = (d.x * 180 / Math.PI) - 90;
+        const flip = d.x >= Math.PI;
+        const offset = radiusFor(d) + 8;
+        return `rotate(${deg}) translate(${offset},0) rotate(${flip ? 180 : 0})`;
+      });
 
     node.merge(nodeEnter).select("text.esma-expand-badge")
       .text((d) => (d._children ? "+" : ""));
@@ -245,7 +337,7 @@
     node.exit()
       .transition().duration(300)
       .style("opacity", 0)
-      .attr("transform", `translate(${source.x},${source.y})`)
+      .attr("transform", `translate(${radialPoint(source.x, source.y).join(",")})`)
       .remove();
 
     nodes.forEach((d) => {
@@ -284,6 +376,32 @@
     nodeSel.style("opacity", (n) => (ids.has(n.id) || descendantIds.has(n.id) ? 1 : 0.35));
     linkSel.classed("esma-link--highlight", (l) => l.target.id === d.id);
     relationSel.style("opacity", (r) => (r.from === d.id || r.to === d.id ? 1 : 0.15));
+  }
+
+  function showTooltip(d, event) {
+    if (!tooltip) return;
+    const short = I18n.pick3(d.data.short);
+    tooltip.innerHTML = `
+      <div class="node-hover-tip__title">${I18n.pick3(d.data.name)}</div>
+      ${short ? `<div class="node-hover-tip__short">${short}</div>` : ""}
+    `;
+    tooltip.hidden = false;
+    moveTooltip(event);
+  }
+
+  function moveTooltip(event) {
+    if (!tooltip || tooltip.hidden || !wrapEl) return;
+    const rect = wrapEl.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+    x = Math.max(60, Math.min(rect.width - 60, x));
+    y = Math.max(50, y);
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+  }
+
+  function hideTooltip() {
+    if (tooltip) tooltip.hidden = true;
   }
 
   const VOLUME_LABEL_OVERRIDE = {
@@ -389,6 +507,7 @@
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "İlişki", en: "Relation", pt: "Relação" })}</p>
       <h2 class="detail-title">${I18n.pick3(from.data.name)} ↔ ${I18n.pick3(to.data.name)}</h2>
+      ${relationDiagramHtml(r)}
       <div class="detail-block detail-block--ibnarabi">
         <p>${I18n.pick3(r.label)}</p>
       </div>
