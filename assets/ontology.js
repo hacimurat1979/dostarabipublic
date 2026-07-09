@@ -17,6 +17,7 @@
     render();
     if (currentMainView === "esma") window.__esmaApp && window.__esmaApp.onLangChange();
     else if (currentMainView === "hal") window.__halApp && window.__halApp.onLangChange();
+    else if (currentMainView === "bookmap") window.__bookmapApp && window.__bookmapApp.onLangChange();
   });
 
   detailClose.addEventListener("click", () => {
@@ -96,9 +97,11 @@
   const ontologyBtn = document.getElementById("ontology-btn");
   const esmaBtn = document.getElementById("esma-btn");
   const halBtn = document.getElementById("hal-btn");
+  const bookmapBtn = document.getElementById("bookmap-btn");
   const ontologyWrap = document.getElementById("ontology-wrap");
   const esmaWrap = document.getElementById("esma-wrap");
   const halWrap = document.getElementById("hal-wrap");
+  const bookmapWrap = document.getElementById("bookmap-wrap");
 
   function setMainView(view) {
     if (currentMainView === view) return;
@@ -106,15 +109,19 @@
     if (ontologyBtn) ontologyBtn.classList.toggle("btn-ghost--active", view === "ontology");
     if (esmaBtn) esmaBtn.classList.toggle("btn-ghost--active", view === "esma");
     if (halBtn) halBtn.classList.toggle("btn-ghost--active", view === "hal");
+    if (bookmapBtn) bookmapBtn.classList.toggle("btn-ghost--active", view === "bookmap");
     if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
     if (esmaWrap) esmaWrap.hidden = view !== "esma";
     if (halWrap) halWrap.hidden = view !== "hal";
+    if (bookmapWrap) bookmapWrap.hidden = view !== "bookmap";
     const introOntology = document.getElementById("intro-ontology");
     const introEsma = document.getElementById("intro-esma");
     const introHal = document.getElementById("intro-hal");
+    const introBookmap = document.getElementById("intro-bookmap");
     if (introOntology) introOntology.hidden = view !== "ontology";
     if (introEsma) introEsma.hidden = view !== "esma";
     if (introHal) introHal.hidden = view !== "hal";
+    if (introBookmap) introBookmap.hidden = view !== "bookmap";
     currentDetailNode = null;
     currentDetailEdge = null;
     detailPanel.hidden = true;
@@ -124,6 +131,9 @@
     } else if (view === "hal") {
       currentDetailView = "hal";
       window.__halApp && window.__halApp.activate();
+    } else if (view === "bookmap") {
+      currentDetailView = "bookmap";
+      window.__bookmapApp && window.__bookmapApp.activate();
     } else {
       currentDetailView = null;
     }
@@ -132,6 +142,7 @@
   if (ontologyBtn) ontologyBtn.addEventListener("click", () => { setMainView("ontology"); updateHash("ontoloji"); });
   if (esmaBtn) esmaBtn.addEventListener("click", () => { setMainView("esma"); updateHash("esma"); });
   if (halBtn) halBtn.addEventListener("click", () => { setMainView("hal"); updateHash("hal"); });
+  if (bookmapBtn) bookmapBtn.addEventListener("click", () => { setMainView("bookmap"); updateHash("kitap"); });
 
   // --- Deep linking & cross-view navigation ---
   let pendingSirlarId = null;
@@ -157,6 +168,11 @@
     if (id) window.__halApp && window.__halApp.goToNode(id);
   }
 
+  function goToBookmap(id) {
+    setMainView("bookmap");
+    window.__bookmapApp && window.__bookmapApp.goToNode(id);
+  }
+
   function goToSirlar(id) {
     currentDetailNode = null;
     currentDetailEdge = null;
@@ -170,13 +186,14 @@
   }
 
   function parseHashAndGo() {
-    const m = /^#\/(ontoloji|esma|sirlar|hal)(?:\/(.+))?$/.exec(location.hash);
+    const m = /^#\/(ontoloji|esma|sirlar|hal|kitap)(?:\/(.+))?$/.exec(location.hash);
     if (!m) return;
     const [, view, id] = m;
     if (view === "ontoloji") goToOntologyNode(id);
     else if (view === "esma") goToEsma(id);
     else if (view === "sirlar") goToSirlar(id);
     else if (view === "hal") goToHal(id);
+    else if (view === "kitap") goToBookmap(id);
   }
 
   window.addEventListener("hashchange", parseHashAndGo);
@@ -187,6 +204,7 @@
       else if (view === "esma") goToEsma(id);
       else if (view === "sirlar") goToSirlar(id);
       else if (view === "hal") goToHal(id);
+      else if (view === "kitap") goToBookmap(id);
       updateHash(view, id);
     },
     setHash: updateHash,
@@ -644,9 +662,21 @@
   }
 
   function showNodeDetail(d) {
+    const metadataHtml = window.__graphEnhancement
+      ? (() => {
+          const meta = window.__graphEnhancement.getMetadata(d.id);
+          if (!meta) return "";
+          return `<div class="detail-block detail-block--metadata">
+            <p class="detail-metadata__category">${meta.category}</p>
+            <p class="detail-metadata__meaning">${meta.meaning}</p>
+          </div>`;
+        })()
+      : "";
+
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Varlık Mertebesi", en: "Level of Being", pt: "Nível do Ser" })}</p>
       <h2 class="detail-title">${I18n.pick3(d.name)}</h2>
+      ${metadataHtml}
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(d.short)}</h3>
         <p>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>
