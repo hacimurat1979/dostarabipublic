@@ -165,6 +165,28 @@
     </p>
   </footer>
 
+  <div class="app-fallback" id="app-fallback" hidden role="status" aria-live="polite">
+    <div class="app-fallback__ring" aria-hidden="true"></div>
+    <p class="app-fallback__text">
+      Dost şu anda güncelleniyor, birazdan tekrar deneyin.<br>
+      Dost is being updated right now — please check back shortly.<br>
+      Dost está sendo atualizado agora — volte em breve.
+    </p>
+  </div>
+  <script>
+    (function () {
+      var shown = false;
+      function showFallback() {
+        if (shown || window.__dostAppReady) return;
+        shown = true;
+        var el = document.getElementById("app-fallback");
+        if (el) el.hidden = false;
+      }
+      window.addEventListener("error", showFallback);
+      window.addEventListener("unhandledrejection", showFallback);
+      setTimeout(showFallback, 8000);
+    })();
+  </script>
   <script src="assets/vendor/d3.min.js"></script>
   <script src="assets/i18n.js"></script>
   <script src="assets/esma.js"></script>

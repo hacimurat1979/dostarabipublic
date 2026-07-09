@@ -47,6 +47,7 @@
       buildGraph(data);
       registerOntologyCrossLinks(data);
       parseHashAndGo();
+      window.__dostAppReady = true;
     })
     .catch((err) => console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err));
 
