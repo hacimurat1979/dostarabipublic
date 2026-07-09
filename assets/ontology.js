@@ -14,7 +14,7 @@
 
   // İki kavram/ilişkinin salt metinle anlatıldığında soyut kalan bağını
   // tek bakışta gösteren küçük SVG şemalar (bkz. CLAUDE.md ikinci ilke).
-  const edgeDiagramRenderers = {
+  const entityDiagramRenderers = {
     "twin-truth": (d) => `
       <svg class="term-diagram__svg" viewBox="0 0 320 180" role="img" aria-label="${tt(d.note)}">
         <circle class="term-diagram-node--venn" cx="125" cy="88" r="68"/>
@@ -26,16 +26,42 @@
         <text class="term-diagram-label term-diagram-note--accent" x="160" y="93" text-anchor="middle">${tt(d.center)}</text>
       </svg>
     `,
+    "seed-fork": (d) => `
+      <svg class="term-diagram__svg" viewBox="0 0 260 240" role="img" aria-label="${tt(d.note)}">
+        <line class="term-diagram-tether" x1="114" y1="167" x2="73" y2="197"/>
+        <line class="term-diagram-arrow" x1="130" y1="135" x2="130" y2="97" marker-end="url(#odArrowEnd)"/>
+        <line class="term-diagram-arrow term-diagram-arrow--oneway" x1="112" y1="63" x2="73" y2="37" marker-end="url(#odArrowEnd)"/>
+        <line class="term-diagram-arrow term-diagram-arrow--dashed" x1="148" y1="63" x2="187" y2="37" marker-end="url(#odArrowEnd)"/>
+        <circle class="term-diagram-node" cx="130" cy="155" r="20"/>
+        <text class="term-diagram-label--small" x="130" y="192" text-anchor="middle">${tt(d.seed)}</text>
+        <circle class="term-diagram-node--dashed" cx="55" cy="210" r="22"/>
+        <text class="term-diagram-label--small" x="55" y="215" text-anchor="middle">${tt(d.root)}</text>
+        <circle class="term-diagram-node" cx="130" cy="75" r="22"/>
+        <text class="term-diagram-label--small" x="130" y="80" text-anchor="middle">${tt(d.branch)}</text>
+        <circle class="term-diagram-node--accent" cx="55" cy="25" r="22"/>
+        <text class="term-diagram-label--small" x="55" y="30" text-anchor="middle">${tt(d.leftLeaf)}</text>
+        <circle class="term-diagram-node--faint" cx="205" cy="25" r="22"/>
+        <text class="term-diagram-label--small" x="205" y="30" text-anchor="middle">${tt(d.rightLeaf)}</text>
+      </svg>
+    `,
+    "cascade-seas": (d) => {
+      const xs = [45, 145, 245, 345];
+      const classes = ["term-diagram-node--accent", "term-diagram-node", "term-diagram-node", "term-diagram-node--faint"];
+      const circles = d.stops.map((s, i) => `
+        <circle class="${classes[i]}" cx="${xs[i]}" cy="55" r="26"/>
+        <text class="term-diagram-label--small" x="${xs[i]}" y="60" text-anchor="middle">${tt(s)}</text>
+      `).join("");
+      const arrows = [0, 1, 2].map((i) => `
+        <line class="term-diagram-arrow term-diagram-arrow--oneway" x1="${xs[i] + 26}" y1="55" x2="${xs[i + 1] - 26}" y2="55" marker-end="url(#odArrowEnd)"/>
+      `).join("");
+      return `
+        <svg class="term-diagram__svg" viewBox="0 0 390 110" role="img" aria-label="${tt(d.note)}">
+          ${arrows}
+          ${circles}
+        </svg>
+      `;
+    },
   };
-
-  function edgeDiagramHtml(l) {
-    const renderer = l.diagram && edgeDiagramRenderers[l.diagram.type];
-    if (!renderer) return "";
-    return `<div class="term-diagram-row"><div class="term-diagram-card">
-      ${renderer(l.diagram)}
-      <p class="term-diagram-caption">${tt(l.diagram.note)}</p>
-    </div></div>`;
-  }
 
   const ODD_DIAGRAM_DEFS = `
     <svg width="0" height="0" style="position:absolute">
@@ -46,6 +72,16 @@
       </defs>
     </svg>
   `;
+
+  function entityDiagramHtml(obj) {
+    const renderer = obj.diagram && entityDiagramRenderers[obj.diagram.type];
+    if (!renderer) return "";
+    return `<div class="term-diagram-row"><div class="term-diagram-card">
+      ${ODD_DIAGRAM_DEFS}
+      ${renderer(obj.diagram)}
+      <p class="term-diagram-caption">${tt(obj.diagram.note)}</p>
+    </div></div>`;
+  }
 
   function sirlarGestureDiagramHtml() {
     return `<div class="term-diagram-row"><div class="term-diagram-card">
@@ -73,6 +109,7 @@
     if (currentMainView === "esma") window.__esmaApp && window.__esmaApp.onLangChange();
     else if (currentMainView === "hal") window.__halApp && window.__halApp.onLangChange();
     else if (currentMainView === "terimler") window.__terimlerApp && window.__terimlerApp.onLangChange();
+    else if (currentMainView === "cizimler") window.__cizimlerApp && window.__cizimlerApp.onLangChange();
   });
 
   detailClose.addEventListener("click", () => {
@@ -153,10 +190,12 @@
   const esmaBtn = document.getElementById("esma-btn");
   const halBtn = document.getElementById("hal-btn");
   const terimlerBtn = document.getElementById("terimler-btn");
+  const cizimlerBtn = document.getElementById("cizimler-btn");
   const ontologyWrap = document.getElementById("ontology-wrap");
   const esmaWrap = document.getElementById("esma-wrap");
   const halWrap = document.getElementById("hal-wrap");
   const terimlerWrap = document.getElementById("terimler-wrap");
+  const cizimlerWrap = document.getElementById("cizimler-wrap");
 
   function setMainView(view) {
     if (currentMainView === view) return;
@@ -165,18 +204,22 @@
     if (esmaBtn) esmaBtn.classList.toggle("btn-ghost--active", view === "esma");
     if (halBtn) halBtn.classList.toggle("btn-ghost--active", view === "hal");
     if (terimlerBtn) terimlerBtn.classList.toggle("btn-ghost--active", view === "terimler");
+    if (cizimlerBtn) cizimlerBtn.classList.toggle("btn-ghost--active", view === "cizimler");
     if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
     if (esmaWrap) esmaWrap.hidden = view !== "esma";
     if (halWrap) halWrap.hidden = view !== "hal";
     if (terimlerWrap) terimlerWrap.hidden = view !== "terimler";
+    if (cizimlerWrap) cizimlerWrap.hidden = view !== "cizimler";
     const introOntology = document.getElementById("intro-ontology");
     const introEsma = document.getElementById("intro-esma");
     const introHal = document.getElementById("intro-hal");
     const introTerimler = document.getElementById("intro-terimler");
+    const introCizimler = document.getElementById("intro-cizimler");
     if (introOntology) introOntology.hidden = view !== "ontology";
     if (introEsma) introEsma.hidden = view !== "esma";
     if (introHal) introHal.hidden = view !== "hal";
     if (introTerimler) introTerimler.hidden = view !== "terimler";
+    if (introCizimler) introCizimler.hidden = view !== "cizimler";
     currentDetailNode = null;
     currentDetailEdge = null;
     detailPanel.hidden = true;
@@ -189,6 +232,9 @@
     } else if (view === "terimler") {
       currentDetailView = "terimler";
       window.__terimlerApp && window.__terimlerApp.activate();
+    } else if (view === "cizimler") {
+      currentDetailView = "cizimler";
+      window.__cizimlerApp && window.__cizimlerApp.activate();
     } else {
       currentDetailView = null;
     }
@@ -198,6 +244,7 @@
   if (esmaBtn) esmaBtn.addEventListener("click", () => { setMainView("esma"); updateHash("esma"); });
   if (halBtn) halBtn.addEventListener("click", () => { setMainView("hal"); updateHash("hal"); });
   if (terimlerBtn) terimlerBtn.addEventListener("click", () => { setMainView("terimler"); updateHash("terimler"); });
+  if (cizimlerBtn) cizimlerBtn.addEventListener("click", () => { setMainView("cizimler"); updateHash("cizimler"); });
 
   // --- Deep linking & cross-view navigation ---
   let pendingSirlarId = null;
@@ -228,6 +275,11 @@
     window.__terimlerApp && window.__terimlerApp.goToNode(id);
   }
 
+  function goToCizimler() {
+    setMainView("cizimler");
+    window.__cizimlerApp && window.__cizimlerApp.activate();
+  }
+
   function goToSirlar(id) {
     currentDetailNode = null;
     currentDetailEdge = null;
@@ -241,7 +293,7 @@
   }
 
   function parseHashAndGo() {
-    const m = /^#\/(ontoloji|esma|sirlar|hal|terimler)(?:\/(.+))?$/.exec(location.hash);
+    const m = /^#\/(ontoloji|esma|sirlar|hal|terimler|cizimler)(?:\/(.+))?$/.exec(location.hash);
     if (!m) return;
     const [, view, id] = m;
     if (view === "ontoloji") goToOntologyNode(id);
@@ -249,6 +301,7 @@
     else if (view === "sirlar") goToSirlar(id);
     else if (view === "hal") goToHal(id);
     else if (view === "terimler") goToTerimler(id);
+    else if (view === "cizimler") goToCizimler();
   }
 
   window.addEventListener("hashchange", parseHashAndGo);
@@ -260,6 +313,7 @@
       else if (view === "sirlar") goToSirlar(id);
       else if (view === "hal") goToHal(id);
       else if (view === "terimler") goToTerimler(id);
+      else if (view === "cizimler") goToCizimler();
       updateHash(view, id);
     },
     setHash: updateHash,
@@ -667,6 +721,8 @@
     "fukuk-konevi": { tr: "Fusûsu'l-Hikem'in Sırları (Konevî)", en: "The Secrets of the Fusus (Qunawi)", pt: "Os Segredos do Fusus (Qunawi)" },
     "izutsu-anahtar": { tr: "Anahtar-Kavramlar (İzutsu)", en: "Key Concepts (Izutsu)", pt: "Conceitos-Chave (Izutsu)" },
     "affifi-tasavvuf": { tr: "Tasavvuf Felsefesi (Affifi)", en: "The Mystical Philosophy (Affifi)", pt: "A Filosofia Mística (Affifi)" },
+    "varlik-agaci": { tr: "Varlık Ağacı (Şeceretü'l-Kevn)", en: "The Tree of Being (Shajarat al-Kawn)", pt: "A Árvore do Ser (Shajarat al-Kawn)" },
+    "ozun-ozu": { tr: "Özün Özü (Lübbü'l-Lübb)", en: "The Kernel of the Kernel (Lubb al-Lubb)", pt: "O Cerne do Cerne (Lubb al-Lubb)" },
   };
 
   function volumeLabel(n) {
@@ -679,6 +735,8 @@
     "fukuk-konevi": "El-Fükük fi Esrâr-ı Müstenidât-ı Hikemi'l-Fusûs (Sadreddin Konevî",
     "izutsu-anahtar": "İbn Arabî'nin Fusûsu'ndaki Anahtar-Kavramlar (Toshihiko İzutsu",
     "affifi-tasavvuf": "Muhyiddîn İbnü'l-Arabî'nin Tasavvuf Felsefesi (A. E. Affifi",
+    "varlik-agaci": "Şeceretü'l-Kevn / Varlık Ağacı",
+    "ozun-ozu": "Özün Özü / Lübbü'l-Lübb",
   };
 
   function sourcesForInsight(ins, sources) {
@@ -738,6 +796,7 @@
         <p>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>
       </div>
       ${analogyHtml(d.analogy)}
+      ${entityDiagramHtml(d)}
       ${insightsHtml(d.insights, d.sources, "ontoloji", d.id)}
       ${relatedEdgesHtml(d)}
     `;
@@ -766,7 +825,7 @@
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${I18n.pick3(l.relation)}</p>
       <h2 class="detail-title">${I18n.pick3(l.source.name)} → ${I18n.pick3(l.target.name)}</h2>
-      ${edgeDiagramHtml(l)}
+      ${entityDiagramHtml(l)}
       <div class="detail-block detail-block--ibnarabi">
         <p>${linkify(I18n.pick3(l.nature), null, null)}</p>
         ${insightsHtml(l.insights, null, null, null)}
