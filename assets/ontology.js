@@ -276,10 +276,21 @@
       .data(nodes)
       .join("g")
       .attr("class", "node ontology-node")
+      .attr("tabindex", "0")
+      .attr("role", "button")
+      .attr("aria-label", (d) => labelFor(d))
       .call(drag(simulation))
       .on("click", (event, d) => onNodeClick(d))
+      .on("keydown", (event, d) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onNodeClick(d);
+        }
+      })
       .on("mouseenter", (event, d) => highlight(d))
-      .on("mouseleave", () => highlight(null));
+      .on("mouseleave", () => highlight(null))
+      .on("focus", (event, d) => highlight(d))
+      .on("blur", () => highlight(null));
 
     nodeSel
       .append("circle")
@@ -502,11 +513,17 @@
     }
   }
 
+  const RADIUS_BY_ID = {
+    "dhat": 22,
+    "sifat-asma": 15,
+    "ayan-sabite": 14,
+    "tecelli": 14,
+    "insan-i-kamil": 18,
+    "kalp": 16,
+  };
+
   function radiusFor(d) {
-    if (d.id === "dhat") return 22;
-    if (d.id === "insan-i-kamil") return 18;
-    if (d.id === "kalp") return 16;
-    return 13;
+    return RADIUS_BY_ID[d.id] || 13;
   }
 
   const LAYER_COLOR = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#2a78d6", "#1c5cab", "#0d366b"];
@@ -639,6 +656,7 @@
       ${relatedEdgesHtml(d)}
     `;
     detailPanel.hidden = false;
+    if (nodeSel) nodeSel.classed("node--active", (n) => n.id === d.id);
   }
 
   function relatedEdgesHtml(d) {
@@ -668,6 +686,7 @@
       </div>
     `;
     detailPanel.hidden = false;
+    if (nodeSel) nodeSel.classed("node--active", false);
   }
 
   function drag(sim) {

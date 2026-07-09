@@ -198,13 +198,25 @@
     const nodeEnter = node.enter().append("g")
       .attr("class", "node esma-node")
       .attr("transform", `translate(${source.x0},${source.y0})`)
+      .attr("tabindex", "0")
+      .attr("role", "button")
+      .attr("aria-label", (d) => labelFor(d))
       .style("opacity", 0)
       .on("click", (event, d) => {
         event.stopPropagation();
         toggle(d);
       })
+      .on("keydown", (event, d) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          event.stopPropagation();
+          toggle(d);
+        }
+      })
       .on("mouseenter", (event, d) => highlight(d))
-      .on("mouseleave", () => highlight(null));
+      .on("mouseleave", () => highlight(null))
+      .on("focus", (event, d) => highlight(d))
+      .on("blur", () => highlight(null));
 
     nodeEnter.append("circle")
       .attr("r", (d) => radiusFor(d))
@@ -366,6 +378,7 @@
       ${relatedNamesHtml(d)}
     `;
     detailPanel.hidden = false;
+    nodeGroup.selectAll("g.esma-node").classed("node--active", (n) => n.id === d.id);
   }
 
   function showRelationDetail(r) {
@@ -381,6 +394,7 @@
       </div>
     `;
     detailPanel.hidden = false;
+    nodeGroup.selectAll("g.esma-node").classed("node--active", false);
   }
 
   function render() {

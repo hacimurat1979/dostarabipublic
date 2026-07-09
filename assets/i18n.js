@@ -4,9 +4,23 @@ window.DostI18n = (function () {
   const LANGS = ["tr", "en", "pt"];
   const LANG_LABEL = { tr: "TR", en: "EN", pt: "PT" };
 
+  function detectBrowserLang() {
+    const candidates = navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ""];
+    for (const raw of candidates) {
+      const code = (raw || "").toLowerCase();
+      if (code.startsWith("pt")) return "pt";
+      if (code.startsWith("en")) return "en";
+      if (code.startsWith("tr")) return "tr";
+    }
+    return "tr";
+  }
+
   function getLang() {
     const l = localStorage.getItem("dost-lang");
-    return LANGS.includes(l) ? l : "tr";
+    if (LANGS.includes(l)) return l;
+    return detectBrowserLang();
   }
 
   function setLang(l) {

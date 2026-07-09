@@ -143,12 +143,24 @@
       .join("g")
       .attr("class", "node hal-node")
       .attr("transform", (d) => `translate(${d.x},${d.y})`)
+      .attr("tabindex", "0")
+      .attr("role", "button")
+      .attr("aria-label", (d) => labelFor(d))
       .on("click", (event, d) => {
         event.stopPropagation();
         selectNode(d);
       })
+      .on("keydown", (event, d) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          event.stopPropagation();
+          selectNode(d);
+        }
+      })
       .on("mouseenter", (event, d) => highlight(d))
-      .on("mouseleave", () => highlight(null));
+      .on("mouseleave", () => highlight(null))
+      .on("focus", (event, d) => highlight(d))
+      .on("blur", () => highlight(null));
 
     nodeSel.append("circle")
       .attr("r", (d) => radiusFor(d))

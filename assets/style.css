@@ -30,6 +30,13 @@
 
 * { box-sizing: border-box; }
 
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--series-hal-hayret, #e0b545);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -121,6 +128,27 @@ html, body {
 }
 .intro p { color: var(--text-secondary); line-height: 1.5; }
 
+.intro__who {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  max-width: 80ch;
+  margin: 0 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.intro__who::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  background: var(--series-hal-hayret, #e0b545);
+}
+
 .intro__row {
   display: flex;
   align-items: flex-start;
@@ -208,6 +236,10 @@ html, body {
   border-color: var(--series-theme);
   transform: rotate(90deg);
 }
+@media (prefers-reduced-motion: reduce) {
+  .graph-recenter { transition: color 0.2s ease, border-color 0.2s ease; }
+  .graph-recenter:hover { transform: none; }
+}
 
 #esma-graph {
   width: 100%;
@@ -285,8 +317,12 @@ html, body {
   stroke-width: 0;
 }
 .hal-node--active circle {
-  stroke: var(--text-primary);
+  stroke: var(--series-hal-hayret, #e0b545);
   stroke-width: 2.5px;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--series-hal-hayret, #e0b545) 65%, transparent));
+}
+@media (prefers-reduced-motion: reduce) {
+  .hal-node--active circle { filter: none; }
 }
 
 .legend {
@@ -327,6 +363,9 @@ html, body {
 }
 .legend__line--zid {
   border-top-color: var(--series-daphne);
+}
+.legend__line--return {
+  border-top-color: var(--series-hal-hayret);
 }
 
 .node-label {
@@ -404,6 +443,19 @@ html, body {
 }
 .node { cursor: pointer; }
 .node:hover circle { stroke: var(--text-primary); }
+.node:focus-visible { outline: none; }
+.node:focus-visible circle {
+  stroke: var(--series-hal-hayret, #e0b545);
+  stroke-width: 2.5px;
+}
+.node--active circle {
+  stroke: var(--series-hal-hayret, #e0b545);
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--series-hal-hayret, #e0b545) 65%, transparent));
+}
+@media (prefers-reduced-motion: reduce) {
+  .node--active circle { filter: none; }
+}
 
 .detail-panel {
   position: fixed;
@@ -585,6 +637,11 @@ html, body {
   border-bottom: 1px dotted var(--series-theme);
 }
 .cross-link:hover { border-bottom-style: solid; }
+.cross-link:focus-visible {
+  outline: 2px solid var(--series-theme);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
 .detail-block blockquote {
   margin: 0;
   font-style: italic;
