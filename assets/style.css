@@ -21,6 +21,12 @@
   --series-hal-fenabeka:  #6a4b93; /* violet / annihilation and subsistence */
   --series-hal-tevhit:    #2f3a6b; /* indigo / divine unity */
   --series-hal-hayret:    #c9971a; /* gold / bewilderment */
+
+  --series-sir-suskunluk: #5c6b78; /* slate / silence and veiling */
+  --series-sir-peygamber: #c2703f; /* terracotta / prophets' stories */
+  --series-sir-kader:     #1f7d6f; /* teal / destiny and divine unity */
+  --series-sir-dil:       #8e3d68; /* plum / language and words */
+  --series-sir-insan:     #9c7a26; /* bronze / perfect human and sainthood */
 }
 
 .viz-root[data-theme="dark"] {
@@ -46,6 +52,12 @@
   --series-hal-fenabeka:  #9070c2;
   --series-hal-tevhit:    #6b7fc2;
   --series-hal-hayret:    #e0b545;
+
+  --series-sir-suskunluk: #8a99a6;
+  --series-sir-peygamber: #e0935c;
+  --series-sir-kader:     #3aa694;
+  --series-sir-dil:       #b5638f;
+  --series-sir-insan:     #c7a13e;
 }
 
 
@@ -64,6 +76,9 @@ html, body {
   background: var(--page-plane);
   color: var(--text-primary);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html {
   overflow-x: hidden;
 }
 
@@ -73,7 +88,8 @@ html, body {
   align-items: flex-start;
   padding: 24px clamp(16px, 4vw, 48px) 8px;
   gap: 16px;
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 50;
   pointer-events: none;
   background: var(--page-plane);
@@ -87,6 +103,11 @@ html, body {
   gap: 10px;
 }
 
+.app-header__title {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
 .app-header__title h1 {
   margin: 0;
   font-size: 1.6rem;
@@ -97,7 +118,7 @@ html, body {
   margin: 4px 0 0;
   color: var(--text-secondary);
   font-size: 0.95rem;
-  max-width: 60ch;
+  max-width: 52ch;
 }
 
 .btn-ghost {
@@ -165,46 +186,9 @@ html, body {
   color: var(--surface-1);
 }
 
-.intro {
-  padding: 0 clamp(16px, 4vw, 48px) 8px;
-}
-.intro p { color: var(--text-secondary); line-height: 1.5; }
-
-.intro__who {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  max-width: 80ch;
-  margin: 0 0 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.88rem;
-  color: var(--text-muted);
-}
-.intro__who::before {
-  content: "";
-  flex: 0 0 auto;
-  width: 6px;
-  height: 6px;
-  margin-bottom: 2px;
-  border-radius: 50%;
-  background: var(--series-hal-hayret, #e0b545);
-}
-
-.intro__row {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-}
-.intro__text {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 80ch;
-}
-
 .landing-quote {
-  flex: 0 1 360px;
-  max-width: 400px;
+  flex: 1 1 280px;
+  max-width: 340px;
   min-width: 0;
   margin: 0;
   padding-left: 20px;
@@ -219,8 +203,8 @@ html, body {
 .landing-quote blockquote {
   margin: 0 0 6px;
   font-style: italic;
-  font-size: 0.92rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.4;
   color: var(--text-primary);
   transition: color 0.2s ease;
 }
@@ -301,6 +285,15 @@ html, body {
 }
 #hal-graph:active { cursor: grabbing; }
 
+#sirlar-graph {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: pan-y;
+  cursor: grab;
+}
+#sirlar-graph:active { cursor: grabbing; }
+
 .esma-expand-badge {
   fill: var(--surface-1);
   font-size: 13px;
@@ -330,15 +323,15 @@ html, body {
 .esma-relation {
   fill: none;
   stroke: var(--series-theme);
-  stroke-width: 1.5px;
-  stroke-dasharray: 2 4;
-  opacity: 0.65;
+  stroke-width: 2.2px;
+  stroke-dasharray: 4 3;
+  opacity: 0.9;
   cursor: pointer;
   pointer-events: stroke;
 }
 .esma-relation:hover {
   opacity: 1;
-  stroke-width: 2.5px;
+  stroke-width: 3px;
 }
 .esma-relation--zid {
   stroke: var(--series-daphne);
@@ -376,6 +369,26 @@ html, body {
   .hal-node--active circle { filter: none; }
 }
 
+.sirlar-link {
+  fill: none;
+  stroke: var(--gridline);
+  stroke-width: 1.5px;
+}
+.sirlar-link--highlight {
+  stroke: var(--series-theme);
+  stroke-width: 2.5px;
+}
+.sirlar-node--entry circle {
+  cursor: pointer;
+}
+.sirlar-node--theme circle,
+.sirlar-node--root circle {
+  cursor: default;
+}
+.sirlar-node--theme text.node-label {
+  font-weight: 600;
+}
+
 .legend {
   position: absolute;
   bottom: 12px;
@@ -406,6 +419,11 @@ html, body {
 .legend__dot--hal-fenabeka { background: var(--series-hal-fenabeka); }
 .legend__dot--hal-tevhit   { background: var(--series-hal-tevhit); }
 .legend__dot--hal-hayret   { background: var(--series-hal-hayret); }
+.legend__dot--sir-suskunluk { background: var(--series-sir-suskunluk); }
+.legend__dot--sir-peygamber { background: var(--series-sir-peygamber); }
+.legend__dot--sir-kader     { background: var(--series-sir-kader); }
+.legend__dot--sir-dil       { background: var(--series-sir-dil); }
+.legend__dot--sir-insan     { background: var(--series-sir-insan); }
 .legend__line {
   width: 16px;
   height: 0;
@@ -510,23 +528,27 @@ html, body {
 
 .detail-panel {
   position: fixed;
-  top: 0;
+  top: var(--app-header-height, 96px);
   right: 0;
-  height: 100%;
+  height: calc(100% - var(--app-header-height, 96px));
   width: min(420px, 92vw);
   background: var(--surface-1);
   border-left: 1px solid var(--border);
   box-shadow: -8px 0 24px rgba(0,0,0,0.15);
-  padding: 64px 24px 24px;
+  padding: 52px 24px 24px;
   overflow-y: auto;
   z-index: 40;
 }
 .detail-panel[hidden] { display: none; }
 
+html:has(.detail-panel:not([hidden])) {
+  overflow: hidden;
+}
+
 .detail-panel__close {
   display: none;
   position: fixed;
-  top: 12px;
+  top: calc(var(--app-header-height, 96px) + 12px);
   right: 16px;
   background: var(--surface-1);
   border: none;
@@ -727,13 +749,14 @@ html, body {
 
 @media (max-width: 640px) {
   .app-header { flex-direction: column; }
-  .detail-panel { width: 100vw; padding-top: 64px; z-index: 60; }
-  .detail-panel__close { z-index: 61; }
+  .detail-panel { top: 0; height: 100%; width: 100vw; padding-top: 64px; z-index: 60; }
+  .detail-panel__close { top: 12px; z-index: 61; }
+  .app-header__title { flex-basis: auto; }
   .app-header__controls { flex-wrap: wrap; row-gap: 10px; }
   .view-switch { flex-wrap: wrap; }
   .btn-ghost { padding: 6px 11px; font-size: 0.8rem; }
-  .intro__row { flex-direction: column; }
   .landing-quote {
+    flex: 0 1 auto;
     max-width: none;
     margin: 12px 0 0;
     padding-left: 0;
@@ -863,6 +886,10 @@ html, body {
   font-size: clamp(1.5rem, 5.2vw, 2.5rem);
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+.welcome-screen__suffix {
+  font-size: 0.7em;
 }
 
 .welcome-screen__line--en,
@@ -1519,6 +1546,10 @@ html[data-contrast="high"] .detail-title {
   padding: 0 0 12px;
   border-bottom: 1px solid var(--gridline);
   margin-bottom: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--surface-1);
 }
 
 .typography-btn {
@@ -2835,6 +2866,18 @@ html[data-contrast="high"] .detail-title {
   overflow: visible;
 }
 
+.term-diagram-svg-wrap {
+  cursor: zoom-in;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.term-diagram-svg-wrap:hover,
+.term-diagram-svg-wrap:focus-visible {
+  background: color-mix(in srgb, var(--series-theme) 8%, transparent);
+  outline: none;
+}
+
 .term-diagram-caption {
   margin: 8px 0 0;
   font-size: 0.82rem;
@@ -3116,8 +3159,17 @@ html[data-contrast="high"] .detail-title {
   justify-content: center;
 }
 
-.cizim-lightbox__svg-wrap .cizim-card__svg {
+.cizim-lightbox__svg-wrap .cizim-card__svg,
+.cizim-lightbox__svg-wrap .term-diagram__svg {
   max-width: 640px;
+}
+
+.cizim-lightbox__caption {
+  margin: 14px 0 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 body.cizim-lightbox-open {
