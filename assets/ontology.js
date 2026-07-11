@@ -7,6 +7,7 @@
   const detailPanel = document.getElementById("detail-panel");
   const detailContent = document.getElementById("detail-content");
   const detailClose = document.getElementById("detail-close");
+  const breadcrumbEl = document.getElementById("detail-breadcrumb");
   const tooltip = document.getElementById("ontology-tooltip");
   const wrapEl = document.getElementById("ontology-wrap");
 
@@ -165,7 +166,6 @@
     .then((data) => {
       sirlarData = data;
       if (pendingSirlarId) goToSirlar(pendingSirlarId);
-      maybeInitLandingQuote();
       render();
     })
     .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
@@ -185,15 +185,6 @@
       render();
     })
     .catch((err) => console.error("Hâller verisi yüklenemedi / Failed to load States data", err));
-
-  let landingQuoteIds = null;
-  fetch("data/ibn-arabi/quotes.json")
-    .then((r) => r.json())
-    .then((data) => {
-      landingQuoteIds = data.ids;
-      maybeInitLandingQuote();
-    })
-    .catch((err) => console.error("Alıntılar yüklenemedi / Failed to load quotes", err));
 
   let currentMainView = "ontology";
   const ontologyBtn = document.getElementById("ontology-btn");
@@ -263,6 +254,59 @@
   function updateHash(view, id) {
     const hash = "#/" + view + (id ? "/" + id : "");
     if (location.hash !== hash) history.replaceState(null, "", hash);
+    if (id) pushBreadcrumb(view, id);
+  }
+
+  let breadcrumbTrail = [];
+
+  function pushBreadcrumb(view, id) {
+    requestAnimationFrame(() => {
+      const titleEl = detailContent.querySelector(".detail-title");
+      let label = "";
+      if (titleEl) {
+        const clone = titleEl.cloneNode(true);
+        clone.querySelectorAll(".pole-badge").forEach((b) => b.remove());
+        label = clone.textContent.trim();
+      }
+      if (!label) return;
+      const last = breadcrumbTrail[breadcrumbTrail.length - 1];
+      if (last && last.view === view && last.id === id) {
+        last.label = label;
+        renderBreadcrumb();
+        return;
+      }
+      if (!last || last.view !== view) breadcrumbTrail = [];
+      breadcrumbTrail.push({ view, id, label });
+      if (breadcrumbTrail.length > 4) breadcrumbTrail.shift();
+      renderBreadcrumb();
+    });
+  }
+
+  function renderBreadcrumb() {
+    if (!breadcrumbEl) return;
+    if (breadcrumbTrail.length < 2) {
+      breadcrumbEl.hidden = true;
+      breadcrumbEl.innerHTML = "";
+      return;
+    }
+    breadcrumbEl.hidden = false;
+    breadcrumbEl.innerHTML = breadcrumbTrail
+      .map((c, i) => {
+        if (i === breadcrumbTrail.length - 1) {
+          return `<span class="detail-breadcrumb__item detail-breadcrumb__item--current">${c.label}</span>`;
+        }
+        return `<button type="button" class="detail-breadcrumb__item" data-view="${c.view}" data-id="${c.id}">${c.label}</button>`;
+      })
+      .join('<span class="detail-breadcrumb__sep">›</span>');
+    breadcrumbEl.querySelectorAll("button.detail-breadcrumb__item").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const view = btn.dataset.view;
+        const id = btn.dataset.id;
+        const idx = breadcrumbTrail.findIndex((c) => c.view === view && c.id === id);
+        if (idx !== -1) breadcrumbTrail = breadcrumbTrail.slice(0, idx + 1);
+        window.__dostNav.goTo(view, id);
+      });
+    });
   }
 
   function goToOntologyNode(id) {
@@ -479,59 +523,10 @@
 
   function render() {
     if (currentDetailView === "sirlar") showSirlarPanel();
-    if (landingQuoteEntries.length) renderLandingQuote(true);
     if (!labelSel) return;
     labelSel.text((d) => labelFor(d));
     if (currentDetailNode) showNodeDetail(currentDetailNode);
     else if (currentDetailEdge) showEdgeDetail(currentDetailEdge);
-  }
-
-  // --- Rotating landing quote ---
-  let landingQuoteEntries = [];
-  let landingQuoteIndex = 0;
-  let landingQuoteInited = false;
-
-  function maybeInitLandingQuote() {
-    if (landingQuoteInited || !sirlarData || !landingQuoteIds) return;
-    landingQuoteInited = true;
-    landingQuoteEntries = landingQuoteIds
-      .map((id) => sirlarData.entries.find((e) => e.id === id))
-      .filter(Boolean);
-    if (!landingQuoteEntries.length) return;
-    landingQuoteIndex = Math.floor(Math.random() * landingQuoteEntries.length);
-    const el = document.getElementById("landing-quote");
-    if (!el) return;
-    el.addEventListener("click", () => {
-      const entry = landingQuoteEntries[landingQuoteIndex];
-      if (entry) window.__dostNav.goTo("sirlar", entry.id);
-    });
-    renderLandingQuote(true);
-    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduceMotion) {
-      setInterval(() => {
-        landingQuoteIndex = (landingQuoteIndex + 1) % landingQuoteEntries.length;
-        renderLandingQuote(false);
-      }, 22000);
-    }
-  }
-
-  function renderLandingQuote(immediate) {
-    const el = document.getElementById("landing-quote");
-    if (!el || !landingQuoteEntries.length) return;
-    const paint = () => {
-      const entry = landingQuoteEntries[landingQuoteIndex];
-      el.innerHTML = `<blockquote>${I18n.pick3(entry.quote)}</blockquote><cite>${entry.source}</cite>`;
-    };
-    if (immediate) {
-      paint();
-      el.classList.add("landing-quote--visible");
-      return;
-    }
-    el.classList.remove("landing-quote--visible");
-    setTimeout(() => {
-      paint();
-      el.classList.add("landing-quote--visible");
-    }, 400);
   }
 
   function registerOntologyCrossLinks(data) {
