@@ -8,6 +8,29 @@
   const detailContent = document.getElementById("detail-content");
   const detailClose = document.getElementById("detail-close");
   const breadcrumbEl = document.getElementById("detail-breadcrumb");
+
+  // Her görünümün detay şablonu ".detail-eyebrow" + ".detail-title" ile
+  // başlıyor; bunları scroll sırasında yazı boyutu kontrollerinin hemen
+  // altında sabit kalan tek bir başlık bloğuna sarıyoruz.
+  function updateTypoHeightVar() {
+    const controls = document.getElementById("typography-controls");
+    if (!controls || !controls.offsetHeight) return;
+    document.documentElement.style.setProperty("--typo-controls-height", controls.offsetHeight + "px");
+  }
+
+  function wrapStickyHead() {
+    const eyebrow = detailContent.firstElementChild;
+    if (!eyebrow || !eyebrow.classList.contains("detail-eyebrow")) return;
+    const title = eyebrow.nextElementSibling;
+    if (!title || !title.classList.contains("detail-title")) return;
+    const head = document.createElement("div");
+    head.className = "detail-sticky-head";
+    detailContent.insertBefore(head, eyebrow);
+    head.appendChild(eyebrow);
+    head.appendChild(title);
+    updateTypoHeightVar();
+  }
+  new MutationObserver(wrapStickyHead).observe(detailContent, { childList: true });
   const tooltip = document.getElementById("ontology-tooltip");
   const wrapEl = document.getElementById("ontology-wrap");
 
@@ -127,10 +150,19 @@
   }
   updateHeaderHeightVar();
   window.addEventListener("resize", updateHeaderHeightVar);
+  window.addEventListener("resize", updateTypoHeightVar);
 
   detailClose.addEventListener("click", () => {
     detailPanel.hidden = true;
   });
+
+  const detailPrint = document.getElementById("detail-print");
+  if (detailPrint) {
+    detailPrint.addEventListener("click", () => {
+      detailContent.querySelectorAll("details:not([open])").forEach((d) => d.setAttribute("open", ""));
+      window.print();
+    });
+  }
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !detailPanel.hidden) {
@@ -150,41 +182,61 @@
     "kalp": { x: 0.5, y: 0.90 },
   };
 
-  fetch("data/ibn-arabi/ontology.json")
-    .then((r) => r.json())
-    .then((data) => {
-      buildGraph(data);
-      registerOntologyCrossLinks(data);
-      parseHashAndGo();
-      window.__dostAppReady = true;
-    })
-    .catch((err) => console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err));
+  function loadOntologyData() {
+    if (window.DostViewStatus) window.DostViewStatus.showLoading("ontology-wrap");
+    fetch("data/ibn-arabi/ontology.json")
+      .then((r) => r.json())
+      .then((data) => {
+        buildGraph(data);
+        registerOntologyCrossLinks(data);
+        parseHashAndGo();
+        window.__dostAppReady = true;
+        if (window.DostViewStatus) window.DostViewStatus.hide("ontology-wrap");
+      })
+      .catch((err) => {
+        console.error("Ontoloji verisi yüklenemedi / Failed to load ontology data", err);
+        if (window.DostViewStatus) window.DostViewStatus.showError("ontology-wrap", loadOntologyData);
+      });
+  }
+  loadOntologyData();
+
+  // Bu üç veri seti yalnızca cross-link kaydı için gerekli; kritik olan
+  // ontoloji haritasının ilk boyanmasıyla bant genişliği için yarışmasınlar
+  // diye ana iş parçacığı boşta kalınca (veya en geç kısa bir gecikmeyle)
+  // çekiliyor.
+  const deferFetch = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
 
   let sirlarData = null;
-  fetch("data/ibn-arabi/sirlar.json")
-    .then((r) => r.json())
-    .then((data) => {
-      sirlarData = data;
-      if (pendingSirlarId) goToSirlar(pendingSirlarId);
-      render();
-    })
-    .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
+  deferFetch(() => {
+    fetch("data/ibn-arabi/sirlar.json")
+      .then((r) => r.json())
+      .then((data) => {
+        sirlarData = data;
+        if (pendingSirlarId) goToSirlar(pendingSirlarId);
+        render();
+      })
+      .catch((err) => console.error("Sırlar verisi yüklenemedi / Failed to load mysteries data", err));
+  });
 
-  fetch("data/ibn-arabi/esma.json")
-    .then((r) => r.json())
-    .then((data) => {
-      registerEsmaCrossLinks(data);
-      render();
-    })
-    .catch((err) => console.error("Esmâ verisi yüklenemedi / Failed to load Esma data", err));
+  deferFetch(() => {
+    fetch("data/ibn-arabi/esma.json")
+      .then((r) => r.json())
+      .then((data) => {
+        registerEsmaCrossLinks(data);
+        render();
+      })
+      .catch((err) => console.error("Esmâ verisi yüklenemedi / Failed to load Esma data", err));
+  });
 
-  fetch("data/ibn-arabi/hal.json")
-    .then((r) => r.json())
-    .then((data) => {
-      registerHalCrossLinks(data);
-      render();
-    })
-    .catch((err) => console.error("Hâller verisi yüklenemedi / Failed to load States data", err));
+  deferFetch(() => {
+    fetch("data/ibn-arabi/hal.json")
+      .then((r) => r.json())
+      .then((data) => {
+        registerHalCrossLinks(data);
+        render();
+      })
+      .catch((err) => console.error("Hâller verisi yüklenemedi / Failed to load States data", err));
+  });
 
   let currentMainView = "ontology";
   const ontologyBtn = document.getElementById("ontology-btn");
@@ -758,6 +810,7 @@
     "affifi-tasavvuf": { tr: "Tasavvuf Felsefesi (Affifi)", en: "The Mystical Philosophy (Affifi)", pt: "A Filosofia Mística (Affifi)" },
     "varlik-agaci": { tr: "Varlık Ağacı (Şeceretü'l-Kevn)", en: "The Tree of Being (Shajarat al-Kawn)", pt: "A Árvore do Ser (Shajarat al-Kawn)" },
     "ozun-ozu": { tr: "Özün Özü (Lübbü'l-Lübb)", en: "The Kernel of the Kernel (Lubb al-Lubb)", pt: "O Cerne do Cerne (Lubb al-Lubb)" },
+    "tedbirat-konuk": { tr: "et-Tedbîrâtü'l-İlâhiyye (Konuk)", en: "et-Tadbirat al-Ilahiyya (Konuk)", pt: "et-Tadbirat al-Ilahiyya (Konuk)" },
   };
 
   function volumeLabel(n) {
