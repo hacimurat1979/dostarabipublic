@@ -137,6 +137,7 @@
     else if (currentMainView === "terimler") window.__terimlerApp && window.__terimlerApp.onLangChange();
     else if (currentMainView === "cizimler") window.__cizimlerApp && window.__cizimlerApp.onLangChange();
     else if (currentMainView === "sirlar") window.__sirlarGraphApp && window.__sirlarGraphApp.onLangChange();
+    else if (currentMainView === "sorular") window.__sorularApp && window.__sorularApp.onLangChange();
     updateHeaderHeightVar();
   });
 
@@ -165,10 +166,40 @@
   }
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !detailPanel.hidden) {
+    if (e.key !== "Escape") return;
+    // Bir adım geri: önce açık detay panelini kapat; panel zaten kapalıysa
+    // ve Sırlar grafiğinde bir tema odaklanmışsa (bkz. sirlar-graph.js
+    // focusOnTheme), o odağı geri al -- "mevcut durumdan bir önceki duruma."
+    if (!detailPanel.hidden) {
       detailPanel.hidden = true;
+      return;
+    }
+    if (window.__sirlarGraphApp && window.__sirlarGraphApp.isFocused && window.__sirlarGraphApp.isFocused()) {
+      window.__sirlarGraphApp.unfocusTheme();
     }
   });
+
+  // Lejant kutuları (Ontoloji/Esmâ/Hâller/Sırlar), özellikle dokunmatik/
+  // tablet ekranlarda kısa viewport yüksekliğinde grafiğin üstüne düşüp
+  // düğümleri kapatabiliyor -- varsayılan olarak kısık/dokunmatik
+  // ekranlarda katlanmış başlasın, kullanıcı isterse açsın.
+  function setupLegendToggles() {
+    const collapseByDefault = window.matchMedia("(max-height: 700px)").matches
+      || window.matchMedia("(pointer: coarse)").matches;
+    document.querySelectorAll(".legend").forEach((legend) => {
+      const toggle = legend.querySelector(".legend__toggle");
+      if (!toggle) return;
+      if (collapseByDefault) {
+        legend.classList.add("legend--collapsed");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+      toggle.addEventListener("click", () => {
+        const collapsed = legend.classList.toggle("legend--collapsed");
+        toggle.setAttribute("aria-expanded", String(!collapsed));
+      });
+    });
+  }
+  setupLegendToggles();
 
   const TARGET = {
     "dhat": { x: 0.5, y: 0.09 },
@@ -245,12 +276,14 @@
   const terimlerBtn = document.getElementById("terimler-btn");
   const cizimlerBtn = document.getElementById("cizimler-btn");
   const sirlarBtn = document.getElementById("sirlar-btn");
+  const sorularBtn = document.getElementById("sorular-btn");
   const ontologyWrap = document.getElementById("ontology-wrap");
   const esmaWrap = document.getElementById("esma-wrap");
   const halWrap = document.getElementById("hal-wrap");
   const terimlerWrap = document.getElementById("terimler-wrap");
   const cizimlerWrap = document.getElementById("cizimler-wrap");
   const sirlarWrap = document.getElementById("sirlar-wrap");
+  const sorularWrap = document.getElementById("sorular-wrap");
 
   function setMainView(view) {
     if (currentMainView === view) return;
@@ -261,12 +294,14 @@
     if (terimlerBtn) terimlerBtn.classList.toggle("btn-ghost--active", view === "terimler");
     if (cizimlerBtn) cizimlerBtn.classList.toggle("btn-ghost--active", view === "cizimler");
     if (sirlarBtn) sirlarBtn.classList.toggle("btn-ghost--active", view === "sirlar");
+    if (sorularBtn) sorularBtn.classList.toggle("btn-ghost--active", view === "sorular");
     if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
     if (esmaWrap) esmaWrap.hidden = view !== "esma";
     if (halWrap) halWrap.hidden = view !== "hal";
     if (terimlerWrap) terimlerWrap.hidden = view !== "terimler";
     if (cizimlerWrap) cizimlerWrap.hidden = view !== "cizimler";
     if (sirlarWrap) sirlarWrap.hidden = view !== "sirlar";
+    if (sorularWrap) sorularWrap.hidden = view !== "sorular";
     currentDetailNode = null;
     currentDetailEdge = null;
     detailPanel.hidden = true;
@@ -285,6 +320,9 @@
     } else if (view === "sirlar") {
       currentDetailView = null;
       window.__sirlarGraphApp && window.__sirlarGraphApp.activate();
+    } else if (view === "sorular") {
+      currentDetailView = "sorular";
+      window.__sorularApp && window.__sorularApp.activate();
     } else {
       currentDetailView = null;
     }
@@ -299,6 +337,7 @@
   if (halBtn) halBtn.addEventListener("click", () => { setMainView("hal"); updateHash("hal"); });
   if (terimlerBtn) terimlerBtn.addEventListener("click", () => { setMainView("terimler"); updateHash("terimler"); });
   if (cizimlerBtn) cizimlerBtn.addEventListener("click", () => { setMainView("cizimler"); updateHash("cizimler"); });
+  if (sorularBtn) sorularBtn.addEventListener("click", () => { setMainView("sorular"); updateHash("sorular"); });
 
   // --- Deep linking & cross-view navigation ---
   let pendingSirlarId = null;
@@ -401,8 +440,13 @@
     showSirlarPanel(id);
   }
 
+  function goToSorular(id) {
+    setMainView("sorular");
+    window.__sorularApp && window.__sorularApp.goToNode(id);
+  }
+
   function parseHashAndGo() {
-    const m = /^#\/(ontoloji|esma|sirlar|hal|terimler|cizimler)(?:\/(.+))?$/.exec(location.hash);
+    const m = /^#\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular)(?:\/(.+))?$/.exec(location.hash);
     if (!m) return;
     const [, view, id] = m;
     if (view === "ontoloji") goToOntologyNode(id);
@@ -411,6 +455,7 @@
     else if (view === "hal") goToHal(id);
     else if (view === "terimler") goToTerimler(id);
     else if (view === "cizimler") goToCizimler();
+    else if (view === "sorular") goToSorular(id);
   }
 
   window.addEventListener("hashchange", parseHashAndGo);
@@ -423,6 +468,7 @@
       else if (view === "hal") goToHal(id);
       else if (view === "terimler") goToTerimler(id);
       else if (view === "cizimler") goToCizimler();
+      else if (view === "sorular") goToSorular(id);
       updateHash(view, id);
     },
     setHash: updateHash,
@@ -533,6 +579,11 @@
       .append("circle")
       .attr("r", (d) => radiusFor(d))
       .attr("fill", (d) => colorFor(d));
+
+    nodeSel
+      .append("circle")
+      .attr("class", "node-sheen")
+      .attr("r", (d) => radiusFor(d));
 
     labelSel = nodeSel
       .append("text")
@@ -827,6 +878,7 @@
     "izutsu-anahtar": "İbn Arabî'nin Fusûsu'ndaki Anahtar-Kavramlar (Toshihiko İzutsu",
     "affifi-tasavvuf": "Muhyiddîn İbnü'l-Arabî'nin Tasavvuf Felsefesi (A. E. Affifi",
     "varlik-agaci": "Şeceretü'l-Kevn / Varlık Ağacı",
+    "tedbirat-konuk": "et-Tedbîrâtü'l-İlâhiyye",
     "ozun-ozu": "Özün Özü / Lübbü'l-Lübb",
     "risaleler-1": "İbn Arabî'nin Risaleleri, 1. Cild",
     "risaleler-2": "İbn Arabî'nin Risaleleri, 2. Cild",
