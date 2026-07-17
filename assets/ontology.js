@@ -139,6 +139,7 @@
     else if (currentMainView === "sirlar") window.__sirlarGraphApp && window.__sirlarGraphApp.onLangChange();
     else if (currentMainView === "sorular") window.__sorularApp && window.__sorularApp.onLangChange();
     else if (currentMainView === "futuhat") window.__futuhatApp && window.__futuhatApp.onLangChange();
+    else if (currentMainView === "biriken-parcalar") window.__birikenParcalarApp && window.__birikenParcalarApp.onLangChange();
     updateHeaderHeightVar();
   });
 
@@ -207,9 +208,9 @@
     "sifat-asma": { x: 0.5, y: 0.21 },
     "ayan-sabite": { x: 0.5, y: 0.33 },
     "tecelli": { x: 0.5, y: 0.45 },
-    "alem-ervah": { x: 0.20, y: 0.60 },
+    "alem-ervah": { x: 0.10, y: 0.60 },
     "alem-misal": { x: 0.5, y: 0.60 },
-    "alem-ecsam": { x: 0.80, y: 0.60 },
+    "alem-ecsam": { x: 0.90, y: 0.60 },
     "insan-i-kamil": { x: 0.5, y: 0.75 },
     "kalp": { x: 0.5, y: 0.90 },
   };
@@ -279,6 +280,7 @@
   const sirlarBtn = document.getElementById("sirlar-btn");
   const sorularBtn = document.getElementById("sorular-btn");
   const futuhatBtn = document.getElementById("futuhat-btn");
+  const birikenParcalarBtn = document.getElementById("biriken-parcalar-btn");
   const hakkindaBtn = document.getElementById("hakkinda-btn");
   const ontologyWrap = document.getElementById("ontology-wrap");
   const esmaWrap = document.getElementById("esma-wrap");
@@ -288,6 +290,7 @@
   const sirlarWrap = document.getElementById("sirlar-wrap");
   const sorularWrap = document.getElementById("sorular-wrap");
   const futuhatWrap = document.getElementById("futuhat-wrap");
+  const birikenParcalarWrap = document.getElementById("biriken-parcalar-wrap");
   const hakkindaWrap = document.getElementById("hakkinda-wrap");
 
   function setMainView(view) {
@@ -301,6 +304,7 @@
     if (sirlarBtn) sirlarBtn.classList.toggle("btn-ghost--active", view === "sirlar");
     if (sorularBtn) sorularBtn.classList.toggle("btn-ghost--active", view === "sorular");
     if (futuhatBtn) futuhatBtn.classList.toggle("btn-ghost--active", view === "futuhat");
+    if (birikenParcalarBtn) birikenParcalarBtn.classList.toggle("btn-ghost--active", view === "biriken-parcalar");
     if (hakkindaBtn) hakkindaBtn.classList.toggle("btn-ghost--active", view === "hakkinda");
     if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
     if (esmaWrap) esmaWrap.hidden = view !== "esma";
@@ -310,6 +314,7 @@
     if (sirlarWrap) sirlarWrap.hidden = view !== "sirlar";
     if (sorularWrap) sorularWrap.hidden = view !== "sorular";
     if (futuhatWrap) futuhatWrap.hidden = view !== "futuhat";
+    if (birikenParcalarWrap) birikenParcalarWrap.hidden = view !== "biriken-parcalar";
     if (hakkindaWrap) hakkindaWrap.hidden = view !== "hakkinda";
     currentDetailNode = null;
     currentDetailEdge = null;
@@ -336,6 +341,9 @@
     } else if (view === "futuhat") {
       currentDetailView = null;
       window.__futuhatApp && window.__futuhatApp.activate();
+    } else if (view === "biriken-parcalar") {
+      currentDetailView = "biriken-parcalar";
+      window.__birikenParcalarApp && window.__birikenParcalarApp.activate();
     } else {
       currentDetailView = null;
     }
@@ -352,6 +360,7 @@
   if (cizimlerBtn) cizimlerBtn.addEventListener("click", () => { setMainView("cizimler"); updateHash("cizimler"); });
   if (sorularBtn) sorularBtn.addEventListener("click", () => { setMainView("sorular"); updateHash("sorular"); });
   if (futuhatBtn) futuhatBtn.addEventListener("click", () => { setMainView("futuhat"); updateHash("futuhat"); });
+  if (birikenParcalarBtn) birikenParcalarBtn.addEventListener("click", () => { setMainView("biriken-parcalar"); updateHash("biriken-parcalar"); });
   if (hakkindaBtn) hakkindaBtn.addEventListener("click", () => { setMainView("hakkinda"); updateHash("hakkinda"); });
 
   // --- Deep linking & cross-view navigation ---
@@ -437,6 +446,14 @@
         tr: "Fütûhât-ı Mekkiyye'nin cilt cilt, kısım kısım okunup anlaşılmaya çalışıldığı bölüm.",
         en: "A section reading Futuhat al-Makkiyya volume by volume, part by part.",
         pt: "Uma seção que lê o Futuhat al-Makkiyya volume a volume, parte a parte.",
+      },
+    },
+    "biriken-parcalar": {
+      title: { tr: "Biriken Parçalar", en: "Gathered Pieces", pt: "Peças Reunidas" },
+      desc: {
+        tr: "Külliyatı kısım kısım okurken karşımıza çıkan, birbirini tamamlayan parçaları -aynı imgenin farklı kitaplarda nasıl yeniden belirdiğini- bir araya toplayan bir sayfa.",
+        en: "A page gathering the pieces that complete one another as we read the corpus part by part -- how the same image reappears across different books.",
+        pt: "Uma página que reúne as peças que se completam umas às outras à medida que lemos o corpus parte por parte -- como a mesma imagem reaparece em diferentes livros.",
       },
     },
     hakkinda: {
@@ -569,13 +586,18 @@
     window.__futuhatApp && window.__futuhatApp.activate(id);
   }
 
+  function goToBirikenParcalar(id) {
+    setMainView("biriken-parcalar");
+    window.__birikenParcalarApp && window.__birikenParcalarApp.goToNode(id);
+  }
+
   function goToHakkinda() {
     setMainView("hakkinda");
   }
 
   function parseHashAndGo() {
     const rawPath = location.pathname.slice(ROUTE_BASE.length) || "/";
-    const m = /^\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular|futuhat|hakkinda)(\/.*)?$/.exec(rawPath);
+    const m = /^\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular|futuhat|biriken-parcalar|hakkinda)(\/.*)?$/.exec(rawPath);
     if (!m) return;
     const [, view, restRaw] = m;
     // id kısmı bir sonraki segment'e kadar bağıl-slaş içerebilir (örn.
@@ -594,6 +616,7 @@
     else if (view === "cizimler") goToCizimler();
     else if (view === "sorular") goToSorular(id);
     else if (view === "futuhat") goToFutuhat(id);
+    else if (view === "biriken-parcalar") goToBirikenParcalar(id);
     else if (view === "hakkinda") goToHakkinda();
   }
 
@@ -626,6 +649,7 @@
       else if (view === "cizimler") goToCizimler();
       else if (view === "sorular") goToSorular(id);
       else if (view === "futuhat") goToFutuhat(id);
+      else if (view === "biriken-parcalar") goToBirikenParcalar(id);
       else if (view === "hakkinda") goToHakkinda();
       updateHash(view, id);
     },
@@ -692,8 +716,31 @@
     const recenterBtn = document.getElementById("ontology-recenter");
     if (recenterBtn) {
       recenterBtn.addEventListener("click", () => {
-        svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
+        svg.transition().duration(400).call(zoom.transform, computeFitTransform());
       });
+    }
+
+    function computeFitTransform() {
+      const pad = 48;
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      nodes.forEach((n) => {
+        const r = radiusFor(n);
+        minX = Math.min(minX, n.tx - r);
+        maxX = Math.max(maxX, n.tx + r);
+        minY = Math.min(minY, n.ty - r);
+        maxY = Math.max(maxY, n.ty + r);
+      });
+      const bboxW = Math.max(maxX - minX, 1);
+      const bboxH = Math.max(maxY - minY, 1);
+      const scale = Math.min(
+        4,
+        Math.max(0.5, Math.min((width - pad * 2) / bboxW, (height - pad * 2) / bboxH))
+      );
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      return d3.zoomIdentity
+        .translate(width / 2 - scale * cx, height / 2 - scale * cy)
+        .scale(scale);
     }
 
     const linkGroup = zoomLayer.append("g").attr("class", "links");
@@ -716,6 +763,7 @@
       .data(nodes)
       .join("g")
       .attr("class", "node ontology-node")
+      .classed("node--root", (d) => d.id === "dhat")
       .attr("tabindex", "0")
       .attr("role", "button")
       .attr("aria-label", (d) => labelFor(d))
@@ -732,6 +780,11 @@
       .on("mouseleave", () => { highlight(null); hideTooltip(); })
       .on("focus", (event, d) => { highlight(d); showTooltip(d, event); })
       .on("blur", () => { highlight(null); hideTooltip(); });
+
+    nodeSel
+      .append("circle")
+      .attr("class", "node-halo")
+      .attr("r", (d) => radiusFor(d) * 1.4);
 
     nodeSel
       .append("circle")
@@ -754,6 +807,8 @@
       pathSel.attr("d", (d) => edgePath(d));
       nodeSel.attr("transform", (d) => `translate(${d.x},${d.y})`);
     });
+
+    svg.call(zoom.transform, computeFitTransform());
 
     window.__ontologyApp = { nodes, links, nodeById };
   }

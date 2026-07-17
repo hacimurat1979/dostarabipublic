@@ -14,6 +14,7 @@
     cizimler: { tr: "Çizimler", en: "Diagrams", pt: "Diagramas" },
     sorular: { tr: "Sorular", en: "Questions", pt: "Perguntas" },
     futuhat: { tr: "Fütûhât Atlası", en: "Futuhat Atlas", pt: "Atlas do Futuhat" },
+    "biriken-parcalar": { tr: "Biriken Parçalar", en: "Gathered Pieces", pt: "Peças Reunidas" },
   };
 
   // Sonuç gruplarının başında, hangi görünüme ait olduğunu tek bakışta
@@ -28,6 +29,7 @@
     cizimler: "--series-theme",
     sorular: "--series-sorular-en-temel",
     futuhat: "--series-hal-muameleler",
+    "biriken-parcalar": "--series-theme",
   };
 
   let index = [];
@@ -93,6 +95,11 @@
             sub: p.hero && p.hero.summary,
             searchText: allLangText(p.title) + " " + allLangText(p.hero && p.hero.summary) + " " + sectionHeadings,
           });
+        });
+      }),
+      fetch("data/ibn-arabi/biriken-parcalar.json").then((r) => r.json()).then((d) => {
+        (d.entries || []).forEach((e) => {
+          index.push({ view: "biriken-parcalar", id: e.id, label: e.title, sub: e.ozet, searchText: allLangText(e.title) + " " + allLangText(e.ozet) + " " + allLangText(e.sentez) });
         });
       }),
     ];
@@ -184,6 +191,33 @@
 
   const themeToggle = document.getElementById("theme-toggle");
   headerControls.insertBefore(toggleBtn, themeToggle);
+
+  // "Beni şaşırt" -- daireyi tamamlayan bir gezinme: arama kutusunun
+  // zaten topladığı tüm görünümlerin ortak indeksinden rastgele bir
+  // kavram/isim/hâl/terim/soru/kısma atlar.
+  const surpriseBtn = document.createElement("button");
+  surpriseBtn.className = "surprise-toggle";
+  surpriseBtn.type = "button";
+  surpriseBtn.id = "surprise-toggle";
+  surpriseBtn.setAttribute("aria-label", "Beni şaşırt / Surprise me / Me surpreenda");
+  surpriseBtn.title = "Beni şaşırt / Surprise me / Me surpreenda";
+  surpriseBtn.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.3-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M20 12a8 8 0 0 1-13.3 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M17.3 6l1-3.3 3 1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.7 18l-1 3.3-3-1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  headerControls.insertBefore(surpriseBtn, themeToggle);
+
+  let lastSurprise = null;
+  function pickSurprise() {
+    if (!index.length) return;
+    let item;
+    do {
+      item = index[Math.floor(Math.random() * index.length)];
+    } while (index.length > 1 && item === lastSurprise);
+    lastSurprise = item;
+    window.__dostNav && window.__dostNav.goTo(item.view, item.id);
+  }
+  surpriseBtn.addEventListener("click", () => {
+    if (indexLoaded) pickSurprise();
+    else buildIndex().then(pickSurprise);
+  });
 
   const panel = document.createElement("div");
   panel.className = "search-panel";
