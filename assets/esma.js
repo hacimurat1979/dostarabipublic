@@ -93,6 +93,11 @@
   }
 
   function colorFor(d) {
+    // Zât is the one node whose own "color" is unknowable -- it is known
+    // only through its glow (the halo below), so its circle itself is left
+    // the whitest tone possible rather than given a pole/layer color. Same
+    // treatment as the ontology graph's "dhat" root node.
+    if (d.id === "zat") return "#ffffff";
     const pole = d.data.pole;
     if (pole === "celal") return getVar("--series-celal");
     if (pole === "cemal") return getVar("--series-cemal");
@@ -109,43 +114,19 @@
     neutral: { tr: "Grup", en: "Group", pt: "Grupo" },
   };
 
-  // Rozet arka planı her tema/mod kombinasyonunda değişebildiği için, sabit
-  // beyaz metin bazı renklerde (özellikle karanlık modda) yetersiz kontrast
-  // veriyordu -- bunun yerine, her arka plana göre beyaz/koyu metinden
-  // hangisi daha yüksek kontrast sağlıyorsa onu seçiyoruz.
-  function relLuminance(hex) {
-    const c = hex.replace("#", "");
-    const [r, g, b] = [0, 2, 4].map((i) => parseInt(c.substr(i, 2), 16) / 255);
-    const lin = (v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-    return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-  }
-  function contrastRatio(l1, l2) {
-    const a = Math.max(l1, l2) + 0.05;
-    const b = Math.min(l1, l2) + 0.05;
-    return a / b;
-  }
-  function textColorFor(bgHex) {
-    const bgLum = relLuminance(bgHex);
-    const whiteContrast = contrastRatio(bgLum, 1);
-    const darkContrast = contrastRatio(bgLum, relLuminance("#14100a"));
-    return whiteContrast >= darkContrast ? "#ffffff" : "#14100a";
-  }
-
-  // .pole-badge'in sabit koyu text-shadow'u beyaz metni okunur kılmak için
-  // vardı; ama textColorFor bazı (özellikle Kemâl gibi orta tonlu altın)
-  // arka planlarda koyu metni seçince, aynı koyu gölge artık koyu metnin
-  // üzerine binip bulanıklaştırıyor, kontrastı iyileştirmek yerine bozuyordu.
-  function textShadowFor(textColor) {
-    return textColor === "#ffffff" ? "0 1px 1px rgba(20,15,8,0.35)" : "none";
-  }
-
+  // Rozet, düğümün kendi (bazen açık tonlu -- örn. Kemâl altını) rengini
+  // aynen kullanırsa beyaz metin bazı renklerde okunmuyordu; koyu metin
+  // seçmek de başka renklerde okunurluğu bozuyordu (bkz. eski deneme,
+  // git geçmişi). Kalıcı çözüm: rozetin arka planını (düğümün kendi
+  // rengini, haritadaki hâliyle değiştirmeden) biraz koyulaştırıp metni
+  // her zaman beyaz tutmak -- bu üç kutbun rengiyle de yeterli kontrastı
+  // sağlıyor.
   function poleBadgeHtml(d) {
     if (d.depth === 0) return "";
     const label = POLE_LABEL[d.data.pole];
     if (!label) return "";
     const bg = colorFor(d);
-    const color = textColorFor(bg);
-    return `<span class="pole-badge" style="background:${bg};color:${color};text-shadow:${textShadowFor(color)}">${I18n.pick3(label)}</span>`;
+    return `<span class="pole-badge" style="background:color-mix(in srgb, ${bg} 72%, black);color:#ffffff">${I18n.pick3(label)}</span>`;
   }
 
   function labelFor(d) {
@@ -314,6 +295,7 @@
 
     const nodeEnter = node.enter().append("g")
       .attr("class", "node esma-node")
+      .classed("node--root", (d) => d.id === "zat")
       .attr("transform", () => `translate(${radialPoint(source.x0, source.y0).join(",")})`)
       .attr("tabindex", "0")
       .attr("role", "button")
@@ -335,6 +317,10 @@
       .on("mouseleave", () => { highlight(null); hideTooltip(); })
       .on("focus", (event, d) => { highlight(d); showTooltip(d, event); })
       .on("blur", () => { highlight(null); hideTooltip(); });
+
+    nodeEnter.append("circle")
+      .attr("class", "node-halo")
+      .attr("r", (d) => radiusFor(d) * 1.4);
 
     nodeEnter.append("circle")
       .attr("r", (d) => radiusFor(d))
