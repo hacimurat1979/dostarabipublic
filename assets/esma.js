@@ -58,6 +58,7 @@
   let currentDetailRelation = null;
   let currentDetailIsZat = false;
   let lastBoundaryRadius = 0;
+  let focusedNode = null;
 
   function fetchData() {
     if (esmaDataPromise) return esmaDataPromise;
@@ -215,10 +216,11 @@
       })
       .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
     svg.call(zoomBehavior).on("dblclick.zoom", null);
+    svg.on("click", () => { if (focusedNode) unfocusNode(true); });
 
     const recenterBtn = document.getElementById("esma-recenter");
     if (recenterBtn) {
-      recenterBtn.addEventListener("click", () => zoomToFit(true));
+      recenterBtn.addEventListener("click", () => unfocusNode(true));
     }
 
     update(root, false);
@@ -299,8 +301,28 @@
       .attr("transform", `translate(${zx},${zy})`);
   }
 
-  function zoomToFit(animate) {
-    const nodes = root.descendants();
+  // For a wide hub (e.g. the Hundred Divine Ranks group, whose children fan
+  // out across most of the circle), fitting the whole cluster's bounding
+  // box into view caps the pan/zoom scale near 1x -- the box is already
+  // nearly as wide as the full map. Panning alone can't make the focused
+  // cluster read as "brought forward" in that case, so the cluster's own
+  // nodes are additionally scaled up in place (via the node group's own
+  // transform, after its translate) -- this is what actually delivers the
+  // "büyütüp" (enlarge) half of the request, independent of how much the
+  // pan/zoom can fit.
+  const FOCUS_NODE_SCALE = 1.4;
+
+  function focusedClusterIds() {
+    return focusedNode ? new Set(focusedNode.descendants().map((n) => n.id)) : null;
+  }
+
+  function nodeTransform(d, clusterIds) {
+    const [cx, cy] = radialPoint(d.x, d.y);
+    const scaled = clusterIds && clusterIds.has(d.id);
+    return `translate(${cx},${cy})${scaled ? ` scale(${FOCUS_NODE_SCALE})` : ""}`;
+  }
+
+  function zoomToBox(nodes, animate, margin, maxScaleCap) {
     const width = svg.node().clientWidth || 800;
     const height = svg.node().clientHeight || 600;
     let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
@@ -311,25 +333,34 @@
       y0 = Math.min(y0, cy);
       y1 = Math.max(y1, cy);
     });
-    // Zât's boundary frame + top marker enclose the whole map -- include
-    // them so the fit never crops the frame itself.
-    if (lastBoundaryRadius) {
-      x0 = Math.min(x0, -lastBoundaryRadius);
-      x1 = Math.max(x1, lastBoundaryRadius);
-      y0 = Math.min(y0, -lastBoundaryRadius - 34);
-      y1 = Math.max(y1, lastBoundaryRadius);
-    }
-    x0 -= 70; x1 += 70; y0 -= 70; y1 += 70;
+    const m = margin || { x0: 70, x1: 70, y0: 70, y1: 70 };
+    x0 -= m.x0; x1 += m.x1; y0 -= m.y0; y1 += m.y1;
     const treeW = Math.max(1, x1 - x0);
     const treeH = Math.max(1, y1 - y0);
     const [minScale, maxScale] = zoomBehavior.scaleExtent();
-    const scale = Math.min(maxScale, 1.3, width / treeW, height / treeH);
+    const cap = maxScaleCap || 1.3;
+    const scale = Math.min(maxScale, cap, width / treeW, height / treeH);
     const clampedScale = Math.max(minScale, scale);
     const tx = width / 2 - clampedScale * (x0 + treeW / 2);
     const ty = height / 2 - clampedScale * (y0 + treeH / 2);
     const transform = d3.zoomIdentity.translate(tx, ty).scale(clampedScale);
     const sel = animate ? svg.transition().duration(400) : svg;
     sel.call(zoomBehavior.transform, transform);
+  }
+
+  function zoomToFit(animate) {
+    // Zât's boundary frame + top marker enclose the whole map -- include
+    // them so the fit never crops the frame itself.
+    const nodes = root.descendants();
+    if (lastBoundaryRadius) {
+      nodes.push(
+        { x: 0, y: lastBoundaryRadius + 34 },
+        { x: Math.PI, y: lastBoundaryRadius },
+        { x: Math.PI / 2, y: lastBoundaryRadius },
+        { x: -Math.PI / 2, y: lastBoundaryRadius }
+      );
+    }
+    zoomToBox(nodes, animate);
   }
 
   function update(source, animate) {
@@ -463,10 +494,11 @@
       .attr("text-anchor", "middle")
       .text((d) => (d._children ? "+" : ""));
 
+    const clusterIds = focusedClusterIds();
     node.merge(nodeEnter)
       .transition().duration(300)
       .style("opacity", 1)
-      .attr("transform", (d) => `translate(${radialPoint(d.x, d.y).join(",")})`);
+      .attr("transform", (d) => nodeTransform(d, clusterIds));
 
     node.merge(nodeEnter).select("text.node-label")
       .attr("text-anchor", (d) => (d.depth === 0 ? "middle" : (d.x < Math.PI ? "start" : "end")))
@@ -492,17 +524,82 @@
       d.y0 = d.y;
     });
 
-    zoomToFit(animate !== false);
+    applyFocusClasses();
+    if (focusedNode && nodeById.get(focusedNode.id)) {
+      zoomToBox(focusedNode.descendants(), animate !== false, { x0: 80, x1: 80, y0: 70, y1: 80 }, 2.2);
+    } else {
+      focusedNode = null;
+      zoomToFit(animate !== false);
+    }
+  }
+
+  // Mirrors sirlar-graph.js's theme-focus: clicking a "hub" node (one with
+  // its own children -- a group heading, or a name like Rab/Hayy that opens
+  // onto a chain of others) dims every node outside its own cluster and
+  // zooms in on just that cluster, so a dense ring of names doesn't have to
+  // be read all at once. Allah itself (the tree root) is exempted -- it
+  // already sits at the map's center, so clicking it resets to the full
+  // view instead of zooming in on "everything."
+  function applyFocusClasses() {
+    if (!focusedNode) {
+      nodeGroup.selectAll("g.esma-node").classed("esma-node--dimmed", false).classed("esma-node--focused", false);
+      return;
+    }
+    const clusterIds = new Set(focusedNode.descendants().map((n) => n.id));
+    nodeGroup.selectAll("g.esma-node")
+      .classed("esma-node--dimmed", (n) => !clusterIds.has(n.id))
+      .classed("esma-node--focused", (n) => n.id === focusedNode.id);
+  }
+
+  // applyFocusClasses() only toggles CSS (dimmed/opacity); when a focus
+  // change is driven through toggle() -> update(), the node scale is
+  // already baked into that same position transition via nodeTransform(),
+  // so no separate call is needed there. But unfocusing via the SVG
+  // background, the recenter button, or Allah's own root-toggle never runs
+  // update() -- this is the one place those paths need to shrink the
+  // previously-focused cluster's nodes back down explicitly.
+  function resetFocusTransforms(animate) {
+    const sel = nodeGroup.selectAll("g.esma-node");
+    const target = animate ? sel.transition().duration(350) : sel;
+    target.attr("transform", (d) => nodeTransform(d, null));
+  }
+
+  function unfocusNode(animate) {
+    focusedNode = null;
+    applyFocusClasses();
+    resetFocusTransforms(animate);
+    zoomToFit(animate);
   }
 
   function toggle(d) {
-    if (d.children) {
-      d._children = d.children;
-      d.children = null;
-    } else if (d._children) {
-      d.children = d._children;
-      d._children = null;
+    const isHub = !!(d.children || d._children);
+
+    if (!d.parent) {
+      // Allah -- the tree root -- keeps its own independent collapse
+      // toggle, and always resets focus to the full view (mirrors
+      // sirlar-graph.js's root-node behavior) rather than "focusing" on
+      // its own cluster, which is everything.
+      if (d.children) { d._children = d.children; d.children = null; }
+      else if (d._children) { d.children = d._children; d._children = null; }
+      focusedNode = null;
+    } else if (isHub) {
+      // Clicking a hub (a group heading, or a name that opens onto a chain
+      // of others) focuses on it -- dimming everyone else and zooming into
+      // its cluster -- which requires it to actually be expanded, so
+      // focusing also expands it if it was collapsed. Clicking an
+      // already-focused hub again collapses it and clears the focus,
+      // returning to the full view -- a single two-state toggle per hub,
+      // rather than letting "expand/collapse" and "focus" drift out of
+      // sync with each other.
+      if (focusedNode && focusedNode.id === d.id) {
+        if (d.children) { d._children = d.children; d.children = null; }
+        focusedNode = null;
+      } else {
+        if (d._children) { d.children = d._children; d._children = null; }
+        focusedNode = d;
+      }
     }
+
     update(d, true);
     showDetail(d);
     window.__dostNav && window.__dostNav.setHash("esma", d.id);
