@@ -96,8 +96,7 @@
   function fetchData() {
     if (esmaDataPromise) return esmaDataPromise;
     if (window.DostViewStatus) window.DostViewStatus.showLoading("esma-wrap");
-    esmaDataPromise = fetch("data/ibn-arabi/esma.json")
-      .then((r) => r.json())
+    esmaDataPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/esma.json")
       .then((data) => {
         esmaData = data;
         if (window.DostViewStatus) window.DostViewStatus.hide("esma-wrap");
@@ -284,15 +283,7 @@
     const height = svg.node().clientHeight || 600;
     svg.attr("viewBox", `0 0 ${width} ${height}`).attr("preserveAspectRatio", "xMidYMid meet");
 
-    zoomBehavior = d3.zoom()
-      .scaleExtent([0.35, 5])
-      .filter((event) => {
-        if (event.type === "wheel") return event.ctrlKey || event.metaKey;
-        if (event.touches) return event.touches.length > 1;
-        return true;
-      })
-      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
-    svg.call(zoomBehavior).on("dblclick.zoom", null);
+    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.35, 5]);
     svg.on("click", () => { if (focusedNode) unfocusNode(true); });
 
     const recenterBtn = document.getElementById("esma-recenter");

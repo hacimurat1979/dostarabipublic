@@ -2,7 +2,10 @@
   "use strict";
 
   const I18n = window.DostI18n;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const wrapEl = document.getElementById("futuhat-wrap");
+  const mapEl = document.getElementById("futuhat-map");
+  const motifsEl = document.getElementById("futuhat-motifs");
   const partsEl = document.getElementById("futuhat-parts");
   const articleEl = document.getElementById("futuhat-article");
   const statsEl = document.getElementById("futuhat-stats");
@@ -161,6 +164,9 @@
   let futuhatData = null;
   let dataPromise = null;
   let activePartId = null;
+  let motifEntries = null;
+  let motifFetchPromise = null;
+  let activeMotifId = null;
 
   // Atlas artık ikiye bölünmüş yükleniyor (bkz. scripts/build-static-routes.py
   // -> write_futuhat_split): önce hafif indeks (kısım listesi + arama için,
@@ -169,8 +175,7 @@
   function fetchData() {
     if (dataPromise) return dataPromise;
     if (window.DostViewStatus) window.DostViewStatus.showLoading("futuhat-wrap");
-    dataPromise = fetch("data/ibn-arabi/futuhat-atlas-index.json")
-      .then((r) => r.json())
+    dataPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-atlas-index.json")
       .then((data) => {
         futuhatData = data;
         activePartId = data.activePartId;
@@ -194,11 +199,7 @@
   const partCache = new Map();
   function fetchPart(id) {
     if (partCache.has(id)) return partCache.get(id);
-    const p = fetch("data/ibn-arabi/futuhat-parts/" + id + ".json")
-      .then((r) => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
+    const p = window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-parts/" + id + ".json")
       .catch((err) => {
         console.error("Fütûhât kısmı yüklenemedi / Failed to load Futuhat part", id, err);
         partCache.delete(id);
@@ -636,6 +637,89 @@
     </span>`;
   }
 
+  // Sifr × Cilt × Kısım iç içe halka haritası: üç bölümleme düzlemini
+  // (bkz. TERM_EVOLUTION "sifr/bölüm/kısım") tek bir dairesel görselde
+  // üst üste bindirip okuyucunun "neredeyim" sorusunu tek bakışta
+  // cevaplamasını sağlıyor. Sifr sınırları için kaynak metinde SADECE
+  // Kısım 28/34/40'ı işaretleyen net "bitmesiyle" ifadeleri bulundu (bkz.
+  // OPEN_QUESTIONS #10); Kısım 1-28 içindeki Sifr I-IV alt-sınırları
+  // doğrulanamadığı için kendi aritmetiğimizle icat edilmedi -- o aralık
+  // tek, ayrıştırılmamış bir halka dilimi olarak dürüstçe gösteriliyor.
+  const SIFR_SEGMENTS = [
+    { label: { tr: "Sifr I–IV", en: "Sifr I–IV", pt: "Sifr I–IV" }, k0: 1, k1: 28 },
+    { label: { tr: "Sifr V", en: "Sifr V", pt: "Sifr V" }, k0: 29, k1: 34 },
+    { label: { tr: "Sifr VI", en: "Sifr VI", pt: "Sifr VI" }, k0: 35, k1: 40 },
+  ];
+
+  function arcWedgePath(cx, cy, r1, r2, a0, a1) {
+    const large = a1 - a0 > Math.PI ? 1 : 0;
+    const x1 = cx + r1 * Math.cos(a0), y1 = cy + r1 * Math.sin(a0);
+    const x2 = cx + r2 * Math.cos(a0), y2 = cy + r2 * Math.sin(a0);
+    const x3 = cx + r2 * Math.cos(a1), y3 = cy + r2 * Math.sin(a1);
+    const x4 = cx + r1 * Math.cos(a1), y4 = cy + r1 * Math.sin(a1);
+    return `M ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} A ${r2} ${r2} 0 ${large} 1 ${x3.toFixed(1)} ${y3.toFixed(1)} L ${x4.toFixed(1)} ${y4.toFixed(1)} A ${r1} ${r1} 0 ${large} 0 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
+  }
+
+  function renderMap() {
+    if (!mapEl || !futuhatData) return;
+    const cilts = futuhatData.book.cilts || [];
+    if (!cilts.length) return;
+    mapEl.hidden = false;
+    const maxKisim = Math.max(...cilts.map((c) => c.kisimEnd));
+    const size = 200;
+    const cx = size / 2;
+    const cy = size / 2;
+    const rCiltOuter = 96, rCiltInner = 80;
+    const rSifrOuter = 78, rSifrInner = 62;
+    const rKisimOuter = 60, rKisimInner = 40;
+
+    function angleRange(k0, k1) {
+      const a0 = ((k0 - 1) / maxKisim) * Math.PI * 2 - Math.PI / 2;
+      const a1 = (k1 / maxKisim) * Math.PI * 2 - Math.PI / 2;
+      return [a0, a1];
+    }
+
+    const ciltWedges = cilts
+      .map((c, i) => {
+        const [a0, a1] = angleRange(c.kisimStart, Math.min(c.kisimEnd, maxKisim));
+        return `<path class="futuhat-map__cilt" style="--ring-hue:${(i * 90 + 40) % 360}" d="${arcWedgePath(cx, cy, rCiltInner, rCiltOuter, a0, a1)}"></path>`;
+      })
+      .join("");
+
+    const sifrWedges = SIFR_SEGMENTS.filter((s) => s.k0 <= maxKisim)
+      .map((s) => {
+        const [a0, a1] = angleRange(s.k0, Math.min(s.k1, maxKisim));
+        return `<path class="futuhat-map__sifr" d="${arcWedgePath(cx, cy, rSifrInner, rSifrOuter, a0, a1)}"><title>${tt(s.label)}</title></path>`;
+      })
+      .join("");
+
+    const kisimWedges = [];
+    for (let k = 1; k <= maxKisim; k++) {
+      const cilt = cilts.find((c) => k >= c.kisimStart && k <= c.kisimEnd);
+      if (!cilt) continue;
+      const part = futuhatData.parts.find((p) => p.cilt === cilt.cilt && p.kisim === k);
+      const [a0, a1] = angleRange(k, k);
+      const published = !!part;
+      const isCurrent = part && part.id === activePartId;
+      kisimWedges.push(
+        `<path class="futuhat-map__kisim${published ? " futuhat-map__kisim--published" : ""}${isCurrent ? " futuhat-map__kisim--current" : ""}" data-id="${part ? part.id : ""}" style="--ring-hue:${(cilts.indexOf(cilt) * 90 + 40) % 360}" d="${arcWedgePath(cx, cy, rKisimInner, rKisimOuter, a0, a1)}"><title>${tt({ tr: "Kısım " + roman(k), en: "Part " + roman(k), pt: "Parte " + roman(k) })}</title></path>`
+      );
+    }
+
+    mapEl.innerHTML = `
+      <p class="futuhat-map__label">${tt({ tr: "Neredeyim: Sifr · Cilt · Kısım", en: "Where am I: Sifr · Volume · Part", pt: "Onde estou: Sifr · Volume · Parte" })}</p>
+      <svg viewBox="0 0 ${size} ${size}" role="img" aria-label="${tt({ tr: "Fütûhât'ın sifr, cilt ve kısım bölümlemesini gösteren iç içe halka haritası", en: "Nested-ring map of Futuhat's sifr, volume, and part divisions", pt: "Mapa de anéis aninhados das divisões de sifr, volume e parte do Futuhat" })}">
+        ${ciltWedges}
+        ${sifrWedges}
+        ${kisimWedges.join("")}
+      </svg>
+      <p class="futuhat-map__note">${tt({ tr: "En dış halka: cilt. Orta halka: sifr (Kısım 1–28 arası henüz sifr bazında ayrıştırılmadı, bkz. açık sorular). İç halka: her dilim bir kısım -- dolu olan yayında, soluk olan yakında.", en: "Outermost ring: volume. Middle ring: sifr (Parts 1–28 not yet broken down by sifr, see open questions). Inner ring: each wedge is one part -- solid ones are published, faint ones are coming soon.", pt: "Anel externo: volume. Anel do meio: sifr (Partes 1–28 ainda não divididas por sifr, ver questões em aberto). Anel interno: cada fatia é uma parte -- as sólidas estão publicadas, as tênues estão a caminho." })}</p>
+    `;
+    mapEl.querySelectorAll(".futuhat-map__kisim--published[data-id]").forEach((wedge) => {
+      wedge.addEventListener("click", () => activatePart(wedge.dataset.id));
+    });
+  }
+
   function renderParts() {
     if (!partsEl) return;
     const cilts = futuhatData.book.cilts || [];
@@ -675,6 +759,64 @@
       })
       .join("");
     partsEl.innerHTML += `<span class="futuhat-parts__more">${tt({ tr: "Cilt IV–XVIII yakında", en: "Volumes IV–XVIII coming soon", pt: "Volumes IV–XVIII em breve" })}</span>`;
+  }
+
+  // Motif izleme: "biriken parçalar" motiflerinin (aynı imgenin/temanın
+  // farklı kısımlarda tekrar tekrar belirmesi) hangi kısımlara değindiğini
+  // kısım listesinde doğrudan görünür kılan bir filtre katmanı. Veri zaten
+  // var (biriken-parcalar.json her motifin kaynaklarını {view,id} olarak
+  // tutuyor) -- burada sadece Fütûhât'a değinen motifleri seçip listeye
+  // bir vurgu katmanı ekliyoruz.
+  function fetchMotifs() {
+    if (motifEntries) return Promise.resolve(motifEntries);
+    if (motifFetchPromise) return motifFetchPromise;
+    motifFetchPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/biriken-parcalar.json")
+      .then((data) => {
+        motifEntries = (data.entries || []).filter((e) => (e.kaynaklar || []).some((k) => k.view === "futuhat"));
+        return motifEntries;
+      })
+      .catch((err) => {
+        console.error("Motif verisi yüklenemedi / Failed to load motif data", err);
+        motifEntries = [];
+        motifFetchPromise = null;
+        return motifEntries;
+      });
+    return motifFetchPromise;
+  }
+
+  function renderMotifs() {
+    if (!motifsEl || !motifEntries || !motifEntries.length) return;
+    motifsEl.hidden = false;
+    const activeEntry = activeMotifId ? motifEntries.find((e) => e.id === activeMotifId) : null;
+    motifsEl.innerHTML = `
+      <p class="futuhat-motifs__label">${tt({ tr: "Motif izle", en: "Track a motif", pt: "Rastrear um motivo" })}</p>
+      <div class="futuhat-motifs__chips">
+        ${motifEntries
+          .map(
+            (e, i) => `<button class="futuhat-motifs__chip${e.id === activeMotifId ? " futuhat-motifs__chip--active" : ""}" type="button" data-motif-id="${e.id}" style="--tag-hue:${(i * 47) % 360}">${tt(e.title)}</button>`
+          )
+          .join("")}
+      </div>
+      ${activeEntry ? `<p class="futuhat-motifs__note">${tt(activeEntry.ozet)}</p>` : ""}
+    `;
+    motifsEl.querySelectorAll(".futuhat-motifs__chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const id = chip.dataset.motifId;
+        activeMotifId = activeMotifId === id ? null : id;
+        renderMotifs();
+        applyMotifHighlight();
+      });
+    });
+  }
+
+  function applyMotifHighlight() {
+    if (!partsEl) return;
+    const activeEntry = activeMotifId && motifEntries ? motifEntries.find((e) => e.id === activeMotifId) : null;
+    const ids = activeEntry ? new Set((activeEntry.kaynaklar || []).filter((k) => k.view === "futuhat").map((k) => k.id)) : null;
+    partsEl.querySelectorAll(".futuhat-part-chip[data-id]").forEach((chip) => {
+      chip.classList.toggle("futuhat-part-chip--motif", !!(ids && ids.has(chip.dataset.id)));
+      chip.classList.toggle("futuhat-part-chip--motif-dim", !!(ids && !ids.has(chip.dataset.id)));
+    });
   }
 
   function roman(n) {
@@ -780,6 +922,7 @@
   }
 
   function renderPart(part) {
+    stopTts();
     articleEl.innerHTML = `
       <header class="futuhat-hero">
         <div class="futuhat-toolbar">
@@ -791,9 +934,13 @@
           <button class="futuhat-toolbar__btn futuhat-toolbar__btn--icon" id="futuhat-share" type="button" title="Paylaş / Share / Compartilhar" aria-label="Paylaş / Share / Compartilhar">
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="10.8" x2="15.7" y2="6.7" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="13.2" x2="15.7" y2="17.3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
+          <button class="futuhat-toolbar__btn futuhat-toolbar__btn--icon" id="futuhat-tts" type="button" hidden title="Dinle / Listen / Ouvir" aria-label="Dinle / Listen / Ouvir" aria-pressed="false">
+            <svg class="futuhat-tts-icon futuhat-tts-icon--play" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M6 4.5v15l13-7.5z" fill="currentColor"/></svg>
+            <svg class="futuhat-tts-icon futuhat-tts-icon--pause" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="5" y="4.5" width="5" height="15" fill="currentColor"/><rect x="14" y="4.5" width="5" height="15" fill="currentColor"/></svg>
+          </button>
         </div>
         <p class="futuhat-hero__eyebrow">${tt({ tr: "Fütûhât-ı Mekkiyye", en: "al-Futuhat al-Makkiyya", pt: "al-Futuhat al-Makkiyya" })} · ${tt({ tr: "Cilt " + CILT_ROMAN[part.cilt], en: "Volume " + CILT_ROMAN[part.cilt], pt: "Volume " + CILT_ROMAN[part.cilt] })} · ${tt({ tr: "Kısım " + roman(part.kisim), en: "Part " + roman(part.kisim), pt: "Parte " + roman(part.kisim) })}</p>
-        <h1 class="futuhat-hero__title">${tt(part.title)}</h1>
+        <h2 class="futuhat-hero__title">${tt(part.title)}</h2>
         <p class="futuhat-hero__summary">${linkify(tt(part.hero.summary))}</p>
       </header>
 
@@ -833,7 +980,7 @@
     part.sections.forEach((section, si) => {
       const secEl = document.createElement("section");
       secEl.className = "futuhat-section";
-      secEl.innerHTML = `<h2 class="futuhat-section__heading">${tt(section.heading)}</h2>`;
+      secEl.innerHTML = `<h3 class="futuhat-section__heading">${tt(section.heading)}</h3>`;
       section.blocks.forEach((block, bi) => {
         if (block.type === "p") {
           const p = document.createElement("p");
@@ -890,10 +1037,102 @@
     setupToolbar(part);
   }
 
-  // --- Toolbar: font size, print, share ---
+  // --- Sesli dinleme (TTS) pilotu: kısmın paragraflarını sırayla, tarayıcının
+  // yerleşik SpeechSynthesis'iyle okur -- yeni bir bağımlılık/ses dosyası
+  // yok, tamamen istemci tarafında. Okunan paragraf görsel olarak da
+  // vurgulanır (metni dinlerken takip edebilmek için).
+  let ttsQueue = [];
+  let ttsIndex = -1;
+  let ttsPlaying = false;
+  let ttsCurrentEl = null;
+
+  function ttsSupported() {
+    return "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+  }
+
+  function ttsLangCode() {
+    const lang = I18n.getLang();
+    return lang === "tr" ? "tr-TR" : lang === "pt" ? "pt-BR" : "en-US";
+  }
+
+  function updateTtsButton() {
+    const btn = document.getElementById("futuhat-tts");
+    if (!btn) return;
+    // İkon geçişi CSS'te [aria-pressed] seçicisiyle yapılıyor (bkz. stil
+    // dosyasındaki not) -- SVG içindeki `hidden` özniteliği tarayıcıların
+    // SVG ad alanı için varsayılan stil sayfasında tanımlı olmayabiliyor.
+    btn.setAttribute("aria-pressed", String(ttsPlaying));
+    const label = ttsPlaying
+      ? tt({ tr: "Duraklat", en: "Pause", pt: "Pausar" })
+      : tt({ tr: "Dinle", en: "Listen", pt: "Ouvir" });
+    btn.title = label;
+    btn.setAttribute("aria-label", label);
+  }
+
+  function stopTts() {
+    if (ttsSupported()) window.speechSynthesis.cancel();
+    ttsQueue = [];
+    ttsIndex = -1;
+    ttsPlaying = false;
+    if (ttsCurrentEl) {
+      ttsCurrentEl.classList.remove("futuhat-tts-active");
+      ttsCurrentEl = null;
+    }
+    updateTtsButton();
+  }
+
+  function speakNext() {
+    if (ttsCurrentEl) ttsCurrentEl.classList.remove("futuhat-tts-active");
+    ttsIndex += 1;
+    if (!ttsPlaying || ttsIndex >= ttsQueue.length) {
+      stopTts();
+      return;
+    }
+    const { text, el } = ttsQueue[ttsIndex];
+    ttsCurrentEl = el || null;
+    if (ttsCurrentEl) {
+      ttsCurrentEl.classList.add("futuhat-tts-active");
+      ttsCurrentEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = ttsLangCode();
+    utter.onend = () => { if (ttsPlaying) speakNext(); };
+    utter.onerror = () => { if (ttsPlaying) speakNext(); };
+    window.speechSynthesis.speak(utter);
+  }
+
+  function toggleTts() {
+    if (!ttsSupported()) return;
+    if (ttsPlaying) {
+      ttsPlaying = false;
+      window.speechSynthesis.pause();
+      updateTtsButton();
+      return;
+    }
+    if (window.speechSynthesis.paused && ttsQueue.length) {
+      ttsPlaying = true;
+      window.speechSynthesis.resume();
+      updateTtsButton();
+      return;
+    }
+    const nodes = Array.from(
+      articleEl.querySelectorAll(".futuhat-hero__summary, .futuhat-section__heading, .futuhat-section__p")
+    );
+    ttsQueue = nodes
+      .map((el) => ({ text: el.textContent.trim(), el }))
+      .filter((n) => n.text);
+    if (!ttsQueue.length) return;
+    ttsIndex = -1;
+    ttsPlaying = true;
+    updateTtsButton();
+    speakNext();
+  }
+
+  // --- Toolbar: font size, print, share, dinle ---
   function setupToolbar(part) {
     const printBtn = document.getElementById("futuhat-print");
     const shareBtn = document.getElementById("futuhat-share");
+    const ttsBtn = document.getElementById("futuhat-tts");
 
     window.DostFontScale.bindFontScaleButtons(
       document.getElementById("futuhat-font-decrease"),
@@ -905,6 +1144,10 @@
     }
     if (shareBtn) {
       shareBtn.addEventListener("click", () => sharePart(part));
+    }
+    if (ttsBtn) {
+      ttsBtn.hidden = !ttsSupported();
+      ttsBtn.addEventListener("click", toggleTts);
     }
   }
 
@@ -948,6 +1191,11 @@
       const containingGroup = currentChip && currentChip.closest("details.futuhat-cilt-group");
       if (containingGroup) containingGroup.open = true;
     }
+    if (mapEl) {
+      mapEl.querySelectorAll(".futuhat-map__kisim").forEach((wedge) => {
+        wedge.classList.toggle("futuhat-map__kisim--current", wedge.dataset.id === id);
+      });
+    }
     if (window.__dostNav) window.__dostNav.setHash("futuhat", id);
     // setHash az önce genel "futuhat" başlık/canonical/description'ını yazdı
     // (bkz. ontology.js updateMeta) -- bu kısma özel olanlarla en son biz
@@ -958,14 +1206,23 @@
     // yanıp sönme olmasın); yalnızca ilk açılışta "yükleniyor" göster.
     const alreadyRendered = articleEl && articleEl.querySelector(".futuhat-hero");
     if (!partCache.has(id) && !alreadyRendered && articleEl) {
-      articleEl.innerHTML = `<p class="futuhat-part-loading">${tt({ tr: "Yükleniyor…", en: "Loading…", pt: "Carregando…" })}</p>`;
+      articleEl.innerHTML = `
+        <div class="view-status futuhat-part-loading">
+          <div class="view-status__spinner" aria-hidden="true"></div>
+          <p class="view-status__text">${tt({ tr: "Yükleniyor…", en: "Loading…", pt: "Carregando…" })}</p>
+        </div>`;
     }
     fetchPart(id).then((part) => {
       // Kullanıcı bu fetch dönmeden başka bir kısma geçtiyse eskiyi basma.
       if (activePartId !== id) return;
       if (!part) {
         if (articleEl) {
-          articleEl.innerHTML = `<div class="futuhat-part-error"><p>${tt({ tr: "Bu kısım yüklenemedi.", en: "This part could not be loaded.", pt: "Esta parte não pôde ser carregada." })}</p><button type="button" class="futuhat-part-retry">${tt({ tr: "Tekrar dene", en: "Retry", pt: "Tentar novamente" })}</button></div>`;
+          articleEl.innerHTML = `
+            <div class="view-status view-status--error futuhat-part-loading">
+              <div class="view-status__spinner" aria-hidden="true"></div>
+              <p class="view-status__text">${tt({ tr: "Bu kısım yüklenemedi.", en: "This part could not be loaded.", pt: "Esta parte não pôde ser carregada." })}</p>
+              <button type="button" class="view-status__retry futuhat-part-retry">${tt({ tr: "Tekrar dene", en: "Retry", pt: "Tentar novamente" })}</button>
+            </div>`;
           const retry = articleEl.querySelector(".futuhat-part-retry");
           if (retry) retry.addEventListener("click", () => activatePart(id));
         }
@@ -977,6 +1234,7 @@
 
   function render() {
     if (!futuhatData) return;
+    renderMap();
     renderParts();
     if (partsEl) {
       partsEl.querySelectorAll(".futuhat-part-chip[data-id]").forEach((chip) => {
@@ -986,6 +1244,7 @@
         });
       });
     }
+    applyMotifHighlight();
     activatePart(activePartId);
   }
 
@@ -1008,9 +1267,14 @@
         if (id && data.parts.some((p) => p.id === id)) activePartId = id;
         render();
       });
+      fetchMotifs().then((entries) => {
+        if (entries && entries.length) renderMotifs();
+      });
     },
     onLangChange() {
       render();
+      if (motifEntries && motifEntries.length) renderMotifs();
     },
+    stopTts,
   };
 })();

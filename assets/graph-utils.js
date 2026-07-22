@@ -1,6 +1,18 @@
 window.DostGraphUtils = (function () {
   "use strict";
 
+  // Every view's data-loading boilerplate was `fetch(url).then(r => r.json())`
+  // with no check that the response actually succeeded -- a 404/500 (bad
+  // deploy, renamed file) surfaced as an opaque "Unexpected token '<'"
+  // JSON-parse error instead of a clear failure. One shared helper for all
+  // ~24 call sites across the site's view modules.
+  function fetchJson(url) {
+    return fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`fetchJson: ${url} -> HTTP ${r.status}`);
+      return r.json();
+    });
+  }
+
   function getVar(name) {
     return getComputedStyle(document.body).getPropertyValue(name).trim();
   }
@@ -63,6 +75,26 @@ window.DostGraphUtils = (function () {
     });
   }
 
+  // Shared D3 zoom setup (esma/hal/sorular/sirlar-graph/ontology all
+  // repeated this identically, only scaleExtent differing). Ctrl/Cmd+wheel
+  // or a two-finger touch to zoom -- plain wheel/scroll is left free for
+  // the page itself to scroll. `extraFilter(event)`, if given, is ANDed
+  // into the fallback case (ontology.js's force-layout needs this to keep
+  // a node-drag click from also panning the whole canvas; the four
+  // fixed-layout tree/radial views don't need it and pass nothing).
+  function createZoomBehavior(svg, zoomLayer, scaleExtent, extraFilter) {
+    const zoomBehavior = d3.zoom()
+      .scaleExtent(scaleExtent)
+      .filter((event) => {
+        if (event.type === "wheel") return event.ctrlKey || event.metaKey;
+        if (event.touches) return event.touches.length > 1;
+        return extraFilter ? extraFilter(event) : true;
+      })
+      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
+    svg.call(zoomBehavior).on("dblclick.zoom", null);
+    return zoomBehavior;
+  }
+
   // Shared D3 force-simulation drag behavior (Ontoloji/Compare/Daphne-profil
   // all wired this up independently). `shouldSkip(d)`, if given, excludes
   // nodes (e.g. a fixed central hub) from being draggable.
@@ -87,5 +119,47 @@ window.DostGraphUtils = (function () {
     return d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
   }
 
-  return { getVar, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, isDark, setupLegendToggles, createDragBehavior };
+  // #detail-panel/#detail-close aynı id'lerle her üç sayfada da yaşıyor
+  // (index.html/ontology.js, compare.html/compare.js, daphne-profil.html/
+  // daphne-profil.js) -- her görünümün kendi "hidden = false" satırını tek
+  // tek yamamak yerine (14+ çağrı yeri), MutationObserver ile TEK bir yerden
+  // odak yönetimi ekliyoruz: panel açılınca kapatma düğmesine odaklan,
+  // panel kapanınca odağı paneli açan öğeye geri döndür.
+  function setupDetailPanelFocus() {
+    const panel = document.getElementById("detail-panel");
+    if (!panel) return;
+    let lastFocused = null;
+    const observer = new MutationObserver(() => {
+      if (panel.hidden) {
+        if (lastFocused && document.contains(lastFocused) && typeof lastFocused.focus === "function") {
+          lastFocused.focus();
+        }
+        lastFocused = null;
+      } else {
+        lastFocused = document.activeElement;
+        const closeBtn = document.getElementById("detail-close");
+        if (closeBtn) closeBtn.focus();
+      }
+    });
+    observer.observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+
+    // Basit odak-tuzağı: panel açıkken Tab, arkadaki sayfaya kaçmasın.
+    panel.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const focusable = Array.from(panel.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])'))
+        .filter((n) => !n.hidden && n.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  }
+
+  return { getVar, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, fetchJson };
 })();

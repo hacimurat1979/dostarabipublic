@@ -2,6 +2,7 @@
   "use strict";
 
   const I18n = window.DostI18n;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const svg = d3.select("#sorular-graph");
 
   const CATEGORY_COLOR_VAR = {
@@ -52,8 +53,7 @@
   function fetchData() {
     if (dataPromise) return dataPromise;
     if (window.DostViewStatus) window.DostViewStatus.showLoading("sorular-wrap");
-    dataPromise = fetch("data/ibn-arabi/sorular.json")
-      .then((r) => r.json())
+    dataPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/sorular.json")
       .then((data) => {
         sorularData = data;
         categoryById = new Map(data.categories.map((c) => [c.id, c]));
@@ -150,15 +150,7 @@
       .attr("x1", cx).attr("y1", cy)
       .attr("x2", (d) => d.x).attr("y2", (d) => d.y);
 
-    zoomBehavior = d3.zoom()
-      .scaleExtent([0.5, 3])
-      .filter((event) => {
-        if (event.type === "wheel") return event.ctrlKey || event.metaKey;
-        if (event.touches) return event.touches.length > 1;
-        return true;
-      })
-      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
-    svg.call(zoomBehavior).on("dblclick.zoom", null);
+    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.5, 3]);
 
     const recenterBtn = document.getElementById("sorular-recenter");
     if (recenterBtn) recenterBtn.onclick = () => zoomToFit(true, items, cx, cy);
@@ -258,7 +250,7 @@
     const tx = width / 2 - clampedScale * (x0 + boxW / 2);
     const ty = height / 2 - clampedScale * (y0 + boxH / 2);
     const transform = d3.zoomIdentity.translate(tx, ty).scale(clampedScale);
-    const sel = animate ? svg.transition().duration(400) : svg;
+    const sel = (animate && !reduceMotion) ? svg.transition().duration(400) : svg;
     sel.call(zoomBehavior.transform, transform);
   }
 

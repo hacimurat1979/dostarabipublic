@@ -15,6 +15,7 @@
 
   I18n.applyStatic();
   I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => render());
+  window.DostGraphUtils.setupDetailPanelFocus();
 
   const tabButtons = document.querySelectorAll("#profile-tabs .bookmap-tab");
   const tabPanels = document.querySelectorAll("[data-tab-panel]");
@@ -70,8 +71,7 @@
 
   function loadData() {
     if (window.DostViewStatus) window.DostViewStatus.showLoading("profile-wrap");
-    fetch("data/daphne-profile.json")
-      .then((r) => r.json())
+    window.DostGraphUtils.fetchJson("data/daphne-profile.json")
       .then((data) => {
         pageData = data;
         if (window.DostViewStatus) window.DostViewStatus.hide("profile-wrap");
@@ -148,10 +148,21 @@
       .data(nodes)
       .join("g")
       .attr("class", (d) => "node" + (d.type === "hub" ? " node--root" : ""))
+      .attr("tabindex", "0")
+      .attr("role", "button")
+      .attr("aria-label", (d) => labelFor(d))
       .call(drag(simulation))
       .on("click", (event, d) => onNodeClick(d))
+      .on("keydown", (event, d) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onNodeClick(d);
+        }
+      })
       .on("mouseenter", (event, d) => highlight(d))
-      .on("mouseleave", () => highlight(null));
+      .on("mouseleave", () => highlight(null))
+      .on("focus", (event, d) => highlight(d))
+      .on("blur", () => highlight(null));
 
     nodeSel.filter((d) => d.type === "hub").append("circle").attr("class", "node-halo").attr("r", radiusFor(nodes[0]) * 1.4);
 

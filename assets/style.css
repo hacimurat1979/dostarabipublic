@@ -89,6 +89,7 @@
   --series-hal-fenabeka:  #6a4b93; /* violet / annihilation and subsistence */
   --series-hal-tevhit:    #2f3a6b; /* indigo / divine unity */
   --series-hal-hayret:    #c9971a; /* gold / bewilderment */
+  --series-hal-hayret-text: #8a690e; /* darker text-safe variant, ~5.0:1 on this page-plane */
 
   --series-sir-suskunluk: #5c6b78; /* slate / silence and veiling */
   --series-sir-peygamber: #c2703f; /* terracotta / prophets' stories */
@@ -142,6 +143,7 @@
   --series-hal-fenabeka:  #9070c2;
   --series-hal-tevhit:    #6b7fc2;
   --series-hal-hayret:    #e0b545;
+  --series-hal-hayret-text: #e0b545; /* already passes AA on this dark page-plane (~10:1), so just an alias */
 
   --series-sir-suskunluk: #8a99a6;
   --series-sir-peygamber: #e0935c;
@@ -285,7 +287,7 @@ html {
   border-top: 1px solid var(--border);
 }
 
-.hakkinda-content__section h2 {
+.hakkinda-content__section h3 {
   font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 600;
@@ -346,17 +348,19 @@ html {
   gap: 6px;
 }
 
-/* Shared 34x34 circular icon-button chrome -- theme-toggle/graph-recenter/
-   search-toggle/typography-btn/futuhat-toolbar__btn all repeat this shape;
-   only their background/position/font vary below. */
+/* Shared 44x44 circular icon-button chrome (touch-target minimum) --
+   theme-toggle/graph-recenter/search-toggle/typography-btn/
+   futuhat-toolbar__btn all repeat this shape; only their
+   background/position/font vary below. */
 .theme-toggle,
 .graph-recenter,
 .search-toggle,
 .surprise-toggle,
 .typography-btn,
 .futuhat-toolbar__btn {
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
   border-radius: 50%;
   border: 1px solid var(--border);
   color: var(--text-secondary);
@@ -553,6 +557,9 @@ html {
   animation: start-hint-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .start-hint[hidden] { display: none; }
+.viz-root[data-theme="dark"] .start-hint {
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+}
 
 /* Keeps the base rule's translateX(-50%) centering intact through the
    entrance -- reusing the shared fade-up-in keyframe as-is would replace
@@ -619,9 +626,9 @@ html {
 .graph-hint {
   position: absolute;
   top: 12px;
-  left: 54px;
-  width: 34px;
-  height: 34px;
+  left: 64px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--surface-1) 90%, transparent);
   border: 1px solid var(--border);
@@ -641,9 +648,9 @@ html {
 .graph-back {
   position: absolute;
   top: 12px;
-  left: 96px;
-  width: 34px;
-  height: 34px;
+  left: 116px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--surface-1) 90%, transparent);
   border: 1px solid var(--border);
@@ -881,7 +888,7 @@ html {
 .hal-link--return-label {
   font-size: 10.5px;
   font-style: italic;
-  fill: var(--series-hal-hayret, #c9971a);
+  fill: var(--series-hal-hayret-text, #8a690e);
   text-anchor: middle;
   pointer-events: none;
   opacity: 0.85;
@@ -1110,10 +1117,137 @@ button.futuhat-part-chip:hover {
   font-size: 0.76rem;
 }
 
+/* Motif izleme: seçilen motifin değindiği kısımlar altın bir halkayla
+   vurgulanır, geri kalanı hafifçe soluklaşır (daire ilkesi: vurgu bir
+   halka/nokta, düz bir renk bloğu değil). */
+.futuhat-part-chip--motif {
+  border-color: var(--series-theme);
+  box-shadow: 0 0 0 1px var(--series-theme);
+}
+.futuhat-part-chip--motif-dim {
+  opacity: 0.45;
+}
+
 .futuhat-parts__more {
   color: var(--text-muted);
   font-size: 0.76rem;
   margin-top: 4px;
+}
+
+/* Sifr × Cilt × Kısım iç içe halka haritası -- "neredeyim" sorusuna
+   tek bakışta cevap. En dış halka cilt, orta halka sifr (kısmen -- bkz.
+   OPEN_QUESTIONS #10), iç halka her kısmın kendi dilimi. */
+.futuhat-map {
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.futuhat-map__label {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.futuhat-map svg {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  margin: 0 auto;
+}
+.futuhat-map__cilt {
+  fill: hsl(var(--ring-hue) 34% 46% / 0.32);
+  stroke: var(--surface-1);
+  stroke-width: 1px;
+}
+.futuhat-map__sifr {
+  fill: var(--text-muted);
+  opacity: 0.22;
+  stroke: var(--surface-1);
+  stroke-width: 1px;
+}
+.futuhat-map__kisim {
+  fill: var(--border);
+  opacity: 0.4;
+  stroke: var(--surface-1);
+  stroke-width: 0.75px;
+}
+.futuhat-map__kisim--published {
+  fill: hsl(var(--ring-hue) 34% 46%);
+  opacity: 1;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.futuhat-map__kisim--published:hover,
+.futuhat-map__kisim--published:focus-visible {
+  opacity: 0.75;
+}
+.futuhat-map__kisim--current {
+  stroke: var(--series-theme);
+  stroke-width: 2px;
+}
+.viz-root[data-theme="dark"] .futuhat-map__cilt {
+  fill: hsl(var(--ring-hue) 32% 58% / 0.36);
+}
+.viz-root[data-theme="dark"] .futuhat-map__kisim--published {
+  fill: hsl(var(--ring-hue) 32% 58%);
+}
+.futuhat-map__note {
+  margin: 8px 0 0;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.futuhat-motifs {
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.futuhat-motifs__label {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.futuhat-motifs__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.futuhat-motifs__chip {
+  border-radius: 999px;
+  border: 1px solid hsl(var(--tag-hue) 34% 40% / 0.4);
+  background: hsl(var(--tag-hue) 34% 46% / 0.12);
+  color: var(--text-primary);
+  padding: 5px 12px;
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.futuhat-motifs__chip:hover,
+.futuhat-motifs__chip:focus-visible {
+  border-color: hsl(var(--tag-hue) 34% 40% / 0.8);
+}
+.futuhat-motifs__chip--active {
+  background: hsl(var(--tag-hue) 34% 46% / 0.32);
+  border-color: hsl(var(--tag-hue) 34% 40%);
+  font-weight: 600;
+}
+.viz-root[data-theme="dark"] .futuhat-motifs__chip {
+  background: hsl(var(--tag-hue) 32% 58% / 0.16);
+  border-color: hsl(var(--tag-hue) 32% 58% / 0.4);
+}
+.viz-root[data-theme="dark"] .futuhat-motifs__chip--active {
+  background: hsl(var(--tag-hue) 32% 58% / 0.34);
+  border-color: hsl(var(--tag-hue) 32% 58%);
+}
+.futuhat-motifs__note {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 .futuhat-shell {
@@ -1188,6 +1322,29 @@ button.futuhat-part-chip:hover {
   font-size: 0;
 }
 
+#futuhat-tts[aria-pressed="true"] {
+  color: var(--accent-interactive);
+  border-color: var(--accent-interactive);
+}
+/* SVG'nin `hidden` özniteliği tarayıcıların SVG ad alanı için varsayılan
+   stil sayfasında tanımlı olmayabiliyor (HTML'deki gibi otomatik
+   display:none vermiyor) -- bu yüzden play/pause ikonu arasındaki geçiş
+   burada, düğümün kendi aria-pressed durumuna göre açıkça yönetiliyor. */
+#futuhat-tts .futuhat-tts-icon--pause { display: none; }
+#futuhat-tts[aria-pressed="true"] .futuhat-tts-icon--play { display: none; }
+#futuhat-tts[aria-pressed="true"] .futuhat-tts-icon--pause { display: block; }
+
+/* Sesli dinleme (TTS) pilotu: o an okunan paragraf/başlık görsel olarak
+   vurgulanır, dinleyen kişi metni gözüyle de takip edebilsin diye. */
+.futuhat-tts-active {
+  background: color-mix(in srgb, var(--accent-interactive) 12%, transparent);
+  border-radius: 4px;
+  box-shadow: -3px 0 0 var(--accent-interactive);
+  padding-left: 10px;
+  margin-left: -10px;
+  transition: background-color 0.2s ease;
+}
+
 .futuhat-toast {
   position: fixed;
   left: 50%;
@@ -1209,31 +1366,15 @@ button.futuhat-part-chip:hover {
   transform: translate(-50%, 0);
 }
 
-.futuhat-part-loading,
-.futuhat-part-error {
-  padding: 48px 16px;
-  text-align: center;
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
-.futuhat-part-retry {
-  margin-top: 12px;
-  padding: 8px 20px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
+/* Fütûhât kısım-içi yükleme/hata durumu, sitenin geri kalanındaki
+   .view-status bileşeninin (dairesel spinner + metin + tekrar-dene)
+   görselini paylaşır -- ama .view-status'un "position: absolute; inset:0"
+   kuralı burada işe yaramaz (articleEl konumlandırılmış bir ata değil,
+   akış içi bir makale gövdesi), o yüzden akış-içi bir düzene çeviriyoruz. */
+.futuhat-part-loading {
+  position: static;
   background: transparent;
-  color: var(--text-primary);
-  font: inherit;
-  font-style: normal;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.futuhat-part-retry:hover,
-.futuhat-part-retry:focus-visible {
-  color: var(--accent-interactive);
-  border-color: var(--accent-interactive);
+  padding: 48px 16px;
 }
 
 @media (max-width: 560px) {
@@ -1836,9 +1977,6 @@ li.futuhat-pulse,
   border-top: 2px dashed var(--series-theme);
   display: inline-block;
 }
-.legend__line--relation {
-  border-top-color: var(--series-theme);
-}
 .legend__line--zid {
   border-top-color: var(--series-daphne);
 }
@@ -2105,8 +2243,8 @@ html:has(.detail-panel:not([hidden])) {
   background: var(--surface-1);
   border: none;
   border-radius: 999px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   font-size: 1.6rem;
   line-height: 1;
   color: var(--text-secondary);
@@ -2128,12 +2266,12 @@ html:has(.detail-panel:not([hidden])) {
   display: none;
   position: fixed;
   top: calc(var(--app-header-height, 96px) + 12px);
-  right: 60px;
+  right: 68px;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 999px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   color: var(--text-secondary);
   cursor: pointer;
   z-index: 56;
@@ -2184,6 +2322,53 @@ html:has(.detail-panel:not([hidden])) {
 }
 .detail-block p { margin: 0; line-height: 1.55; font-size: 0.92rem; }
 
+/* "Görüldüğü Yerler" -- dağınık kaynakların bir senteze yakınsadığını
+   gösteren dairesel diyagram (daire+çizim ilkeleri, bkz. CLAUDE.md). Her
+   kaynak kendi görünüm rengiyle (--tag-hue, terimler.js'teki VIEW_HUE ile
+   aynı) bir istasyon; merkeze uzanan çizgi o kaynaktan senteze giden okumayı
+   temsil ediyor. */
+.gorulen-yer-diagram {
+  display: block;
+  width: min(100%, 320px);
+  height: auto;
+  margin: 0 auto 20px;
+}
+.gorulen-yer-diagram__spoke {
+  stroke: hsl(var(--tag-hue) 34% 46% / 0.45);
+  stroke-width: 1.5px;
+}
+.gorulen-yer-diagram__center {
+  fill: var(--surface-1);
+  stroke: var(--text-secondary);
+  stroke-width: 1.5px;
+}
+.gorulen-yer-diagram__node circle {
+  fill: hsl(var(--tag-hue) 34% 46% / 0.82);
+  stroke: hsl(var(--tag-hue) 34% 40%);
+  stroke-width: 1px;
+  cursor: pointer;
+  transition: stroke-width 0.15s ease;
+}
+.gorulen-yer-diagram__node text {
+  font-size: 9px;
+  fill: var(--text-secondary);
+  pointer-events: none;
+}
+.gorulen-yer-diagram__node:hover circle,
+.gorulen-yer-diagram__node:focus-visible circle {
+  stroke-width: 2.5px;
+}
+.gorulen-yer-diagram__node:focus-visible {
+  outline: none;
+}
+.viz-root[data-theme="dark"] .gorulen-yer-diagram__spoke {
+  stroke: hsl(var(--tag-hue) 32% 58% / 0.5);
+}
+.viz-root[data-theme="dark"] .gorulen-yer-diagram__node circle {
+  fill: hsl(var(--tag-hue) 32% 58% / 0.85);
+  stroke: hsl(var(--tag-hue) 32% 62%);
+}
+
 .gorulen-yer-list {
   display: flex;
   flex-direction: column;
@@ -2194,13 +2379,122 @@ html:has(.detail-panel:not([hidden])) {
   flex-direction: column;
   gap: 6px;
 }
-.gorulen-yer-item .bookmap-concept-tag {
-  align-self: flex-start;
+.gorulen-yer-item__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.gorulen-yer-item__dot {
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  border-radius: 50%;
+  background: hsl(var(--tag-hue) 34% 46%);
+}
+.viz-root[data-theme="dark"] .gorulen-yer-item__dot {
+  background: hsl(var(--tag-hue) 32% 58%);
 }
 .gorulen-yer-item p {
   margin: 0;
   line-height: 1.55;
   font-size: 0.92rem;
+}
+
+/* Anlayış-evrimi zaman çizelgesi -- anlama çabasının kapanmış bir sonuç
+   değil, sürmekte olan bir okuma olduğunu somutlaştıran, damıtılmış ve
+   kamuya açık iki örnek (bkz. CLAUDE.md dördüncü ilke). Ham araştırma
+   notları değil, önce/fark-edişi/şimdi üç durağını yumuşak bir eğri
+   üzerinde gösteren küçük bir diyagram + üç kısa paragraf. */
+.anlayis-timeline {
+  margin: 28px 0 8px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.anlayis-timeline__heading {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+.anlayis-timeline__intro {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+.anlayis-timeline__entries {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.anlayis-timeline__entry {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  background: var(--surface-1);
+}
+.anlayis-timeline__entry-title {
+  margin: 0 0 10px;
+  font-size: 0.98rem;
+}
+.anlayis-timeline__diagram {
+  display: block;
+  width: min(100%, 320px);
+  height: auto;
+  margin: 0 auto 12px;
+}
+.anlayis-timeline__path {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1.5px;
+  stroke-dasharray: 3 4;
+}
+.anlayis-timeline__node circle {
+  stroke-width: 1.5px;
+}
+.anlayis-timeline__node text {
+  font-size: 10px;
+  fill: var(--text-secondary);
+}
+.anlayis-timeline__node--once circle {
+  fill: color-mix(in srgb, var(--text-secondary) 35%, transparent);
+  stroke: var(--text-secondary);
+}
+.anlayis-timeline__node--fark circle {
+  fill: color-mix(in srgb, var(--accent-interactive) 55%, transparent);
+  stroke: var(--accent-interactive);
+}
+.anlayis-timeline__node--simdi circle {
+  fill: var(--series-ibnarabi);
+  stroke: var(--series-ibnarabi);
+}
+.anlayis-timeline__stages {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.anlayis-timeline__stage-label {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.anlayis-timeline__stage--fark .anlayis-timeline__stage-label { color: var(--accent-interactive); }
+.anlayis-timeline__stage--simdi .anlayis-timeline__stage-label { color: var(--series-ibnarabi); }
+.anlayis-timeline__stage p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .anlayis-timeline__stages {
+    grid-template-columns: 1fr;
+  }
 }
 
 .detail-analogy {
@@ -2390,7 +2684,7 @@ html:has(.detail-panel:not([hidden])) {
   .app-header { flex-direction: column; }
   .detail-panel { width: 100vw; padding-top: calc(var(--app-header-height, 64px) + 12px); z-index: 60; }
   .detail-panel__close { top: 12px; z-index: 61; }
-  .detail-panel__print { top: 12px; right: 56px; z-index: 61; }
+  .detail-panel__print { top: 12px; right: 64px; z-index: 61; }
   .app-header__controls { flex-wrap: wrap; row-gap: 10px; }
   .view-switch { flex-wrap: wrap; }
   .btn-ghost { padding: 8px 11px; font-size: 0.8rem; }
@@ -2842,147 +3136,7 @@ html:has(.detail-panel:not([hidden])) {
 }
 
 
-/* Book Map */
-.bookmap-wrap {
-  position: relative;
-  width: calc(100% - clamp(32px, 8vw, 96px));
-  margin: 0 clamp(16px, 4vw, 48px);
-  max-height: min(72vh, 720px);
-  overflow-y: auto;
-  scrollbar-width: none; /* Firefox -- ayrıntısı .terimler-wrap kuralında */
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: clamp(16px, 3vw, 32px);
-}
-.bookmap-wrap::-webkit-scrollbar { display: none; }
-
-.bookmap-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.bookmap-card {
-  background: var(--page-plane);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.bookmap-card:hover,
-.bookmap-card:focus-visible {
-  transform: translateY(-3px);
-  border-color: var(--accent-interactive);
-}
-
-.bookmap-card__badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--series-theme) 18%, transparent);
-  color: var(--series-theme-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.bookmap-card h3 {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 1.15rem;
-}
-
-.bookmap-card .bookmap-author {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  margin: -6px 0 0;
-}
-
-.bookmap-card .bookmap-preview {
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-  line-height: 1.55;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.bookmap-card .bookmap-meta {
-  display: flex;
-  gap: 16px;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  margin-top: auto;
-}
-
-.bookmap-detail {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-  animation: bookmapFadeIn 0.25s ease;
-}
-
-@keyframes bookmapFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bookmap-detail { animation: none; }
-}
-
-.bookmap-detail__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.bookmap-detail__header h2 {
-  margin: 0 0 4px;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-}
-
-.bookmap-detail__header .bookmap-author {
-  font-size: 0.95rem;
-}
-
-.bookmap-detail__close {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--surface-1);
-  color: var(--text-secondary);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.bookmap-detail__close:hover {
-  color: var(--text-primary);
-  border-color: var(--accent-interactive);
-}
-
+/* Book Map (yalnızca hâlâ kullanılan concept-tag/tabs bileşenleri) */
 .bookmap-tabs {
   display: flex;
   gap: 4px;
@@ -3008,34 +3162,6 @@ html:has(.detail-panel:not([hidden])) {
   color: var(--text-primary);
   border-bottom-color: var(--series-theme);
   font-weight: 600;
-}
-
-.bookmap-tab-panel__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.bookmap-stat {
-  padding: 12px 14px;
-  background: var(--page-plane);
-  border-radius: 8px;
-  border-left: 3px solid var(--series-theme);
-}
-
-.bookmap-stat .label {
-  display: block;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.bookmap-stat .value {
-  color: var(--text-primary);
-  font-size: 0.92rem;
 }
 
 .bookmap-concept-tags {
@@ -3100,56 +3226,10 @@ html:has(.detail-panel:not([hidden])) {
   border-color: hsl(var(--tag-hue) 32% 58% / 0.7);
 }
 
-.bookmap-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.bookmap-list-item {
-  padding: 12px 14px;
-  background: var(--page-plane);
-  border-radius: 8px;
-  border-left: 3px solid var(--series-theme);
-}
-
-.bookmap-list-item strong {
-  display: block;
-  color: var(--text-primary);
-  margin-bottom: 3px;
-}
-
-.bookmap-list-item .sub {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-}
-
-.bookmap-list-item .range {
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  margin-top: 3px;
-}
-
-.bookmap-section-title {
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 20px 0 10px;
-}
-
 @media (max-width: 768px) {
-  .bookmap-grid { grid-template-columns: 1fr; }
   .bookmap-tabs { flex-direction: column; border-bottom: none; }
   .bookmap-tab { border-bottom: 1px solid var(--border); border-left: 3px solid transparent; }
   .bookmap-tab--active { border-left-color: var(--series-theme); border-bottom-color: var(--border); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bookmap-card,
-  .bookmap-detail {
-    transition: none;
-    animation: none;
-  }
 }
 
 /* Search */
@@ -3398,12 +3478,60 @@ html:has(.detail-panel:not([hidden])) {
 .terimler-wrap::-webkit-scrollbar { display: none; }
 
 .terimler-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 16px;
+}
+
+.terimler-group__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+/* Grubun kendi rengiyle boyanmış dairesel bir "küme" rozeti -- 68 terimi
+   tek bir kuvvet-yönlü grafa zorlamak yerine (taramayı zorlaştırır),
+   ilişkiyi gruplama + bu daire ile görünür kılan daha ölçülü bir yol. */
+.terimler-group__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background: hsl(var(--tag-hue) 34% 46% / 0.16);
+  border: 1px solid hsl(var(--tag-hue) 34% 40% / 0.4);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.viz-root[data-theme="dark"] .terimler-group__badge {
+  background: hsl(var(--tag-hue) 32% 58% / 0.2);
+  border-color: hsl(var(--tag-hue) 32% 58% / 0.45);
+}
+.terimler-group__title {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.terimler-group__desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 60ch;
+}
+.terimler-group__cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   grid-auto-flow: dense;
   align-items: start;
   gap: 12px;
-  margin-top: 16px;
 }
 
 .terim-card {
