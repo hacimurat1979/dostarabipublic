@@ -3972,3 +3972,132 @@ body.cizim-lightbox-open {
     color: #000;
   }
 }
+
+/* Esmâ'nın mertebe/kapsayıcılık ilişkisini üç boyutta gösteren görünüm --
+   ayrı bir framework/bağımlılık eklemeden (Three.js değil), D3'ün kendi
+   radyal ağaç düzenini yeniden kullanıp derinliği gerçek bir Z eksenine
+   taşıyan, elle yaw/pitch + perspektif projeksiyonlu bir SVG sahnesi
+   (bkz. assets/esma-3d.js). */
+.esma-3d-toggle {
+  position: absolute;
+  top: 12px;
+  left: 116px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface-1) 90%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.esma-3d-toggle:hover,
+.esma-3d-toggle:focus-visible {
+  color: var(--accent-interactive);
+  border-color: var(--accent-interactive);
+}
+
+.esma3d {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: var(--surface-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.esma3d[hidden] { display: none; }
+.esma3d__viewport {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+}
+.esma3d__viewport:active { cursor: grabbing; }
+.esma3d__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.esma3d-link {
+  stroke: var(--series-esma-neutral);
+  stroke-width: 1;
+  fill: none;
+}
+.esma3d-node__dot {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.esma3d-node__label {
+  fill: var(--text-primary);
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--surface-1);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+.esma3d-node {
+  cursor: pointer;
+}
+.esma3d-settling { transition: none; }
+.esma3d__caption {
+  max-width: 520px;
+  margin: 0 auto 8px;
+  padding: 0 24px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+.esma3d__exit {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-1) 90%, transparent);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.esma3d__exit:hover,
+.esma3d__exit:focus-visible {
+  color: var(--accent-interactive);
+  border-color: var(--accent-interactive);
+}
+@media (max-width: 640px) {
+  .esma3d__caption { font-size: 0.76rem; }
+}
+
+/* .graph-hint'e tıklanınca beliren baloncuk (bkz. assets/graph-hint.js) --
+   önceden bu buton sadece native title tooltip'ine (yalnızca hover)
+   güveniyordu, dokunmatik cihazlarda tamamen erişilemezdi. */
+.graph-hint-popover {
+  position: fixed;
+  z-index: 50;
+  max-width: 280px;
+  padding: 10px 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20, 15, 8, 0.18);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+.viz-root[data-theme="dark"] .graph-hint-popover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
