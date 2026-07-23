@@ -110,12 +110,20 @@
     return esmaDataPromise;
   }
 
+  // Zât ve Allah'ın çapı burada Ontoloji grafiğindeki Zât (dhat) düğümüyle
+  // aynı RAW r değerini kullanmıyor -- bunu yapmak görsel eşitlik
+  // SAĞLAMIYOR, çünkü bu iki grafiğin kendi otomatik-yakınlaştırma
+  // ölçekleri farklı (pencere boyutuna ve içerik yoğunluğuna göre
+  // değişebilir). Buradaki 111, iki grafikte ekrana çizilen GERÇEK piksel
+  // boyutunu (getBoundingClientRect ile ölçülerek) eşitleyecek şekilde
+  // ampirik olarak bulunmuş bir değerdir -- ring1'in (aşağıdaki update())
+  // hesabı değiştikçe bu değer de yeniden ölçülüp ayarlanmalı.
   function radiusFor(d) {
-    if (d.isZat) return 34;
+    if (d.isZat) return 160;
     const depth = d.depth;
-    if (depth === 0) return 34; // Allah -- the map's true center
-    if (depth === 1) return 22;
-    return Math.max(9, 16 - depth);
+    if (depth === 0) return 160; // Allah -- the map's true center
+    if (depth === 1) return 42;
+    return Math.max(18, 30 - 3 * depth);
   }
 
   const LAYER_COLOR = window.DostGraphUtils.LAYER_COLOR;
@@ -283,7 +291,12 @@
     const height = svg.node().clientHeight || 600;
     svg.attr("viewBox", `0 0 ${width} ${height}`).attr("preserveAspectRatio", "xMidYMid meet");
 
-    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.35, 5]);
+    // Alt sınır 0.35'ten 0.18'e indirildi: derinlik 2 halkasındaki isim
+    // sayısı artık pencereye değil veriye bağlı (bkz. update()'teki
+    // minRing1ForSpacing) ve 74 isme çıktığında gereken sığdırma ölçeği
+    // eski 0.35 tabanının altına düşüyor -- taban çok yüksek kalırsa
+    // zoomToFit dairenin tamamını sığdıramayıp Zât'ı üstten kırpıyordu.
+    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.18, 5]);
     svg.on("click", () => { if (focusedNode) unfocusNode(true); });
 
     const recenterBtn = document.getElementById("esma-recenter");
@@ -451,7 +464,7 @@
     const nodes = root.descendants();
     if (lastBoundaryRadius) {
       nodes.push(
-        { x: 0, y: lastBoundaryRadius + 34 },
+        { x: 0, y: lastBoundaryRadius + radiusFor({ isZat: true }) },
         { x: Math.PI, y: lastBoundaryRadius },
         { x: Math.PI / 2, y: lastBoundaryRadius },
         { x: -Math.PI / 2, y: lastBoundaryRadius }
@@ -481,16 +494,35 @@
     // mostly-empty rings to fit it, it continues outward past ring 2 as its
     // own spiraling "sequence of derivation" tail (each Name in the chain
     // necessarily implying the next).
-    const ring1 = outerRadius * 0.42;
+    // Ring 1'in payı sabit değil: el-Bülgâ/Yüz Mertebe grup düğümleri
+    // kaldırılıp çocukları doğrudan allah'a bağlandığından (bkz. yukarıdaki
+    // yorum) bu halkadaki isim sayısı pencereye göre değil, veriye göre
+    // değişiyor (şu an 74) -- sabit bir oran, bu kadar çok ismi aynı
+    // dairede sıkıştırıp üst üste bindirirdi. Bu yüzden ring1, ya pencere
+    // oranını ya da o derinlikteki gerçek düğüm sayısının gerektirdiği asgari
+    // çevre uzunluğunu (hangisi büyükse) kullanıyor; zoomToFit sahnenin
+    // tamamını orantılı küçülttüğü için bu oran korunuyor, sıkışma geri
+    // gelmiyor.
+    const depth1Count = nodes.filter((d) => d.depth === 1).length;
+    const minRing1ForSpacing = (depth1Count * (radiusFor({ depth: 1 }) * 2 + 14)) / (2 * Math.PI);
+    const ring1 = Math.max(outerRadius * 0.42, minRing1ForSpacing);
     const ring2 = outerRadius * 0.74;
     const tailStep = outerRadius * 0.11;
     function radiusForDepth(depth) {
       if (depth <= 0) return 0;
       if (depth === 1) return ring1;
-      if (depth === 2) return ring2;
-      return ring2 + (depth - 2) * tailStep;
+      if (depth === 2) return Math.max(ring2, ring1 + 60);
+      return radiusForDepth(2) + (depth - 2) * tailStep;
     }
     nodes.forEach((d) => { d.y = radiusForDepth(d.depth); });
+    // Deneme: ring1'deki 74 isim artık düz bir daire değil, hafif bir
+    // "dalgalanma" (spiral hissi) ile duruyor -- komşu isimler dönüşümlü
+    // olarak biraz içeri/dışarı kayıyor, bu da salt çevresel boşluğun
+    // üzerine bir miktar RADYAL boşluk da ekliyor (aynı çevre uzunluğunda
+    // daha az sıkışma hissi).
+    nodes.forEach((d) => {
+      if (d.depth === 1) d.y = ring1 * (1 + 0.12 * Math.sin(d.x * 9));
+    });
 
     const maxDepth = Math.max(2, d3.max(nodes, (d) => d.depth));
     const boundaryRadius = Math.max(outerRadius * 1.1, radiusForDepth(maxDepth) + 50);
