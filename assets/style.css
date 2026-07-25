@@ -2066,6 +2066,9 @@ body[data-theme="dark"] #sirlar-legend {
 .legend__dot--descent  { background: var(--series-ibnarabi-line); }
 .legend__dot--return   { background: var(--series-theme); }
 .legend__dot--paradox  { background: var(--series-daphne); }
+.legend__dot--hal-gerilim { background: var(--series-hal-nefs); }
+.legend__dot--hal-dogurur { background: var(--series-hal-hayret); }
+.legend__dot--hal-yanki   { background: var(--series-hal-cemfark); }
 .legend__dot--celal    { background: var(--series-celal); }
 .legend__dot--cemal    { background: var(--series-cemal); }
 .legend__dot--kemal    { background: var(--series-kemal); }
@@ -3386,6 +3389,122 @@ html:has(.detail-panel:not([hidden])) {
   border-color: var(--accent-interactive);
 }
 
+.dost-shot-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.dost-shot-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--page-plane) 55%, black 25%);
+  backdrop-filter: blur(3px);
+}
+
+.dost-shot-modal__card {
+  position: relative;
+  z-index: 1;
+  width: min(480px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  box-shadow: 0 12px 32px rgba(20, 15, 8, 0.28);
+}
+.viz-root[data-theme="dark"] .dost-shot-modal__card {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.dost-shot-modal__attach {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.dost-shot-modal__attach button {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--page-plane);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.dost-shot-modal__attach button:hover,
+.dost-shot-modal__attach button:focus-visible {
+  border-color: var(--accent-interactive);
+}
+
+.dost-shot-modal__remove {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  text-decoration: underline;
+}
+
+.dost-shot-modal__preview {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+}
+.dost-shot-modal__preview[hidden] {
+  display: none;
+}
+
+.dost-shot-modal__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dost-shot-modal__note {
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--page-plane);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.dost-shot-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.dost-shot-modal__actions button {
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--page-plane);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.dost-shot-modal__save {
+  border-color: var(--accent-interactive);
+  background: var(--accent-interactive);
+  color: var(--surface-1);
+  font-weight: 600;
+}
+
 .search-panel {
   position: fixed;
   inset: 0;
@@ -4196,7 +4315,8 @@ body.cizim-lightbox-open {
    radyal ağaç düzenini yeniden kullanıp derinliği gerçek bir Z eksenine
    taşıyan, elle yaw/pitch + perspektif projeksiyonlu bir SVG sahnesi
    (bkz. assets/esma-3d.js). */
-.esma-3d-toggle {
+.esma-3d-toggle,
+.graph-3d-toggle {
   position: absolute;
   top: 12px;
   left: 116px;
@@ -4214,7 +4334,9 @@ body.cizim-lightbox-open {
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 .esma-3d-toggle:hover,
-.esma-3d-toggle:focus-visible {
+.esma-3d-toggle:focus-visible,
+.graph-3d-toggle:hover,
+.graph-3d-toggle:focus-visible {
   color: var(--accent-interactive);
   border-color: var(--accent-interactive);
 }
@@ -4435,7 +4557,26 @@ body[data-theme="dark"] .esmaX-flow-line { stroke: var(--accent-glow-dark); }
 }
 .esmaX-explore:hover { color: var(--series-theme-text); border-color: color-mix(in srgb, var(--series-theme) 45%, var(--border)); }
 .esmaX-explore.is-on { color: var(--series-theme-text); border-color: var(--series-theme); background: color-mix(in srgb, var(--series-theme) 12%, var(--surface-1)); }
-.esma-3d-toggle.is-on { color: var(--series-theme-text); border-color: var(--series-theme); }
+.esma-3d-toggle.is-on,
+.graph-3d-toggle.is-on { color: var(--series-theme-text); border-color: var(--series-theme); }
+
+/* Hâller: dairenin İÇİNDEN geçen çapraz bağlar (kirişler). Ardışık basamak
+   çizgilerinden ince ve sönük olmaları KASITLI -- yol hâlâ birincil, bu bağlar
+   onun altında duran ikinci bir dokuyu gösteriyor. Türe göre renk/desen:
+   gerilim = sırayla çelişen bağ (kesikli), doğurur = biri ötekini açan,
+   yankı = aynı hamlenin iki ayrı yerde tekrarı. */
+.hal-chord { fill: none; stroke-linecap: round; pointer-events: stroke; cursor: pointer; }
+.hal-chord--gerilim { stroke-dasharray: 5 4; }
+.hal-chord--dogurur { stroke-dasharray: none; }
+.hal-chord--yanki { stroke-dasharray: 2 5; }
+.hal-chord-hit { fill: none; stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: pointer; }
+
+/* "Makamı ve Terki": Fütûhât'ta ayrıca bir terk bölümü olan makamların
+   çevresindeki ikinci, kesik halka -- kazanılıp sonra bırakılan basamak. */
+.hal-terk-ring { fill: none; stroke-dasharray: 3 5; pointer-events: none; }
+
+/* Sarmalın devam ettiğini gösteren hayalet iz (yalnız 3B'de görünür). */
+.hal-ghost { fill: none; pointer-events: none; }
 @media (max-width: 620px) { .esmaX-explore__txt { display: none; } .esmaX-explore { padding: 0 9px; } }
 
 /* Onboarding (3 adım) */
