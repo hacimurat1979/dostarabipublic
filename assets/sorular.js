@@ -10,6 +10,13 @@
   // (radyal ışık + yavaş süzülen parçacıklar), üstüne gelince açılan mini bilgi
   // kartı, derinlik katmanı süzgeci (Yüzey/Derin/Çok Derin), odak modu ve sağ
   // altta bir minimap. Salt vanilla D3 (yeni bağımlılık yok — bkz. CLAUDE.md).
+  //
+  // Kademeli açılım: 46 sorunun hepsi aynı anda ekrana dökülmüyor. Açılışta
+  // sekiz kategori bir HALKA üzerinde, "En Temel Soru" ise halkanın merkezinde
+  // duruyor (daire ve merkez ilkesi). Bir kategoriye dokununca o kategorinin
+  // soru düğümleri halkanın DIŞINA doğru açılıyor -- düğümler kayboldu değil,
+  // sırasını bekliyor. Soru düğümleri, bağlantıları, atmosfer, derinlik
+  // süzgeci ve minimap eskisiyle aynı dili konuşuyor.
   // ============================================================================
 
   const I18n = window.DostI18n;
@@ -81,11 +88,17 @@
   }
   function catColor(d) { return muteColor(getVar(CATEGORY_COLOR_VAR[d.category.id] || "--series-theme")); }
 
+  // Halkanın merkezindeki kategori: tek sorusu olan "En Temel Soru".
+  const CENTER_CAT = "en-temel";
+
   // ---------------------------------------------------------------------------
   let sorularData = null, dataPromise = null;
   let categoryById = new Map(), questionIndex = new Map();
+  let catNodes = [], qNodes = [], relLinks = [];
+  let expandedCatId = null;
+  let ringR = 200, cx = 450, cy = 320;
   let nodes = [], nodeById = new Map(), links = [];
-  let zoomLayer, bgLayer, linkLayer, particleLayer, nodeLayer, centerLayer, defs;
+  let zoomLayer, bgLayer, ringLayer, linkLayer, particleLayer, nodeLayer, centerLayer, defs;
   let zoomBehavior = null, simulation = null, currentK = 1;
   let currentDetailQuestion = null, hoveredId = null, focusId = null;
   let width = 900, height = 640;
@@ -115,9 +128,10 @@
     return dataPromise;
   }
 
-  function labelFor(q) {
+  function labelFor(q, max) {
     const label = I18n.pick3(q.question);
-    return label.length > 30 ? label.slice(0, 29) + "…" : label;
+    const lim = max || 30;
+    return label.length > lim ? label.slice(0, lim - 1) + "…" : label;
   }
 
   function buildGraphData(data) {
@@ -151,10 +165,46 @@
     const sorted = items.slice().sort((a, b) => b.surfaceScore - a.surfaceScore);
     const third = Math.ceil(sorted.length / 3);
     sorted.forEach((n, i) => { n.depth = i < third ? 1 : i < 2 * third ? 2 : 3; });
-    return { nodes: items, links: relLinks };
+
+    // Kategori düğümleri: biri merkezde, kalanlar halka üzerinde.
+    const ringCats = cats.filter((c) => c.id !== CENTER_CAT);
+    const catItems = cats.map((cat) => {
+      const ri = ringCats.indexOf(cat);
+      return {
+        id: "cat:" + cat.id, isCat: true, category: cat,
+        isCenterCat: cat.id === CENTER_CAT,
+        ringAngle: ri < 0 ? 0 : -Math.PI / 2 + (ri / ringCats.length) * Math.PI * 2,
+        phase: Math.random() * 6.28,
+        degree: cat.questions.length,
+      };
+    });
+    return { catNodes: catItems, qNodes: items, links: relLinks };
   }
 
-  function radiusFor(d) { return 8.5 + Math.min(6, d.degree) * 1.5; }
+  function radiusFor(d) {
+    if (d.isCat) return (d.isCenterCat ? 15 : 13) + Math.min(7, d.category.questions.length) * 1.15;
+    return 8.5 + Math.min(6, d.degree) * 1.5;
+  }
+
+  // --- Kademeli açılım: hangi düğümler şu an sahnede? -------------------------
+  function visibleQuestions() {
+    if (!expandedCatId) return [];
+    return qNodes.filter((n) => n.category.id === expandedCatId);
+  }
+  function activeNodes() { return catNodes.concat(visibleQuestions()); }
+  function activeLinks() {
+    const vis = new Set(visibleQuestions().map((n) => n.id));
+    // sap: kategori -> kendi sorusu
+    const stems = visibleQuestions().map((n) => ({
+      id: "stem:" + n.id, kind: "stem", from: "cat:" + n.category.id, to: n.id,
+      source: "cat:" + n.category.id, target: n.id,
+    }));
+    // ilişki: yalnız iki ucu da sahnede olanlar (ötekiler detay panelinde
+    // "İlişkili Sorular" olarak duruyor, kaybolmuyorlar)
+    const rels = relLinks.filter((r) => vis.has(r.from) && vis.has(r.to))
+      .map((r) => Object.assign({}, r, { id: "rel:" + r.from + ">" + r.to, kind: "rel", source: r.from, target: r.to }));
+    return stems.concat(rels);
+  }
 
   function relationsOf(id) { return (sorularData.relations || []).filter((r) => r.from === id || r.to === id); }
   function conceptCount(q) { return q.link ? 1 : 0; }
@@ -181,22 +231,31 @@
 
     zoomLayer = svg.append("g").attr("class", "sorular-canvas");
     bgLayer = zoomLayer.append("g").attr("class", "sorular-bg");
+    // Halka kendi katmanında: .sorular-bg circle kuralı (dolgu = text-muted)
+    // atmosfer noktaları için; halkanın içi dolu görünmesin.
+    ringLayer = zoomLayer.append("g").attr("class", "sorular-ringlayer");
     linkLayer = zoomLayer.append("g").attr("class", "sorular-links");
     particleLayer = zoomLayer.append("g").attr("class", "sorular-particles");
     centerLayer = zoomLayer.append("g").attr("class", "sorular-center").attr("aria-hidden", "true");
     nodeLayer = zoomLayer.append("g").attr("class", "sorular-nodes");
 
+    // kategorilerin üzerinde durduğu sessiz halka
+    ringLayer.append("circle").attr("class", "sorular-ring-path");
+
     // merkezde nefes alan sessiz işaret (daire/merkez ilkesi)
     centerLayer.append("circle").attr("class", "node-halo").attr("r", 34);
-    centerLayer.append("circle").attr("class", "sorular-center__core").attr("r", 5);
 
     zoomBehavior = GU.createZoomBehavior(svg, zoomLayer, [0.4, 3], (event) => !event.target.closest(".node"));
     svgNode.addEventListener("wheel", () => { setTimeout(() => { currentK = d3.zoomTransform(svgNode).k; }, 0); }, { passive: true });
 
     const rc = document.getElementById("sorular-recenter");
-    if (rc) rc.onclick = () => { clearFocus(); fitView(true); };
-    if (backBtn) { backBtn.hidden = !currentDetailQuestion; backBtn.onclick = () => showAllQuestionsList(); }
-    svg.on("click", () => { if (focusId) { clearFocus(); } });
+    if (rc) rc.onclick = () => { showAllQuestionsList(); };
+    if (backBtn) { backBtn.hidden = !currentDetailQuestion && !expandedCatId; backBtn.onclick = () => showAllQuestionsList(); }
+    // Boşluğa tıklamak: önce odağı bırakır, sonra açık kategoriyi kapatır.
+    svg.on("click", () => {
+      if (focusId) { clearFocus(); return; }
+      if (expandedCatId) collapseCategory(true);
+    });
 
     buildControls();
     buildMinimap();
@@ -278,41 +337,100 @@
 
   // ---------------------------------------------------------------------------
   function layoutSeed() {
-    const cx = width / 2, cy = height / 2;
-    const layoutRadius = Math.max(150, Math.min(width, height) / 2 - 60);
-    nodes.forEach((n) => {
-      const r = layoutRadius * (0.35 + 0.65 * ((n.sectorIndex + 1) / (categoryById.get(n.category.id).questions.length + 1)));
-      n.x = cx + r * Math.cos(n.sectorAngle);
-      n.y = cy + r * Math.sin(n.sectorAngle);
-      n.tx = cx + layoutRadius * 0.6 * Math.cos(n.sectorAngle);
-      n.ty = cy + layoutRadius * 0.6 * Math.sin(n.sectorAngle);
+    cx = width / 2; cy = height / 2;
+    // Halka: açılan sorulara dışarıda yer kalsın diye ekranın yarısı kadar.
+    ringR = Math.max(96, Math.min(width, height) / 2 - (Math.min(width, height) < 620 ? 118 : 150));
+    catNodes.forEach((n) => {
+      if (n.isCenterCat) { n.x = cx; n.y = cy; }
+      else { n.x = cx + ringR * Math.cos(n.ringAngle); n.y = cy + ringR * Math.sin(n.ringAngle); }
+      n.fx = n.x; n.fy = n.y;   // halka sabit dursun (soru düğümleri serbest)
     });
     centerLayer.attr("transform", `translate(${cx},${cy})`);
   }
 
+  // Açılan kategorinin soruları, kategorinin bulunduğu yönde bir yelpaze
+  // hâlinde halkanın DIŞINA yerleşir. (Merkezdeki kategori için "dışarısı"
+  // halkanın içi olur; orası boş.)
+  function assignBloomTargets() {
+    const vis = visibleQuestions();
+    if (!vis.length) return;
+    const cat = nodeById.get("cat:" + expandedCatId);
+    if (!cat) return;
+    const isMobile = Math.min(width, height) < 620;
+    const outward = isMobile ? 86 : 124;
+    const R = cat.isCenterCat ? Math.max(70, ringR * 0.44) : ringR + outward;
+    const baseA = cat.isCenterCat ? -Math.PI / 2 : cat.ringAngle;
+    // Dörtten fazla soru varsa tek bir geniş yay komşu kategorilerin üstüne
+    // taşıyor; onun yerine iki sıraya (yakın/uzak) diziyoruz -- yelpaze dar
+    // kalıyor, kendi kolunun içinde duruyor.
+    const rows = vis.length > 4 ? 2 : 1;
+    const rowGap = isMobile ? 56 : 76;
+    const perRow = [[], []];
+    vis.forEach((n, i) => perRow[rows === 2 ? i % 2 : 0].push(n));
+    perRow.forEach((row, ri) => {
+      const rowR = R + ri * rowGap;
+      const spread = cat.isCenterCat
+        ? Math.PI * 1.5
+        : Math.min(1.25, 0.36 * Math.max(1, row.length - 1) + 0.3);
+      row.forEach((n, i) => {
+        const t = row.length === 1 ? 0 : (i / (row.length - 1)) - 0.5;
+        n.bloomAngle = baseA + t * spread;
+        n.targetR = rowR;
+      });
+    });
+    vis.forEach((n) => {
+      const a = n.bloomAngle, R2 = n.targetR;
+      n.tx = cx + R2 * Math.cos(a);
+      n.ty = cy + R2 * Math.sin(a);
+      // Açılış: soru, kategorinin üstünden doğup dışarı doğru açılsın.
+      if (!n.bloomed) {
+        n.bloomed = true;
+        n.x = cat.x + (Math.random() - 0.5) * 8;
+        n.y = cat.y + (Math.random() - 0.5) * 8;
+        n.vx = 0; n.vy = 0;
+      }
+    });
+  }
+
   function buildSim() {
     if (simulation) simulation.stop();
+    nodes = activeNodes();
+    links = activeLinks();
+    assignBloomTargets();
     // #1 — daha fazla nefes: çarpışma mesafesi ve itim mobilde/masaüstünde farklı.
     const isMobile = Math.min(width, height) < 620;
     simulation = d3.forceSimulation(nodes)
       .alphaDecay(0.045)
-      .force("link", d3.forceLink(links).id((d) => d.id).distance(isMobile ? 82 : 108).strength(0.32))
-      .force("charge", d3.forceManyBody().strength(isMobile ? -95 : -140))
-      .force("x", d3.forceX((d) => d.tx).strength(0.05))
-      .force("y", d3.forceY((d) => d.ty).strength(0.05))
-      .force("collide", d3.forceCollide().radius((d) => radiusFor(d) + (isMobile ? 20 : 26)).strength(0.92));
+      .force("link", d3.forceLink(links).id((d) => d.id)
+        .distance((l) => (l.kind === "stem" ? (isMobile ? 78 : 104) : (isMobile ? 70 : 92)))
+        .strength((l) => (l.kind === "stem" ? 0.45 : 0.12)))
+      .force("charge", d3.forceManyBody().strength((d) => (d.isCat ? 0 : (isMobile ? -95 : -150))))
+      // soruları halkanın dışındaki kendi yayına oturt
+      .force("radial", d3.forceRadial((d) => d.targetR || ringR, cx, cy).strength((d) => (d.isCat ? 0 : 0.32)))
+      .force("x", d3.forceX((d) => d.tx).strength((d) => (d.isCat ? 0 : 0.1)))
+      .force("y", d3.forceY((d) => d.ty).strength((d) => (d.isCat ? 0 : 0.1)))
+      .force("collide", d3.forceCollide().radius((d) => radiusFor(d) + (d.isCat ? 22 : (isMobile ? 24 : 34))).strength(0.92));
     if (reduceMotion) { simulation.alphaDecay(0.2); for (let i = 0; i < 220; i++) simulation.tick(); simulation.stop(); }
-    let settledOnce = false;
-    simulation.on("end", () => { if (settledOnce) return; settledOnce = true; if (!focusId && !currentDetailQuestion) fitView(true); });
+    simulation.on("end", () => {
+      const focused = focusId ? nodeById.get(focusId) : null;
+      if (focused && nodes.indexOf(focused) >= 0) panTo(focused);
+      else if (!currentDetailQuestion) fitView(true);
+    });
+    initEdgeParticles();
   }
 
   function initAtmosphere() {
     bgParticles = [];
     if (reduceMotion) return;
-    const cx = width / 2, cy = height / 2;
     const rmax = Math.min(width, height) * 0.62;
     for (let i = 0; i < 30; i++) bgParticles.push({ a: Math.random() * 6.28, r: 30 + Math.random() * rmax, sp: (Math.random() - 0.5) * 0.00006, rad: 0.6 + Math.random() * 1.5, cx, cy });
+  }
+
+  // Işık akışı parçacıkları sahnedeki bağlantılara bağlı; kategori açılıp
+  // kapandıkça bağlantı kümesi değiştiği için yeniden kuruluyor.
+  function initEdgeParticles() {
     edgeParticles = [];
+    if (reduceMotion) return;
     links.forEach((l) => { edgeParticles.push({ l, t: Math.random(), sp: 0.05 + Math.random() * 0.05 }); });
   }
 
@@ -348,6 +466,11 @@
   function ensureFrame() { if (rafId == null) { lastTs = performance.now(); rafId = requestAnimationFrame(frame); } }
   function frame(ts) {
     rafId = null;
+    // Görünüm ekranda değilse (başka bölüme geçilmiş ya da sekme arkada)
+    // döngüyü tamamen durdur. Aksi hâlde bu tam-render döngüsü sonsuza kadar
+    // 60fps sürüyor ve sayfanın geri kalanını -- metin kutusuna yazmayı bile --
+    // yavaşlatıyordu (bkz. GU.isViewActive).
+    if (!GU.isViewActive(wrapEl)) return;
     const dt = Math.min(64, ts - lastTs); lastTs = ts;
     if (!reduceMotion) {
       bgParticles.forEach((p) => { p.a += p.sp * dt; });
@@ -370,7 +493,7 @@
     return { anchor, set };
   }
 
-  function depthVisible(d) { return d.depth <= depthMax; }
+  function depthVisible(d) { return !!d.isCat || d.depth <= depthMax; }
 
   function render(ts) {
     if (!nodeLayer) return;
@@ -386,8 +509,11 @@
       bg.exit().remove();
     }
 
+    // --- kategori halkası ---
+    ringLayer.select("circle.sorular-ring-path").attr("cx", cx).attr("cy", cy).attr("r", ringR);
+
     // --- bağlantılar (bezier, düşük opaklık) (#3) ---
-    const lk = linkLayer.selectAll("path.sorular-link").data(links, (l) => l.from + ">" + l.to);
+    const lk = linkLayer.selectAll("path.sorular-link").data(links, (l) => l.id);
     lk.enter().append("path").attr("class", "sorular-link").attr("fill", "none").merge(lk)
       .each(function (l) {
         const p = d3.select(this);
@@ -404,7 +530,7 @@
     // --- aktif bağlantılarda ışık akışı (#3 "ışık akışı") ---
     if (!reduceMotion && act) {
       const vis = edgeParticles.filter((p) => act.set.has(p.l.source.id) && act.set.has(p.l.target.id));
-      const ps = particleLayer.selectAll("circle.sorular-flow").data(vis, (d) => d.l.from + ">" + d.l.to);
+      const ps = particleLayer.selectAll("circle.sorular-flow").data(vis, (d) => d.l.id);
       ps.enter().append("circle").attr("class", "sorular-flow").attr("r", 1.6).merge(ps)
         .each(function (p) { const [x, y] = pointOnLink(p.l, p.t); d3.select(this).attr("cx", x).attr("cy", y).style("fill", catColor(p.l.source)); });
       ps.exit().remove();
@@ -413,11 +539,12 @@
     // --- düğümler ---
     const gsel = nodeLayer.selectAll("g.sorular-node").data(nodes, (d) => d.id);
     const enter = gsel.enter().append("g")
-      .attr("class", "node sorular-node")
-      .attr("tabindex", 0).attr("role", "button").attr("aria-label", (d) => I18n.pick3(d.question.question))
-      .call(GU.createDragBehavior(simulation))
-      .on("click", (e, d) => { e.stopPropagation(); openQuestion(d); })
-      .on("keydown", (e, d) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); openQuestion(d); } })
+      .attr("class", (d) => "node sorular-node" + (d.isCat ? " sorular-node--cat" : ""))
+      .attr("tabindex", 0).attr("role", "button")
+      .attr("aria-label", (d) => (d.isCat ? I18n.pick3(d.category.name) : I18n.pick3(d.question.question)))
+      .call(GU.createDragBehavior(simulation, (d) => d.isCat))
+      .on("click", (e, d) => { e.stopPropagation(); if (d.isCat) toggleCategory(d.category.id); else openQuestion(d); })
+      .on("keydown", (e, d) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); if (d.isCat) toggleCategory(d.category.id); else openQuestion(d); } })
       .on("pointerenter", (e, d) => { setHover(d.id); showTooltip(d, e); })
       .on("pointermove", (e) => moveTooltip(e))
       .on("pointerleave", () => { setHover(null); hideTooltip(); })
@@ -437,10 +564,14 @@
       const breath = reduceMotion ? 1 : (1 + 0.02 * Math.sin(ts / 2800 + d.phase));
       let scale = breath;
       if (isHover) scale *= 1.08;               // hover 1.08x (#2/#15)
+      if (d.isCat && expandedCatId === d.category.id) scale *= 1.1;
       const r = radiusFor(d) * scale;
       const dx = reduceMotion ? 0 : 1.2 * Math.sin(ts / 3300 + d.phase);
       const dy = reduceMotion ? 0 : 1.2 * Math.cos(ts / 3800 + d.phase);
       let op = depthVisible(d) ? 1 : 0.12;       // derinlik süzgeci (#6)
+      // Bir kategori açıkken diğerleri geri çekilir; halka görünür kalır ama
+      // dikkat açılan kolda toplanır.
+      if (d.isCat && expandedCatId && expandedCatId !== d.category.id) op *= 0.42;
       if (act) { if (!act.set.has(d.id)) op *= 0.28; }  // focus/hover (#19)
       g.style("opacity", op).style("display", op < 0.02 ? "none" : null)
         .attr("transform", `translate(${(d.x + dx).toFixed(1)},${(d.y + dy).toFixed(1)})`);
@@ -460,10 +591,17 @@
       g.select(".sorular-sphere").attr("r", r);
       g.select(".sorular-sheen").attr("r", r);
       const lbl = g.select(".sorular-label");
-      const showLabel = isHover || isActive || currentK >= 1.15 || (act && act.set.has(d.id));
-      lbl.attr("y", r + 13).style("display", showLabel ? null : "none")
+      // Kategori etiketi hep açık (haritanın okunur kalması için); soru
+      // etiketi eskisi gibi üstüne gelince / yakınlaşınca / seçiliyken.
+      const inOpenArm = !d.isCat && expandedCatId === d.category.id;
+      const showLabel = d.isCat || inOpenArm || isHover || isActive || currentK >= 1.15 || (act && act.set.has(d.id));
+      // Açılan koldaki soruların etiketi merkezden DIŞARI bakan tarafa yazılır;
+      // yoksa iki sıralı yelpazede dış sıranın etiketi iç sıranın üstüne düşüyor.
+      const labelY = inOpenArm && (d.y - cy) < 0 ? -(r + 7) : r + 13;
+      lbl.attr("y", labelY).style("display", showLabel ? null : "none")
         .classed("sorular-label--strong", isHover || isActive)
-        .text(labelFor(d.question));
+        .classed("sorular-label--cat", !!d.isCat)
+        .text(d.isCat ? I18n.pick3(d.category.name) : labelFor(d.question, inOpenArm ? 20 : 30));
     });
   }
 
@@ -471,15 +609,40 @@
   function setHover(id) { if (hoveredId === id) return; hoveredId = id; ensureFrame(); }
   function clearFocus() { focusId = null; ensureFrame(); }
 
+  // Detay paneli grafiğin SAĞINI örter (sabit ~420px); sığdırma bunu hesaba
+  // katmazsa haritanın sağ yarısı panelin arkasında kalıyor. Mobilde panel bir
+  // yan sütun değil, alttan gelen tam genişlikte bir sayfa: orada daraltmıyoruz.
+  function visibleWidth() {
+    if (!detailPanel || detailPanel.hidden) return width;
+    const sr = svgNode.getBoundingClientRect();
+    if (!sr.width) return width;
+    const pr = detailPanel.getBoundingClientRect();
+    if (!pr.width || pr.left >= sr.right) return width;
+    const visiblePx = pr.left - sr.left;
+    if (visiblePx < sr.width * 0.45) return width;
+    return width * (visiblePx / sr.width);
+  }
+
   function fitView(animate) {
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
-    nodes.forEach((d) => { if (!depthVisible(d)) return; x0 = Math.min(x0, d.x); x1 = Math.max(x1, d.x); y0 = Math.min(y0, d.y); y1 = Math.max(y1, d.y); });
-    if (x0 === 1e9) nodes.forEach((d) => { x0 = Math.min(x0, d.x); x1 = Math.max(x1, d.x); y0 = Math.min(y0, d.y); y1 = Math.max(y1, d.y); });
-    x0 -= 60; x1 += 60; y0 -= 52; y1 += 52;
+    // Hem şimdiki hem HEDEF konumu hesaba katıyoruz: bir kategori yeni
+    // açıldığında sorular henüz kategorinin üstünde duruyor; sadece o ana
+    // bakarsak açılan yelpaze çerçevenin dışına taşıyor.
+    const bound = (d) => {
+      const xs = [d.x], ys = [d.y];
+      if (!d.isCat && d.tx != null) { xs.push(d.tx); ys.push(d.ty); }
+      xs.forEach((v) => { x0 = Math.min(x0, v); x1 = Math.max(x1, v); });
+      ys.forEach((v) => { y0 = Math.min(y0, v); y1 = Math.max(y1, v); });
+    };
+    nodes.forEach((d) => { if (depthVisible(d)) bound(d); });
+    if (x0 === 1e9) nodes.forEach(bound);
+    // Kategori etiketleri kürenin altına yazılıyor; kenardakiler için pay bırak.
+    x0 -= 78; x1 += 78; y0 -= 56; y1 += 62;
     const bw = Math.max(1, x1 - x0), bh = Math.max(1, y1 - y0);
+    const vw = visibleWidth();
     const [mn, mx] = zoomBehavior.scaleExtent();
-    const k = Math.max(mn, Math.min(mx, Math.min(width / bw, height / bh)));
-    const t = d3.zoomIdentity.translate(width / 2 - k * (x0 + bw / 2), height / 2 - k * (y0 + bh / 2)).scale(k);
+    const k = Math.max(mn, Math.min(mx, Math.min(vw / bw, height / bh)));
+    const t = d3.zoomIdentity.translate(vw / 2 - k * (x0 + bw / 2), height / 2 - k * (y0 + bh / 2)).scale(k);
     const sel = (animate && !reduceMotion) ? svg.transition().duration(500).ease(d3.easeCubicInOut) : svg;
     sel.call(zoomBehavior.transform, t);
     currentK = k;
@@ -497,6 +660,17 @@
   //     okuma süresi. ---
   function showTooltip(d, event) {
     if (!tooltip) return;
+    if (d.isCat) {
+      const n = d.category.questions.length;
+      const open = expandedCatId === d.category.id;
+      tooltip.innerHTML =
+        `<div class="node-hover-tip__title">${I18n.pick3(d.category.name)}</div>` +
+        `<div class="node-hover-tip__meta">${n} ${tt({ tr: "soru", en: "questions", pt: "perguntas" })} · ` +
+        (open ? tt({ tr: "kapatmak için tıkla", en: "click to close", pt: "clique para fechar" })
+              : tt({ tr: "açmak için tıkla", en: "click to open", pt: "clique para abrir" })) + `</div>`;
+      tooltip.hidden = false; moveTooltip(event);
+      return;
+    }
     const q = d.question;
     const answer = I18n.pick3(q.answer) || "";
     const shortDesc = answer.replace(/<[^>]+>/g, "").split(/(?<=[.!?])\s/)[0].slice(0, 120);
@@ -546,10 +720,60 @@
     return `<p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "İlişkili Sorular", en: "Related Questions", pt: "Perguntas Relacionadas" })}</p><div class="sorular-question-list">${rows}</div>`;
   }
 
-  function showAllQuestionsList() {
+  // --- Kademeli açılım: kategori aç / kapat ----------------------------------
+  function rebuildScene(animate) {
+    buildSim();
+    render(performance.now());
+    fitView(animate !== false);
+    ensureFrame();
+  }
+
+  function expandCategory(catId, animate) {
+    if (expandedCatId === catId) return;
+    // Önceki kategorinin soruları kapanınca bir dahaki açılışta yeniden
+    // "doğsunlar" diye bloom bayrağını sıfırlıyoruz.
+    qNodes.forEach((n) => { if (n.category.id !== catId) n.bloomed = false; });
+    expandedCatId = catId;
+    rebuildScene(animate);
+  }
+
+  function collapseCategory(animate) {
+    if (!expandedCatId) return;
+    qNodes.forEach((n) => { n.bloomed = false; });
+    expandedCatId = null;
+    focusId = null;
+    rebuildScene(animate);
+  }
+
+  function toggleCategory(catId) {
+    if (expandedCatId === catId) { collapseCategory(true); showAllQuestionsList(true); return; }
+    expandCategory(catId, true);
+    showCategoryList(catId);
+  }
+
+  function showCategoryList(catId) {
+    const cat = categoryById.get(catId);
+    if (!cat) return;
+    currentDetailQuestion = null;
+    if (backBtn) backBtn.hidden = false;
+    const rows = cat.questions.map((q) => `
+      <button class="sorular-question-row" type="button" data-id="${q.id}"><span>${I18n.pick3(q.question)}</span><span class="sorular-question-row__arrow" aria-hidden="true">→</span></button>`).join("");
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow"><button class="sorular-back-link" type="button">← ${tt({ tr: "Bütün Sorular", en: "All Questions", pt: "Todas as Perguntas" })}</button></p>
+      <h2 class="detail-title">${I18n.pick3(cat.name)}</h2>
+      <p class="sorular-category-tag">${cat.questions.length} ${tt({ tr: "soru", en: "questions", pt: "perguntas" })}</p>
+      <div class="sorular-question-list">${rows}</div>`;
+    detailContent.querySelector(".sorular-back-link").addEventListener("click", () => showAllQuestionsList());
+    wireQuestionRows();
+    detailPanel.hidden = false;
+    ensureFrame();
+  }
+
+  function showAllQuestionsList(keepScene) {
     currentDetailQuestion = null; focusId = null;
     if (backBtn) backBtn.hidden = true;
-    if (nodes.length) fitView(true);
+    if (expandedCatId && !keepScene) collapseCategory(true);
+    else if (nodes.length) fitView(true);
     const introBlock = `<div class="detail-block detail-block--ibnarabi"><p>${I18n.pick3(sorularData.intro)}</p></div>`;
     const sections = sorularData.categories.map((cat) => {
       const rows = cat.questions.map((q) => `
@@ -575,6 +799,16 @@
   }
 
   function openQuestion(d) {
+    const entry = questionIndex.get(d.id);
+    // Soru başka bir kategorideyse (ör. "İlişkili Sorular"dan gelindiyse) önce
+    // o kol açılır; düğüm sahneye çıkınca simülasyon yerleşince ona pan edilir.
+    if (entry && expandedCatId !== entry.category.id) {
+      expandCategory(entry.category.id, true);
+      focusId = d.id;
+      flashId = d.id; flashStart = performance.now();
+      showQuestionDetail(d.question);
+      return;
+    }
     focusId = d.id;
     flashId = d.id; flashStart = performance.now();
     panTo(d);
@@ -603,13 +837,11 @@
   // ---------------------------------------------------------------------------
   function buildGraph(data) {
     const built = buildGraphData(data);
-    nodes = built.nodes; links = built.links;
-    nodeById = new Map(nodes.map((n) => [n.id, n]));
-    links.forEach((l) => { l.source = l.from; l.target = l.to; });
+    catNodes = built.catNodes; qNodes = built.qNodes; relLinks = built.links;
+    nodeById = new Map(catNodes.concat(qNodes).map((n) => [n.id, n]));
     buildDom();
     layoutSeed();
     buildSim();
-    // link kaynak/hedefleri forceLink tarafından obje referanslarına çevrildi
     initAtmosphere();
     render(performance.now());
     fitView(false);
@@ -618,11 +850,15 @@
   }
 
   function onResize() {
-    if (!nodes.length || wrapEl.hidden) return;
+    if (!catNodes.length || wrapEl.hidden) return;
     width = svgNode.clientWidth || 900; height = svgNode.clientHeight || 640;
     svg.attr("viewBox", `0 0 ${width} ${height}`);
+    layoutSeed();
+    assignBloomTargets();
+    if (simulation) simulation.alpha(0.35).restart();
     render(performance.now());
     fitView(false);
+    ensureFrame();
   }
 
   function relabel() {
@@ -630,13 +866,14 @@
     muteCache.clear();
     render(performance.now());
     if (currentDetailQuestion) showQuestionDetail(currentDetailQuestion);
-    else if (detailPanel && !detailPanel.hidden) showAllQuestionsList();
+    else if (expandedCatId) showCategoryList(expandedCatId);
+    else if (detailPanel && !detailPanel.hidden) showAllQuestionsList(true);
   }
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
     if (wrapEl.hidden) return;
-    if (!currentDetailQuestion) return;
+    if (!currentDetailQuestion && !expandedCatId) return;
     showAllQuestionsList();
   });
 
@@ -644,18 +881,21 @@
   svgNode.addEventListener("pointerdown", () => { dragging = true; ensureFrame(); });
   window.addEventListener("pointerup", () => { dragging = false; });
 
+  // Sekme arkaya alınıp geri gelindiğinde döngü yeniden uyansın.
+  GU.onViewWake(() => { if (!wrapEl.hidden) ensureFrame(); });
+
   window.__sorularApp = {
     activate() {
       fetchData().then((data) => {
         if (!data) return;
-        if (!nodes.length) { buildGraph(data); showAllQuestionsList(); }
+        if (!catNodes.length) { buildGraph(data); showAllQuestionsList(true); }
         else ensureFrame();
       });
     },
     goToNode(id) {
       fetchData().then((data) => {
         if (!data) return;
-        if (!nodes.length) buildGraph(data);
+        if (!catNodes.length) buildGraph(data);
         if (questionIndex.has(id)) { const node = nodeById.get(id); if (node) openQuestion(node); else showQuestionDetail(questionIndex.get(id).question); }
         else showAllQuestionsList();
       });
