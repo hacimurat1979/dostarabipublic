@@ -5779,6 +5779,240 @@ body.share-stage-open { overflow: hidden; }
 }
 
 /* ===========================================================================
+   Duruş taraması (assets/durus-kontrol.js) — YALNIZ @revise kipinde görünür,
+   yalnız önizlemede yayınlanır. Sarı, çünkü bir hata değil bir uyarı:
+   "buraya bir bak" diyor, "burası yanlış" demiyor.
+   =========================================================================== */
+.durus-rozet-grup {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 0.35em;
+  vertical-align: baseline;
+  user-select: none;
+}
+.durus-rozet {
+  border: 0;
+  background: none;
+  padding: 0 1px;
+  font-size: 0.82em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.durus-rozet:hover, .durus-rozet:focus-visible { opacity: 1; transform: scale(1.15); }
+.durus-rozet:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; }
+/* Kural seviyesi metnin kendisini de hafifçe boyuyor; gözden-geçir
+   seviyesi boyamıyor -- yanlış-pozitif payı yüksek olduğu için sayfayı
+   sarıya boğmasın. */
+.durus-isaretli--kural {
+  background: color-mix(in srgb, var(--helix-gold) 12%, transparent);
+  border-radius: 4px;
+  box-shadow: -4px 0 0 0 color-mix(in srgb, var(--helix-gold) 55%, transparent);
+}
+
+.durus-kutu {
+  position: absolute;
+  z-index: 1200;
+  width: min(340px, calc(100vw - 24px));
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--gridline);
+  border-left: 3px solid var(--helix-gold);
+  border-radius: 8px;
+  background: var(--surface-1);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.18);
+  text-align: left;
+}
+.durus-kutu p { margin: 0 0 0.45rem; }
+.durus-kutu__ad { font-weight: 600; color: var(--text-primary); font-size: 0.92rem; }
+.durus-kutu__sev {
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--gridline);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.durus-kutu__es span {
+  display: inline-block;
+  margin: 0 0.25rem 0.25rem 0;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--helix-gold) 22%, transparent);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+.durus-kutu__neden, .durus-kutu__yerine {
+  color: var(--text-secondary);
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+.durus-kutu__alt { display: flex; gap: 0.4rem; margin-top: 0.55rem; }
+.durus-kutu__alt button {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--gridline);
+  border-radius: 6px;
+  background: var(--page-plane);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.durus-kutu__alt button:hover { border-color: var(--accent-interactive); color: var(--text-primary); }
+
+.durus-cip {
+  position: fixed;
+  /* Sol alt: düzenleme paneli sağ altta ve menüsü açılınca yukarı doğru
+     büyüyor; sayacı sağa koyduğumuzda menünün altında kalıyordu. */
+  left: 14px;
+  bottom: 18px;
+  z-index: 1100;
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--gridline);
+  border-radius: 999px;
+  background: var(--surface-1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+}
+.durus-cip button {
+  border: 0;
+  background: none;
+  padding: 0.42rem 0.8rem;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.durus-cip button:hover { background: color-mix(in srgb, var(--helix-gold) 14%, transparent); }
+.durus-cip__sayac { display: flex; gap: 0.5rem; }
+.durus-cip__site { border-left: 1px solid var(--gridline) !important; }
+.durus-cip__k { color: var(--text-primary); font-weight: 600; }
+.durus-cip__temiz { color: var(--text-muted); }
+
+/* --- site geneli tarama paneli --- */
+.durus-site { position: fixed; inset: 0; z-index: 1300; }
+.durus-site__backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.42); }
+.durus-site__card {
+  position: absolute;
+  inset: 4vh auto 4vh 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  width: min(760px, calc(100vw - 24px));
+  border: 1px solid var(--gridline);
+  border-radius: 14px;
+  background: var(--surface-1);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+.durus-site__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--gridline);
+}
+.durus-site__title { margin: 0; font-weight: 600; color: var(--text-primary); }
+.durus-site__title span {
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--gridline);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.durus-site__close {
+  border: 0; background: none; cursor: pointer;
+  color: var(--text-secondary); font-size: 1.4rem; line-height: 1; padding: 0 0.2rem;
+}
+.durus-site__body { padding: 0.9rem 1rem 1.2rem; overflow-y: auto; }
+.durus-site__yukleniyor, .durus-site__temiz {
+  margin: 1.5rem 0; text-align: center; color: var(--text-secondary); font-size: 0.9rem;
+}
+.durus-site__ozet {
+  margin: 0 0 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--gridline);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.durus-site__grup { margin-bottom: 1.4rem; }
+.durus-site__grup h3 {
+  margin: 0 0 0.2rem; font-size: 0.98rem; color: var(--text-primary);
+}
+.durus-site__grup h3 span {
+  margin-left: 0.35rem; padding: 0.05rem 0.45rem; border-radius: 999px;
+  background: var(--gridline); color: var(--text-secondary);
+  font-size: 0.74rem; font-weight: 500;
+}
+.durus-site__neden { margin: 0 0 0.7rem; color: var(--text-muted); font-size: 0.82rem; }
+.durus-site__satir {
+  margin-bottom: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border-left: 2px solid var(--helix-gold);
+  border-radius: 0 8px 8px 0;
+  background: var(--page-plane);
+}
+.durus-site__nere {
+  margin: 0 0 0.25rem; color: var(--text-muted);
+  font-size: 0.76rem; letter-spacing: 0.02em;
+}
+.durus-site__git { margin-left: 0.4rem; color: var(--accent-interactive); }
+.durus-site__parca {
+  margin: 0 0 0.4rem; color: var(--text-secondary);
+  font-size: 0.86rem; line-height: 1.6;
+}
+.durus-site__parca mark {
+  background: color-mix(in srgb, var(--helix-gold) 40%, transparent);
+  color: var(--text-primary); border-radius: 3px; padding: 0 2px;
+}
+.durus-site__sustur {
+  border: 1px solid var(--gridline); border-radius: 6px;
+  background: var(--surface-1); color: var(--text-secondary);
+  font-size: 0.76rem; padding: 0.2rem 0.5rem; cursor: pointer;
+}
+.durus-site__sustur:hover { border-color: var(--accent-interactive); color: var(--text-primary); }
+
+/* --- "buradayım": panelden gelince ilgili paragrafı göster --- */
+/* Doğru sayfayı açmak yetmiyordu, paragraf elle aranıyordu. Vurgu kısa
+   süreli ve kendiliğinden sönüyor: kalıcı bir işaret değil, bir işaret
+   etme hareketi. */
+.durus-vurgu {
+  border-radius: 6px;
+  animation: durus-vurgu-sonme 6s ease-out forwards;
+}
+@keyframes durus-vurgu-sonme {
+  0%, 55% {
+    background: color-mix(in srgb, var(--helix-gold) 22%, transparent);
+    box-shadow: -6px 0 0 0 var(--helix-gold);
+  }
+  100% { background: transparent; box-shadow: -6px 0 0 0 transparent; }
+}
+mark.durus-vurgu-es {
+  background: color-mix(in srgb, var(--helix-gold) 62%, transparent);
+  color: var(--text-primary);
+  border-radius: 3px;
+  padding: 0 2px;
+  animation: durus-es-sonme 6s ease-out forwards;
+}
+@keyframes durus-es-sonme {
+  0%, 55% { background: color-mix(in srgb, var(--helix-gold) 62%, transparent); }
+  100% { background: color-mix(in srgb, var(--helix-gold) 22%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .durus-vurgu, mark.durus-vurgu-es { animation: none; }
+  .durus-vurgu {
+    background: color-mix(in srgb, var(--helix-gold) 18%, transparent);
+    box-shadow: -6px 0 0 0 var(--helix-gold);
+  }
+}
+
+/* ===========================================================================
    Taşıyanlar görünümü — Fütûhât 13 ve 476'yı yan yana koyan çift sarmal.
    Renkler bilerek Füsûs sahnelerinin (.helix-scene__*) tokenlarıyla aynı:
    düğüm --helix-gold, iplik --gridline, zemin --surface-1. Yeni bir renk
