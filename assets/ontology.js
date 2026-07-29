@@ -181,6 +181,7 @@
     else if (currentMainView === "sorular") window.__sorularApp && window.__sorularApp.onLangChange();
     else if (currentMainView === "menziller") window.__menzillerApp && window.__menzillerApp.onLangChange();
     else if (currentMainView === "futuhat") window.__futuhatApp && window.__futuhatApp.onLangChange();
+    else if (currentMainView === "fusus") window.__fususApp && window.__fususApp.onLangChange();
     updateHeaderHeightVar();
   });
 
@@ -364,6 +365,7 @@
   const sorularBtn = document.getElementById("sorular-btn");
   const menzillerBtn = document.getElementById("menziller-btn");
   const futuhatBtn = document.getElementById("futuhat-btn");
+  const fususBtn = document.getElementById("fusus-btn");
   const hakkindaBtn = document.getElementById("hakkinda-btn");
   const ontologyWrap = document.getElementById("ontology-wrap");
   const esmaWrap = document.getElementById("esma-wrap");
@@ -374,6 +376,7 @@
   const sorularWrap = document.getElementById("sorular-wrap");
   const menzillerWrap = document.getElementById("menziller-wrap");
   const futuhatWrap = document.getElementById("futuhat-wrap");
+  const fususWrap = document.getElementById("fusus-wrap");
   const hakkindaWrap = document.getElementById("hakkinda-wrap");
 
   // Görsel olarak aktif sekmeyi işaretlemek (.btn-ghost--active) ekran
@@ -399,6 +402,7 @@
     markActiveNavButton(sorularBtn, view === "sorular");
     markActiveNavButton(menzillerBtn, view === "menziller");
     markActiveNavButton(futuhatBtn, view === "futuhat");
+    markActiveNavButton(fususBtn, view === "fusus");
     markActiveNavButton(hakkindaBtn, view === "hakkinda");
     if (ontologyWrap) ontologyWrap.hidden = view !== "ontology";
     if (esmaWrap) esmaWrap.hidden = view !== "esma";
@@ -409,6 +413,7 @@
     if (sorularWrap) sorularWrap.hidden = view !== "sorular";
     if (menzillerWrap) menzillerWrap.hidden = view !== "menziller";
     if (futuhatWrap) futuhatWrap.hidden = view !== "futuhat";
+    if (fususWrap) fususWrap.hidden = view !== "fusus";
     if (hakkindaWrap) hakkindaWrap.hidden = view !== "hakkinda";
     if (view === "hakkinda") wireHakkindaDiagrams();
     currentDetailNode = null;
@@ -439,6 +444,9 @@
     } else if (view === "futuhat") {
       currentDetailView = null;
       window.__futuhatApp && window.__futuhatApp.activate();
+    } else if (view === "fusus") {
+      currentDetailView = null;
+      window.__fususApp && window.__fususApp.activate();
     } else {
       currentDetailView = null;
     }
@@ -456,6 +464,7 @@
   if (sorularBtn) sorularBtn.addEventListener("click", () => { setMainView("sorular"); updateHash("sorular"); });
   if (menzillerBtn) menzillerBtn.addEventListener("click", () => { setMainView("menziller"); updateHash("menziller"); });
   if (futuhatBtn) futuhatBtn.addEventListener("click", () => { setMainView("futuhat"); updateHash("futuhat"); });
+  if (fususBtn) fususBtn.addEventListener("click", () => { setMainView("fusus"); updateHash("fusus"); });
   if (hakkindaBtn) hakkindaBtn.addEventListener("click", () => { setMainView("hakkinda"); updateHash("hakkinda"); });
 
   // --- Deep linking & cross-view navigation ---
@@ -549,6 +558,14 @@
         tr: "Fütûhât-ı Mekkiyye'nin cilt cilt, kısım kısım okunup anlaşılmaya çalışıldığı bölüm.",
         en: "A section reading Futuhat al-Makkiyya volume by volume, part by part.",
         pt: "Uma seção que lê o Futuhat al-Makkiyya volume a volume, parte a parte.",
+      },
+    },
+    fusus: {
+      title: { tr: "Füsûsu'l-Hikem", en: "Fusus al-Hikam", pt: "Fusus al-Hikam" },
+      desc: {
+        tr: "İbn Arabî'nin Füsûsu'l-Hikem'ini (Ahmed Avni Konuk şerhi) fass fass okuma denemesi; her fassın kendi sarmal şemalarıyla.",
+        en: "An attempt to read Ibn Arabi's Fusus al-Hikam (with Ahmed Avni Konuk's commentary) bezel by bezel, each with its own spiral diagrams.",
+        pt: "Uma tentativa de ler os Fusus al-Hikam de Ibn Arabi (com o comentário de Ahmed Avni Konuk) engaste a engaste, cada um com os seus próprios esquemas em espiral.",
       },
     },
     hakkinda: {
@@ -688,13 +705,18 @@
     window.__futuhatApp && window.__futuhatApp.activate(id);
   }
 
+  function goToFusus(id) {
+    setMainView("fusus");
+    window.__fususApp && window.__fususApp.activate(id);
+  }
+
   function goToHakkinda() {
     setMainView("hakkinda");
   }
 
   function parseHashAndGo() {
     const rawPath = location.pathname.slice(ROUTE_BASE.length) || "/";
-    const m = /^\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular|menziller|futuhat|hakkinda)(\/.*)?$/.exec(rawPath);
+    const m = /^\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular|menziller|futuhat|fusus|hakkinda)(\/.*)?$/.exec(rawPath);
     if (!m) return;
     const [, view, restRaw] = m;
     // id kısmı bir sonraki segment'e kadar bağıl-slaş içerebilir (örn.
@@ -714,6 +736,7 @@
     else if (view === "sorular") goToSorular(id);
     else if (view === "menziller") goToMenziller(id);
     else if (view === "futuhat") goToFutuhat(id);
+    else if (view === "fusus") goToFusus(id);
     else if (view === "hakkinda") goToHakkinda();
   }
 
@@ -747,6 +770,7 @@
       else if (view === "sorular") goToSorular(id);
       else if (view === "menziller") goToMenziller(id);
       else if (view === "futuhat") goToFutuhat(id);
+      else if (view === "fusus") goToFusus(id);
       else if (view === "hakkinda") goToHakkinda();
       updateHash(view, id);
     },
@@ -1606,8 +1630,18 @@
   // PERDE_DENETIM.md) sayfadaki 30 perde kaydının üç ayrı soruya cevap
   // verdiği görüldü. Tek eksene dizilebilen yalnız "perde nedir" grubu.
   const HALKA_R = [148, 96, 46];   // dış / orta / merkez yarıçapları
-  const HALKA_VB = 340;            // viewBox kenarı (kare)
+  const HALKA_VB = 340;            // çizim alanının kenarı (kare)
   const HALKA_BUYUK = 1.85;        // lightbox'taki büyütme katsayısı
+  // Etiket payı (2026-07-29). Dış halkanın etiketi merkezden 168 birim
+  // uzağa yazılıyor; 340'lık kare viewBox'ta bu tam kenara denk geliyordu
+  // ve en sağdaki etiket (`text-anchor:start`) kutunun DIŞINA taşıyordu.
+  // Eskiden bu `overflow: visible` ile "çözülmüştü" -- yani etiket
+  // kırpılmıyordu ama lightbox'ta yanındaki anahtar listesinin üstüne
+  // biniyordu (kullanıcı bildirimi: 417 ile 418 iç içe girmiş görünüyor).
+  // Doğru çözümü viewBox'a pay eklemek: etiketler kutunun İÇİNDE kalıyor,
+  // hiçbir şeyin üstüne binemiyor.
+  const HALKA_PAD_X = 46;
+  const HALKA_PAD_Y = 12;
 
   // buyuk=true: lightbox sürümü. Yalnız ölçek değişiyor -- etiketler yine
   // sadece bölüm numarası. Kayıt adlarını halkanın üstüne radyal olarak
@@ -1616,19 +1650,21 @@
   // tam bir anahtar listesi konuyor (halkaLightbox).
   function halkaSvg(halka, buyuk) {
     const k = buyuk ? HALKA_BUYUK : 1;
-    const VB = HALKA_VB * k;
-    const c = VB / 2;
+    const VBW = (HALKA_VB + 2 * HALKA_PAD_X) * k;
+    const VBH = (HALKA_VB + 2 * HALKA_PAD_Y) * k;
+    const cx = VBW / 2;
+    const cy = VBH / 2;
     const rings = halka.rings || [];
     let out = "";
 
     // Halkalar: dıştan içe, en dıştaki kesik çizgili (sınırı en belirsiz olan).
     rings.forEach((ring, ri) => {
       const cls = ri === 0 ? "sir-halka__ring sir-halka__ring--dashed" : "sir-halka__ring";
-      out += `<circle class="${cls}" cx="${c}" cy="${c}" r="${(HALKA_R[ri] * k).toFixed(1)}"/>`;
+      out += `<circle class="${cls}" cx="${cx}" cy="${cy}" r="${(HALKA_R[ri] * k).toFixed(1)}"/>`;
     });
 
     // Merkez dolgusu -- Zât/kök ile aynı ailede dursun diye vurgulu.
-    out += `<circle class="sir-halka__core" cx="${c}" cy="${c}" r="${((HALKA_R[2] - 6) * k).toFixed(1)}"/>`;
+    out += `<circle class="sir-halka__core" cx="${cx}" cy="${cy}" r="${((HALKA_R[2] - 6) * k).toFixed(1)}"/>`;
 
     rings.forEach((ring, ri) => {
       const r = HALKA_R[ri] * k;
@@ -1636,16 +1672,16 @@
       ring.entries.forEach((e, i) => {
         // -90°'den başlayıp saat yönünde: okuma üstten başlasın.
         const a = (-Math.PI / 2) + (i * 2 * Math.PI) / n;
-        const x = c + r * Math.cos(a);
-        const y = c + r * Math.sin(a);
+        const x = cx + r * Math.cos(a);
+        const y = cy + r * Math.sin(a);
         const label = I18n.pick3(e.label);
         const bolumAdi = tt({ tr: `${e.bolum}. Bölüm`, en: `Chapter ${e.bolum}`, pt: `Capítulo ${e.bolum}` });
         const title = `${bolumAdi} — ${label}\n${I18n.pick3(e.quote)}`;
         // Etiket, düğümün merkezden dışa doğru olan tarafına yazılır ki
         // iç halkaların etiketleri dış halkanın üstüne binmesin.
         const off = (ri === 0 ? 20 : 17) * k;
-        const lx = c + (r + off) * Math.cos(a);
-        const ly = c + (r + off) * Math.sin(a);
+        const lx = cx + (r + off) * Math.cos(a);
+        const ly = cy + (r + off) * Math.sin(a);
         const anchor = Math.abs(Math.cos(a)) < 0.25 ? "middle" : (Math.cos(a) > 0 ? "start" : "end");
         // Küçük sürüm bir <button> içinde duruyor; düğümleri de odaklanabilir
         // yapmak butonun içine etkileşimli içerik koymak olurdu (geçersiz HTML
@@ -1662,7 +1698,7 @@
     });
 
     const merkezLabel = rings[2] ? I18n.pick3(rings[2].label) : "";
-    return `<svg class="sir-halka__svg${buyuk ? " sir-halka__svg--buyuk" : ""}" viewBox="0 0 ${VB} ${VB}" role="list"
+    return `<svg class="sir-halka__svg${buyuk ? " sir-halka__svg--buyuk" : ""}" viewBox="0 0 ${VBW} ${VBH}" role="list"
                  aria-label="${escapeHtmlAttr(merkezLabel)}">${out}</svg>`;
   }
 
@@ -1679,7 +1715,12 @@
             <span class="sir-halka__key-label">${escapeHtmlAttr(I18n.pick3(e.label))}</span>
             <em>${escapeHtmlAttr(I18n.pick3(e.quote))}</em></li>`).join("")}</ul>
       </div>`).join("");
-    return halkaSvg(halka, true) + `<div class="sir-halka__key">${key}</div>`;
+    // Kendi sarmalayıcısı şart: `.cizim-lightbox__svg-wrap` bir flex SATIRI
+    // ve iki kardeşi (svg + anahtar listesi) yan yana diziyordu -- tablet
+    // genişliğinde liste sıkışıp metni kırpılıyordu (2026-07-29). Bu
+    // sarmalayıcı onları tasarlandığı gibi alt alta koyuyor.
+    return `<div class="sir-halka__lightbox">${halkaSvg(halka, true)}
+        <div class="sir-halka__key">${key}</div></div>`;
   }
 
   function openHalkaLightbox() {
@@ -1688,7 +1729,7 @@
     window.dostTrack && window.dostTrack("sema_acildi", { type: "perde-halkasi" });
     window.DostLightbox.open({
       closeLabel: tt({ tr: "Kapat", en: "Close", pt: "Fechar" }),
-      name: tt({ tr: "Perde nedir? — on altı kayıt", en: "What is the veil? — sixteen records", pt: "O que é o véu? — dezasseis registos" }),
+      name: tt({ tr: "Perde nedir? — on yedi kayıt", en: "What is the veil? — seventeen records", pt: "O que é o véu? — dezassete registos" }),
       svgHtml: halkaLightboxHtml(halka),
       caption: tt({
         tr: "Halkalar dıştan içe okunur. Sıra bir zaman sırası değil.",
@@ -1722,7 +1763,7 @@
       </li>`).join("");
     return `
       <div class="detail-block sir-halka">
-        <p class="detail-eyebrow">${tt({ tr: "Perde nedir? — on altı kaydın halkası", en: "What is the veil? — a ring of sixteen records", pt: "O que é o véu? — um anel de dezasseis registos" })}</p>
+        <p class="detail-eyebrow">${tt({ tr: "Perde nedir? — on yedi kaydın halkası", en: "What is the veil? — a ring of seventeen records", pt: "O que é o véu? — um anel de dezassete registos" })}</p>
         <p class="sir-halka__caption">${linkify(I18n.pick3(halka.caption), null, null)}</p>
         <button type="button" class="sir-halka__figure"
                 aria-label="${escapeHtmlAttr(tt({ tr: "Halkayı büyüt", en: "Enlarge the ring", pt: "Ampliar o anel" }))}">

@@ -5255,8 +5255,29 @@ body.share-stage-open { overflow: hidden; }
   width: min(100vw, calc(100dvh * 9 / 16));
   height: 100dvh;
   overflow: hidden;
+  /* Sahnenin paleti yerel değişkenlerde: açık zemin (.share-stage--acik)
+     tek yerden dönüyor, çizim kodu renk bilmiyor (2026-07-29). */
+  --sahne-murekkep: var(--series-theme, #eda100);
+  --sahne-hale: var(--accent-glow-dark, #ffc44d);
+  --sahne-metin: #f4f1ea;
+  --sahne-vurgu: var(--accent-glow-dark, #ffc44d);
+  --sahne-golge: rgba(0, 0, 0, 0.65);
+  --sahne-perde: #05060a;
   background:
     radial-gradient(ellipse at 50% 42%, #12161f 0%, #05060a 72%);
+}
+.share-stage--acik .share-stage__frame {
+  /* Açık zeminde altın çok soluk kalıyor; koyu kehribara iniliyor
+     (--accent-interactive ile aynı gerekçe: dekoratif ton açık zeminde
+     3:1'in altına düşüyor). */
+  --sahne-murekkep: #8a6100;
+  --sahne-hale: #d99a12;
+  --sahne-metin: #1a1a19;
+  --sahne-vurgu: #8a6100;
+  --sahne-golge: rgba(255, 255, 255, 0.75);
+  --sahne-perde: #fbfaf6;
+  background:
+    radial-gradient(ellipse at 50% 42%, #fdfcf8 0%, #eae7dc 72%);
 }
 /* Ekranın kendisi 9:16'dan daha uzunsa (telefon), çerçeve ekranı doldursun. */
 @media (max-aspect-ratio: 9 / 16) {
@@ -5264,13 +5285,13 @@ body.share-stage-open { overflow: hidden; }
 }
 .share-stage__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .share-spiral {
-  stroke: var(--series-theme, #eda100);
+  stroke: var(--sahne-murekkep);
   stroke-width: 1;
   opacity: 0.22;
 }
-.share-dot { fill: var(--series-theme, #eda100); }
+.share-dot { fill: var(--sahne-murekkep); }
 .share-halo {
-  fill: var(--accent-glow-dark, #ffc44d);
+  fill: var(--sahne-hale);
   filter: blur(18px);
 }
 /* Metin, TikTok arayüzünün kapatmadığı orta bandda kalıyor: altta ~%20,
@@ -5287,11 +5308,11 @@ body.share-stage-open { overflow: hidden; }
 }
 .share-line {
   margin: 0;
-  color: #f4f1ea;
+  color: var(--sahne-metin);
   font-family: var(--font-display, Georgia, serif);
   line-height: 1.32;
   text-wrap: balance;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.65);
+  text-shadow: 0 2px 24px var(--sahne-golge);
   will-change: opacity, transform;
 }
 .share-line--soz { font-size: clamp(1.5rem, 4.6vh, 2.6rem); }
@@ -5302,11 +5323,11 @@ body.share-stage-open { overflow: hidden; }
 .share-line--sol, .share-line--sag {
   font-size: clamp(1.3rem, 4vh, 2.2rem);
 }
-.share-line--sag { color: var(--accent-glow-dark, #ffc44d); }
+.share-line--sag { color: var(--sahne-vurgu); }
 .share-rule {
   display: block;
   height: 1px;
-  background: rgba(244, 241, 234, 0.5);
+  background: color-mix(in srgb, var(--sahne-metin) 50%, transparent);
   transform-origin: left center;
 }
 .share-stage__source {
@@ -5317,7 +5338,7 @@ body.share-stage-open { overflow: hidden; }
   margin: 0;
   font-size: clamp(0.7rem, 1.7vh, 0.86rem);
   letter-spacing: 0.05em;
-  color: rgba(244, 241, 234, 0.62);
+  color: color-mix(in srgb, var(--sahne-metin) 62%, transparent);
 }
 /* Kayıt kipinin açılış/kapanış karartısı. Sahne döngüsünde saydam durur;
    yalnız "Videoyu indir" ile başlayan çekimde 1'den 0'a ve sonda 0'dan 1'e
@@ -5325,7 +5346,7 @@ body.share-stage-open { overflow: hidden; }
 .share-stage__fade {
   position: absolute;
   inset: 0;
-  background: #05060a;
+  background: var(--sahne-perde);
   pointer-events: none;
 }
 /* TikTok'un kapattığı bölgeler — yalnız kadraj denetimi için. */
@@ -5452,10 +5473,15 @@ body.share-stage-open { overflow: hidden; }
 }
 .sir-halka__svg {
   width: 100%;
-  max-width: 340px;
+  /* 432 = 340 çizim alanı + 2×46 etiket payı (bkz. ontology.js
+     HALKA_PAD_X). Halkanın ekrandaki boyu eskisiyle aynı kalsın diye
+     max-width de aynı oranda büyütüldü. */
+  max-width: 432px;
   height: auto;
   flex: 0 0 auto;
-  overflow: visible;     /* dış halkanın etiketleri kırpılmasın */
+  /* overflow kasıtlı olarak varsayılan (hidden): etiketler artık
+     viewBox'ın içinde duruyor, dolayısıyla dışarı taşıp komşu
+     içeriğin -- lightbox'ta anahtar listesinin -- üstüne binemezler. */
 }
 
 .sir-halka__ring {
@@ -5538,8 +5564,15 @@ body.share-stage-open { overflow: hidden; }
 /* Halkanın lightbox sürümü: büyük şema + altında tam anahtar listesi.
    Küçük sürümde düğümlerin yanında yalnız bölüm numarası var; burada
    numaranın karşılığı ve alıntısı da okunuyor. */
+.sir-halka__lightbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
 .sir-halka__svg--buyuk {
-  max-width: min(88vw, 560px);
+  max-width: min(92vw, 700px);   /* 560 × (432/340) ≈ 711; halka aynı boyda kalsın */
   margin: 0 auto;
   display: block;
 }
@@ -5548,6 +5581,8 @@ body.share-stage-open { overflow: hidden; }
   gap: 1.05rem;
   margin-top: 1.15rem;
   text-align: left;
+  width: 100%;
+  min-width: 0;
 }
 @media (min-width: 760px) {
   .sir-halka__key { grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
@@ -5635,3 +5670,230 @@ body.share-stage-open { overflow: hidden; }
     background-attachment: local, local, scroll, scroll;
   }
 }
+
+/* ===========================================================================
+   Füsûsu'l-Hikem görünümü ve paylaşılan sarmal sahne (assets/helix.js).
+   Füsûs'ta bütün şemalar sarmal: CLAUDE.md'nin "iki boyutlu halka ile üç
+   boyutlu sarmal arasında seçim varken sarmalı tercih et" ilkesi.
+   =========================================================================== */
+
+.helix-scene { display: block; width: 100%; }
+.helix-scene__svg {
+  display: block;
+  width: 100%;
+  overflow: visible;   /* düğüm etiketleri kenara yakın kalabiliyor */
+  touch-action: manipulation;
+}
+.helix-scene__path {
+  fill: none;
+  stroke: var(--gridline);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.helix-scene__path--ghost {
+  /* Kapanış izi: dönüş var ama tekrar yok -- iz silinerek bitiyor. */
+  stroke-dasharray: 3 6;
+  opacity: 0.5;
+}
+.helix-scene__node circle {
+  fill: var(--surface-1);
+  /* --series-theme DEĞİL: o token dekoratif ve açık zeminde 2.1:1'de
+     kalıyor (dosyanın kendi notu). Bu düğümler tıklanabilir, yani
+     WCAG'ın 3:1 arayüz-kontrast tabanı gerçekten geçerli. */
+  stroke: var(--accent-interactive);
+  stroke-width: 1.6;
+  transition: fill 140ms ease, r 140ms ease;
+}
+.helix-scene__node text {
+  fill: var(--text-secondary);
+  font-weight: 500;
+  /* Etiket de tıklanabilir: düğüm dairesi küçük ve dönüyor, okurun
+     doğal hedefi çoğu zaman yazının kendisi (2026-07-29 testi). */
+  cursor: pointer;
+  paint-order: stroke;
+  stroke: var(--surface-1);
+  stroke-width: 3.2px;
+  stroke-linejoin: round;
+}
+.helix-scene__node--accent circle { fill: var(--accent-interactive); }
+.helix-scene__node--accent text { fill: var(--text-primary); font-weight: 600; }
+.helix-scene__node.is-focus circle { fill: var(--accent-interactive); stroke-width: 2.6; }
+.helix-scene__node.is-focus text { fill: var(--text-primary); font-weight: 600; }
+.helix-scene__node:hover circle { fill: var(--accent-interactive); }
+.helix-scene__node { cursor: pointer; }
+.helix-scene__node:focus-visible { outline: none; }
+.helix-scene__node:focus-visible circle {
+  stroke: var(--accent-interactive);
+  stroke-width: 3;
+}
+
+.helix-scene__note {
+  margin-top: 0.7rem;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid var(--accent-interactive);
+  background: color-mix(in srgb, var(--series-theme) 7%, var(--surface-1));
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  /* Not paneli düğümden düğüme geçerken sayfa zıplamasın diye alt sınır. */
+  min-height: 5.2rem;
+}
+.helix-scene__note-label {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+.helix-scene__note-no {
+  display: inline-block;
+  min-width: 2.6em;
+  margin-right: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--gridline);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.helix-scene__note-body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.62;
+}
+
+/* --- Füsûs görünümü ------------------------------------------------------ */
+.fusus-wrap { position: relative; padding: 0 clamp(12px, 3vw, 28px) 40px; }
+.fusus-shell {
+  display: grid;
+  gap: clamp(18px, 3vw, 34px);
+  max-width: 1180px;
+  margin: 0 auto;
+  align-items: start;
+}
+@media (min-width: 1000px) {
+  .fusus-shell { grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); }
+  .fusus-sidebar { position: sticky; top: 84px; }
+}
+.fusus-sidebar { min-width: 0; }
+.fusus-map { min-width: 0; }
+
+.fusus-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0.9rem;
+}
+.fusus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  /* WCAG 2.2 SC 2.5.8: dokunma hedefi en az 24px. */
+  min-height: 28px;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--gridline);
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.fusus-chip:hover:not(.is-planned) { border-color: var(--accent-interactive); color: var(--text-primary); }
+.fusus-chip.is-active { background: var(--series-theme); border-color: var(--series-theme); color: var(--on-accent-text); font-weight: 600; }
+.fusus-chip.is-planned { opacity: 0.42; cursor: default; }
+.fusus-chip__no { font-variant-numeric: tabular-nums; opacity: 0.7; font-size: 0.72rem; }
+
+.fusus-article { min-width: 0; }
+.fusus-article__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.fusus-article__title {
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.35rem, 3.4vw, 2rem);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.fusus-article__range { margin: 0 0 1rem; color: var(--text-secondary); font-size: 0.86rem; }
+.fusus-article__summary { color: var(--text-primary); line-height: 1.72; }
+.fusus-section { margin-top: 2.1rem; }
+.fusus-section h3 {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.02rem, 2.2vw, 1.22rem);
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.fusus-section p, .fusus-article__summary p { line-height: 1.72; }
+
+.fusus-figure {
+  margin: 1.5rem 0;
+  padding: 1rem clamp(0.6rem, 2vw, 1.1rem) 1.1rem;
+  border: 1px solid var(--gridline);
+  border-radius: 12px;
+  background: var(--surface-1);
+}
+.fusus-figure__scene { min-width: 0; }
+.fusus-figure__cap {
+  margin-top: 0.85rem;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+.fusus-figure__cap cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  font-style: normal;
+  opacity: 0.8;
+}
+.fusus-article__sources { margin-top: 2.4rem; padding-top: 1.1rem; border-top: 1px solid var(--gridline); }
+.fusus-article__sources h3 { margin: 0 0 0.5rem; font-size: 0.9rem; }
+.fusus-article__sources ul { margin: 0; padding-left: 1.1rem; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6; }
+.helix-scene__marker path { fill: var(--gridline); }
+
+/* Karanlık modda düğümlerin görünmemesi (2026-07-29, kullanıcı bildirimi)
+   var olmayan --surface / --accent token'larından geliyordu: geçersiz
+   bildirim düşünce daireler varsayılan siyahla doluyor, siyah zeminde
+   kayboluyordu. Tokenlar düzeltildi; ayrıca karanlıkta altın konturun
+   daha parlak sürümü kullanılıyor -- düz --series-theme yakın-siyah
+   üzerinde sönük kalıyor (aynı gerekçe Zât halesinde de yazılı). */
+.viz-root[data-theme="dark"] .helix-scene__node circle {
+  stroke: var(--accent-glow-dark);
+}
+.viz-root[data-theme="dark"] .helix-scene__node--accent circle,
+.viz-root[data-theme="dark"] .helix-scene__node.is-focus circle,
+.viz-root[data-theme="dark"] .helix-scene__node:hover circle {
+  fill: var(--accent-glow-dark);
+}
+.viz-root[data-theme="dark"] .helix-scene__path { stroke: #46453f; }
+.viz-root[data-theme="dark"] .helix-scene__marker path { fill: #46453f; }
+
+/* Paylaşım panelindeki zemin seçimi ve açık/koyu anahtarı (2026-07-29). */
+.share-panel__label {
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.share-panel__chips--zemin { flex-wrap: wrap; }
+.share-panel__chip--sm { font-size: 0.76rem; padding: 0.2rem 0.55rem; }
+.share-panel__switch {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  /* WCAG 2.2 SC 2.5.8: etiketin tamamı tıklanabilir ve 24px'ten yüksek. */
+  min-height: 30px;
+  margin-top: 0.7rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.share-panel__switch input { width: 16px; height: 16px; accent-color: var(--accent-interactive); }
+/* Hale açık zeminde parlama değil leke gibi okunuyor (koyu zeminde ışık
+   saçıyor, açıkta metnin üstüne oturuyor); orada yumuşatılıyor. Satır içi
+   opaklığı JS yazdığı için filtre ile çarpılıyor. */
+.share-stage--acik .share-halo { filter: blur(26px) opacity(0.45); }
