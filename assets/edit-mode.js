@@ -136,7 +136,10 @@
       '<button type="button" data-action="pick">🖼️ Galeriden Seç</button>' +
       '<button type="button" data-action="remove-image" class="dost-shot-modal__remove" hidden>Görüntüyü kaldır</button>' +
       "</div>" +
-      '<img class="dost-shot-modal__preview" alt="" hidden>' +
+      '<img class="dost-shot-modal__preview" alt="" hidden ' +
+      // src\'siz <img> kırık görsel kutusu olarak yüklenir; görüntü seçilene
+      // kadar şeffaf 1x1 piksel tutuyoruz (impeccable A9)
+      'src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">' +
       '<label class="dost-shot-modal__label" for="dost-shot-note">Bu sayfada ne değişmeli?</label>' +
       '<textarea id="dost-shot-note" class="dost-shot-modal__note" rows="3" placeholder="İstersen yukarıdan bir ekran görüntüsü ekle, istersen sadece burada anlat…"></textarea>' +
       '<div class="dost-shot-modal__actions">' +
@@ -372,12 +375,38 @@
       '<button type="button" data-action="notes">📋 Kayıtlı Notlar</button>' +
       '<button type="button" data-action="export">Dışa Aktar</button>' +
       '<button type="button" data-action="clear">Temizle</button>' +
+      '<button type="button" data-action="minimize">Küçült ↑</button>' +
       '<button type="button" data-action="exit">Düzenleme Modunu Kapat</button>' +
       "</div>";
     document.body.appendChild(panel);
     const toggle = panel.querySelector(".dost-edit-panel__toggle");
     const menu = panel.querySelector(".dost-edit-panel__menu");
-    toggle.addEventListener("click", () => { menu.hidden = !menu.hidden; });
+    // Drag-or-click on toggle: drag moves panel, click without movement toggles menu
+    let dragStartX = 0, dragStartY = 0, panelStartL = 0, panelStartB = 0, hasDragged = false;
+    toggle.addEventListener("mousedown", (e) => {
+      dragStartX = e.clientX; dragStartY = e.clientY; hasDragged = false;
+      const r = panel.getBoundingClientRect();
+      panelStartL = r.left; panelStartB = window.innerHeight - r.bottom;
+      const onMove = (me) => {
+        const dx = me.clientX - dragStartX, dy = me.clientY - dragStartY;
+        if (!hasDragged && Math.abs(dx) < 3 && Math.abs(dy) < 3) return;
+        if (!hasDragged) {
+          hasDragged = true;
+          // Keep bottom anchoring: the menu opens upward from the toggle,
+          // so pinning `top` would push it off the bottom of the viewport.
+          panel.style.right = "auto"; panel.style.top = "auto";
+        }
+        panel.style.left   = Math.max(0, Math.min(window.innerWidth - r.width, panelStartL + dx)) + "px";
+        panel.style.bottom = Math.max(0, Math.min(window.innerHeight - r.height, panelStartB - dy)) + "px";
+      };
+      const onUp = () => {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+        if (!hasDragged) menu.hidden = !menu.hidden;
+      };
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
     panel.querySelector('[data-action="visual-note"]').addEventListener("click", () => {
       menu.hidden = true;
       buildVisualNoteModal();
@@ -388,6 +417,7 @@
     });
     panel.querySelector('[data-action="export"]').addEventListener("click", exportQueue);
     panel.querySelector('[data-action="clear"]').addEventListener("click", clearQueue);
+    panel.querySelector('[data-action="minimize"]').addEventListener("click", () => { menu.hidden = true; });
     panel.querySelector('[data-action="exit"]').addEventListener("click", disableEditMode);
   }
 
