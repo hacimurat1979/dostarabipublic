@@ -60,6 +60,8 @@
     },
     zemin: { tr: "Zemin", en: "Backdrop", pt: "Fundo" },
     isik: { tr: "Açık zemin", en: "Light backdrop", pt: "Fundo claro" },
+    kare: { tr: "Kare (1:1)", en: "Square (1:1)", pt: "Quadrado (1:1)" },
+    kart: { tr: "🖼 Kart indir", en: "🖼 Download card", pt: "🖼 Descarregar cartão" },
     dil: { tr: "Dil", en: "Language", pt: "Idioma" },
     tpl: {
       soz: { tr: "Bir Cümle", en: "One Sentence", pt: "Uma Frase" },
@@ -69,6 +71,7 @@
       ontoloji: { tr: "Ontoloji", en: "Ontology",     pt: "Ontologia" },
       esma:     { tr: "Esmâ",     en: "Divine Name",  pt: "Nome Divino" },
       gunun:    { tr: "Günün Sözü", en: "Word of the Day", pt: "Palavra do Dia" },
+      benzetme: { tr: "Bir Benzetmeyle", en: "Through an Analogy", pt: "Através de uma Analogia" },
     },
     filter:      { tr: "Filtre",             en: "Filter",               pt: "Filtro" },
     filterAll:   { tr: "Tümü",              en: "All",                  pt: "Tudo" },
@@ -123,7 +126,7 @@
     return GU.fetchJson("data/ibn-arabi/sirlar.json").then((d) => (sirlarData = d));
   }
 
-  let ontolojiData = null, esmaData = null;
+  let ontolojiData = null, esmaData = null, felsefiData = null, vahdetData = null;
   function loadOntoloji() {
     if (ontolojiData) return Promise.resolve(ontolojiData);
     return GU.fetchJson("data/ibn-arabi/ontology.json").then((d) => (ontolojiData = d));
@@ -132,8 +135,27 @@
     if (esmaData) return Promise.resolve(esmaData);
     return GU.fetchJson("data/ibn-arabi/esma.json").then((d) => (esmaData = d));
   }
+  function loadFelsefiTerimler() {
+    if (felsefiData) return Promise.resolve(felsefiData);
+    return GU.fetchJson("data/ibn-arabi/felsefi-terimler.json").then((d) => (felsefiData = d));
+  }
+  function loadVahdet() {
+    if (vahdetData) return Promise.resolve(vahdetData);
+    return GU.fetchJson("data/ibn-arabi/vahdet-elestiri.json")
+      .then((d) => (vahdetData = d))
+      .catch(() => (vahdetData = { maddeler: [] }));
+  }
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  // Var olan bir metni, sahnenin taşıyabileceği uzunlukta kesip "…" ekler --
+  // YENİ metin YAZMAZ (bkz. dosya başındaki KURAL), yalnız var olanı seçer.
+  // Kelime sınırında keser ki bir kelime yarıda bölünmesin.
+  function capText(raw, max) {
+    raw = String(raw || "");
+    max = max || 310;
+    return raw.length > max ? raw.slice(0, raw.lastIndexOf(" ", max)) + "…" : raw;
+  }
 
   function partLabel(p) {
     const c = CILT_ROMAN[p.cilt] || p.cilt;
@@ -256,7 +278,6 @@
         return {
           tpl: "soru",
           lines: [{ text: tt(q.question), kind: "soru" }],
-          source: tt({ tr: "Sorular · dostarabi.com", en: "Questions · dostarabi.com", pt: "Perguntas · dostarabi.com" }),
         };
       });
     }
@@ -284,7 +305,6 @@
             { text: sents[0], kind: "soz" },
             { text: sents[1], kind: "soz" },
           ],
-          source: tt({ tr: "Sorular · dostarabi.com", en: "Questions · dostarabi.com", pt: "Perguntas · dostarabi.com" }),
         };
       });
     }
@@ -303,21 +323,64 @@
         return {
           tpl: "gunun",
           lines: [{ text: text, kind: "soz" }],
-          source: tt({ tr: "Sırlar · dostarabi.com", en: "Mysteries · dostarabi.com", pt: "Mistérios · dostarabi.com" }),
         };
       });
     }
     if (tpl === "ikili") {
-      return pickPart(true).then((r) => {
-        if (!r) return null;
-        const pr = pick(r.items);
+      // Kullanıcı isteği (2026-08-02): Eleştiriler sekmesindeki "eleştiri /
+      // Dost'un dediği" çiftleri de bu şablonun üçüncü bir kaynağı --
+      // Fütûhât/Füsûs diyagram çiftleriyle aynı iki-satırlı biçimde,
+      // ~30% ihtimalle seçiliyor (çeşitlilik için, tekele dönüşmesin diye).
+      return loadVahdet().then((vahdet) => {
+        const maddeler = (vahdet && vahdet.maddeler) || [];
+        function vahdetScene() {
+          if (!maddeler.length) return null;
+          const m = pick(maddeler);
+          return {
+            tpl: "ikili",
+            lines: [
+              { text: capText(tt(m.elestiri.ozet)), kind: "sol" },
+              { text: capText(tt(m.dostunDedigi.ozet)), kind: "sag" },
+            ],
+          };
+        }
+        if (maddeler.length && Math.random() < 0.3) {
+          const s = vahdetScene();
+          if (s) return s;
+        }
+        return pickPart(true).then((r) => {
+          if (r) {
+            const pr = pick(r.items);
+            return {
+              tpl: "ikili",
+              lines: [
+                { text: tt(pr.left.label), kind: "sol" },
+                { text: tt(pr.right.label), kind: "sag" },
+              ],
+            };
+          }
+          return vahdetScene();
+        });
+      });
+    }
+    if (tpl === "benzetme") {
+      // "Bir Benzetmeyle": esma.json/ontology.json/felsefi-terimler.json'un
+      // zaten yazılmış `analogy` alanlarından -- kavram adı + günlük hayat
+      // benzetmesi. Yeni metin yok, yalnız var olan benzetmeler bir araya
+      // toplanıp seçiliyor (kullanıcı önerisi, 2026-08-02).
+      return Promise.all([loadEsma(), loadOntoloji(), loadFelsefiTerimler()]).then(([esma, onto, felsefi]) => {
+        const pool = [];
+        (esma.nodes || []).forEach((n) => { if (n.analogy) pool.push({ name: n.name, analogy: n.analogy }); });
+        (onto.nodes || []).forEach((n) => { if (n.analogy) pool.push({ name: n.name, analogy: n.analogy }); });
+        Object.values(felsefi.terms || {}).forEach((t) => { if (t.analogy) pool.push({ name: t.title, analogy: t.analogy }); });
+        if (!pool.length) return null;
+        const item = pick(pool);
         return {
-          tpl: "ikili",
+          tpl: "benzetme",
           lines: [
-            { text: tt(pr.left.label), kind: "sol" },
-            { text: tt(pr.right.label), kind: "sag" },
+            { text: tt(item.name), kind: "baslik" },
+            { text: capText(tt(item.analogy)), kind: "soz" },
           ],
-          source: partLabel(r.part) + " · dostarabi.com",
         };
       });
     }
@@ -336,7 +399,6 @@
             { text: tt(node.name || {}), kind: "baslik" },
             { text: text, kind: "soz" },
           ],
-          source: tt({ tr: "Ontoloji · dostarabi.com", en: "Ontology · dostarabi.com", pt: "Ontologia · dostarabi.com" }),
         };
       });
     }
@@ -355,7 +417,6 @@
             { text: tt(node.name || {}), kind: "baslik" },
             { text: text, kind: "soz" },
           ],
-          source: tt({ tr: "Esmâ · dostarabi.com", en: "Divine Names · dostarabi.com", pt: "Nomes Divinos · dostarabi.com" }),
         };
       });
     }
@@ -364,7 +425,6 @@
       return {
         tpl: "soz",
         lines: [{ text: pick(r.items), kind: "soz" }],
-        source: partLabel(r.part) + " · dostarabi.com",
       };
     });
   }
@@ -376,19 +436,20 @@
   // Şablon başına döngü uzunluğu (ms) ve metin vuruşları. Vuruşlar
   // [giriş, çıkış] biçiminde, döngü içindeki oranlar.
   const TIMING = {
-    soz:      { loop: 9000,  beats: [[0.09, 0.94]], source: [0.55, 0.97] },
-    gunun:    { loop: 9000,  beats: [[0.09, 0.94]], source: [0.55, 0.97] },
-    ikili:    { loop: 8500,  beats: [[0.09, 0.94], [0.22, 0.94]], source: [0.55, 0.97] },
-    soru:     { loop: 8500,  beats: [[0.09, 0.94]], source: [0.52, 0.97] },
+    soz:      { loop: 9000,  beats: [[0.09, 0.94]] },
+    gunun:    { loop: 9000,  beats: [[0.09, 0.94]] },
+    ikili:    { loop: 8500,  beats: [[0.09, 0.94], [0.22, 0.94]] },
+    soru:     { loop: 8500,  beats: [[0.09, 0.94]] },
     // Üç vuruşlu, daha uzun bir döngü: soru en başta girip ekranda kalıyor
     // ("kanca" burada), iki cevap cümlesi ardından sırayla altına ekleniyor.
     // 15000 -> 20000 (2026-08-02 kullanıcı bildirimi): metin derin anlamlar
     // taşıyor ve okuyucu tam hazmetmeye başlarken kayboluyordu -- vuruş
     // ORANLARI aynı kaldı (sadece döngü uzadı), yani her satırın giriş/çıkış
     // sırası aynı hissi veriyor, sadece hepsi orantılı olarak yavaşladı.
-    hikaye:   { loop: 20000, beats: [[0.04, 0.97], [0.24, 0.97], [0.52, 0.97]], source: [0.80, 0.99] },
-    ontoloji: { loop: 9500,  beats: [[0.07, 0.75], [0.22, 0.94]], source: [0.60, 0.97] },
-    esma:     { loop: 9500,  beats: [[0.07, 0.75], [0.22, 0.94]], source: [0.60, 0.97] },
+    hikaye:   { loop: 20000, beats: [[0.04, 0.97], [0.24, 0.97], [0.52, 0.97]] },
+    ontoloji: { loop: 9500,  beats: [[0.07, 0.75], [0.22, 0.94]] },
+    esma:     { loop: 9500,  beats: [[0.07, 0.75], [0.22, 0.94]] },
+    benzetme: { loop: 9500,  beats: [[0.07, 0.75], [0.22, 0.94]] },
   };
 
   function ease(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
@@ -423,7 +484,6 @@
     const read = Math.min(READ_CAP[s.tpl] || 11, Math.max(3.2, words / READ_WPS));
     return {
       fadeIn: fadeIn, fadeOut: fadeOut, lineIn: lineIn, cues: cues, ruleAt: ruleAt,
-      sourceAt: t + read * 0.3,
       // 8 sn'nin altı TikTok'ta göz kırpması gibi geçiyor, tavanın üstü
       // (şablona göre 22 ya da 40 sn) tek bir sahne için uzun.
       total: Math.min(TOTAL_CAP[s.tpl] || 22, Math.max(8, t + read + fadeOut)),
@@ -454,8 +514,6 @@
       rule.style.opacity = (v * 0.55).toFixed(3);
       rule.style.transform = "scaleX(" + v.toFixed(3) + ")";
     }
-    const src = el.querySelector(".share-stage__source");
-    if (src) src.style.opacity = ease(clamp01((t - plan.sourceAt) / 0.9)).toFixed(3);
   }
   // Bir vuruşun o andaki görünürlüğü: kısa bir belirme, uzun bir duruş,
   // kısa bir sönme. Döngü başa sardığında sert bir kesme olmasın diye.
@@ -534,12 +592,16 @@
   }
   const ZEMIN_ANAHTAR  = "dost-share-zemin";
   const ISIK_ANAHTAR   = "dost-share-isik";
+  const KARE_ANAHTAR   = "dost-share-kare";
   const FAV_ANAHTAR    = "dost-share-fav";
   const KAYNAK_ANAHTAR = "dost-share-kaynak";
   const TARIH_ANAHTAR  = "dost-share-tarih";
   const MAX_FAV = 20, MAX_TARIH = 5;
   let zeminId  = safeGet(ZEMIN_ANAHTAR) || "sarmal";
   let acikMod  = safeGet(ISIK_ANAHTAR) === "1";
+  // Kullanıcı isteği (2026-08-02): kare (1:1) format seçeneği -- feed
+  // paylaşımı için 9:16 dikey gereksiz uzun kalıyordu.
+  let kareMod  = safeGet(KARE_ANAHTAR) === "1";
   let kaynakId = safeGet(KAYNAK_ANAHTAR) || "all";
 
   function safeGet(k) {
@@ -660,8 +722,6 @@
       node.style.opacity = v.toFixed(3);
       node.style.transform = "translateY(" + ((1 - v) * 14).toFixed(1) + "px)";
     });
-    const src = el.querySelector(".share-stage__source");
-    if (src) src.style.opacity = beat(t, cfg.source[0], cfg.source[1]).toFixed(3);
     const rule = el.querySelector(".share-rule");
     if (rule) {
       const v = beat(t, 0.30, 0.94);
@@ -683,7 +743,6 @@
       new Array(NODE_COUNT).fill('<circle class="share-dot"></circle>').join("") +
       "</svg>" +
       '<div class="share-stage__text">' + lines + "</div>" +
-      '<p class="share-stage__source">' + escapeHtml(s.source) + "</p>" +
       '<div class="share-stage__qr" aria-hidden="true">' + qrSvg() + "</div>" +
       '<div class="share-stage__guides" hidden></div>' +
       // Kayıt kipinde açılış/kapanış karartısı. Sahne döngüsünde hep saydam.
@@ -696,7 +755,8 @@
       // 2,2 saniye sonra soluyor.)
       '<div class="share-stage__chrome">' +
       (canRecord
-        ? '<button type="button" data-action="rec">' + escapeHtml(tt(UI.rec)) + "</button>"
+        ? '<button type="button" data-action="rec">' + escapeHtml(tt(UI.rec)) + "</button>" +
+          '<button type="button" data-action="kart">' + escapeHtml(tt(UI.kart)) + "</button>"
         : '<button type="button" data-action="recyok" aria-label="' + escapeHtml(tt(UI.recYok)) + '">?</button>') +
       '<button type="button" data-action="guides">' + escapeHtml(tt(UI.guides)) + "</button>" +
       '<button type="button" data-action="close">✕</button>' +
@@ -764,7 +824,7 @@
 
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
-    canvas.height = 1920;
+    canvas.height = kareMod ? 1080 : 1920;
     const ctx = canvas.getContext("2d");
 
     // Yakalanan görüntü sekmenin görünen alanı; CSS pikselinden yakalama
@@ -833,6 +893,79 @@
   }
   let recording = false;
 
+  // --- statik kart (PNG) indirme -----------------------------------------
+  // Kullanıcı isteği (2026-08-02): video her paylaşım için gerekli değil --
+  // WhatsApp durumu/Instagram gönderisi gibi yerlerde tek bir kare yeterli
+  // ve daha hafif. Aynı getDisplayMedia+kırpma mekanizmasını (recordToFile
+  // ile aynı) kullanıyoruz ki ekrandakiyle piksel piksel aynı çıksın --
+  // SVG+metni yeniden canvas'a çizmek ayrı, hataya açık bir yol olurdu.
+  // Tek fark: MediaRecorder yok, videodan TEK bir kare yakalanıp hemen
+  // PNG olarak indiriliyor.
+  async function captureCardToFile() {
+    if (!stageEl || recording) return;
+    const frameEl = stageEl.querySelector(".share-stage__frame");
+    recStatus(tt(UI.recPick), false);
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 5, preferCurrentTab: true },
+        preferCurrentTab: true,
+        audio: false,
+      });
+    } catch (e) {
+      recStatus(tt(UI.recFail), false);
+      setTimeout(() => recStatus("", false), 4000);
+      return;
+    }
+    recording = true;
+    stageEl.classList.add("is-recording");
+    recStatus(tt(UI.recWait), true);
+
+    const video = document.createElement("video");
+    video.srcObject = stream;
+    video.muted = true;
+    await video.play();
+    // Akışın ilk karesi bazen bir önceki sekmenin görüntüsünü taşıyor --
+    // küçük bir bekleme, yakalanan karenin gerçekten sahneye ait olmasını
+    // garantiliyor (recordToFile'da bu sorun olmuyor çünkü orada zaten
+    // saniyelerce çiziliyor).
+    await new Promise((resolve) => setTimeout(resolve, 250));
+
+    const sx = video.videoWidth / window.innerWidth;
+    const sy = video.videoHeight / window.innerHeight;
+    const r = frameEl.getBoundingClientRect();
+    const crop = {
+      x: Math.round(r.left * sx), y: Math.round(r.top * sy),
+      w: Math.round(r.width * sx), h: Math.round(r.height * sy),
+    };
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = kareMod ? 1080 : 1920;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, crop.x, crop.y, crop.w, crop.h, 0, 0, canvas.width, canvas.height);
+    stream.getTracks().forEach((t) => t.stop());
+
+    canvas.toBlob((blob) => {
+      recording = false;
+      stageEl && stageEl.classList.remove("is-recording");
+      if (!blob) {
+        recStatus(tt(UI.recFail), false);
+        setTimeout(() => recStatus("", false), 4000);
+        return;
+      }
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "dost-" + scene.tpl + "-" + new Date().toISOString().slice(0, 10) + ".png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      recStatus(tt(UI.recDone) + " · png", false);
+      setTimeout(() => recStatus("", false), 3000);
+    }, "image/png");
+  }
+
   function escapeHtml(s) {
     return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => (
       { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]
@@ -844,7 +977,7 @@
     tarihEkle(s);
     closeStage();
     stageEl = document.createElement("div");
-    stageEl.className = "share-stage" + (acikMod ? " share-stage--acik" : "");
+    stageEl.className = "share-stage" + (acikMod ? " share-stage--acik" : "") + (kareMod ? " share-stage--kare" : "");
     stageEl.innerHTML = stageMarkup(s);
     document.body.appendChild(stageEl);
     document.body.classList.add("share-stage-open");
@@ -880,6 +1013,8 @@
     });
     const recBtn = stageEl.querySelector('[data-action="rec"]');
     if (recBtn) recBtn.addEventListener("click", recordToFile);
+    const kartBtn = stageEl.querySelector('[data-action="kart"]');
+    if (kartBtn) kartBtn.addEventListener("click", captureCardToFile);
     const recYokBtn = stageEl.querySelector('[data-action="recyok"]');
     if (recYokBtn) {
       recYokBtn.addEventListener("click", () => {
@@ -1124,6 +1259,10 @@
       '<label class="share-panel__switch">' +
       '<input type="checkbox" data-action="isik"' + (acikMod ? " checked" : "") + ">" +
       "<span>" + escapeHtml(tt(UI.isik)) + "</span></label>" +
+      // Kare format
+      '<label class="share-panel__switch">' +
+      '<input type="checkbox" data-action="kare"' + (kareMod ? " checked" : "") + ">" +
+      "<span>" + escapeHtml(tt(UI.kare)) + "</span></label>" +
       // Filtre (koşullu)
       (kaynak_chips
         ? '<p class="share-panel__label">' + escapeHtml(tt(UI.filter)) + "</p>" +
@@ -1194,6 +1333,12 @@
       acikMod = e.target.checked;
       safeSet(ISIK_ANAHTAR, acikMod ? "1" : "0");
       if (stageEl) stageEl.classList.toggle("share-stage--acik", acikMod);
+    });
+
+    panel.querySelector('[data-action="kare"]').addEventListener("change", function (e) {
+      kareMod = e.target.checked;
+      safeSet(KARE_ANAHTAR, kareMod ? "1" : "0");
+      if (stageEl) stageEl.classList.toggle("share-stage--kare", kareMod);
     });
 
     panel.querySelector('[data-action="shuffle"]').addEventListener("click", refresh);

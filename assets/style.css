@@ -6142,6 +6142,15 @@ body.share-stage-open { overflow: hidden; }
 @media (max-aspect-ratio: 9 / 16) {
   .share-stage__frame { width: 100vw; height: 100dvh; }
 }
+/* Kare (1:1) format (kullanıcı isteği, 2026-08-02): feed paylaşımı için --
+   9:16'nın aksine ekran boyutuna bakılmaksızın sabit bir kare, kısa kenara
+   göre sınırlanmış. Kayıt/kart yakalaması zaten frameEl'in GERÇEK render
+   kutusunu kırptığı için (bkz. recordToFile/captureCardToFile) burada
+   yalnız CSS boyutunu değiştirmek yetiyor -- ayrı bir kırpma kodu gerekmez. */
+.share-stage--kare .share-stage__frame {
+  width: min(100vw, 100dvh);
+  height: min(100vw, 100dvh);
+}
 .share-stage__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .share-spiral {
   stroke: var(--sahne-murekkep);
@@ -6185,21 +6194,19 @@ body.share-stage-open { overflow: hidden; }
   font-weight: 600;
   font-size: clamp(1.3rem, 4.1vh, 1.9rem);
 }
+/* Kullanıcı isteği (2026-08-02): pasajın ait olduğu kavram/terim (esma/
+   ontoloji/benzetme şablonlarının "baslik" satırı) altın rengiyle vurgulu --
+   sitenin kendi çapraz-bağlantı terimi tam da bu isim, o yüzden vurgu
+   pasajın kendi gövde metninde rastgele bir kelime değil bu satır. */
+.share-line--baslik {
+  color: var(--sahne-vurgu);
+  font-weight: 700;
+}
 .share-rule {
   display: block;
   height: 1px;
   background: color-mix(in srgb, var(--sahne-metin) 50%, transparent);
   transform-origin: left center;
-}
-.share-stage__source {
-  position: absolute;
-  left: 8%;
-  right: 20%;
-  bottom: 22%;
-  margin: 0;
-  font-size: clamp(0.7rem, 1.7vh, 0.86rem);
-  letter-spacing: 0.05em;
-  color: color-mix(in srgb, var(--sahne-metin) 62%, transparent);
 }
 /* Kayıt kipinin açılış/kapanış karartısı. Sahne döngüsünde saydam durur;
    yalnız "Videoyu indir" ile başlayan çekimde 1'den 0'a ve sonda 0'dan 1'e
@@ -7700,6 +7707,24 @@ mark.durus-vurgu-es {
   width: 100%;
   height: 100%;
 }
+/* Mertebeler sahnesi (3B, 2026-08-02): hangi hazrete yakın olunduğunu
+   gösteren küçük, sabit bir etiket -- kimlik artık küreye gömülü metinle
+   değil (3B'de okunaksız olurdu), bu kaplamayla taşınıyor. */
+.kozmik-mertebeler-label {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-1) 78%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  pointer-events: none;
+  z-index: 5;
+}
 .kozmik-hint {
   text-align: center;
   font-size: 0.8rem;
@@ -7765,7 +7790,19 @@ mark.durus-vurgu-es {
   outline: 2px solid var(--accent-interactive);
   outline-offset: -2px;
 }
-.atlas-layer {
+/* 3B sarmal iniş (kullanıcı kararı, 2026-08-02): canvas'ın altında/üstünde
+   Zât (.atlas-haze) ve İsim (.atlas-isim-ring) için 2B kaplamalar duruyor --
+   bkz. atlas.js dosya başlığı, ikisi de üç boyutlu ışın-izlemeyle yeniden
+   inşa edilmedi (Zât'ı cisimleştirmeme yasağı + İsim'in 100 düğümlük
+   erişilebilirliği). */
+.atlas-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.atlas-overlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -7774,8 +7811,8 @@ mark.durus-vurgu-es {
   pointer-events: none;
   will-change: filter, opacity, transform;
 }
-.atlas-layer--interactive,
-.atlas-layer--interactive * {
+.atlas-overlay--interactive,
+.atlas-overlay--interactive * {
   pointer-events: auto;
 }
 .atlas-haze {
@@ -7783,21 +7820,6 @@ mark.durus-vurgu-es {
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--text-primary) 16%, transparent) 0%, transparent 72%);
-}
-.atlas-core {
-  width: 46%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 12px;
-}
-.atlas-core__label {
-  font-size: 0.98rem;
-  font-weight: 600;
-  color: color-mix(in srgb, var(--text-primary) 78%, transparent);
 }
 .atlas-isim-ring {
   position: relative;
@@ -7969,11 +7991,75 @@ mark.durus-vurgu-es {
   color: var(--text-muted);
   margin: 0 0 10px;
 }
-.kavram-list__chips,
 .kavram-related__chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+.kavram-list__intro--gauge {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: -10px;
+}
+/* Liste kartları: düz isim yığını yerine, her adın yanında o kavram için
+   biriken malzemeyi (kısım sayısı + birlikte-esmâ + ilişkili sır/çizim/
+   âyet/hadis) gösteren bir halka -- terim sayfasındaki "dönüş yoğunluğu"
+   ile aynı görsel dil (bkz. zenginlikSkoru/kavramGaugeSvg). */
+.kavram-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.kavram-tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+.kavram-tile:hover,
+.kavram-tile:focus-visible {
+  border-color: hsl(var(--tag-hue, 38) 55% 50%);
+  background: hsl(var(--tag-hue, 38) 55% 50% / 0.08);
+  transform: translateY(-1px);
+}
+.kavram-tile__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kavram-tile__gauge {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+.kavram-tile__gauge-track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1.8;
+}
+.kavram-tile__gauge-arc {
+  fill: none;
+  stroke: hsl(var(--tag-hue, 38) 42% 44%);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.viz-root[data-theme="dark"] .kavram-tile__gauge-arc {
+  stroke: hsl(var(--tag-hue, 38) 48% 62%);
+}
+@media (max-width: 480px) {
+  .kavram-list__grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
 .kavram-chip {
   padding: 7px 14px;
