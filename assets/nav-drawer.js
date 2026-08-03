@@ -16,6 +16,13 @@
   // (btn-ghost--active); biz yalnız izliyoruz. MutationObserver hem sınıf
   // değişimini (görünüm değişti) hem metin değişimini (dil değişti,
   // applyStatic textContent'i yeniden yazar) yakalar.
+  // NOT (2026-08-03): burada bir süre, çekmecede karşılığı OLMAYAN görünümler
+  // için ("hangi sarmalayıcı görünürse onun adını yaz") ek bir katman vardı.
+  // Tek tüketicisi kaldırılan Tenezzül pilotuydu; tüketicisiz kalınca
+  // silindi. Yeniden böyle bir görünüm eklenirse (nav'da olmayan bir bölüm)
+  // aynı katman gerekecek: aksi hâlde ☰ etiketi bir ÖNCEKİ bölümün adında
+  // asılı kalır ve kullanıcıya nerede olduğu hakkında yanlış bilgi verir --
+  // yanlış etiket, hiç etiket olmamasından kötüdür.
   function updateLabel() {
     if (!label) return;
     const active = drawer.querySelector(".btn-ghost--active");
