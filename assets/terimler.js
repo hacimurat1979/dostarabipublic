@@ -73,11 +73,16 @@
     return derivedTermPromise;
   }
 
-  // Diğer görünümlerdeki metinler (örn. Fütûhât Atlası) terimlere bağlantı
-  // verebilsin diye, kullanıcı Terimler sekmesini hiç açmasa da veriyi
-  // erkenden (ana iş parçacığı boştayken) çekip kaydediyoruz.
-  const deferFetch = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
-  deferFetch(() => { fetchData(); fetchDerivedTerms(); });
+  // 2026-08-03'e kadar burada `deferFetch(() => { fetchData(); ... })`
+  // vardı: kullanıcı Terimler sekmesini hiç açmasa da felsefi-terimler.json
+  // (409KB) HER sayfada iniyordu -- tek sebebi çapraz-bağlantı önizlemesinin
+  // terim adlarına ihtiyaç duymasıydı. O adlar artık derleme zamanında
+  // üretilen ortak indekste (data/ibn-arabi/capraz-baglanti-indeksi.json,
+  // ontology.js yüklüyor), yani önizleme hiçbir şey kaybetmiyor. Tam dosya
+  // ancak Terimler görünümü gerçekten açıldığında geliyor (activate()).
+  //
+  // Türetilmiş kenarlar (12KB) da aynı sebeple erteleniyor: yalnız bu
+  // görünümün grafiğinde kullanılıyor.
 
   function groupById(id) {
     return glossaryData.groups.find((g) => g.id === id);
@@ -300,6 +305,16 @@
       </svg>
     `;
     },
+    "tinted-glass": (d) => `
+      <svg class="term-diagram__svg" viewBox="0 0 340 130" role="img" aria-label="${tt(d.note)}">
+        <line class="term-diagram-arrow term-diagram-arrow--oneway" x1="20" y1="65" x2="150" y2="65"/>
+        <rect class="term-diagram-node--dashed" x="150" y="25" width="24" height="80" fill="none"/>
+        <line class="term-diagram-arrow term-diagram-arrow--oneway" x1="174" y1="65" x2="315" y2="65" marker-end="url(#tdArrowEnd)"/>
+        <text class="term-diagram-label--small" x="162" y="18" text-anchor="middle">${tt(d.glassLabel)}</text>
+        <text class="term-diagram-note" x="85" y="45" text-anchor="middle">${tt(d.reasonReading)}</text>
+        <text class="term-diagram-note--accent" x="245" y="45" text-anchor="middle">${tt(d.senseReading)}</text>
+      </svg>
+    `,
     "heart-visitors": (d) => {
       const cx = 170, cy = 170, hostR = 34, satR = 26, orbit = 112;
       const n = d.visitors.length;
@@ -788,8 +803,9 @@
   // `iliskili_kavramlar`dan görsel olarak (kesikli çerçeve, ayrı başlık,
   // her çipte "biz saydık" açıklaması) ayrı tutulur. Veri henüz yüklenmediyse
   // (kullanıcı sekmeyi açar açmaz detay panelini açtıysa) sessizce boş döner
-  // -- fetchDerivedTerms() zaten arka planda çalışıyor, bir sonraki
-  // showTermDetail çağrısında (örn. ilişkili bir terime tıklanınca) dolu gelir.
+  // -- showTermDetail'in sonundaki tembel çağrı veriyi getirip paneli
+  // tazeliyor. (2026-08-03'e kadar bu dosya açılışta çekiliyordu; artık
+  // yalnız gerektiğinde.)
   function derivedTermsHtml(t) {
     const rows = derivedTermRelations.filter((r) => r.from === t.id || r.to === t.id);
     if (!rows.length) return "";
