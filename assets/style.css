@@ -51,6 +51,13 @@
 .viz-root {
   --font-display: "Fraunces Dost", Georgia, "Times New Roman", serif;
   --font-body: "Source Sans Dost", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Sitede gömülü bir Arapça yazı tipi yok (Fraunces/Source Sans yalnız
+     Latin) -- Arapça ayet/hadis metni bu yüzden gövde fontunun rastgele
+     sistem yedeğine düşüyordu (2026-08-04 kullanıcı bildirimi: "daha kolay
+     okunabilir başka bir formatta verelim"). Bir dosya eklemeden, sistemde
+     kurulu olması muhtemel iyi nesih/Kur'an fontlarını adıyla sırayla
+     deniyoruz -- bulunanı kullanır, yoksa genel serif'e düşer. */
+  --font-arabic: "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
 
   --surface-1:      #fcfcfb;
   --page-plane:     #f9f9f7;
@@ -1888,11 +1895,43 @@ button.futuhat-part-chip:hover {
 }
 
 .futuhat-maindiagram {
+  position: relative;
   background: var(--page-plane);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 18px 12px 16px;
   margin-bottom: 34px;
+}
+
+/* Büyütme düğmesi artık diyagramı SARMALAYAN bir role="button" değil, onun
+   YANINDA duran gerçek bir <button> (2026-08-04, pa11y-ci/axe "Interactive
+   controls must not be nested" bulgusu). Eskiden diyagramın tamamı
+   tabindex+role="button" taşıyordu; ağaç düğümlerine de aynı özellikleri
+   verdiğimizde (aria-label düzeltmesiyle) bu, bir düğmenin İÇİNDE başka
+   düğmeler olması gibi görünüyordu -- axe'in haklı olarak reddettiği bir
+   yapı. Artık dış kapsayıcı sade bir div (fare tıklaması hâlâ çalışıyor,
+   yalnız ARIA rolü yok), klavye/okuyucu erişimi bu ayrı düğmeden geliyor. */
+.futuhat-diagram-enlarge-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--page-plane) 85%, transparent);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.futuhat-diagram-enlarge-btn:hover,
+.futuhat-diagram-enlarge-btn:focus-visible {
+  color: var(--accent-interactive);
+  border-color: var(--accent-interactive);
 }
 
 .futuhat-tree {
@@ -2123,6 +2162,7 @@ button.futuhat-part-chip:hover {
 }
 
 .futuhat-inline-diagram {
+  position: relative;
   background: var(--page-plane);
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -2196,6 +2236,124 @@ button.futuhat-part-chip:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .futuhat-nested__field { animation: none; }
+}
+
+.futuhat-akis__svg {
+  width: 100%;
+  max-width: 420px;
+  display: block;
+  margin: 0 auto;
+}
+.futuhat-akis__col-head {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  fill: var(--text-muted);
+}
+.futuhat-akis__link {
+  stroke: var(--gridline);
+  stroke-width: 1.1px;
+  stroke-dasharray: 1.4 3.4;
+}
+.futuhat-akis__dot {
+  fill: var(--page-plane);
+  stroke: var(--text-secondary);
+  stroke-width: 1.2px;
+}
+.futuhat-akis__dot--hak {
+  fill: var(--series-theme);
+  stroke: var(--series-theme);
+}
+.futuhat-akis__kul {
+  font-size: 0.78rem;
+  font-weight: 600;
+  fill: var(--text-primary);
+}
+.futuhat-akis__hak {
+  font-size: 0.72rem;
+  fill: var(--text-secondary);
+}
+
+.futuhat-radyal__svg {
+  width: 100%;
+  max-width: 320px;
+  display: block;
+  margin: 0 auto;
+}
+.futuhat-radyal__tether {
+  stroke: var(--gridline);
+  stroke-width: 1.2px;
+  /* Kesikli: dört bağlamın tek bir kavramın yüzleri mi yoksa gerilimli iki
+     ayrı kullanım mı olduğu ÇÖZÜLMEDİ (OPEN_QUESTIONS #37) -- sağlam bir
+     çizgi vereceği kesinliği burada bilerek vermiyoruz. */
+  stroke-dasharray: 2 4;
+}
+.futuhat-radyal__dot {
+  fill: var(--page-plane);
+  stroke: var(--text-secondary);
+  stroke-width: 1.3px;
+}
+.futuhat-radyal__merkez-dot {
+  fill: var(--series-theme);
+  stroke: var(--series-theme);
+}
+.futuhat-radyal__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  fill: var(--text-primary);
+}
+.futuhat-radyal__not {
+  font-size: 0.6rem;
+  fill: var(--text-secondary);
+}
+.futuhat-radyal__merkez-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  fill: var(--on-accent-text);
+}
+
+.futuhat-perdegoz__svg {
+  width: 100%;
+  max-width: 360px;
+  display: block;
+  margin: 0 auto;
+}
+.futuhat-perdegoz__ray {
+  stroke: var(--series-theme);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.futuhat-perdegoz__kaynak {
+  fill: var(--series-theme);
+  stroke: var(--series-theme);
+}
+.futuhat-perdegoz__kaynak-hale {
+  fill: var(--series-theme);
+  opacity: 0.16;
+}
+.futuhat-perdegoz__perde {
+  /* Matlık = perdelenme (GORSEL_DIL.md); keskin konturlu bir halka/dikdörtgen
+     değil, bulanıklaştırma filtresiyle yumuşatılmış, yarı saydam bir bant. */
+  fill: var(--text-muted);
+  opacity: 0.5;
+}
+.futuhat-perdegoz__goz {
+  /* Perdenin arkasında -- ışık ona ulaşmıyor değil, o ışığı görmüyor. */
+  fill: var(--page-plane);
+  stroke: var(--text-muted);
+  stroke-width: 1.3px;
+  opacity: 0.55;
+}
+.futuhat-perdegoz__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  fill: var(--text-primary);
+}
+.futuhat-perdegoz__note {
+  font-size: 0.6rem;
+  fill: var(--text-secondary);
 }
 
 .futuhat-sources {
@@ -3073,14 +3231,29 @@ a.daphne-bag__ad { color: var(--accent-interactive); }
 
 .detail-panel {
   position: fixed;
-  top: 0;
+  /* Starting the box below the app header (not padding-top alone) removes
+     that space from the scrollable area entirely -- but a SECOND, smaller
+     leak remained even after that fix: the panel's own padding-top (12px)
+     sits ABOVE the sticky .typography-controls bar, and since padding is
+     part of the scrollport that overflow-y:auto clips (not part of the
+     scrollport that's covered by an opaque background), scrolled content
+     was still visible through that 12px strip -- content peeking out
+     above the sticky bar's stuck position instead of staying hidden
+     behind it (kullanıcı bildirimi, 2026-08-04: "kayan yazı köprünün üst
+     kısmında yeniden görünür oluyor", ikinci tur: "düzeltme işe yaramadı
+     halen aynı görüntü var"). Fix: give the panel NO top padding, and let
+     the sticky bar reserve that same 12px as its OWN padding-top instead
+     -- its opaque background then covers the strip that used to be a
+     peephole, because the sticky element now starts flush with the
+     panel's true (padding-free) top edge. See .typography-controls. */
+  top: var(--app-header-height, 96px);
   right: 0;
-  height: 100%;
+  height: calc(100% - var(--app-header-height, 96px));
   width: min(420px, 92vw);
   background: var(--surface-1);
   border-left: 1px solid var(--border);
   box-shadow: -8px 0 24px rgba(20,15,8,0.15);
-  padding: calc(var(--app-header-height, 96px) + 12px) 24px 24px;
+  padding: 0 24px 24px;
   overflow-y: auto;
   z-index: 55;
   animation: detail-panel-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
@@ -3983,13 +4156,31 @@ details[open] .siir-card__not-toggle::before { content: "▾ "; }
   color: var(--text-muted);
   font-style: normal;
 }
-.cross-link {
+.cross-link,
+/* Fütûhât/Füsûs atlaslarındaki gibi metnin içine elle yazılmış iç
+   bağlantılar (örn. "bkz. 149. kısım") linkify()'ın ürettiği .cross-link
+   sınıfını taşımıyordu -- otomatik terim linkleri altın/noktalı çizgiyle
+   belirgin görünürken bu elle yazılmış linkler sınıfsız kaldığı için
+   tarayıcının varsayılan mavi/düz stiline düşüyordu (kullanıcı bildirimi,
+   2026-08-04: "standardı var mı kontrol edelim, sitenin her yerinde aynı
+   olmalı"). Dış linkler (target dolu) ve mailto: bilerek dışarıda
+   bırakıldı, onlar zaten farklı bir sözleşmeye (yeni sekmede açılma) tabi. */
+a[href]:not([class]):not([target]):not([href^="mailto:"]) {
   color: var(--accent-interactive);
   text-decoration: none;
   border-bottom: 1px dotted var(--accent-interactive);
 }
-.cross-link:hover { border-bottom-style: solid; }
-.cross-link:focus-visible {
+/* Gündüz modunda çapraz linkler soluk kalıyordu (kullanıcı bildirimi,
+   2026-08-04) -- karanlık modun kendi rengi (#c98500) zaten daha canlı,
+   bu yüzden yalnız gündüz için çizgiyi belirginleştiriyoruz. */
+.viz-root:not([data-theme="dark"]) .cross-link,
+.viz-root:not([data-theme="dark"]) a[href]:not([class]):not([target]):not([href^="mailto:"]) {
+  border-bottom-width: 2px;
+}
+.cross-link:hover,
+a[href]:not([class]):not([target]):not([href^="mailto:"]):hover { border-bottom-style: solid; }
+.cross-link:focus-visible,
+a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
   outline: 2px solid var(--accent-interactive);
   outline-offset: 2px;
   border-radius: 2px;
@@ -4042,7 +4233,7 @@ details[open] .siir-card__not-toggle::before { content: "▾ "; }
 
 @media (max-width: 640px) {
   .app-header { flex-direction: column; }
-  .detail-panel { width: 100vw; padding-top: calc(var(--app-header-height, 64px) + 12px); z-index: 60; }
+  .detail-panel { width: 100vw; top: var(--app-header-height, 64px); height: calc(100% - var(--app-header-height, 64px)); z-index: 60; }
   .detail-panel__close { top: 12px; z-index: 61; }
   .detail-panel__print { top: 12px; right: 64px; z-index: 61; }
   .btn-ghost { padding: 8px 11px; font-size: 0.8rem; }
@@ -4175,54 +4366,11 @@ details[open] .siir-card__not-toggle::before { content: "▾ "; }
   font-size: 0.7em;
 }
 
-.welcome-screen__line--en,
-.welcome-screen__line--pt {
+.welcome-screen__line--en {
   font-size: clamp(0.85rem, 2.6vw, 1.05rem);
   font-style: italic;
   color: rgba(245,234,208,0.72);
   margin-top: 7px;
-}
-
-.welcome-screen__line--tagline {
-  font-family: var(--font-body);
-  font-size: clamp(0.72rem, 1.8vw, 0.8rem);
-  letter-spacing: 0.02em;
-  color: rgba(245,234,208,0.55);
-  margin-top: 16px;
-}
-
-/* B4 "Bugünün parçası" -- tagline'ın altında, ondan da soluk, tek satırlık
-   ve alıntı olduğunu belli eden italik bir iz. */
-.welcome-screen__line--gunun {
-  font-family: var(--font-body);
-  font-style: italic;
-  font-size: clamp(0.68rem, 1.6vw, 0.76rem);
-  letter-spacing: 0.01em;
-  color: rgba(245,234,208,0.4);
-  margin-top: 8px;
-}
-
-/* B3 "Neredeyiz" -- Fütûhât/Füsûs okumasının sayısal durumu, iki küçük
-   halka olarak. Yorum taşımıyor, yalnız sayım (kaynak: okuma-durumu.json). */
-.welcome-neredeyiz {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 10px;
-}
-.welcome-neredeyiz__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.welcome-neredeyiz__track { stroke: rgba(245,234,208,0.18); }
-.welcome-neredeyiz__fill { stroke: rgba(245,234,208,0.75); }
-.welcome-neredeyiz__label {
-  font-family: var(--font-body);
-  font-size: clamp(0.64rem, 1.5vw, 0.72rem);
-  letter-spacing: 0.01em;
-  color: rgba(245,234,208,0.55);
-  font-variant-numeric: tabular-nums;
 }
 
 .welcome-screen__skip {
@@ -4375,8 +4523,13 @@ details[open] .siir-card__not-toggle::before { content: "▾ "; }
      the notebook star button was added further left and started silently
      hiding the A+ button under it (2026-08-01 kullanıcı notu). Push them
      clear of the full reserved zone instead of letting them sit underneath
-     it. */
-  padding: 0 164px 12px 0;
+     it.
+     padding-top:12px (moved here from .detail-panel's own padding, see
+     that rule's comment) is what keeps this bar off the panel's very top
+     edge -- kept here instead so the bar's own opaque background covers
+     that space too, closing the scroll-peephole that padding on the
+     scrolling ancestor left open. */
+  padding: 12px 164px 12px 0;
   border-bottom: 1px solid var(--gridline);
   position: sticky;
   top: 0;
@@ -5889,9 +6042,18 @@ details[open] .siir-card__not-toggle::before { content: "▾ "; }
 .cizim-lightbox__svg-wrap .cizim-card__svg,
 .cizim-lightbox__svg-wrap .term-diagram__svg,
 .cizim-lightbox__svg-wrap .futuhat-tree__svg,
-.cizim-lightbox__svg-wrap .futuhat-triad__svg {
+.cizim-lightbox__svg-wrap .futuhat-triad__svg,
+.cizim-lightbox__svg-wrap .futuhat-akis__svg {
   width: 100%;
   max-width: 1000px;
+}
+.cizim-lightbox__svg-wrap .futuhat-radyal__svg {
+  width: 100%;
+  max-width: 460px;
+}
+.cizim-lightbox__svg-wrap .futuhat-perdegoz__svg {
+  width: 100%;
+  max-width: 640px;
 }
 
 /* Füsûs'ün sarmal sahnesi (assets/helix.js), lightbox içinde yeniden
@@ -6631,6 +6793,25 @@ body.share-stage-open { overflow: hidden; }
 .share-halo {
   fill: var(--sahne-hale);
   filter: blur(18px);
+}
+/* Sarmalın tepesindeki Zât düğümünün hâlesi -- ontoloji/esmâ'daki
+   .node--root .node-halo ile AYNI nefes ritmi (2026-08-04, kullanıcı
+   isteği: "zat düğümü sitede her nerede geçiyorsa daima birebir aynı
+   olmalı"). Işık kaynağı statik bir parıltı filtresi değil, altı
+   saniyelik nefes alan bir hâle -- oradaki gibi burada da. */
+.share-zat-halo {
+  fill: var(--sahne-vurgu);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: share-zat-halo-breathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes share-zat-halo-breathe {
+  0%, 100% { opacity: 0.14; transform: scale(1); }
+  50%      { opacity: 0.34; transform: scale(1.4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .share-zat-halo { animation: none; opacity: 0.2; }
 }
 /* Metin, TikTok arayüzünün kapatmadığı orta bandda kalıyor: altta ~%20,
    sağda ~%18 butonlarla örtülüyor. */
@@ -7560,7 +7741,12 @@ mark.durus-vurgu-es {
   align-items: start;
 }
 @media (min-width: 1000px) {
-  .fusus-shell { grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); }
+  /* Sarmalın odaktaki düğüm etiketi (.helix-scene__svg'nin overflow:visible
+     olması yüzünden) bazen sidebar sınırını aşıp sağdaki metne giriyordu
+     (2026-08-04 kullanıcı bildirimi, /fusus/fs27). Etiketin taşabileceği
+     kadar boşluk bırakmak için sütun aralığını dar viewport'ların (18-34px)
+     üstünde, geniş viewport'ta belirgin biçimde açıyoruz. */
+  .fusus-shell { grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: clamp(48px, 7vw, 88px); }
   .fusus-sidebar { position: sticky; top: 84px; }
 }
 .fusus-sidebar { min-width: 0; }
@@ -7893,8 +8079,10 @@ mark.durus-vurgu-es {
   transform: none;
 }
 .ayet-tip__ar {
-  font-size: 1.15rem;
-  line-height: 1.9;
+  font-family: var(--font-arabic);
+  font-size: 1.25rem;
+  line-height: 2;
+  letter-spacing: 0.01em;
   margin: 0 0 0.5em;
   color: var(--text-primary);
 }
@@ -7968,9 +8156,11 @@ mark.durus-vurgu-es {
   flex: 0 0 auto;
 }
 .ayethadis-item__ar {
-  font-size: 1.05rem;
-  line-height: 1.85;
-  margin: 0 0 0.4em;
+  font-family: var(--font-arabic);
+  font-size: 1.3rem;
+  line-height: 2.1;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.5em;
   color: var(--text-primary);
 }
 .ayethadis-item__meal {
@@ -8126,6 +8316,23 @@ mark.durus-vurgu-es {
   max-height: 70vh;
   overflow-y: auto;
   text-align: left;
+  /* .legend__body'deki ince altın çizgiyle aynı desen -- tarayıcının çıplak
+     varsayılan çubuğu yerine sitenin kendi paletine uyan bir iz. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--series-theme) 32%, transparent) transparent;
+}
+.esma-fca-lightbox::-webkit-scrollbar {
+  width: 3px;
+}
+.esma-fca-lightbox::-webkit-scrollbar-track {
+  background: transparent;
+}
+.esma-fca-lightbox::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--series-theme) 32%, transparent);
+  border-radius: 999px;
+}
+.esma-fca-lightbox::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--series-theme) 55%, transparent);
 }
 .esma-fca-lightbox__not {
   margin: 0 0 1rem;
@@ -8267,13 +8474,10 @@ mark.durus-vurgu-es {
 }
 .kavram-tile__gauge-arc {
   fill: none;
-  stroke: hsl(var(--tag-hue, 38) 42% 44%);
+  stroke: var(--helix-gold-rim);
   stroke-width: 2.4;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.viz-root[data-theme="dark"] .kavram-tile__gauge-arc {
-  stroke: hsl(var(--tag-hue, 38) 48% 62%);
 }
 @media (max-width: 480px) {
   .kavram-list__grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
