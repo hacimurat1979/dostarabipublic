@@ -97,6 +97,7 @@
   --series-celal:     #a83246; /* garnet / majesty */
   --series-cemal:     #2f8f7a; /* jade / beauty */
   --series-kemal:     #a6821f; /* gold / names combining celal and cemal */
+  --series-kemal-text: #8c6d1a; /* darker text-safe variant, ~4.61:1 on this page-plane (bkz. G13 erişilebilirlik taraması, 2026-08-05 -- düz --series-kemal metin olarak yalnız 3.41:1) */
   --series-esma-neutral: #9b998f; /* grey / group headers, beyond the polarity */
 
   /* 2026-08-01: kullanıcı bu altısının Ontoloji/Esmâ'ya göre soluk kaldığını
@@ -165,6 +166,7 @@
   --series-celal:     #d5677a;
   --series-cemal:     #4bb69d;
   --series-kemal:     #d9b555;
+  --series-kemal-text: #d9b555; /* zaten ~9.89:1, ayrı bir varyant gerekmiyor */
   --series-esma-neutral: #7c7a70;
 
   --series-hal-nefs:      #bfac88;
@@ -547,6 +549,15 @@ html {
   cursor: pointer;
 }
 .btn-ghost:hover { background: var(--gridline); }
+/* Fütûhât'ın kendi kardeş görünümleri (Kur'ân Dokusu / Mimarisi) --
+   drawer'ın kendisi kaydırmalı-flex bir pill dizisi olduğu için girinti
+   satır kaydığında anlamını kaybediyor; "↳" öneki (etikette, HTML'de) ve
+   bu hafif küçültme/soluklaştırma "Fütûhât'a bağlı" hissini taşıyor. */
+.btn-ghost--sub {
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  color: var(--text-secondary);
+}
 .btn-ghost--active {
   background: var(--text-primary);
   color: var(--surface-1);
@@ -624,11 +635,39 @@ html {
 }
 .nav-drawer__heading {
   margin: 0 0 8px;
-  font-size: 0.68rem;
+  font-size: 0.875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
+/* Grup collapse (bkz. assets/nav-drawer.js wireGroupCollapse). Gerçek bir
+   <button> DEĞİL -- <p role="button"> -- çünkü drawer'ın kendi "bir
+   düğmeye tıklayınca çekmeceyi kapat" dinleyicisi `closest("button")`
+   arıyor; gerçek bir buton olsaydı grup açılırken çekmece de kapanırdı.
+   Ok işareti ::after ile: [data-tr] üzerindeki her dil değişiminde
+   textContent yeniden yazılıyor (bkz. .btn-ghost--yeni::after'ın aynı
+   notu), bir DOM çocuğu hayatta kalamazdı. */
+.nav-drawer__heading[role="button"] {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.nav-drawer__heading[role="button"]:hover { color: var(--text-secondary); }
+.nav-drawer__heading[role="button"]:focus-visible {
+  outline: 2px solid var(--accent-interactive);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+.nav-drawer__heading[role="button"]::after {
+  content: "▾";
+  font-size: 0.85em;
+  transition: transform 0.15s ease;
+}
+.nav-drawer__heading[aria-expanded="false"]::after { transform: rotate(-90deg); }
+.nav-drawer__group--collapsed .nav-drawer__items { display: none; }
 .nav-drawer__items {
   display: flex;
   flex-wrap: wrap;
@@ -806,7 +845,7 @@ body.sessiz-mod-on .app-header {
   min-width: 0;
 }
 .defter-panel__item-eyebrow {
-  font-size: 0.68rem;
+  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-muted);
@@ -1548,7 +1587,7 @@ text.sorular-label--cat {
 .futuhat-parts__cilt::-webkit-details-marker { display: none; }
 .futuhat-parts__cilt::before {
   content: "▸";
-  font-size: 0.6rem;
+  font-size: 0.875rem;
   transition: transform 0.2s ease;
   flex-shrink: 0;
 }
@@ -3252,7 +3291,7 @@ a.daphne-bag__ad { color: var(--accent-interactive); }
 .daphne-bag__tur {
   display: inline-block;
   margin-bottom: 4px;
-  font-size: 0.66rem;
+  font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 1px 7px;
@@ -3267,7 +3306,7 @@ a.daphne-bag__ad { color: var(--accent-interactive); }
 }
 .daphne-bag--soru { border-left-color: var(--series-kemal); }
 .daphne-bag--soru .daphne-bag__tur {
-  color: var(--series-kemal);
+  color: var(--series-kemal-text);
   background: color-mix(in srgb, var(--series-kemal) 16%, transparent);
 }
 .daphne-bag__neden {
@@ -3617,6 +3656,44 @@ html:has(.detail-panel:not([hidden])) {
   font-weight: 600;
 }
 .hakkinda-subtab:focus-visible {
+  outline: 2px solid var(--accent-interactive);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Akraba sekmeler (bkz. graph-utils.js wireRelatedTabs) ───────────────
+   Hakkında'nın alt-sekmeleriyle AYNI görsel dil (ETKILESIM_DILI.md: bir
+   hareketin/desenin anlamı görünümde değil sözleşmede tanımlı). .graph-wrap
+   kutularının içine değil, <main>'in normal akışına oturuyor -- absolute
+   konumlu recenter/hint düğmeleriyle çakışmasın ve sabit yükseklikli SVG
+   kutularının kendi ölçümlerini bozmasın diye. */
+.related-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0 clamp(16px, 4vw, 48px) 14px;
+}
+.related-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 7px 14px 9px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+.related-tab:hover { color: var(--text-primary); }
+.related-tab--active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-interactive);
+  font-weight: 600;
+}
+.related-tab:focus-visible {
   outline: 2px solid var(--accent-interactive);
   outline-offset: 2px;
   border-radius: 4px;
@@ -5704,7 +5781,7 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
    görünüyor. İlişkinin adı üstte küçük bir üst-etiket, gerekçesi altında
    normal metin, güvenimiz (kesin saymadığımız yerlerde) en altta. */
 .node-hover-tip__eyebrow {
-  font-size: 0.68rem;
+  font-size: 0.875rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -9135,10 +9212,12 @@ mark.durus-vurgu-es {
 .elestiri-rol-rozet--savunmaci { border-color: color-mix(in srgb, var(--series-cemal) 55%, var(--border)); }
 .elestiri-rol-rozet--hukumdar { border-color: color-mix(in srgb, var(--series-theme) 55%, var(--border)); }
 .elestiri-rol-rozet--kaynak-tarihci { border-color: color-mix(in srgb, var(--series-ibnarabi) 55%, var(--border)); }
+.elestiri-rol-rozet--benimseyen-elestirmen { border-color: color-mix(in srgb, var(--series-kemal) 55%, var(--border)); }
 
 .elestiri-kimlik { color: var(--text-secondary); font-size: 0.86rem; margin: 2px 0 12px; }
 .elestiri-kaynak-satiri { color: var(--text-secondary); font-size: 0.82rem; margin: 8px 0 0; }
 .elestiri-kaynak-satiri--omurga { margin-top: 16px; }
+.elestiri-kaynak-satiri__not { color: var(--text-muted); }
 
 .elestiri-bag-listesi { display: flex; flex-direction: column; gap: 6px; }
 .elestiri-bag-satiri {
@@ -9474,6 +9553,14 @@ button.kuran-dokusu-satir:focus-visible {
 
 .seyahat-durak { cursor: pointer; }
 .seyahat-durak:focus { outline: none; }
+/* Kardeş düğüm sınıflarının (eser-agi-eser, kuran-dokusu-sure, ...) hepsinde
+   :focus-visible bir vurgu var; burada eksikti -- klavyeyle gezinen biri
+   hangi durakta olduğunu hiç göremiyordu (bkz. G13 erişilebilirlik
+   taraması, 2026-08-05). */
+.seyahat-durak:focus-visible .seyahat-durak__nokta {
+  stroke: var(--text-primary);
+  stroke-width: 2.4;
+}
 .seyahat-durak__nokta {
   fill: var(--series-ibnarabi);
   stroke: var(--surface-1);
