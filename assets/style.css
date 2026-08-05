@@ -3051,6 +3051,35 @@ body[data-theme="dark"] #sirlar-legend {
   stroke-width: 2.5px;
 }
 
+/* compare.html'in "Ortak Temalar" grafiği (#compare-wrap) -- ontoloji
+   haritasıyla AYNI .link sınıfını paylaşıyor, o yüzden burada kapsamlı
+   bir override; genel kuralı değiştirmek index.html'deki ana haritayı da
+   soldururdu.
+   Neden ayrı: yukarıdaki 0.55 zaten 2026-08-04 12:30'da bir kullanıcı
+   bildirimiyle indirilmişti; kullanıcı aynı gün 17:07'de, YANİ O
+   DÜZELTMEDEN SONRA, bu grafiği hâlâ "çok koyu" buldu. Sebebi tekil
+   çizginin koyuluğundan çok YOĞUNLUK: burada iki merkez (İbn Arabî ve
+   Daphne) ile onlarca tema arasında kesişen çok sayıda kenar var, ontoloji
+   haritasında ise kenarlar daha seyrek. Aynı opaklık, sık kesişen bir
+   dokuda çok daha koyu bir kütle olarak görünüyor.
+   Dinginlikte soluk, etkileşimde net: .link--highlight (0.9) olduğu gibi
+   duruyor, yani ilişkiyi görmek isteyen düğüme dokununca tam kontrastı
+   alıyor -- bilgi kaybolmuyor, yalnız dinlenme hâli sakinleşiyor. */
+#compare-wrap .link {
+  stroke-opacity: 0.3;
+  stroke-width: 1.2px;
+}
+/* Vurgu kuralı da kapsamlı yazılmak ZORUNDA: yukarıdaki seçici id+sınıf
+   (1,1,0), .link--highlight ise yalnız sınıf (0,1,0) -- yani özgüllük
+   yarışını dinlenme hâli kazanıyordu ve üzerine gelince çizgi hiç
+   belirginleşmiyordu. Playwright ölçümü yakaladı: vurguluyken de 0.3
+   okunuyordu. Dinginlikte soluk / etkileşimde net dengesi tam olarak
+   buna bağlı. */
+#compare-wrap .link--highlight {
+  stroke-opacity: 0.85;
+  stroke-width: 2.2px;
+}
+
 .arrowhead {
   /* Ok başları için hiç kural yoktu -- SVG varsayılanı fill:black'e
      düşüyorlardı, bu yüzden soluk altın çizginin ucunda birer koyu, keskin
@@ -7626,6 +7655,15 @@ body.share-stage-open { overflow: hidden; }
 .durus-cip button:hover { background: color-mix(in srgb, var(--helix-gold) 14%, transparent); }
 .durus-cip__sayac { display: flex; gap: 0.5rem; }
 .durus-cip__site { border-left: 1px solid var(--gridline) !important; }
+/* Mekanik tahkik düğmesi -- duruş taramasının kardeşi, aynı çipte. */
+.durus-cip__tahkik { border-left: 1px solid var(--gridline) !important; }
+.durus-site__ozet { margin: 0 0 .4rem; font-size: .88rem; color: var(--text-primary); }
+.durus-site__not { margin: 0 0 1rem; font-size: .8rem; color: var(--text-muted); line-height: 1.55; }
+.durus-site__not code { font-size: .95em; }
+.durus-site__ornek {
+  margin: .3rem 0 .5rem; font-size: .8rem; color: var(--text-secondary);
+  font-style: italic; line-height: 1.5;
+}
 .durus-cip__k { color: var(--text-primary); font-weight: 600; }
 .durus-cip__temiz { color: var(--text-muted); }
 
@@ -9424,6 +9462,15 @@ mark.durus-vurgu-es {
   stroke-width: 1;
   opacity: 0.5;
 }
+/* Atıf bulunmayan sûrelerin halka üzerindeki izi. Halkanın Kur'ân'ın
+   TAMAMI olduğunu ve o konumlarda atıf bulunmadığını gösteriyor -- bir
+   düğüm değil, bir yokluk işareti. Bu yüzden düğümlerden belirgin biçimde
+   soluk: yanlışlıkla "küçük bir sûre düğümü" sanılmamalı. */
+.kuran-dokusu-atifsiz {
+  fill: var(--text-muted);
+  opacity: 0.28;
+  pointer-events: none;
+}
 .kuran-dokusu-kenar {
   stroke: var(--series-ibnarabi);
   stroke-opacity: 0.4;
@@ -9560,6 +9607,54 @@ button.kuran-dokusu-satir:focus-visible {
 }
 .futuhat-mimarisi-kapanis {
   fill: var(--helix-gold-rim);
+}
+
+/* İç halka: 560 babın her biri için bir çentik. Kur'ân Dokusu'ndaki kararın
+   aynısı -- okunmayan bab silinmiyor, soluk duruyor; halka tam okunuyor ve
+   boşluk onun içinde görünür kalıyor. Dolu çentik tıklanabilir, o babı
+   işleyen okuma birimine götürüyor. */
+.futuhat-mimarisi-bab {
+  stroke-width: 1.1px;
+  stroke-linecap: butt;
+}
+.futuhat-mimarisi-bab--bos {
+  stroke: var(--text-muted);
+  opacity: 0.22;
+  pointer-events: none;
+}
+.futuhat-mimarisi-bab--dolu {
+  stroke: var(--series-ibnarabi);
+  opacity: 0.85;
+  pointer-events: none;   /* etkileşim avcı halkasında */
+}
+/* Vurgu bab'a değil KISMA veriliyor: tıklayınca gidilen yer okuma birimi,
+   o yüzden aynı kısmın bütün çentikleri birlikte parlıyor. */
+.futuhat-mimarisi-bab--deginiliyor {
+  stroke: var(--helix-gold-rim);
+  stroke-width: 2.6px;
+  opacity: 1;
+}
+/* Tek saydam halka bütün imleç olaylarını yakalıyor; bab açıdan hesaplanıyor.
+   560 çentiğe tek tek vuruş alanı vermek komşuların üstüne biniyordu. */
+.futuhat-mimarisi-bab-avci {
+  fill: transparent;
+  cursor: pointer;
+}
+/* Klavye durakları: görünmez, yalnız odaklanınca beliriyor. */
+.futuhat-mimarisi-kisim-odak {
+  stroke: transparent;
+  stroke-width: 2px;
+  pointer-events: none;
+}
+.futuhat-mimarisi-kisim-odak:focus-visible {
+  stroke: var(--helix-gold-rim);
+  stroke-width: 3px;
+  outline: none;
+}
+.futuhat-mimarisi-kapsam {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
