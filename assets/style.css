@@ -7664,6 +7664,29 @@ body.share-stage-open { overflow: hidden; }
   margin: .3rem 0 .5rem; font-size: .8rem; color: var(--text-secondary);
   font-style: italic; line-height: 1.5;
 }
+/* Tahkik panelinde kaynak süzgeci. Tarama bütün siteye bakmaya başlayınca
+   bulgu sayısı birkaç yüze çıktı; tek liste okunmuyor, dosya dosya
+   çalışılıyor. Süzgeç hiçbir bulguyu gizlemiyor -- "Hepsi" hep orada. */
+.durus-site__suzgec {
+  display: flex; flex-wrap: wrap; gap: .3rem;
+  margin: 0 0 1rem; padding-bottom: .7rem;
+  border-bottom: 1px solid var(--gridline);
+}
+.durus-site__suzgec button {
+  min-height: 30px; padding: .25rem .55rem;
+  border: 1px solid var(--gridline); border-radius: 999px;
+  background: transparent; color: var(--text-secondary);
+  font-size: .76rem; font-family: inherit; cursor: pointer;
+}
+.durus-site__suzgec button:hover {
+  background: color-mix(in srgb, var(--helix-gold) 12%, transparent);
+  color: var(--text-primary);
+}
+.durus-site__suzgec button[aria-pressed="true"] {
+  border-color: var(--helix-gold);
+  background: color-mix(in srgb, var(--helix-gold) 18%, transparent);
+  color: var(--text-primary);
+}
 .durus-cip__k { color: var(--text-primary); font-weight: 600; }
 .durus-cip__temiz { color: var(--text-muted); }
 
@@ -9462,15 +9485,6 @@ mark.durus-vurgu-es {
   stroke-width: 1;
   opacity: 0.5;
 }
-/* Atıf bulunmayan sûrelerin halka üzerindeki izi. Halkanın Kur'ân'ın
-   TAMAMI olduğunu ve o konumlarda atıf bulunmadığını gösteriyor -- bir
-   düğüm değil, bir yokluk işareti. Bu yüzden düğümlerden belirgin biçimde
-   soluk: yanlışlıkla "küçük bir sûre düğümü" sanılmamalı. */
-.kuran-dokusu-atifsiz {
-  fill: var(--text-muted);
-  opacity: 0.28;
-  pointer-events: none;
-}
 .kuran-dokusu-kenar {
   stroke: var(--series-ibnarabi);
   stroke-opacity: 0.4;
@@ -9493,9 +9507,10 @@ mark.durus-vurgu-es {
   transform-origin: center;
 }
 .kuran-dokusu-sure__etiket {
-  /* 2026-08-05: eser-agi-eser__etiket'teki aynı gerekçeyle geri alındı --
-     yoğun kümede (sûre başları) gerçek çakışma görüldü. Bkz. o kuralın
-     üstündeki not. */
+  /* Etiketler artık yarıçap yönünde ve düğümler eşit aralıklı; çakışmayı
+     yaratan sıkışma kalktığı için (bkz. kuran-dokusu.js yerleşim notu)
+     0.66rem'de gerçek bir bindirme yok. Yine de büyütmüyoruz: teğet
+     aralık ~70 piksel, uzun sûre adları komşusuna yaklaşıyor. */
   font-size: 0.66rem;
   fill: var(--text-secondary);
   pointer-events: none;
