@@ -5,69 +5,77 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <!-- Ayna Metaforu — Dost Arabi görselleştirme
-     2026-08-12: sahne sıfırdan yazıldı. Etkileşim yok, seyredilen bir
-     anlatım. Storyboard: 6 kare, 7.2 sn. GSAP timeline. Tek hedef cümle:
-     "Subhanallah, demek mana, hakikat buymuş." Ayrıntı için:
-     research/anlayis-evrimi/AYNA-SIFIRDAN.md (henüz yazılmadıysa: sohbet
-     kaydında storyboard duruyor). -->
+     2026-08-12 v4: Tek ayna, sabit; suretler değişir.
+     v3 (iki ayna, cilalanan/kaybolan yüzey, kul silueti, sonsuzluk
+     tüneli) emekliye ayrıldı. Yeni sahne, İbn Arabî'nin ayna
+     metaforunun tek ve en yalın cümlesini gösterir:
+         "Suretler değişir; ayna aynıdır."
+     Karanlıkta beliren tek antik ayna. Aynanın içinde altı suret
+     art arda beliriyor: dağ, dalga, alev, ağaç, yıldızlı gece,
+     kuş -- dört unsur + gök + bir canlı. Sonra hepsi ortak bir
+     ışığa eriyor; ayna yine boş, ama görmüş bir gözle.
+     6 kare, 9 sn. Metin yok. Alt başlık dışında hiçbir yerde
+     yazı ya da hat kullanılmaz. Zât ne halesi, ne huzme, ne
+     kaynak olarak çizilir -- sadece "ışığın kendisi" olarak
+     aynanın iç yüzeyinde durur. -->
 <title>Ayna Metaforu — Dost Arabi</title>
 <style>
 :root{
+  /* Dark tema varsayılanı */
   --bg:#0D0D0D; --surface:#1A1A19; --border:#2C2C2A;
   --text:#EDE9E2; --muted:#898781;
-  --gold:#FFC233;         /* ışık = tecellî */
-  --gold-soft:#FFDE84;
-  --amber:#C98500;        /* yansıma = bilgi */
-  --dust:#4A4842;         /* mat kalp, perde durumu */
-  --world:#8A5018;        /* âlem, sıcak toprak */
-  --panel:#161614;
+  --gold:#FFC233; --gold-soft:#FFDE84; --gold-warm:#FFF3C9;
+  --amber:#D89B3C; --amber-soft:#F5C874;
+  --cerceve:#8C6D2E;     /* aynanın ince altın çerçevesi -- iki temada aynı */
+  --ic-derin:#241D12;    /* aynanın iç yüzeyi, koyu sıcak */
+  --ic-yumus:#3A2C15;    /* iç yüzeyin merkez ışığı */
+  --suret:#E9CE7A;       /* suretlerin siluet rengi -- ışıklı ama silik */
+  --panel:#0B0906;       /* sahne alanı zemini */
 }
+/* Light tema: sahne alanı zemini SICAK KREM (siyah kare değil).
+   Ayna iç yüzeyi de light temaya uygun: açık amber → koyu amber
+   gradient. Suret rengi koyu altın (ışıklı zemin üzerinde okunur). */
 @media(prefers-color-scheme:light){:root{
   --bg:#F9F9F7; --surface:#FCFCFB; --border:#E1E0D9;
   --text:#1A1A1A; --muted:#6F6D65;
-  --gold:#8A6100; --gold-soft:#C7973C; --amber:#8C6D1A;
-  --dust:#C8C4B6; --world:#6E3A08; --panel:#FCFCFB;
+  --gold:#B07800; --gold-soft:#D4A03E; --gold-warm:#F1E3B7;
+  --amber:#8C5A18; --amber-soft:#BE8E48;
+  --cerceve:#8C6D2E;
+  --ic-derin:#B7924A; --ic-yumus:#F1E3B7;
+  --suret:#5D4718;
+  --panel:#E6DFCA;
 }}
-:root[data-theme=dark]{--bg:#0D0D0D;--surface:#1A1A19;--border:#2C2C2A;--text:#EDE9E2;--muted:#898781;--gold:#FFC233;--gold-soft:#FFDE84;--amber:#C98500;--dust:#4A4842;--world:#8A5018;--panel:#161614}
-:root[data-theme=light]{--bg:#F9F9F7;--surface:#FCFCFB;--border:#E1E0D9;--text:#1A1A1A;--muted:#6F6D65;--gold:#8A6100;--gold-soft:#C7973C;--amber:#8C6D1A;--dust:#C8C4B6;--world:#6E3A08;--panel:#FCFCFB}
+:root[data-theme=dark]{--bg:#0D0D0D;--surface:#1A1A19;--border:#2C2C2A;--text:#EDE9E2;--muted:#898781;--gold:#FFC233;--gold-soft:#FFDE84;--gold-warm:#FFF3C9;--amber:#D89B3C;--amber-soft:#F5C874;--cerceve:#8C6D2E;--ic-derin:#241D12;--ic-yumus:#3A2C15;--suret:#E9CE7A;--panel:#0B0906}
+:root[data-theme=light]{--bg:#F9F9F7;--surface:#FCFCFB;--border:#E1E0D9;--text:#1A1A1A;--muted:#6F6D65;--gold:#B07800;--gold-soft:#D4A03E;--gold-warm:#F1E3B7;--amber:#8C5A18;--amber-soft:#BE8E48;--cerceve:#8C6D2E;--ic-derin:#B7924A;--ic-yumus:#F1E3B7;--suret:#5D4718;--panel:#E6DFCA}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;min-height:100vh;padding:1.6rem 1rem 3rem;display:flex;flex-direction:column;align-items:center}
-header{text-align:center;margin-bottom:1.2rem}
+body{background:var(--bg);color:var(--text);font-family:Georgia,'Times New Roman',serif;
+  min-height:100vh;padding:1.6rem 1rem 3rem;display:flex;flex-direction:column;align-items:center}
+header{text-align:center;margin-bottom:1.2rem;max-width:640px}
 h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.06em;color:var(--gold);margin-bottom:.4rem}
 .sub{color:var(--muted);font-size:.87rem;font-style:italic;line-height:1.65;max-width:520px;margin:0 auto}
 
-.stage{position:relative;width:min(620px,96vw);aspect-ratio:11/6;background:var(--panel);
+/* Sahne alanı: koyu, sinematik. */
+.stage{position:relative;width:min(680px,96vw);aspect-ratio:11/6;background:var(--panel);
   border:1px solid var(--border);border-radius:12px;overflow:hidden;
-  box-shadow:0 4px 20px rgba(0,0,0,.14)}
+  box-shadow:0 4px 24px rgba(0,0,0,.25)}
 .stage svg{width:100%;height:100%;display:block}
 
-/* GORSEL_DIL.md yasağı: Zât'ı parlak bir cisim gibi çizmek. Onun yerine
-   sağ üst köşede bir sis — koyu, hafif dokulu, yaklaştıkça netleşmez. */
-.zat-sis{opacity:.85}
+/* Aynanın çerçevesi -- HİÇ DEĞİŞMEZ. */
+.cerceve{fill:none;stroke:var(--cerceve);stroke-width:2.2;opacity:0}
+/* Aynanın iç yüzeyi -- boş hâlde bile "ışıklı" (koyu değil, sıcak). */
+.ic{opacity:0}
 
-/* Kalp: matlıktan yansıtır hâle. Mat=perde, düşük opaklık, kontursuz. */
-.kalp-govde{fill:var(--dust);opacity:.75;transition:none}
-.kalp-yuzey{fill:var(--gold-soft);opacity:0}
-.kalp-hale{fill:none;stroke:var(--gold);stroke-width:1;opacity:0}
+/* Suretler -- aynanın içinde beliren siluetler. Fill'li, iç detaylı;
+   bir "yansıma" olarak silik ama tanınır. Tek başlarına belirir,
+   tek başlarına söner. */
+.suret{opacity:0}
+.suret path, .suret ellipse{stroke-linecap:round;stroke-linejoin:round}
 
-/* Işık koridoru: sağ üst sisten kalbe. Başta yok, sonra netleşir. */
-.isik-koridor{stroke:var(--gold);stroke-width:2;fill:none;opacity:0;
-  stroke-linecap:round}
+/* Ortak ışığa erime anında (K4) — bütün suretlerin ortak sıcak ışığı. */
+.tek-isik{opacity:0}
 
-/* İkinci ışık: kalbin yansımasından âleme. Kaynak Zât değil, kalp. */
-.isik-ikinci{stroke:var(--amber);stroke-width:1.6;fill:none;opacity:0;
-  stroke-linecap:round}
-
-/* Âlem: sol altta sönük, sonra sıcak-altın. */
-.alem-govde{fill:var(--dust);opacity:.55}
-
-/* Cümle: sahnenin altında, sonda beliriyor. */
-.sozcuk-alan{width:min(620px,96vw);text-align:center;margin-top:1.2rem;min-height:2.2rem}
-.sozcuk{display:inline-block;font-size:clamp(.95rem,2.6vw,1.15rem);color:var(--gold);
-  font-style:italic;line-height:1.6;letter-spacing:.02em;opacity:0}
-
-.tekrar-alan{margin-top:.9rem;min-height:2.2rem;display:flex;justify-content:center}
+.tekrar-alan{margin-top:1.2rem;min-height:2.2rem;display:flex;justify-content:center}
 .tekrar-btn{display:none;align-items:center;gap:.4rem;padding:.45rem 1.1rem;
   min-height:40px;border-radius:999px;background:transparent;
   color:var(--muted);border:1px solid var(--border);
@@ -77,12 +85,9 @@ h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.06em;color:v
 .tekrar-btn:hover,.tekrar-btn:focus-visible{color:var(--gold);border-color:var(--gold);outline:none}
 .tekrar-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
-/* Etiketler yok. Sahnenin başarı ölçütü: cümlesiz de anlaşılır olsun.
-   Yalnız erişilebilirlik için görünmez ARIA açıklaması. */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
   overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-/* Sahneden çıkış: ESC + görünür bağlantı (2026-08-05 mirası). */
 .sahne-geri{position:fixed;top:12px;left:12px;z-index:60;display:inline-flex;
   align-items:center;gap:.35rem;min-height:44px;padding:0 .9rem;border-radius:999px;
   font-size:.82rem;font-family:inherit;text-decoration:none;opacity:.72;
@@ -92,9 +97,6 @@ h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.06em;color:v
 .sahne-geri:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media(max-width:520px){.sahne-geri{top:8px;left:8px;padding:0 .7rem}}
 
-/* ETKILESIM_DILI.md: hareket "atlanır, taklit edilmez". Reduced-motion
-   açıkken timeline'ı hiç kurmuyoruz -- doğrudan son kareyi gösteriyoruz
-   (aşağıda JS içinde). CSS burada yalnız emniyet katmanı. */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms !important;
@@ -103,8 +105,6 @@ h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.06em;color:v
 }
 </style>
 <script>
-// Sitenin tema seçimini miras al. Tema sıçraması olmasın diye <head>'de
-// senkron çalışıyor.
 (function(){try{var s=localStorage.getItem("dost-theme");
   if(s==="light"||s==="dark")document.documentElement.setAttribute("data-theme",s);
 }catch(e){}})();
@@ -113,67 +113,200 @@ h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.06em;color:v
 <body>
 <header>
   <h1 id="hTitle">Ayna Metaforu</h1>
-  <p class="sub" id="hSub">Bir ayna nasıl aydınlanır — ondan âlem nasıl aydınlanır.</p>
+  <p class="sub" id="hSub">Bir ayna, sayısız suret.</p>
 </header>
 
 <div class="stage" role="img" aria-labelledby="hTitle" aria-describedby="sceneDesc">
   <p id="sceneDesc" class="sr-only">
-    Ekranın sağ üstünde koyu bir sis (Zât — çizilmiyor). Sisten ortadaki
-    kalbe doğru bir ışık uzanıyor. Kalbin yüzeyinde bir yansıma doğuyor.
-    O yansımadan sol alttaki âleme ikinci bir ışık akıyor. Sonunda bir
-    cümle beliriyor: Subhanallah, demek mana, hakikat buymuş.
+    Karanlık bir alanda antik bir ayna belirir. Aynanın içinde art arda
+    farklı suretler görünür: dağ, yaprak, alev, ağaç, yıldızlı gece, bir
+    kuş. Her suret bir öncekini takip eder ve solar; ayna çerçevesi ve
+    boyutu hiç değişmez. Sonda bütün suretler kısa bir an bir arada
+    görünür ve ortak sıcak bir ışığa eriyor -- ayna yine boş kalıyor,
+    ışıklı, dingin. Suretler değişir; ayna aynıdır.
   </p>
   <svg viewBox="0 0 660 360" preserveAspectRatio="xMidYMid meet">
     <defs>
-      <!-- Zât sisi: sağ üst, netleşmeyen bir bulut. Yaklaştıkça netleşmemesi
-           GORSEL_DIL kuralı: Zât resmedilmez. -->
-      <radialGradient id="sis" cx="0.82" cy="0.18" r="0.42">
-        <stop offset="0%" stop-color="#1a1a1a" stop-opacity="0.55"/>
-        <stop offset="55%" stop-color="#1a1a1a" stop-opacity="0.22"/>
-        <stop offset="100%" stop-color="#1a1a1a" stop-opacity="0"/>
+      <!-- Aynanın iç yüzeyi: sıcak, boş bir ışık. Merkez daha parlak,
+           kenarlarda derin. -->
+      <radialGradient id="icGrad" cx="0.5" cy="0.5" r="0.6">
+        <stop offset="0%"  stop-color="var(--ic-yumus)" stop-opacity="1"/>
+        <stop offset="55%" stop-color="var(--ic-derin)" stop-opacity="1"/>
+        <stop offset="100%" stop-color="var(--panel)" stop-opacity="1"/>
       </radialGradient>
-      <!-- Kalbin yüzey yansıması: doğduğunda ışığın kendisi değil,
-           ışığın kalpteki hâli. Merkez soluk-altın, kenar yumuşak. -->
-      <radialGradient id="yansima" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0%" stop-color="var(--gold-soft)" stop-opacity="0.95"/>
-        <stop offset="60%" stop-color="var(--gold)" stop-opacity="0.55"/>
-        <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/>
+
+      <!-- Ortak ışığa erime (K4): merkezde çok parlak altın, dışa
+           yumuşayan. -->
+      <radialGradient id="tekIsikGrad" cx="0.5" cy="0.5" r="0.55">
+        <stop offset="0%"  stop-color="var(--gold-warm)" stop-opacity="1"/>
+        <stop offset="45%" stop-color="var(--gold-soft)" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="var(--amber)"    stop-opacity="0.5"/>
       </radialGradient>
-      <filter id="yumusat"><feGaussianBlur stdDeviation="0.9"/></filter>
+
+      <!-- Alev gradyanı: alt sıcak turuncu, üst sarı-beyaz -->
+      <linearGradient id="alevGrad" x1="0.5" y1="1" x2="0.5" y2="0">
+        <stop offset="0%"  stop-color="var(--amber)"     stop-opacity="0.9"/>
+        <stop offset="55%" stop-color="var(--gold)"      stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="var(--gold-warm)" stop-opacity="0.7"/>
+      </linearGradient>
+
+      <!-- Dalga gradyanı: alt daha koyu, yansımalı üst -->
+      <linearGradient id="dalgaGrad" x1="0.5" y1="1" x2="0.5" y2="0">
+        <stop offset="0%"  stop-color="var(--amber)"     stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="var(--gold-soft)" stop-opacity="0.15"/>
+      </linearGradient>
+
+      <!-- Aynanın çevresine ince bir dış ışıltı -- antik-cam hissi. -->
+      <filter id="aynaBlur" x="-8%" y="-8%" width="116%" height="116%">
+        <feGaussianBlur stdDeviation="0.5"/>
+      </filter>
+
+      <!-- Aynanın iç alanı için clip -- suretler ve tek-ışık AYNANIN
+           İÇİNDE kalır, dışarı taşmaz. -->
+      <clipPath id="ayniClip">
+        <ellipse cx="330" cy="180" rx="95" ry="140"/>
+      </clipPath>
+
+      <!-- Kamera zoom katmanı için grup transform -- ana grup içinde
+           bir kere set edilir, GSAP sadece 'g#kamera'nın scale'ini
+           değiştirir. -->
     </defs>
 
-    <!-- Zât sisi (çizilmemiş; sadece hissedilen bir varlık) -->
-    <rect class="zat-sis" x="380" y="0" width="280" height="180" fill="url(#sis)"/>
+    <!-- KAMERA GRUBU: bütün sahne bunun altında; GSAP ile hafif zoom
+         yapılır (kamera yavaşça aynaya yaklaşır). -->
+    <g id="kamera" transform="translate(330 180) scale(1) translate(-330 -180)">
 
-    <!-- Işık koridoru: sisten kalbe. Yay değil düz kavis: yumuşak Bezier. -->
-    <path id="isikA" class="isik-koridor"
-          d="M 520 90 Q 460 145, 370 175"
-          filter="url(#yumusat)"/>
+      <!-- AYNA -->
+      <g id="ayna">
+        <!-- Dış ince altın çerçeve -- HİÇ değişmez -->
+        <ellipse class="cerceve" id="cerceve" cx="330" cy="180" rx="99" ry="144" filter="url(#aynaBlur)"/>
+        <!-- İç yüzey (sıcak boş ışık) -->
+        <ellipse class="ic" id="ic" cx="330" cy="180" rx="95" ry="140" fill="url(#icGrad)"/>
 
-    <!-- Kalp: merkeze yakın, hafif kavisli bir kap. Yüzey ayrı bir katman. -->
-    <g id="kalp" transform="translate(330,190)">
-      <!-- Kalp gövdesi: mat, perdeli hâlden aydınlanana. -->
-      <ellipse class="kalp-govde" id="kalpGovde" cx="0" cy="0" rx="42" ry="36"/>
-      <!-- Yüzeyde doğan yansıma -->
-      <ellipse class="kalp-yuzey" id="kalpYuzey" cx="0" cy="-4" rx="30" ry="22" fill="url(#yansima)"/>
-      <!-- Aydınlanma halesi (ince, sadece parlak bir kayış izlenimi) -->
-      <ellipse class="kalp-hale" id="kalpHale" cx="0" cy="0" rx="46" ry="40"/>
-    </g>
+        <!-- SURETLER GRUBU: hepsi aynanın iç bölgesine clip'lenir.
+             Merkezi (330, 180), aynanın merkeziyle aynı. Suretlerin
+             çoğu 'stroke' ile -- yansıma hissi. -->
+        <g clip-path="url(#ayniClip)">
+          <!-- 1) DAĞ: iki-plan dağ silsilesi, arkada silik uzak dağlar,
+                 önde daha koyu, zirvede küçük ışık parıltıları. -->
+          <g class="suret" id="s1">
+            <!-- arka plan uzak dağlar -->
+            <path fill="var(--suret)" opacity="0.35"
+                  d="M 258 230 L 285 195 L 305 210 L 320 185 L 340 205 L 360 190 L 385 215 L 402 230 Z"/>
+            <!-- ön plan koyu dağlar -->
+            <path fill="var(--suret)" opacity="0.85"
+                  d="M 265 235 L 295 210 L 320 225 L 345 200 L 372 225 L 395 215 L 402 235 Z"/>
+            <!-- zirve parıltısı -->
+            <path fill="var(--gold-warm)" opacity="0.7"
+                  d="M 342 202 L 348 208 L 336 208 Z"/>
+          </g>
 
-    <!-- İkinci ışık: kalpten âleme. Kaynak Zât değil, kalp. -->
-    <path id="isikB" class="isik-ikinci"
-          d="M 300 210 Q 240 260, 175 285"
-          filter="url(#yumusat)"/>
+          <!-- 2) YAPRAK: bir dal ucunda tek bir yaprak silueti + iç
+                 damarlar. Geçicilik ve doğanın "tek bir suret"i. -->
+          <g class="suret" id="s2">
+            <!-- yaprak gövdesi -->
+            <path fill="var(--suret)" opacity="0.85"
+                  d="M 330 232
+                     C 300 220, 293 180, 315 150
+                     C 340 138, 365 152, 360 195
+                     C 355 215, 345 228, 330 232 Z"/>
+            <!-- iç ana damar (koyu altın, iki temada okunur) -->
+            <path fill="none" stroke="var(--cerceve)" stroke-width="0.9" opacity="0.6"
+                  d="M 330 232 C 325 210, 322 180, 322 152"/>
+            <!-- yan damarlar (ince) -->
+            <path fill="none" stroke="var(--cerceve)" stroke-width="0.6" opacity="0.5"
+                  d="M 328 220 L 315 222 M 325 200 L 308 200 M 323 178 L 310 176 M 323 158 L 335 152"/>
+            <!-- sap -->
+            <path fill="none" stroke="var(--suret)" stroke-width="1.4" opacity="0.75"
+                  d="M 330 232 L 335 240"/>
+          </g>
 
-    <!-- Âlem: sol altta, sönükten sıcağa. -->
-    <g id="alem" transform="translate(150,295)">
-      <circle class="alem-govde" id="alemGovde" r="30"/>
+          <!-- 3) ALEV: alt geniş, üst sivri, iç yumuşak sıcak gradient -->
+          <g class="suret" id="s3">
+            <!-- dış alev, sivri uçlu -->
+            <path fill="url(#alevGrad)" opacity="0.92"
+                  d="M 330 232
+                     C 302 220, 297 175, 322 148
+                     C 320 165, 328 172, 330 158
+                     C 334 138, 342 135, 338 158
+                     C 352 168, 360 188, 350 202
+                     C 366 214, 356 228, 330 232 Z"/>
+            <!-- iç alev, daha sıcak -->
+            <path fill="var(--gold-warm)" opacity="0.6"
+                  d="M 330 225
+                     C 316 216, 318 190, 328 172
+                     C 326 182, 332 187, 332 178
+                     C 336 190, 340 200, 336 208
+                     C 344 216, 340 222, 330 225 Z"/>
+          </g>
+
+          <!-- 4) AĞAÇ: selvi silueti, gövde + tepe -->
+          <g class="suret" id="s4">
+            <!-- gövde -->
+            <path fill="var(--suret)" opacity="0.8"
+                  d="M 327 232 L 327 175 L 333 175 L 333 232 Z"/>
+            <!-- tepe (dik oval) -->
+            <path fill="var(--suret)" opacity="0.88"
+                  d="M 330 178
+                     C 310 168, 307 132, 330 112
+                     C 353 132, 350 168, 330 178 Z"/>
+            <!-- orta damar (koyu altın, iki temada okunur) -->
+            <path fill="none" stroke="var(--cerceve)" stroke-width="0.9" opacity="0.55"
+                  d="M 330 122 L 330 175"/>
+          </g>
+
+          <!-- 5) YILDIZLI GECE: Ay hilali + serpiştirilmiş 4-köşeli
+                 parıltılar (5 yıldız) -->
+          <g class="suret" id="s5">
+            <!-- Ay hilali -->
+            <path fill="var(--suret)" opacity="0.88"
+                  d="M 372 152
+                     A 16 16 0 1 0 372 184
+                     A 12 12 0 1 1 372 152 Z"/>
+            <!-- Yıldızlar (4-köşeli sparkles) -->
+            <g fill="var(--suret)" opacity="0.9">
+              <path d="M 285 158 L 288 165 L 295 168 L 288 171 L 285 178 L 282 171 L 275 168 L 282 165 Z"/>
+              <path d="M 315 128 L 317 133 L 322 135 L 317 137 L 315 142 L 313 137 L 308 135 L 313 133 Z"/>
+              <path d="M 300 195 L 302 199 L 306 201 L 302 203 L 300 207 L 298 203 L 294 201 L 298 199 Z"/>
+              <path d="M 345 218 L 347 222 L 351 224 L 347 226 L 345 230 L 343 226 L 339 224 L 343 222 Z"/>
+              <path d="M 340 145 L 341.5 148 L 344 149.5 L 341.5 151 L 340 154 L 338.5 151 L 336 149.5 L 338.5 148 Z"/>
+            </g>
+          </g>
+
+          <!-- 6) KUŞ: klasik seagull silueti -- iki üst-tepe eğrisi
+                 (M biçimi) arasında küçük çentik. Stroke tabanlı,
+                 gökyüzündeki uzak bir kuşun tanıdık silueti.
+                 Ön planda büyük, sağ üstte çok küçük ikinci kuş. -->
+          <g class="suret" id="s6" fill="none" stroke="var(--suret)"
+             stroke-linecap="round" stroke-linejoin="round">
+            <!-- ön plan seagull: iki dalga, orta çentik -->
+            <path stroke-width="2.6" opacity="0.9"
+                  d="M 285 202
+                     Q 302 174, 322 196
+                     Q 328 192, 330 194
+                     Q 332 192, 338 196
+                     Q 358 174, 375 202"/>
+            <!-- ön plan seagull -- ince alt gölge kanadın iç kıvrımı -->
+            <path stroke-width="1.4" opacity="0.55"
+                  d="M 302 197
+                     Q 312 200, 322 196
+                     M 338 196
+                     Q 348 200, 358 197"/>
+            <!-- arka plan uzak seagull (sağ üstte, minik) -->
+            <path stroke-width="1.6" opacity="0.55"
+                  d="M 372 148
+                     Q 378 141, 384 147
+                     Q 385 146, 386 147
+                     Q 392 141, 398 148"/>
+          </g>
+
+          <!-- ORTAK IŞIK (K4): suretler birbirine karıştıktan sonra
+               hepsi bu tek ışığa erir. -->
+          <ellipse class="tek-isik" id="tekIsik" cx="330" cy="180" rx="70" ry="105" fill="url(#tekIsikGrad)"/>
+        </g>
+      </g>
     </g>
   </svg>
-</div>
-
-<div class="sozcuk-alan">
-  <span class="sozcuk" id="sozcuk">Subhanallah, demek mana, hakikat buymuş.</span>
 </div>
 
 <div class="tekrar-alan">
@@ -182,31 +315,24 @@ h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.06em;color:v
   </button>
 </div>
 
-<script src="vendor/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="vendor/gsap.min.js" crossorigin="anonymous"></script>
 <script>
-// Sahne dili (i18n). Sözcük ve alt-başlık dile göre değişiyor.
-// meditasyon.html'den dil postMessage'ı geliyor (mevcut olan yerde).
+// Alt başlık ve düğme metinleri -- üç dilli. Sahne içinde metin YOK.
 const LA = {
   tr:{title:"Ayna Metaforu",
-      sub:"Bir ayna nasıl aydınlanır — ondan âlem nasıl aydınlanır.",
-      sozcuk:"Subhanallah, demek mana, hakikat buymuş.",
+      sub:"Bir ayna, sayısız suret.",
       tekrar:"Tekrar", geri:"Sahneler"},
   en:{title:"Mirror Metaphor",
-      sub:"How a mirror is lit — how a world is lit from it.",
-      sozcuk:"Subḥān Allāh — so THIS is what meaning was, what the reality was.",
+      sub:"One mirror, countless forms.",
       tekrar:"Replay", geri:"Scenes"},
   pt:{title:"Metáfora do Espelho",
-      sub:"Como um espelho se acende — como um mundo se acende a partir dele.",
-      sozcuk:"Subḥān Allāh — então ERA isto o sentido, era isto a realidade.",
+      sub:"Um espelho, incontáveis formas.",
       tekrar:"Repetir", geri:"Cenas"}
 };
 
 const $ = id => document.getElementById(id);
 let curLang = "tr";
-try {
-  const l = localStorage.getItem("dost-lang");
-  if(LA[l]) curLang = l;
-} catch(e){}
+try { const l = localStorage.getItem("dost-lang"); if(LA[l]) curLang = l; } catch(e){}
 
 function setLang(l){
   if(!LA[l]) return;
@@ -214,7 +340,6 @@ function setLang(l){
   const d = LA[l];
   $("hTitle").textContent = d.title;
   $("hSub").textContent = d.sub;
-  $("sozcuk").textContent = d.sozcuk;
   $("tekrarMetin").textContent = d.tekrar;
   document.documentElement.setAttribute("lang", l);
   const geri = document.querySelector(".sahne-geri");
@@ -227,88 +352,96 @@ window.addEventListener("message", function(e){
   if(e.data && e.data.type === "setLang") setLang(e.data.lang);
 });
 
-// ── SAHNE ───────────────────────────────────────────────────────────────
-// Storyboard: 6 kare, 7.2 sn. Ayrıntılar için üstteki dosya-başı yorumuna
-// ve sohbet kaydındaki storyboard'a bak. Bu timeline SADECE storyboard'u
-// oynatır -- yeni bir sahne kararı burada değil, storyboard'da alınır.
+// ── SAHNE ──────────────────────────────────────────────────────────
+// ~17 sn, 5 mantıksal kare. Tek fikir: ayna sabit; suretler değişir.
+//   K1 (0.0-2.5): ayna karanlıktan belirir. Çerçeve ve iç yüzey.
+//   K2 (2.5-14.5): 6 suret art arda -- yumuşak CROSSFADE ile birinden
+//                 diğerine dönüşür. Her suret 3.2 sn görünür (appear
+//                 1.2, hold 0.8, disappear 1.2), sonraki 1.7 sn sonra
+//                 başlar -- 1.5 sn overlap crossfade.
+//                 Kamera hafif yaklaşır (scale 1.0 → 1.08).
+//   K3 (14.5-15.8): 6 suret kısa bir an düşük opasitede bir arada.
+//   K4 (15.8-16.8): hepsi ortak sıcak bir ışığa eriyor.
+//   K5 (16.8-17.5): ayna yine boş, sadece iç ışık. Kamera durur (1.0'a).
 const gsap = window.gsap;
-if(!gsap){
-  // GSAP yüklenmediyse (SRI hatası ya da ağ): sahneyi son kareye kilitle.
-  // Sessiz bir düşüş, kırık bir sayfa değil.
-  document.getElementById("sozcuk").style.opacity = 1;
-  document.getElementById("isikA").style.opacity = .85;
-  document.getElementById("kalpYuzey").style.opacity = .95;
-  document.getElementById("kalpHale").style.opacity = .55;
-  document.getElementById("isikB").style.opacity = .8;
-  document.getElementById("alemGovde").setAttribute("fill", "var(--world)");
-  document.getElementById("alemGovde").style.opacity = .9;
-}
+const SURETLER = ["#s1","#s2","#s3","#s4","#s5","#s6"];
 
-// Reduced-motion: timeline'ı hiç kurmuyoruz, direkt son kareyi gösteriyoruz.
-const azHareket = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-function sonKarey(){
-  // Storyboard'un Kare 5 sonundaki hâl.
-  gsap.set("#isikA", {opacity:.85});
-  gsap.set("#kalpGovde", {opacity:.4, fill:"var(--gold-soft)"});
-  gsap.set("#kalpYuzey", {opacity:.95});
-  gsap.set("#kalpHale", {opacity:.55});
-  gsap.set("#isikB", {opacity:.8});
-  gsap.set("#alemGovde", {opacity:.9, fill:"var(--world)"});
-  gsap.set("#sozcuk", {opacity:1});
+function sonKare(){
+  gsap.set("#cerceve", {opacity:0.9});
+  gsap.set("#ic", {opacity:1});
+  gsap.set(SURETLER, {opacity:0});
+  gsap.set("#tekIsik", {opacity:0});
+  gsap.set("#kamera", {scale:1, transformOrigin:"330px 180px"});
   $("tekrar").classList.add("gorunur");
 }
 
+if(!gsap){
+  // GSAP yüklenmediyse: son kareye kilitle.
+  var c=$("cerceve"); if(c) c.style.opacity=0.9;
+  var i=$("ic"); if(i) i.style.opacity=1;
+  ["s1","s2","s3","s4","s5","s6","tekIsik"].forEach(function(id){
+    var e=$(id); if(e) e.style.opacity=0;
+  });
+  $("tekrar").classList.add("gorunur");
+}
+
+const azHareket = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 function baslangica(){
-  // Kare 1: perdeli kalp, ışık yok, âlem sönük.
-  gsap.set("#isikA", {opacity:0});
-  gsap.set("#kalpGovde", {opacity:.75, fill:"var(--dust)"});
-  gsap.set("#kalpYuzey", {opacity:0});
-  gsap.set("#kalpHale", {opacity:0});
-  gsap.set("#isikB", {opacity:0});
-  gsap.set("#alemGovde", {opacity:.55, fill:"var(--dust)"});
-  gsap.set("#sozcuk", {opacity:0});
+  gsap.set("#cerceve", {opacity:0});
+  gsap.set("#ic", {opacity:0});
+  gsap.set(SURETLER, {opacity:0});
+  gsap.set("#tekIsik", {opacity:0});
+  gsap.set("#kamera", {scale:0.92, transformOrigin:"330px 180px"});
   $("tekrar").classList.remove("gorunur");
 }
 
 function oynat(){
   if(!gsap) return;
-  if(azHareket){ sonKarey(); return; }
+  if(azHareket){ sonKare(); return; }
   baslangica();
-  // Timeline: sayfaya girildikten 1.5 sn sonra başlar.
   const tl = gsap.timeline({delay:1.5});
 
-  // KARE 1 (0.0-1.4): kalpteki nefes — çok yavaş bir ölçek dalgası.
-  tl.to("#kalpGovde", {scale:0.98, transformOrigin:"50% 50%",
-                       duration:0.7, ease:"sine.inOut"}, 0);
-  tl.to("#kalpGovde", {scale:1.0, duration:0.7, ease:"sine.inOut"}, 0.7);
+  // K1 (0.0-2.5): ayna karanlıktan belirir. Uzun, yumuşak bir belirme.
+  // Kamera 0.92'den 1.0'a. İç yüzey önce, çerçeve arkasından netleşir.
+  tl.to("#kamera", {scale:1.0, duration:2.5, ease:"power2.out"}, 0);
+  tl.to("#ic",     {opacity:1, duration:2.2, ease:"power1.out"}, 0.1);
+  tl.to("#cerceve",{opacity:0.9, duration:2.0, ease:"power2.out"}, 0.4);
 
-  // KARE 2 (1.4-3.2): ışık koridoru netleşiyor, kalbin matlığı azalıyor.
-  tl.to("#isikA", {opacity:0.85, duration:1.6, ease:"power1.out"}, 1.4);
-  tl.to("#kalpGovde", {opacity:0.55, fill:"var(--gold-soft)",
-                       duration:1.6, ease:"power1.out"}, 1.4);
+  // K2 (2.5-14.5): 6 suret art arda CROSSFADE ile. Her suret 3.2 sn
+  // görünür (appear 1.2, hold 0.8, disappear 1.2). Bir sonraki 1.7 sn
+  // sonra başlar -- ilk yaklaşık 1.5 sn eskisi hâlâ sönerken yeni
+  // beliriyor. Birinden diğerine yavaşça DÖNÜŞÜM.
+  // Kamera aynada hafif yakınlaşır (1.0 → 1.08).
+  tl.to("#kamera", {scale:1.08, duration:12.0, ease:"sine.inOut"}, 2.5);
 
-  // KARE 3 (3.2-4.6): yansıma yüzeyde doğuyor, hale hafifçe beliriyor.
-  tl.to("#kalpYuzey", {opacity:0.95, duration:1.2, ease:"power2.out"}, 3.2);
-  tl.to("#kalpHale", {opacity:0.55, duration:1.2, ease:"power2.out"}, 3.4);
-  // Kalbin gövde matlığı yansımayla birlikte biraz daha azalıyor
-  // (gövde artık yansımayı taşıyor).
-  tl.to("#kalpGovde", {opacity:0.4, duration:1.2, ease:"power1.out"}, 3.2);
+  var t = 2.5;
+  var perSuret = 1.7;   // sonraki suretin başlangıç aralığı
+  var appear = 1.2, hold = 0.8, disappear = 1.2;
+  for(var i=0; i<SURETLER.length; i++){
+    var sid = SURETLER[i];
+    tl.to(sid, {opacity:0.9, duration:appear, ease:"sine.inOut"}, t);
+    tl.to(sid, {opacity:0, duration:disappear, ease:"sine.inOut"}, t + appear + hold);
+    t += perSuret;
+  }
+  // Son suret (S6): t=2.5 + 5*1.7 = 11.0. appear→12.2, hold→13.0,
+  // disappear→14.2. K3 başlangıcı 14.5.
 
-  // KARE 4 (4.6-5.8): kalpten âleme ikinci ışık, âlem sıcaklaşıyor.
-  tl.to("#isikB", {opacity:0.8, duration:1.0, ease:"power1.out"}, 4.6);
-  tl.to("#alemGovde", {opacity:0.9, fill:"var(--world)",
-                       duration:1.2, ease:"power1.out"}, 4.8);
+  // K3 (14.5-15.8): 6 suret düşük opasitede bir arada -- "hepsi aynı
+  // aynada yaşadı" duygusu. Yumuşak, uzun bir buluşma.
+  tl.to(SURETLER, {opacity:0.32, duration:1.2, ease:"sine.inOut"}, 14.5);
 
-  // KARE 5 (5.8-7.0): cümle beliriyor (fade-in). Başka hareket yok.
-  tl.to("#sozcuk", {opacity:1, duration:0.9, ease:"power1.out"}, 5.9);
+  // K4 (15.8-16.8): hepsi ortak sıcak bir ışığa eriyor.
+  tl.to(SURETLER, {opacity:0, duration:1.0, ease:"sine.inOut"}, 15.8);
+  tl.to("#tekIsik", {opacity:0.95, duration:1.0, ease:"power2.out"}, 15.8);
 
-  // KARE 6 (7.0-7.2): dinginlik, "Tekrar" düğmesi görünür.
-  tl.call(function(){ $("tekrar").classList.add("gorunur"); }, null, 7.0);
+  // K5 (16.8-17.5): tek-ışık geri çekilir, ayna yine boş kalır.
+  // Kamera durur (1.08 → 1.0 -- son bakışta "tümü görünsün").
+  tl.to("#tekIsik", {opacity:0, duration:0.6, ease:"power1.inOut"}, 16.8);
+  tl.to("#kamera",  {scale:1.0, duration:0.7, ease:"sine.inOut"}, 16.7);
+  tl.call(function(){ $("tekrar").classList.add("gorunur"); }, null, 17.5);
 }
 
-// Sayfa hazır: oynat. Görünürlük gizli değilken oynasın; sekme arkadaysa
-// beklesin (kullanıcının sahneyi kaçırmaması için).
 if(document.visibilityState === "visible"){
   oynat();
 } else {
@@ -321,16 +454,13 @@ if(document.visibilityState === "visible"){
 }
 
 $("tekrar").addEventListener("click", function(){
-  // Tekrar: timeline'ı sıfırla, baştan başlat.
-  if(gsap) gsap.killTweensOf(["#isikA","#isikB","#kalpGovde","#kalpYuzey","#kalpHale","#alemGovde","#sozcuk"]);
+  if(gsap) gsap.killTweensOf(["#cerceve","#ic","#tekIsik","#kamera"].concat(SURETLER));
   oynat();
   $("tekrar").blur();
 });
 </script>
 
 <script>
-// Sahneden çıkış: ESC + görünür bağlantı (2026-08-05 mirası; iframe'de
-// çift çizmemek için yalnız üst pencerede çalışıyor).
 if (window.self === window.top) (function () {
   var ETIKET = { tr: "Sahneler", en: "Scenes", pt: "Cenas" };
   var dil = "tr";
