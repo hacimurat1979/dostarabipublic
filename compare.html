@@ -29,6 +29,31 @@
 </script>
 <link rel="stylesheet" href="assets/style.css">
 <style>
+  /* .graph-wrap'in genel kuralı (assets/style.css) grafiği sayfanın TEK
+     içeriği sayıp yüksekliğini `max(480px, 100vh - başlık - 40px)` olarak
+     hesaplıyor -- index.html'deki görünümlerde doğru, çünkü orada grafik
+     başlığın hemen altında başlıyor. compare.html'de ise üstte bir tanıtım
+     metni ve bir sekme çubuğu VAR; aynı hesap ikisinin üstüne binince
+     toplam yükseklik 100vh'yi aşıyor ve grafik (özellikle "Daphne'nin
+     Profili" sekmesindeki, merkez düğümü aşağıda duran ağaç biçimi)
+     kaydırma yapılmadan görünmüyor -- kullanıcı bildirimi (2026-08-26):
+     grafik "sol üst köşede" küçük ve okunaksız kalıyor.
+     Düzeltme: <main>'i flex sütununa çevirip grafiği kalan alanı dolduran
+     esnek bir öğeye çeviriyoruz -- tanıtım metni + sekmeler ne kadar yer
+     kaplarsa kaplasın, grafik geri kalan alanı TAM dolduruyor, ne taşıyor
+     ne küçük kalıyor. Yalnız bu sayfaya özel (index.html'in tekil-grafik
+     sayfalarını etkilemiyor). */
+  main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--app-header-height, 80px));
+    min-height: calc(100svh - var(--app-header-height, 80px));
+  }
+  .graph-wrap {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 480px;
+  }
 </style>
 </head>
 <body class="viz-root">
@@ -150,7 +175,7 @@
   <script src="assets/reading-mode.js" integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
   <script src="assets/honorifics.js" integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
   <script src="assets/daphne-profil.js" integrity="sha384-Xzg3VjsIAVts0gOuUEoh0kOQs9zx5I4YnzQ9QgZsd//HYsCjyeTJ+LcKxn1gWnDn"></script>
-  <script src="assets/compare.js" integrity="sha384-RjtAsUCqjpd552o0n8NEsWa58f8vZeRGGhACCN/AOwzuSGHHrt5NmMafCNZS7/8r"></script>
+  <script src="assets/compare.js" integrity="sha384-sXDN3q0hdm9FABUj+HOsMY/67xGeSaENSv5AaNDXatLIupFdmXkYVAdGa0Y/J/iP"></script>
   <script src="assets/edit-mode.js" integrity="sha384-7iXPGrWLrIsGmzLLGg2VO5KH/04WinMik9uxQrDgIDKeBqiGPMDkwcG00Faa7WvN"></script>
 </body>
 </html>
