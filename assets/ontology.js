@@ -1358,8 +1358,17 @@
   let birthFn = null;
 
   function buildGraph(data) {
-    const width = svg.node().clientWidth;
-    const height = svg.node().clientHeight;
+    // Dar ekranda (mobil-liste kipi, bkz. ontoloji-mobil-liste.js) SVG
+    // "haritayı aç" düğmesine kadar CSS ile gizli -- clientWidth/Height 0
+    // döner. buildGraph yine de sayfa yüklenirken koşulsuz çağrıldığı için
+    // (bkz. loadOntologyData) TÜM düğümler n.x=n.y=0'a çöküyordu; aynı
+    // noktadan başlayan forceCollide/forceManyBody sıfır-vektörü
+    // normalize etmeye çalışıp NaN üretiyor, bu da her karede konsola
+    // "translate(NaN,NaN) scale(NaN)" olarak taşıyordu (kod taraması,
+    // 2026-08-27). panToNode() zaten aynı 0 durumuna karşı || 800/600
+    // yedeğini kullanıyor (bkz. altta) -- burada da aynı yedek.
+    const width = svg.node().clientWidth || 800;
+    const height = svg.node().clientHeight || 600;
 
     // --- 3B durumu (Hâller/Menziller ile aynı model) ---
     // pitch 0.26: Menziller'de yerleşen değer. Sarmalın okunur (monoton)
@@ -1794,6 +1803,26 @@
         const anchor = swayRotate(d.px, d.py);
         return { x: anchor.x, y: anchor.y, half: radiusFor(d) * s, h: radiusFor(d) * 2 * s };
       });
+      // "İlk kez mi buradasın?" kartı (start-hint.js, #start-hint) grafiğin
+      // ÜSTÜNE sabit bir HTML panel olarak biniyor -- etiket yerleştirme bunu
+      // hiç bilmiyordu, kart açılınca altındaki düğüm etiketlerinin üstüne
+      // biniyordu (kod taraması, 2026-08-27; desktop ekran görüntüsüyle
+      // doğrulandı). Kartın ekran dikdörtgeni burada da bir engel: SVG'nin
+      // kendi (zoom-layer'ın transform'undan ÖNCEKİ, ham) uzayına
+      // d3.zoomTransform().invert ile çevriliyor -- kart döngü her tazelendiğinde
+      // (yaklaşık 2,5 saniyede bir, sway eşiği) canlı ölçülüyor, ayrı bir
+      // olay dinleyicisi gerekmiyor.
+      const startHintEl = document.getElementById("start-hint");
+      if (startHintEl && !startHintEl.hidden) {
+        const hr = startHintEl.getBoundingClientRect();
+        const sr = svg.node().getBoundingClientRect();
+        if (hr.width && hr.height) {
+          const t = d3.zoomTransform(svg.node());
+          const x0 = t.invertX(hr.left - sr.left), x1 = t.invertX(hr.right - sr.left);
+          const y0 = t.invertY(hr.top - sr.top), y1 = t.invertY(hr.bottom - sr.top);
+          nodeObstacles.push({ x: (x0 + x1) / 2, y: (y0 + y1) / 2, half: (x1 - x0) / 2, h: y1 - y0 });
+        }
+      }
       // Ekstra pay: bu sahne yavaşça yaw ile dönüyor (varsayılan 3B eğim),
       // yani her karede biraz farklı bir projeksiyon -- tam sınırda kalan
       // çiftler bir sonraki karede yeniden çakışabiliyordu (2026-08-06
@@ -1814,6 +1843,19 @@
     // welcome.js "dost:welcome-left"), reduced-motion'da hiç çalışmaz.
     birthFn = function runBirth() {
       if (reduceMotion) return;
+      // Dar ekranda (mobil-liste kipi) SVG "haritayı aç"a kadar CSS ile
+      // gizli -- clientWidth 0. d3-zoom'un TRANSITION'lı .transform()'u
+      // (aşağıdaki svg.transition()...call) kendi interpolateZoom
+      // kurulumunda bu değeri DOĞRUDAN DOM'dan okuyor (ontology.js'in
+      // kendi width/height değişkenlerinden değil), 0 olduğunda iç
+      // hesabında sıfıra bölme NaN üretiyor -- her karede konsola
+      // "translate(NaN,NaN) scale(NaN)" olarak taşan asıl kaynak burasıydı
+      // (kod taraması, 2026-08-27; buildGraph'ın kendi || 800/600 yedeği
+      // bunu KAPSAMIYOR, çünkü bu değer hiç JS değişkenine uğramıyor).
+      // Gizliyken doğuş animasyonu zaten görünmez -- 2035. satırdaki
+      // animasyonsuz computeFitTransform() çağrısı grafiği görünür
+      // olmayan ama tutarlı bir dinlenme hâlinde bırakıyor, o yeterli.
+      if (svg.node().clientWidth === 0) return;
       const dhat = nodeById.get("dhat");
       if (!dhat) return;
       // Görünüm açılışta 3B eğimli başlıyor (aşağıdaki "Açılışta doğrudan
