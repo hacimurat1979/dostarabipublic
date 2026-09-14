@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<!-- bkz. index.html'deki aynı etiketin yorumu -- aynı gerekçe, aynı politika. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-lekwPcLDRjYm37sgERAHDeKpN6qv770FKpoFJzh42eg=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-JG8VEOMVh41hGFMcL3AzwbZ6l0d+9CypnZBRrt2oW1w='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Dost — İbn Arabî &amp; Daphne: İç Dünyaların Haritası</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<!-- DOST-ANALYTICS-START -- bkz. index.html'deki aynı işaretin yorumu
+     (Ürün denetimi G3): GA4/Clarity artık ziyaretçi onamı olmadan
+     yüklenmiyor, aynı gerekçe/mekanik; sync-to-preview.py bu işaretlerin
+     arasını çıkarıyor. -->
+<script>
+  (function () {
+    var KEY = "dost-analytics-consent";
+    function getConsent() {
+      try { return localStorage.getItem(KEY); } catch (e) { return null; }
+    }
+    window.__dostLoadAnalytics = function () {
+      if (window.__dostAnalyticsLoaded) return;
+      window.__dostAnalyticsLoaded = true;
+      var ga = document.createElement("script");
+      ga.async = true;
+      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
+      document.head.appendChild(ga);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag('js', new Date());
+      gtag('config', 'G-LGMR3QK3JT');
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "xpbj2z8nhz");
+    };
+    if (getConsent() === "granted") window.__dostLoadAnalytics();
+  })();
+  window.dostTrack = function (name, props) {
+    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
+  };
+</script>
+<!-- DOST-ANALYTICS-END -->
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  /* .graph-wrap'in genel kuralı (assets/style.css) grafiği sayfanın TEK
+     içeriği sayıp yüksekliğini `max(480px, 100vh - başlık - 40px)` olarak
+     hesaplıyor -- index.html'deki görünümlerde doğru, çünkü orada grafik
+     başlığın hemen altında başlıyor. compare.html'de ise üstte bir tanıtım
+     metni ve bir sekme çubuğu VAR; aynı hesap ikisinin üstüne binince
+     toplam yükseklik 100vh'yi aşıyor ve grafik (özellikle "Daphne'nin
+     Profili" sekmesindeki, merkez düğümü aşağıda duran ağaç biçimi)
+     kaydırma yapılmadan görünmüyor -- kullanıcı bildirimi (2026-08-26):
+     grafik "sol üst köşede" küçük ve okunaksız kalıyor.
+     Düzeltme: <main>'i flex sütununa çevirip grafiği kalan alanı dolduran
+     esnek bir öğeye çeviriyoruz -- tanıtım metni + sekmeler ne kadar yer
+     kaplarsa kaplasın, grafik geri kalan alanı TAM dolduruyor, ne taşıyor
+     ne küçük kalıyor. Yalnız bu sayfaya özel (index.html'in tekil-grafik
+     sayfalarını etkilemiyor). */
+  main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--app-header-height, 80px));
+    min-height: calc(100svh - var(--app-header-height, 80px));
+  }
+  .graph-wrap {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 480px;
+  }
+</style>
+</head>
+<body class="viz-root">
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem("dost-theme");
+        var theme = (stored === "light" || stored === "dark")
+          ? stored
+          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.body.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+  <header class="app-header">
+    <button class="app-header__back" id="header-back" type="button"
+            title="Dost'a dön / Back to Dost / Voltar ao Dost"
+            aria-label="Dost'a dön / Back to Dost / Voltar ao Dost">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="app-header__title">
+      <h1>Dost</h1>
+      <p class="app-header__subtitle"
+         data-tr="Muhyiddîn İbnü'l-Arabî &amp; Daphne — iki iç dünyanın örtüştüğü yerler"
+         data-en="Muhyiddîn Ibn al-'Arabi &amp; Daphne — where two inner worlds overlap"
+         data-pt="Muhyiddîn Ibn al-'Arabi &amp; Daphne — onde dois mundos interiores se sobrepõem"></p>
+    </div>
+    <div class="app-header__controls">
+      <button class="theme-toggle" id="theme-toggle" type="button" title="Aydınlık / Karanlık mod — Light / Dark mode — Modo claro / escuro" aria-label="Aydınlık / Karanlık mod — Light / Dark mode — Modo claro / escuro">
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4.2"/><line x1="12" y1="19.8" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.2" y2="12"/><line x1="19.8" y1="12" x2="22.5" y2="12"/><line x1="4.4" y1="4.4" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.6" y2="19.6"/><line x1="4.4" y1="19.6" x2="6.3" y2="17.7"/></g></svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="lang-switch" id="lang-switch"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" id="intro-text">
+      <p data-tr="İbn Arabî, varlığın tekliğini (vahdet-i vücûd), benliğin sahte egemenliğini ve Hakk'ın her sûrette tecellisini asırlar önce anlattı. Daphne ise sistem teorisi, sibernetik ve kişisel bir dönüşüm yolculuğuyla aynı hakikatlere kendi diliyle varıyor. Aşağıdaki takımyıldızda ortadaki altın düğümler, iki dünyanın örtüştüğü temaları gösteriyor — birine tıklayın."
+         data-en="Centuries ago, Ibn Arabi described the oneness of Being, the false sovereignty of the self, and the Real's self-disclosure in every form. Daphne arrives at the same truths through systems theory, cybernetics, and a personal journey of transformation. In the constellation below, the golden nodes at the center are the themes where the two worlds overlap — click one."
+         data-pt="Séculos atrás, Ibn Arabi descreveu a unicidade do Ser, a falsa soberania do eu e a autorrevelação do Real em cada forma. Daphne chega às mesmas verdades através da teoria dos sistemas, da cibernética e de uma jornada pessoal de transformação. Na constelação abaixo, os nós dourados no centro são os temas onde os dois mundos se sobrepõem — clique em um.">
+      </p>
+    </section>
+
+    <section class="intro" id="intro-text-baglar" hidden>
+      <p data-tr="Taradığımız her yazıda, Dost'un hangi kavramına dokunduğunu elle işaretledik. Bu bağlar tek tek yazıların altında duruyordu; burası hepsinin bir arada durduğu yer. Merkezde Daphne var; bir kavram ne kadar çok yazıda dönüyorsa merkeze o kadar yakın duruyor. Bu bir puan değil, bir sayım: neyin tekrar ettiğini gösteriyor, ne anlama geldiğini değil. Bir düğüme tıklayın."
+         data-en="For each piece we surveyed, we marked by hand which of Dost's concepts it touches. These links sat under individual essays; this is where they stand together. Daphne is at the center; the more essays return to a concept, the closer it sits. This is not a score but a count: it shows what recurs, not what it means. Click a node."
+         data-pt="Em cada texto que analisámos, marcámos à mão quais conceitos de Dost ele toca. Estes vínculos ficavam sob cada ensaio; aqui é onde todos se encontram. Daphne está no centro; quanto mais ensaios retornam a um conceito, mais perto ele fica. Isto não é uma pontuação, mas uma contagem: mostra o que se repete, não o que significa. Clique num nó.">
+      </p>
+      <p class="intro__olcu" id="baglar-olcu"></p>
+    </section>
+
+    <section class="intro" id="intro-text-profile" hidden>
+      <p data-tr="Bu harita, Dost ile örtüşüp örtüşmediğine bakmaksızın, Daphne'nin (thelivingfractal) kendi yazılarında tekrar tekrar döndüğü eksenleri bir araya getirmeye çalışıyor. Merkezdeki düğüm Daphne, çevresindekiler ise onun kendi cümleleriyle -- mümkün olduğunca -- kurulmuş temel parametreler. Bu kapanmış bir profil değil; yeni bir yazı paylaşıldıkça güncellenen bir taslak. Bir düğüme tıklayın."
+         data-en="This map tries to gather, independent of any overlap with Dost, the axes Daphne's (thelivingfractal) own writing keeps returning to. The center node is Daphne; the surrounding ones are core parameters built, as much as possible, from her own words. This is not a closed profile -- it is a draft that updates as new pieces are shared. Click a node."
+         data-pt="Este mapa tenta reunir, independentemente de qualquer sobreposição com Dost, os eixos aos quais a própria escrita de Daphne (thelivingfractal) retorna repetidamente. O nó central é Daphne; os que a rodeiam são parâmetros centrais construídos, tanto quanto possível, a partir de suas próprias palavras. Este não é um perfil fechado -- é um rascunho que se atualiza à medida que novos textos são compartilhados. Clique num nó.">
+      </p>
+    </section>
+
+    <div class="bookmap-tabs" id="compare-tabs" role="tablist">
+      <button type="button" class="bookmap-tab bookmap-tab--active" data-tab="temalar" role="tab" aria-selected="true"
+        data-tr="Ortak Temalar" data-en="Shared Themes" data-pt="Temas Comuns"></button>
+      <button type="button" class="bookmap-tab" data-tab="profil" role="tab" aria-selected="false"
+        data-tr="Daphne'nin Profili" data-en="Daphne's Profile" data-pt="O Perfil de Daphne"></button>
+      <button type="button" class="bookmap-tab" data-tab="baglar" role="tab" aria-selected="false"
+        data-tr="Bağlar Haritası" data-en="Map of Links" data-pt="Mapa de Vínculos"></button>
+      <button type="button" class="bookmap-tab" data-tab="yazilar" role="tab" aria-selected="false"
+        data-tr="Taranan Yazılar" data-en="Articles Surveyed" data-pt="Textos Analisados"></button>
+    </div>
+
+    <section class="graph-wrap" id="compare-wrap" data-tab-panel="temalar">
+      <svg id="graph"></svg>
+      <div class="view-status" id="compare-wrap-status" hidden>
+        <div class="view-status__spinner" aria-hidden="true"></div>
+        <p class="view-status__text"></p>
+        <button class="view-status__retry" type="button" hidden></button>
+      </div>
+      <button class="graph-recenter" id="compare-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
+      </button>
+      <div class="legend" id="legend">
+        <button class="legend__toggle" type="button" aria-expanded="true">
+          <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
+          <span class="legend__toggle-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="legend__body">
+          <div class="legend__item"><span class="legend__dot legend__dot--ibnarabi"></span><span data-tr="İbn Arabî kavramları" data-en="Ibn Arabi concepts" data-pt="Conceitos de Ibn Arabi">İbn Arabî kavramları</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--theme"></span><span data-tr="Ortak temalar" data-en="Shared themes" data-pt="Temas compartilhados">Ortak temalar</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--daphne"></span><span data-tr="Daphne'nin yazıları" data-en="Daphne's writings" data-pt="Escritos de Daphne">Daphne'nin yazıları</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="graph-wrap" id="profile-wrap" data-tab-panel="profil" hidden>
+      <svg id="profile-graph"></svg>
+      <div class="view-status" id="profile-wrap-status" hidden>
+        <div class="view-status__spinner" aria-hidden="true"></div>
+        <p class="view-status__text"></p>
+        <button class="view-status__retry" type="button" hidden></button>
+      </div>
+      <button class="graph-recenter" id="profile-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
+      </button>
+    </section>
+
+    <section class="graph-wrap" id="baglar-wrap" data-tab-panel="baglar" hidden>
+      <svg id="baglar-graph"></svg>
+      <div class="view-status" id="baglar-wrap-status" hidden>
+        <div class="view-status__spinner" aria-hidden="true"></div>
+        <p class="view-status__text"></p>
+        <button class="view-status__retry" type="button" hidden></button>
+      </div>
+      <button class="graph-recenter" id="baglar-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
+      </button>
+      <div class="legend" id="baglar-legend">
+        <button class="legend__toggle" type="button" aria-expanded="true">
+          <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
+          <span class="legend__toggle-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="legend__body">
+          <div class="legend__item"><span class="legend__dot legend__dot--daphne"></span><span data-tr="Merkez: Daphne" data-en="Center: Daphne" data-pt="Centro: Daphne">Merkez: Daphne</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--ibnarabi"></span><span data-tr="Ontoloji düğümü" data-en="Ontology node" data-pt="Nó da Ontologia">Ontoloji düğümü</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--theme"></span><span data-tr="Terim" data-en="Term" data-pt="Termo">Terim</span></div>
+          <div class="legend__item"><span class="baglar-lejant-cizgi baglar-lejant-cizgi--ortusme"></span><span data-tr="örtüşme — düz daire" data-en="overlap — plain circle" data-pt="sobreposição — círculo simples">örtüşme</span></div>
+          <div class="legend__item"><span class="baglar-lejant-cizgi baglar-lejant-cizgi--fark"></span><span data-tr="fark — çizili daire" data-en="difference — struck circle" data-pt="diferença — círculo riscado">fark</span></div>
+          <div class="legend__item"><span class="baglar-lejant-cizgi baglar-lejant-cizgi--soru"></span><span data-tr="açık soru — kapanmamış halka" data-en="open question — unclosed ring" data-pt="pergunta aberta — anel não fechado">açık soru</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="daphne-profile-articles-wrap" id="articles-list-section" data-tab-panel="yazilar" hidden>
+      <div id="articles-list" class="daphne-profile-articles-grid"></div>
+    </section>
+
+    <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="true" hidden>
+      <div id="detail-content"></div>
+    </aside>
+    <button class="detail-panel__close" id="detail-close" aria-label="Kapat / Close / Fechar">×</button>
+  </main>
+
+  <footer class="app-footer">
+    <p data-tr="Kaynaklar: thelivingfractal.com, Substack (thelivingfractal1) ve Fütûhât-ı Mekkiyye / Füsûsu'l-Hikem gibi İbn Arabî eserlerinden derlenen kavramlar."
+       data-en="Sources: thelivingfractal.com, Substack (thelivingfractal1), and concepts drawn from Ibn Arabi's works such as Futuhat al-Makkiyya / Fusus al-Hikam."
+       data-pt="Fontes: thelivingfractal.com, Substack (thelivingfractal1) e conceitos extraídos de obras de Ibn Arabi como Futuhat al-Makkiyya / Fusus al-Hikam.">
+    </p>
+  </footer>
+
+  <div class="consent-banner" id="consent-banner" role="dialog" aria-live="polite" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
+    <p data-tr="Bu site ziyaret verisini yalnız onayınla ölçer (Google Analytics, Microsoft Clarity). Reddedersen hiçbir ölçüm scripti yüklenmez."
+       data-en="This site measures visits only with your consent (Google Analytics, Microsoft Clarity). If you decline, no measurement script loads."
+       data-pt="Este site mede visitas apenas com seu consentimento (Google Analytics, Microsoft Clarity). Se recusar, nenhum script de medição é carregado.">
+    </p>
+    <div class="consent-banner__actions">
+      <button type="button" class="btn-ghost" id="consent-decline" data-tr="Reddet" data-en="Decline" data-pt="Recusar">Reddet</button>
+      <button type="button" class="btn-ghost btn-ghost--filled" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var KEY = "dost-analytics-consent";
+      var banner = document.getElementById("consent-banner");
+      if (!banner) return;
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch (e) {}
+      if (!stored) banner.hidden = false;
+      function decide(value) {
+        try { localStorage.setItem(KEY, value); } catch (e) {}
+        banner.hidden = true;
+        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
+      }
+      var accept = document.getElementById("consent-accept");
+      var decline = document.getElementById("consent-decline");
+      if (accept) accept.addEventListener("click", function () { decide("granted"); });
+      if (decline) decline.addEventListener("click", function () { decide("denied"); });
+    })();
+  </script>
+
+  <script src="assets/vendor/d3-custom.min.js" integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
+  <script src="assets/theme.js" integrity="sha384-NegwurN40eZr0Cwp0FE3fFU6d1ptUcUoeGVSaX+M74KAJDTn8QVt2hP+z+Pf29Kf"></script>
+  <script src="assets/i18n.js" integrity="sha384-4r6W6PENfRJ7GevJPyR+ACS8M2OZwCzsNWj9W4PfT6psDUZQRTdpCVLi1eUXtN9l"></script>
+  <script src="assets/view-status.js" integrity="sha384-RQn+LQne6RZJMiJDUPMau3rkhbbj7xyrYvFavcxNe6FdOK+iGXkJc9nUNrBWUEEw"></script>
+  <script src="assets/graph-utils.js" integrity="sha384-fkiVO4e60RHDkj8/u3KsFoE+lqJSrvrCuyIV6wgZ9zGVqhcERLrc6Y3fMQlapA7M"></script>
+  <script src="assets/font-scale.js" integrity="sha384-jW9YOmSCIsqzTZVeFPWgBM7hqIRZ3uOK6bwUrIEU0hh0NTjg657JiSUo3CcQFa+S"></script>
+  <script src="assets/reading-mode.js" integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
+  <script src="assets/honorifics.js" integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
+  <script src="assets/daphne-profil.js" integrity="sha384-riPKPAHqmdrxUHMRDBQ+a9Ht/nvhFLnwNzSLN+YH3jEEaZoYwDt92MXDnz0ABPf7"></script>
+  <script src="assets/daphne-baglar.js" integrity="sha384-7HqxIWHh6WfvLuOhkt+0OzKNog2tNXpAX9oD8oTEI2ZebQimCO1mAc4+w/JnzAA4"></script>
+  <script src="assets/compare.js" integrity="sha384-3AAO82xXVQT1T9++bOWG8WhqxYGGzAYkynZQY0pMFlPQzvwfOa9zeD9hqjJI0oBW"></script>
+  <script src="assets/edit-mode.js" integrity="sha384-2STUAQtHQPipSaOQm3RMg4ga5//G9uq3TrkB2ymuXCBZRDVxGSHMyUzTn7/wcQYM"></script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+(function () {
+  "use strict";
+
+  const I18n = window.DostI18n;
+  const headerControls = document.querySelector(".app-header__controls");
+  if (!headerControls) return;
+
+  const CATEGORY_LABEL = {
+    ontoloji: { tr: "Ontoloji", en: "Ontology", pt: "Ontologia" },
+    esma: { tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" },
+    hal: { tr: "Hâller Haritası", en: "Map of States", pt: "Mapa dos Estados" },
+    sirlar: { tr: "Sırlar", en: "Mysteries", pt: "Mistérios" },
+    terimler: { tr: "Felsefi Terimler", en: "Philosophical Terms", pt: "Termos Filosóficos" },
+    cizimler: { tr: "Çizimler", en: "Diagrams", pt: "Diagramas" },
+    sorular: { tr: "Sorular", en: "Questions", pt: "Perguntas" },
+    futuhat: { tr: "Fütûhât Atlası", en: "Futuhat Atlas", pt: "Atlas do Futuhat" },
+    kavram: { tr: "Kavramlar", en: "Concepts", pt: "Conceitos" },
+    fusus: { tr: "Füsûs", en: "Fusus", pt: "Fusus" },
+    miskat: { tr: "Mişkâtü'l-Envâr", en: "Mishkat al-Anwar", pt: "Mishkat al-Anwar" },
+    menziller: { tr: "Menziller", en: "Mansions", pt: "Mansões" },
+    tasiyicilar: { tr: "Taşıyanlar", en: "The Bearers", pt: "Os Portadores" },
+    hocalar: { tr: "Hocalar", en: "Teachers", pt: "Mestres" },
+    "eser-agi": { tr: "Eser Ağı", en: "The Works Timeline", pt: "A Linha do Tempo das Obras" },
+    "seyahat-atlasi": { tr: "Seyahat Atlası", en: "Travel Atlas", pt: "Atlas de Viagem" },
+    "elestiri-arkeolojisi": { tr: "Eleştiri Arkeolojisi", en: "Archaeology of Criticism", pt: "Arqueologia da Crítica" },
+    "kuran-dokusu": { tr: "Kur'ân Dokusu", en: "The Qur'ânic Weave", pt: "A Trama Alcorânica" },
+    "acik-sorular": { tr: "Açık Sorular", en: "Open Questions", pt: "Perguntas em Aberto" },
+    bilmiyoruz: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" },
+    ayethadis: { tr: "Âyet & Hadis", en: "Verses & Hadith", pt: "Versículos e Hadith" },
+  };
+
+  // Sonuç gruplarının başında, hangi görünüme ait olduğunu tek bakışta
+  // ayırt etsin diye küçük bir renk noktası -- her görünümün kendi
+  // sayfasında zaten kullandığı bir vurgu rengine bağlanıyor.
+  const CATEGORY_DOT_VAR = {
+    ontoloji: "--series-ibnarabi",
+    esma: "--series-kemal",
+    hal: "--series-hal-hayret",
+    sirlar: "--series-sir-kader",
+    terimler: "--series-sir-dil",
+    cizimler: "--series-theme",
+    sorular: "--series-sorular-en-temel",
+    futuhat: "--series-hal-muameleler",
+    kavram: "--series-theme",
+    fusus: "--series-theme",
+    miskat: "--series-theme",
+    menziller: "--series-theme",
+    tasiyicilar: "--series-theme",
+    hocalar: "--series-theme",
+    "eser-agi": "--series-theme",
+    "seyahat-atlasi": "--series-theme",
+    "elestiri-arkeolojisi": "--series-theme",
+    "kuran-dokusu": "--series-theme",
+    "acik-sorular": "--series-theme",
+    bilmiyoruz: "--series-theme",
+    ayethadis: "--series-theme",
+  };
+
+  let index = [];
+  let indexLoaded = false;
+  let indexPromise = null;
+
+  function allLangText(dict) {
+    if (!dict) return "";
+    if (typeof dict === "string") return dict;
+    return [dict.tr, dict.en, dict.pt].filter(Boolean).join(" ␟ ");
+  }
+
+  // Bazı veri dosyalarında başlık alanı üç dilli bir sözlük değil, tek bir
+  // öz ad (şehir/eser/menzil adı gibi, dillere göre değişmeyen). tt()/pick3
+  // yalnız {tr,en,pt} şeklini kabul ettiği için düz string'i aynı üç alana
+  // kopyalayıp sarmalıyoruz.
+  function wrap3(s) {
+    return { tr: s, en: s, pt: s };
+  }
+
+  function buildIndex() {
+    if (indexPromise) return indexPromise;
+    const sources = [
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/ontology.json").then((d) => {
+        (d.nodes || []).forEach((n) => {
+          index.push({ view: "ontoloji", id: n.id, label: n.name, sub: n.short, searchText: allLangText(n.name) + " " + allLangText(n.short) });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/esma.json").then((d) => {
+        (d.nodes || []).forEach((n) => {
+          index.push({ view: "esma", id: n.id, label: n.name, sub: n.short, searchText: allLangText(n.name) + " " + allLangText(n.short) });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/hal.json").then((d) => {
+        (d.nodes || []).forEach((n) => {
+          index.push({ view: "hal", id: n.id, label: n.name, sub: n.short, searchText: allLangText(n.name) + " " + allLangText(n.short) });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/sirlar.json").then((d) => {
+        (d.entries || []).forEach((e) => {
+          index.push({ view: "sirlar", id: e.id, label: e.topic, sub: null, searchText: allLangText(e.topic) + " " + (e.theme || "") });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/felsefi-terimler.json").then((d) => {
+        const terms = d.terms || {};
+        Object.keys(terms).forEach((key) => {
+          const t = terms[key];
+          index.push({ view: "terimler", id: t.id, label: t.title, sub: t.felsefi_tanim, searchText: allLangText(t.title) + " " + allLangText(t.felsefi_tanim) + " " + (t.arabic || "") });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-cizimleri.json").then((d) => {
+        (d.diagrams || []).forEach((c) => {
+          index.push({ view: "cizimler", id: c.id, label: c.name, sub: c.description, searchText: allLangText(c.name) + " " + allLangText(c.description) });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/sorular.json").then((d) => {
+        (d.categories || []).forEach((c) => {
+          (c.questions || []).forEach((q) => {
+            index.push({ view: "sorular", id: q.id, label: q.question, sub: c.name, searchText: allLangText(q.question) + " " + allLangText(q.answer) });
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-atlas-index.json").then((d) => {
+        // Gezinme yalnızca kısım (part) düzeyinde çalıştığı için, sonuç
+        // olarak o kısmı gösteriyoruz -- ama bölüm başlıklarını da arama
+        // metnine katıyoruz ki içindeki bir konu/harf aranınca da bulunsun.
+        // Hafif indeks section başlıklarını sectionHeadings olarak taşır
+        // (tam sections yalnızca kısım açılınca yüklenir -- atlas bölme).
+        (d.parts || []).forEach((p) => {
+          const sectionHeadings = (p.sectionHeadings || []).map((h) => allLangText(h)).join(" ");
+          index.push({
+            view: "futuhat",
+            id: p.id,
+            label: p.title,
+            sub: p.hero && p.hero.summary,
+            searchText: allLangText(p.title) + " " + allLangText(p.hero && p.hero.summary) + " " + sectionHeadings,
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/kavram-hayati.json").then((d) => {
+        (d.kavramlar || []).forEach((k) => {
+          index.push({
+            view: "kavram", id: k.view + "/" + k.id, label: k.isim,
+            sub: { tr: "Bütün hayatı", en: "Life across the corpus", pt: "Vida ao longo do corpus" },
+            searchText: allLangText(k.isim),
+          });
+        });
+      }),
+      // 2026-08-06 denetiminde bulundu: arama yalnız 9/23 görünümü
+      // indeksliyordu, nav çekmecesindeki 14 bölüm hiç aranamıyordu.
+      // Aşağıdaki 13 kaynak o boşluğu kapatıyor (vahdet hariç -- o
+      // Hakkında sayfasının bir alt-sekmesi, goTo() dispatch'inde bağımsız
+      // bir "view" değil, ayrı bir iş gerektirir).
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/fusus-atlas.json").then((d) => {
+        (d.fasses || []).forEach((f) => {
+          index.push({
+            view: "fusus", id: f.id, label: f.title, sub: f.hikmet,
+            searchText: allLangText(f.title) + " " + allLangText(f.hikmet) + " " + allLangText(f.prophet) + " " + allLangText(f.hero && f.hero.summary),
+          });
+        });
+      }),
+      // SEARCH-01 (uzman paneli denetimi 2026-08-17): 101 hadislik Mişkât,
+      // başlık indeksinde HİÇ yoktu -- en yeni külliyat aramada görünmüyordu.
+      // fusus-atlas ile aynı desen (tam atlas zaten fetchJson önbelleğinde
+      // görünümle paylaşılıyor).
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/miskat-atlas.json").then((d) => {
+        (d.hadisler || []).forEach((h) => {
+          if (h.status !== "active") return;
+          index.push({
+            view: "miskat", id: h.id, label: h.title, sub: h.hero && h.hero.summary,
+            searchText: allLangText(h.title) + " " + allLangText(h.hero && h.hero.summary),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/menziller.json").then((d) => {
+        (d.menziller || []).forEach((n) => {
+          index.push({
+            view: "menziller", id: n.sira, label: wrap3(n.menzil), sub: n.zuhur,
+            searchText: n.menzil + " " + n.isim + " " + n.harf + " " + allLangText(n.zuhur),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/tasiyicilar.json").then((d) => {
+        (d.sistemler || []).forEach((s) => {
+          index.push({
+            view: "tasiyicilar", id: s.id, label: s.label, sub: null,
+            searchText: allLangText(s.label) + " " + allLangText(s.note),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/hocalar.json").then((d) => {
+        (d.hocalar || []).forEach((h) => {
+          index.push({
+            view: "hocalar", id: h.id, label: h.ad, sub: h.konum,
+            searchText: allLangText(h.ad) + " " + allLangText(h.kimlik) + " " + allLangText(h.konum),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/eser-agi.json").then((d) => {
+        (d.eserler || []).forEach((e) => {
+          index.push({
+            view: "eser-agi", id: e.id, label: wrap3(e.eser), sub: e.aciklama,
+            searchText: e.eser + " " + allLangText(e.aciklama) + " " + allLangText(e.sehir),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/seyahat-atlasi.json").then((d) => {
+        (d.duraklar || []).forEach((s) => {
+          index.push({
+            view: "seyahat-atlasi", id: s.id, label: s.sehir, sub: s.ozet,
+            searchText: allLangText(s.sehir) + " " + allLangText(s.ozet),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/elestiri-arkeolojisi.json").then((d) => {
+        (d.kisiler || []).forEach((k) => {
+          index.push({
+            view: "elestiri-arkeolojisi", id: k.id, label: k.ad, sub: k.sehir,
+            searchText: allLangText(k.ad) + " " + allLangText(k.ozet) + " " + allLangText(k.sehir),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/kuran-dokusu.json").then((d) => {
+        (d.sureler || []).forEach((s) => {
+          index.push({
+            view: "kuran-dokusu", id: s.no, label: s.ad, sub: null,
+            searchText: allLangText(s.ad),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/acik-sorular.json").then((d) => {
+        (d.sorular || []).forEach((s) => {
+          index.push({
+            view: "acik-sorular", id: s.id, label: s.soru, sub: s.dogdugu_yer,
+            searchText: allLangText(s.soru) + " " + allLangText(s.dogdugu_yer),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/bilmiyoruz.json").then((d) => {
+        (d.maddeler || []).forEach((m) => {
+          index.push({
+            view: "bilmiyoruz", id: m.id, label: m.baslik, sub: null,
+            searchText: allLangText(m.baslik) + " " + allLangText(m.aciklama),
+          });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/kuran.json").then((d) => {
+        const ayetler = d.ayetler || {};
+        Object.keys(ayetler).forEach((key) => {
+          const a = ayetler[key];
+          index.push({
+            view: "ayethadis", id: key, label: a.meal, sub: null,
+            searchText: key + " " + (a.ar || "") + " " + allLangText(a.meal),
+          });
+        });
+      }),
+    ];
+    indexPromise = Promise.allSettled(sources).then((results) => {
+      results.forEach((r) => {
+        if (r.status === "rejected") console.error("Arama kaynağı yüklenemedi / Search source failed to load", r.reason);
+      });
+      // Normalize + tokenize once here, at index-build time, rather than on
+      // every keystroke -- with a few hundred entries the fuzzy pass below
+      // touches every word of every entry per search() call.
+      index.forEach((item) => {
+        item.normText = normalize(item.searchText);
+        item.words = item.normText.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+      });
+      indexLoaded = true;
+    });
+    return indexPromise;
+  }
+
+  const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
+
+  function normalize(s) {
+    return (s || "").toLocaleLowerCase("tr").normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+
+  // Basit bir yazım hatasını (örn. "hayet" yerine "hayret") tolere etmek için
+  // Levenshtein mesafesi -- yeni bir kütüphane eklemeden, tek kelimelik
+  // yaklaşık eşleşme için yeterli.
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    const al = a.length, bl = b.length;
+    if (!al) return bl;
+    if (!bl) return al;
+    let prev = new Array(bl + 1);
+    let curr = new Array(bl + 1);
+    for (let j = 0; j <= bl; j++) prev[j] = j;
+    for (let i = 1; i <= al; i++) {
+      curr[0] = i;
+      for (let j = 1; j <= bl; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+      }
+      [prev, curr] = [curr, prev];
+    }
+    return prev[bl];
+  }
+
+  // Kısa sorgularda (2-3 harf) bulanık eşleşme çok fazla alakasız sonuç
+  // getirir; sorgu uzadıkça bir-iki harflik hataya izin ver.
+  function fuzzyThreshold(len) {
+    if (len <= 3) return 0;
+    if (len <= 5) return 1;
+    return 2;
+  }
+
+  function search(query) {
+    const q = normalize(query);
+    if (!q) return [];
+    const threshold = fuzzyThreshold(q.length);
+    const scored = [];
+    index.forEach((item) => {
+      // Dizin kurulumu bitmeden yazılan sorgularda normText/words henüz
+      // atanmamış olabiliyordu (openPanel buildIndex'i beklemiyor); ilk
+      // öğede TypeError bütün harita aramasını çökertiyor ve ekranda bir
+      // önceki "haritada bulamadık" hâli kalıyordu -- "tecelli bulunamıyor"
+      // diye görünen kusurun asıl sebebi buydu. Tembel normalizasyon o
+      // aralıkta da doğru sonuç verir.
+      if (item.normText === undefined) {
+        item.normText = normalize(item.searchText);
+        item.words = item.normText.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+      }
+      if (item.normText.includes(q)) {
+        scored.push({ item, score: 0 });
+        return;
+      }
+      if (!threshold) return;
+      let best = Infinity;
+      for (const w of item.words) {
+        if (Math.abs(w.length - q.length) > threshold) continue;
+        const d = levenshtein(q, w);
+        if (d < best) best = d;
+        if (!best) break;
+      }
+      if (best <= threshold) scored.push({ item, score: best + 1 });
+    });
+    scored.sort((a, b) => a.score - b.score);
+    return scored.slice(0, 30).map((s) => s.item);
+  }
+
+  // --- UI ---
+  const toggleBtn = document.createElement("button");
+  toggleBtn.className = "search-toggle";
+  toggleBtn.type = "button";
+  toggleBtn.id = "search-toggle";
+  toggleBtn.setAttribute("aria-label", "Ara / Search / Buscar");
+  toggleBtn.title = "Ara / Search / Buscar";
+  toggleBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="15.3" y1="15.3" x2="21" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+  const themeToggle = document.getElementById("theme-toggle");
+  headerControls.insertBefore(toggleBtn, themeToggle);
+
+  // "Beni şaşırt" -- daireyi tamamlayan bir gezinme: arama kutusunun
+  // zaten topladığı tüm görünümlerin ortak indeksinden rastgele bir
+  // kavram/isim/hâl/terim/soru/kısma atlar.
+  const surpriseBtn = document.createElement("button");
+  surpriseBtn.className = "surprise-toggle";
+  surpriseBtn.type = "button";
+  surpriseBtn.id = "surprise-toggle";
+  surpriseBtn.setAttribute("aria-label", "Beni şaşırt / Surprise me / Me surpreenda");
+  surpriseBtn.title = "Beni şaşırt / Surprise me / Me surpreenda";
+  surpriseBtn.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.3-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M20 12a8 8 0 0 1-13.3 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M17.3 6l1-3.3 3 1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.7 18l-1 3.3-3-1.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  headerControls.insertBefore(surpriseBtn, themeToggle);
+
+  let lastSurprise = null;
+  function pickSurprise() {
+    if (!index.length) return;
+    let item;
+    do {
+      item = index[Math.floor(Math.random() * index.length)];
+    } while (index.length > 1 && item === lastSurprise);
+    lastSurprise = item;
+    window.__dostNav && window.__dostNav.goTo(item.view, item.id);
+  }
+  surpriseBtn.addEventListener("click", () => {
+    if (indexLoaded) pickSurprise();
+    else buildIndex().then(pickSurprise);
+  });
+
+  const panel = document.createElement("div");
+  panel.className = "search-panel";
+  panel.id = "search-panel";
+  panel.hidden = true;
+  panel.innerHTML = `
+    <div class="search-panel__box">
+      <input type="search" class="search-panel__input" id="search-input" placeholder="..." autocomplete="off">
+      <div class="search-panel__results" id="search-results"></div>
+    </div>
+  `;
+  document.body.appendChild(panel);
+
+  const input = panel.querySelector("#search-input");
+  const results = panel.querySelector("#search-results");
+
+  function placeholder() {
+    const lang = I18n.getLang();
+    return { tr: "Kavram, isim, hâl veya terim ara…", en: "Search concepts, names, states, or terms…", pt: "Buscar conceitos, nomes, estados ou termos…" }[lang];
+  }
+
+  function openPanel() {
+    panel.hidden = false;
+    input.value = "";
+    input.placeholder = placeholder();
+    input.setAttribute("aria-label", placeholder());
+    results.innerHTML = "";
+    resultButtons = [];
+    activeIndex = -1;
+    input.removeAttribute("aria-activedescendant");
+    requestAnimationFrame(() => input.focus());
+    if (!indexLoaded) buildIndex();
+  }
+
+  function closePanel() {
+    panel.hidden = true;
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    panel.hidden ? openPanel() : closePanel();
+  });
+
+  panel.addEventListener("click", (e) => {
+    if (e.target === panel) closePanel();
+  });
+
+  // Escape artık burada değil, GU.registerStepBack'in merkezi sırasında --
+  // iki katman aynı anda açıkken tek Escape'in hepsini kapatmaması için.
+  if (window.DostGraphUtils) {
+    window.DostGraphUtils.registerStepBack("search-panel", () => { closePanel(); return true; });
+  }
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "/" && panel.hidden && document.activeElement.tagName !== "INPUT") {
+      e.preventDefault();
+      openPanel();
+    }
+  });
+
+  // Ok tuşuyla gezinme: görünür sonuç düğmelerinin düz (gruplanmamış) listesi
+  // üzerinde yukarı/aşağı hareket eder, ekrana kaydırır; Enter seçili olanı
+  // açar (hiçbiri seçili değilken ilk sonucu açar -- klasik komut paleti
+  // davranışı). Liste her renderResults() çağrısında yenilendiğinden,
+  // activeIndex de her yeniden çizimde sıfırlanır.
+  let resultButtons = [];
+  let activeIndex = -1;
+
+  function setActive(i) {
+    if (resultButtons[activeIndex]) {
+      resultButtons[activeIndex].classList.remove("is-active");
+      resultButtons[activeIndex].removeAttribute("aria-selected");
+    }
+    activeIndex = i;
+    const btn = resultButtons[activeIndex];
+    if (btn) {
+      btn.classList.add("is-active");
+      btn.setAttribute("aria-selected", "true");
+      btn.scrollIntoView({ block: "nearest" });
+      input.setAttribute("aria-activedescendant", btn.id);
+    } else {
+      input.removeAttribute("aria-activedescendant");
+    }
+  }
+
+  function moveActive(delta) {
+    if (!resultButtons.length) return;
+    const next = activeIndex < 0
+      ? (delta > 0 ? 0 : resultButtons.length - 1)
+      : (activeIndex + delta + resultButtons.length) % resultButtons.length;
+    setActive(next);
+  }
+
+  function activateResult(btn) {
+    window.dostTrack && window.dostTrack("arama_sonucu_tiklandi", { view: btn.dataset.view, id: btn.dataset.id });
+    closePanel();
+    if (btn.dataset.href) { location.href = btn.dataset.href; return; }
+    window.__dostNav && window.__dostNav.goTo(btn.dataset.view, btn.dataset.id);
+  }
+
+  // ── Metin içi arama (pagefind) ──────────────────────────────────────────────
+  // Yukarıdaki arama yalnız BAŞLIK/etiket düzeyinde çalışıyor. Kısımların
+  // gövde metni (1,5 milyon karakter) orada yok; bir okuyucu "berzah" arayınca
+  // 223 kısmın içinden geçen yerleri bulamıyordu. pagefind indeksi derleme
+  // zamanında üretiliyor (scripts/build-search-corpus.py + npm run index) ve
+  // yalnız aranınca, tembel olarak yükleniyor -- açılışa maliyeti yok.
+  let pfPromise = null;
+  function loadPagefind() {
+    if (pfPromise) return pfPromise;
+    const base = window.__dostRouteBase || "";
+    pfPromise = import(base + "/pagefind/pagefind.js")
+      .then((pf) => pf.init().then(() => pf))
+      .catch(() => null);   // indeks üretilmemişse arama sessizce eski hâlinde kalır
+    return pfPromise;
+  }
+
+  const FULLTEXT_MAX = 6;
+  let fullTextToken = 0;
+  function runFullText(query) {
+    const token = ++fullTextToken;
+    const q = query.trim();
+    if (q.length < 3) { renderFullText([], token); return; }
+    loadPagefind().then((pf) => {
+      if (!pf || token !== fullTextToken) return;
+      return pf.search(q).then((r) =>
+        Promise.all(r.results.slice(0, FULLTEXT_MAX).map((x) => x.data()))
+      ).then((rows) => renderFullText(rows, token));
+    }).catch(() => {});
+  }
+
+  function renderResults(items) {
+    resultButtons = [];
+    activeIndex = -1;
+    input.removeAttribute("aria-activedescendant");
+    if (!items.length) {
+      results.innerHTML = input.value
+        ? `<div class="search-panel__empty" data-tr="Bu terimi haritada henüz bulamadık" data-en="We haven't found this term on the map yet" data-pt="Ainda não encontramos este termo no mapa">...</div>`
+        : "";
+      if (input.value) I18n.applyStatic(results);
+      return;
+    }
+    const byView = {};
+    items.forEach((it) => {
+      (byView[it.view] = byView[it.view] || []).push(it);
+    });
+    let rowIndex = 0;
+    results.innerHTML = Object.keys(byView)
+      .map((view) => {
+        const rows = byView[view]
+          .map(
+            (it) => `<button class="search-result" id="search-result-${rowIndex++}" role="option" data-view="${escapeAttr(it.view)}" data-id="${escapeAttr(it.id)}">
+              <span class="search-result__label">${escapeHtml(tt(it.label))}</span>
+              ${it.sub ? `<span class="search-result__sub">${escapeHtml(tt(it.sub))}</span>` : ""}
+            </button>`
+          )
+          .join("");
+        const dotVar = CATEGORY_DOT_VAR[view];
+        return `<div class="search-panel__group">
+          <div class="search-panel__group-label">${dotVar ? `<span class="search-panel__group-dot" style="background:var(${dotVar})"></span>` : ""}${escapeHtml(tt(CATEGORY_LABEL[view]))}</div>
+          ${rows}
+        </div>`;
+      })
+      .join("");
+
+    // Bağlama işini TEK kapı yapar: rewireResultButtons (data-wired
+    // bekçili). Eskiden burada bir kez doğrudan bağlanıp sonra rewire
+    // çağrılıyordu; data-wired henüz atanmadığı için rewire aynı
+    // düğmelere İKİNCİ dinleyiciyi ekliyor, tek tıklama activateResult'ı
+    // iki kez çalıştırıyordu.
+    rewireResultButtons();
+  }
+
+  // Metin içi sonuçlar ayrı bir grupta, başlık sonuçlarının ALTINDA durur:
+  // başlık eşleşmesi daha kesin bir cevaptır, gövde eşleşmesi bir izdir.
+  function renderFullText(rows, token) {
+    if (token !== fullTextToken) return;
+    const old = results.querySelector(".search-panel__group--fulltext");
+    if (old) old.remove();
+    if (!rows || !rows.length) { rewireResultButtons(); return; }
+    const label = tt({ tr: "Metin içinde", en: "In the text", pt: "No texto" });
+    const html = rows.map((r) => {
+      const href = (r.meta && r.meta.url) || r.url || "";
+      const title = (r.meta && r.meta.title) || "";
+      return `<button class="search-result" role="option" data-href="${escapeAttr(href)}">
+          <span class="search-result__label">${escapeHtml(title)}</span>
+          <span class="search-result__sub search-result__excerpt">${escapeExcerpt(r.excerpt)}</span>
+        </button>`;
+    }).join("");
+    const div = document.createElement("div");
+    div.className = "search-panel__group search-panel__group--fulltext";
+    div.innerHTML = `<div class="search-panel__group-label">${label}</div>${html}`;
+    results.appendChild(div);
+    rewireResultButtons();
+  }
+
+  // Ürün denetimi D1 (2026-09-02): ortak yardımcıya taşındı, bkz.
+  // graph-utils.js:escapeHtml. (Eski String(s) null-korumasız hâli
+  // String(null)="null" basardı; ortak yardımcı null-safe.)
+  const escapeHtml = window.DostGraphUtils.escapeHtml;
+  const escapeAttr = escapeHtml;
+
+  // 2026-08-15: title/href aynı satırda escapeHtml/escapeAttr ile korunmuşken
+  // excerpt korunmamıştı (düşük risk -- pagefind kendi <mark> vurgusunu
+  // güvenli üretiyor -- ama tutarsız). Her şeyi escape'leyip yalnız
+  // pagefind'ın kendi <mark>/</mark> etiketlerini whitelist ediyoruz.
+  function escapeExcerpt(s) {
+    return escapeHtml(s || "").replace(/&lt;mark&gt;/g, "<mark>").replace(/&lt;\/mark&gt;/g, "</mark>");
+  }
+
+  // Ok tuşu gezinmesi tek bir listede yürüsün: metin içi sonuçlar sonradan
+  // (asenkron) geldiği için buton listesini yeniden kuruyoruz.
+  function rewireResultButtons() {
+    const all = Array.from(results.querySelectorAll(".search-result"));
+    all.forEach((btn, i) => {
+      if (!btn.id) btn.id = "search-result-ft-" + i;
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = "1";
+      btn.addEventListener("click", () => activateResult(btn));
+      btn.addEventListener("pointerenter", () => setActive(resultButtons.indexOf(btn)));
+    });
+    resultButtons = all;
+  }
+
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-expanded", "true");
+  input.setAttribute("aria-controls", "search-results");
+  input.setAttribute("aria-autocomplete", "list");
+  results.setAttribute("role", "listbox");
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      moveActive(1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      moveActive(-1);
+    } else if (e.key === "Enter") {
+      const btn = resultButtons[activeIndex] || resultButtons[0];
+      if (btn) {
+        e.preventDefault();
+        activateResult(btn);
+      }
+    }
+  });
+
+  let searchTrackTimer = null;
+  let fullTextTimer = null;
+  input.addEventListener("input", () => {
+    renderResults(search(input.value));
+    // Dizin hâlâ kuruluyorsa, kurulum bitince aynı sorguyu bir kez daha
+    // çiz: erken yazılan sorgu kısmî dizinle eksik sonuç göstermesin.
+    if (!indexLoaded) {
+      const q = input.value;
+      buildIndex().then(() => {
+        if (!panel.hidden && input.value === q) renderResults(search(q));
+      });
+    }
+    clearTimeout(fullTextTimer);
+    fullTextTimer = setTimeout(() => runFullText(input.value), 220);
+    const q = input.value.trim();
+    if (q.length >= 2) {
+      clearTimeout(searchTrackTimer);
+      searchTrackTimer = setTimeout(() => {
+        window.dostTrack && window.dostTrack("arama_yapildi", { query: q });
+      }, 600);
+    }
+  });
+})();

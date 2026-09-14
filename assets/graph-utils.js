@@ -1,0 +1,1058 @@
+window.DostGraphUtils = (function () {
+  "use strict";
+
+  // Every view's data-loading boilerplate was `fetch(url).then(r => r.json())`
+  // with no check that the response actually succeeded -- a 404/500 (bad
+  // deploy, renamed file) surfaced as an opaque "Unexpected token '<'"
+  // JSON-parse error instead of a clear failure. One shared helper for all
+  // ~24 call sites across the site's view modules.
+  // ÖNBELLEK (2026-08-03, denetimde ölçüldü). Aynı JSON'u birden çok modül
+  // istiyor ve her biri ayrı bir indirme başlatıyordu: ana sayfada
+  // sirlar.json (345KB) İKİ kez, /sirlar/'da ÜÇ kez, /esma/'da esma.json
+  // (415KB) iki kez iniyordu -- yani her sayfa yüklemesinde 350-760KB saf
+  // israf. Tarayıcının HTTP önbelleği bunu kurtarmıyordu çünkü istekler
+  // eşzamanlı başlıyor (biri bitmeden öteki çıkıyor).
+  //
+  // Söz (promise) düzeyinde önbellek: aynı URL için ikinci çağrı YENİ bir
+  // istek açmıyor, ilkinin sözünü paylaşıyor. Hata durumunda kayıt
+  // siliniyor ki geçici bir ağ hatası kalıcı bir başarısızlığa dönüşmesin.
+  const jsonCache = new Map();
+  function fetchJson(url) {
+    if (jsonCache.has(url)) return jsonCache.get(url);
+    const p = fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`fetchJson: ${url} -> HTTP ${r.status}`);
+      return r.json();
+    }).catch((e) => { jsonCache.delete(url); throw e; });
+    jsonCache.set(url, p);
+    return p;
+  }
+
+  function getVar(name) {
+    return getComputedStyle(document.body).getPropertyValue(name).trim();
+  }
+
+  // Bir görünümün requestAnimationFrame döngüsü, o görünüm ekranda DEĞİLKEN
+  // (başka bir sekmeye/görünüme geçilmişken) çalışmaya devam etmemeli.
+  // Hâller/Esmâ/Sorular'ın üçünde de döngü koşulu `!reduceMotion` idi -- yani
+  // hareket kısıtlaması açık olmayan normal kullanıcıda HER ZAMAN doğru:
+  // görünüm bir kez açıldıktan sonra, başka bölüme geçilse bile saniyede 60
+  // kez tam render sürüyordu ve birkaç grafik gezildiğinde bunlar üst üste
+  // binip bütün siteyi (metin kutularına yazmayı bile) yavaşlatıyordu.
+  // 2026-07-25'te kullanıcının "sayfa yavaşladı, harfler geç çıkıyor"
+  // bildirimiyle yakalandı.
+  function isViewActive(wrapEl) {
+    return !!wrapEl && !wrapEl.hidden && document.visibilityState !== "hidden";
+  }
+
+  // Kendi kendini durduran rAF döngüsü -- menziller/sorular/sirlar-graph/
+  // esma/hal'de neredeyse birebir aynı iskelet (rafId/lastTs, isViewActive
+  // kapısı, 64ms'e kırpılmış dt) beş kere ayrı ayrı yazılıyordu. Tek fark
+  // hal.js/menziller.js'in SONRADAN fark ettiği bir hata idi: ensureFrame()
+  // içinde `lastTs = performance.now()` ataması -- frame() kendi kendini
+  // sürdürmek için (rafId hep null olduğu an) HER karede ensureFrame()'i
+  // çağırıyorsa, bu satır lastTs'i az önce frame()'in kendi ts'iyle set
+  // ettiği doğru değerin üzerine, neredeyse aynı ama ayrı bir performance.
+  // now() damgasıyla yeniden yazıyordu -- dt bir sonraki karede gerçek
+  // ~16ms yerine "ensureFrame çağrılalı geçen süre" (neredeyse 0) oluyordu,
+  // yani zamana bağlı her şey (dönüş, fizik) sürekli-aktif durumda görünmez
+  // derecede yavaşlıyordu. hal.js/menziller.js bunu ensureFrame'den lastTs
+  // atamasını kaldırarak düzeltmişti; sorular/sirlar-graph/esma hâlâ eski
+  // (hatalı) deseni taşıyordu -- bu ortak yardımcı hepsini düzeltilmiş
+  // davranışa taşıyor.
+  //
+  // tick(ts, dt) her aktif karede çağrılır; bir sonraki karenin
+  // planlanması için truthy dönmeli (fizik/animasyon sürüyor), aksi hâlde
+  // döngü durur ve dışarıdan bir tetikleyici (hover, sürükleme, onViewWake)
+  // loop.ensureFrame() çağırana kadar uyur.
+  function createFrameLoop(wrapEl, tick) {
+    let rafId = null;
+    let lastTs = 0;
+    function frame(ts) {
+      rafId = null;
+      if (!isViewActive(wrapEl)) { lastTs = 0; return; }
+      const dt = lastTs ? Math.min(64, ts - lastTs) : 16;
+      lastTs = ts;
+      if (tick(ts, dt)) ensureFrame();
+    }
+    function ensureFrame() {
+      if (rafId == null) rafId = requestAnimationFrame(frame);
+    }
+    return { ensureFrame };
+  }
+
+  // Sekme geri geldiğinde / görünüm yeniden açıldığında döngüyü uyandırmak
+  // isteyen modüller buraya abone olur.
+  const _wakeSubs = [];
+  function onViewWake(fn) {
+    _wakeSubs.push(fn);
+    if (_wakeSubs.length === 1) {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") _wakeSubs.forEach((f) => { try { f(); } catch (e) {} });
+      });
+    }
+  }
+
+  function moveTooltip(tooltip, wrapEl, event) {
+    if (!tooltip || tooltip.hidden || !wrapEl) return;
+    const rect = wrapEl.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+    x = Math.max(60, Math.min(rect.width - 60, x));
+    y = Math.max(50, y);
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+    // .node-hover-tip'in tabanı imlecin ~14px üstünde büyür (bkz. style.css
+    // transform: translate(-50%, calc(-100% - 14px))) -- uzun bir alıntı
+    // (örn. Sırlar'daki bir sır'ın tam metni) imleç ekranın üst kısmındayken
+    // bu yükseklikle görünüm alanının üstüne taşabiliyordu. İçerik
+    // yerleştirildikten sonra gerçek yüksekliği ölçüp üstten taşıyorsa
+    // imlecin ALTINA doğru büyümeye çeviriyoruz.
+    tooltip.classList.remove("node-hover-tip--flip");
+    if (tooltip.getBoundingClientRect().top < 4) tooltip.classList.add("node-hover-tip--flip");
+    // Yukarıdaki 60px pay, kutunun GERÇEK genişliğini değil sabit bir
+    // tahmini varsayıyordu -- konteynerin sol kenarına yakın bir düğümün
+    // (örn. Eser Ağı'nın en eski satırı) uzun başlığı yine de viewport
+    // dışına taşıp kırpılıyordu (UI denetimi bulgusu). transform:
+    // translate(-50%,...) ile ortalanmış kutu artık YERLEŞTİKTEN SONRA
+    // ölçülüp, ekranın (wrap değil -- kutu fixed değil ama viewport'a göre
+    // kırpılıyor) solundan/sağından taşıyorsa x buna göre düzeltiliyor.
+    const tipRect = tooltip.getBoundingClientRect();
+    const overflowLeft = tipRect.left;
+    const overflowRight = tipRect.right - window.innerWidth;
+    if (overflowLeft < 4) x -= overflowLeft - 4;
+    else if (overflowRight > -4) x -= overflowRight + 4;
+    tooltip.style.left = x + "px";
+  }
+
+  function hideTooltip(tooltip) {
+    if (tooltip) tooltip.hidden = true;
+  }
+
+  // Derinliğe göre boyanan düğümler için paylaşılan mavi rampa (Ontoloji ve
+  // Esmâ'da birebir aynı diziler olarak tekrarlanıyordu). Rampanın orta
+  // noktası (LAYER_COLOR[4], LAYER_COLOR_DARK[2]) KASITLI olarak style.css'teki
+  // --series-ibnarabi/--series-ibnarabi (dark) ile aynı hex değeri taşıyor --
+  // biri değişirse diğeri de elle güncellenmeli (7 renklik bir gradyanı
+  // CSS'ten canlı okumak, aktif temaya göre yanlış ucundan değer okuma riski
+  // taşıdığı için burada tercih edilmedi).
+  const LAYER_COLOR = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#2a78d6", "#1c5cab", "#0d366b"];
+  const LAYER_COLOR_DARK = ["#184f95", "#256abf", "#2a78d6", "#3987e5", "#5598e7", "#86b6ef", "#cde2fb"];
+
+  // 2026-08-27 (kod taraması, kullanıcı onaylı): kısa bir süre "çözülen
+  // karanlık" (koyu dolgu + ışıksız hâle) denendi -- GORSEL_DIL.md'nin
+  // "Zât'ı parlak bir cisim olarak çizme" yasağına daha sadık bir okumaydı.
+  // Aynı gün kullanıcı asıl bembeyaz + altın nefes alan hâleye dönülmesini
+  // istedi ("eski sarı glow efektli bembeyaz daire haline getirelim") --
+  // GORSEL_DIL.md güncellemesi CLAUDE.md'de not edilmiştir, kod burada o
+  // kararı yansıtıyor: kendi rengi bilinemez, yalnız ışımasıyla bilinir.
+  const ZAT_FILL = "#ffffff";
+
+  // "Ne kadar eminiz?" katmanının sözlüğü (B1, ontology.js'te doğdu,
+  // 2026-09-13'te sorular.js de aynı deseni kullanacağı için buraya
+  // taşındı) -- GORSEL_DIL.md'nin "sabit anlam eşleşmeleri" ilkesi gereği
+  // tek bir yerde tanımlı olmalı, her görünüm kendi kopyasını tutmamalı.
+  // Etiketler kenarın/ilişkinin kendi metnindeki temkin diline göre atanır,
+  // rastgele bir değer değildir.
+  const CONFIDENCE_LABEL = {
+    "Yüksek": { tr: "Yüksek", en: "High", pt: "Alta" },
+    "Orta": { tr: "Orta", en: "Medium", pt: "Média" },
+    "Düşük": { tr: "Düşük", en: "Low", pt: "Baixa" },
+    "Hipotez": { tr: "Hipotez", en: "Hypothesis", pt: "Hipótese" },
+    "Bilinmiyor": { tr: "Bilinmiyor", en: "Unknown", pt: "Desconhecida" },
+    "Gelecekte-doğrulanmalı": { tr: "Gelecekte doğrulanmalı", en: "To be confirmed later", pt: "A confirmar mais tarde" },
+  };
+  function confSlug(c) {
+    return c === "Orta" ? "orta"
+      : c === "Düşük" ? "dusuk"
+      : c === "Hipotez" ? "hipotez"
+      : c === "Bilinmiyor" ? "bilinmiyor"
+      : c === "Gelecekte-doğrulanmalı" ? "gelecek"
+      : "yuksek";
+  }
+
+  // Not: OS/tarayıcı tercihini değil, sitenin kendi karanlık-mod anahtarını
+  // (document.body[data-theme]) esas alır -- kullanıcı sistem tercihinin
+  // aksine bir tema seçtiğinde de doğru rampayı döndürsün diye.
+  function isDark() {
+    return document.body.getAttribute("data-theme") === "dark";
+  }
+
+  // Wires up every ".legend" panel's collapse/expand toggle on the page.
+  // On short/touch viewports the panel starts collapsed by default, since a
+  // fully-expanded legend can otherwise sit on top of the graph and hide
+  // nodes behind it.
+  function setupLegendToggles() {
+    const collapseByDefault = window.matchMedia("(max-height: 700px)").matches
+      || window.matchMedia("(pointer: coarse)").matches;
+    document.querySelectorAll(".legend").forEach((legend) => {
+      const toggle = legend.querySelector(".legend__toggle");
+      if (!toggle) return;
+      if (collapseByDefault) {
+        legend.classList.add("legend--collapsed");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+      toggle.addEventListener("click", () => {
+        const collapsed = legend.classList.toggle("legend--collapsed");
+        toggle.setAttribute("aria-expanded", String(!collapsed));
+      });
+    });
+  }
+
+  // Shared D3 zoom setup (esma/hal/sorular/sirlar-graph/ontology all
+  // repeated this identically, only scaleExtent differing). Ctrl/Cmd+wheel
+  // or a two-finger touch to zoom -- plain wheel/scroll is left free for
+  // the page itself to scroll. `extraFilter(event)`, if given, is ANDed
+  // into the fallback case (ontology.js's force-layout needs this to keep
+  // a node-drag click from also panning the whole canvas; the four
+  // fixed-layout tree/radial views don't need it and pass nothing).
+  //
+  // `opts.allowSingleTouchPan` (2026-08-09, eser-agi.js): the default
+  // two-finger-only touch filter exists because several views have
+  // force-drag-draggable nodes, where single-touch on a node needs to stay
+  // a node-drag, not a canvas-pan -- ambiguous on touch. eser-agi's rows
+  // are plain click targets (no per-node drag), so that ambiguity doesn't
+  // exist there; opting in lets a single finger scroll a tall list, which
+  // is what touch users expect from a list.
+  function createZoomBehavior(svg, zoomLayer, scaleExtent, extraFilter, opts) {
+    const allowSingleTouchPan = opts && opts.allowSingleTouchPan;
+    // Varsayılan: düz tekerlek ctrl/cmd olmadan zum YAPMAZ (ETKILESIM_DILI.md'nin
+    // "düz tekerlek = anlamlı bir hareket, Ctrl+tekerlek = klasik yakınlaştırma"
+    // ayrımı) -- ama bu ayrım yalnız düz tekerleğe BAŞKA bir anlam (sayfa kaydırma,
+    // liste kaydırma) yüklenen görünümlerde gerekli. Altında kaydıracak bir
+    // "sayfa" olmayan, tam ekran bir harita/graf için düz tekerlek serbest
+    // bırakılabilir -- opts.plainWheelZooms bunun için (2026-08-09, Sorular).
+    const plainWheelZooms = opts && opts.plainWheelZooms;
+    const zoomBehavior = d3.zoom()
+      .scaleExtent(scaleExtent)
+      .filter((event) => {
+        if (event.type === "wheel") return plainWheelZooms || event.ctrlKey || event.metaKey;
+        if (event.touches) return allowSingleTouchPan ? event.touches.length >= 1 : event.touches.length > 1;
+        return extraFilter ? extraFilter(event) : true;
+      })
+      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
+    svg.call(zoomBehavior).on("dblclick.zoom", null);
+    return zoomBehavior;
+  }
+
+  // Shared D3 force-simulation drag behavior (Ontoloji/Compare/Daphne-profil
+  // all wired this up independently). `shouldSkip(d)`, if given, excludes
+  // nodes (e.g. a fixed central hub) from being draggable.
+  function createDragBehavior(sim, shouldSkip) {
+    function dragstarted(event, d) {
+      if (shouldSkip && shouldSkip(d)) return;
+      if (!event.active) sim.alphaTarget(0.2).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+    function dragged(event, d) {
+      if (shouldSkip && shouldSkip(d)) return;
+      d.fx = event.x;
+      d.fy = event.y;
+    }
+    function dragended(event, d) {
+      if (shouldSkip && shouldSkip(d)) return;
+      if (!event.active) sim.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+    return d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
+  }
+
+  // #detail-panel/#detail-close aynı id'lerle her üç sayfada da yaşıyor
+  // (index.html/ontology.js, compare.html/compare.js, daphne-profil.html/
+  // daphne-profil.js) -- her görünümün kendi "hidden = false" satırını tek
+  // tek yamamak yerine (14+ çağrı yeri), MutationObserver ile TEK bir yerden
+  // odak yönetimi ekliyoruz: panel açılınca kapatma düğmesine odaklan,
+  // panel kapanınca odağı paneli açan öğeye geri döndür.
+  function setupDetailPanelFocus() {
+    const panel = document.getElementById("detail-panel");
+    if (!panel) return;
+    // Bir kez bağla: bu fonksiyonu ontology.js + on küsur görünüm modülü
+    // ayrı ayrı çağırıyor ve hepsinde panel AYNI #detail-panel. Bekçisiz
+    // hâli her çağrıda yeni bir MutationObserver + keydown tuzağı
+    // biriktiriyordu; sonraki observer'lar lastFocused olarak kapatma
+    // düğmesini kaydedip kapanışta odağı yanlış yere taşıyabiliyordu.
+    if (panel.dataset.focusWired) return;
+    panel.dataset.focusWired = "1";
+    let lastFocused = null;
+    const observer = new MutationObserver(() => {
+      if (panel.hidden) {
+        if (lastFocused && document.contains(lastFocused) && typeof lastFocused.focus === "function") {
+          lastFocused.focus();
+        }
+        lastFocused = null;
+      } else {
+        lastFocused = document.activeElement;
+        const closeBtn = document.getElementById("detail-close");
+        if (closeBtn) closeBtn.focus();
+      }
+    });
+    observer.observe(panel, { attributes: true, attributeFilter: ["hidden"] });
+
+    // Basit odak-tuzağı: panel açıkken Tab, arkadaki sayfaya kaçmasın.
+    panel.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const focusable = Array.from(panel.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])'))
+        .filter((n) => !n.hidden && n.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Paylaşılan 2B↔3B eğim motoru (bkz. research/GRAFIK-FELSEFESI.md)
+  //
+  // Hâller, Menziller, Esmâ ve Ontoloji'de bu projeksiyon dört kez elle
+  // yazılmıştı. Sırlar ve Sorular'a da gelince beşinci ve altıncı kopyayı
+  // yazmak yerine motoru buraya taşıdık. Felsefe belgesindeki kural
+  // ("yeni bir kütüphane ekleme, bu motoru kullan") aynen geçerli --
+  // Three.js/WebGL YOK, elle yaw/pitch + perspektif bölme.
+  //
+  // Sözleşme: tilt=0'da project() gelen (x,y)'yi AYNEN geri verir; yani
+  // 2B görünüm matematiksel olarak hiç bozulmaz. tilt=1'de düzlem yatar,
+  // `vert` (katman yüksekliği) dikeyde görünür olur.
+  function createTilt(opts) {
+    const o = opts || {};
+    const FOCAL = o.focal || 2400;
+    const DUR = o.duration || 1050;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let tilt = 0, target = 0, from = 0, animStart = 0;
+    let yaw = 0, pitch = o.pitch == null ? 0.26 : o.pitch;
+    let dragging = false;
+
+    function set(t, instant) {
+      from = tilt; target = t; animStart = performance.now();
+      if (t < 0.5) yaw = 0;
+      // Varsayılan olarak 3B açılan görünümlerde morfu izleyen olmuyor ama
+      // açılıştaki öbür işlerle yarışıp takılmaya yol açıyor -- o yüzden
+      // "instant" seçeneği var (bkz. hal/esma/menziller/ontoloji openIn3D).
+      if (instant || reduce) { tilt = t; from = t; }
+    }
+    // Her karede çağrılır; eğim animasyonu ilerler, kendiliğinden dönüş
+    // uygulanır. Sahne hâlâ hareketliyse true döner.
+    function step(ts, dt, spinning) {
+      let active = false;
+      if (tilt !== target) {
+        if (reduce) tilt = target;
+        else {
+          const p = Math.min(1, (ts - animStart) / DUR);
+          const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+          tilt = from + (target - from) * e;
+          if (p >= 1) tilt = target; else active = true;
+        }
+      }
+      if (tilt > 0.5 && spinning !== false && !dragging && !reduce) {
+        yaw += dt * (o.spinRate == null ? 0.00006 : o.spinRate);
+        active = true;
+      }
+      return active;
+    }
+    // x,y: düz (2B) konum. vert: bu düğümün katman yüksekliği (0 = düzlem).
+    function project(x, y, vert) {
+      if (tilt < 0.001) return { x: x, y: y, depth: 1, z: 0 };
+      const py = y * (1 - tilt) + (vert || 0) * tilt;
+      const pz = y * tilt;
+      const yy = yaw * tilt, pp = pitch * tilt;
+      const cyw = Math.cos(yy), syw = Math.sin(yy);
+      const x1 = x * cyw + pz * syw;
+      const z1 = -x * syw + pz * cyw;
+      const cpt = Math.cos(pp), spt = Math.sin(pp);
+      const y2 = py * cpt - z1 * spt;
+      const z2 = py * spt + z1 * cpt;
+      const zc = Math.max(z2, -FOCAL * 0.85);
+      const depth = FOCAL / (FOCAL + zc);
+      return { x: x1 * depth, y: y2 * depth, depth: depth, z: z2 };
+    }
+    // 3B'de boş alanı sürükleyerek döndürme.
+    function wireDrag(el, onChange, skipSel) {
+      let lx = 0, ly = 0;
+      el.addEventListener("pointerdown", (e) => {
+        if (target < 0.5) return;
+        if (skipSel && e.target.closest && e.target.closest(skipSel)) return;
+        dragging = true; lx = e.clientX; ly = e.clientY;
+        try { el.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      el.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        yaw += (e.clientX - lx) * 0.006;
+        pitch = Math.max(0.02, Math.min(1.1, pitch + (e.clientY - ly) * 0.004));
+        lx = e.clientX; ly = e.clientY;
+        if (onChange) onChange();
+      });
+      const stop = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+      };
+      el.addEventListener("pointerup", stop);
+      el.addEventListener("pointercancel", stop);
+    }
+    function wireToggle(btnId, onChange) {
+      const btn = document.getElementById(btnId);
+      if (!btn || btn.dataset.wiredTilt) return btn;
+      btn.dataset.wiredTilt = "1";
+      btn.setAttribute("aria-pressed", String(target > 0.5));
+      btn.classList.toggle("is-on", target > 0.5);
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const to = target > 0.5 ? 0 : 1;
+        set(to);
+        btn.classList.toggle("is-on", to > 0.5);
+        btn.setAttribute("aria-pressed", to > 0.5 ? "true" : "false");
+        if (onChange) onChange(to);
+      });
+      return btn;
+    }
+    function markOn(btnId) {
+      const btn = document.getElementById(btnId);
+      if (btn) { btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); }
+    }
+    return {
+      set: set, step: step, project: project, wireDrag: wireDrag,
+      wireToggle: wireToggle, markOn: markOn,
+      get value() { return tilt; },
+      get on() { return target > 0.5; },
+      get dragging() { return dragging; },
+    };
+  }
+
+  // --- Etiket çakışması ------------------------------------------------------
+  // Önce sorular.js'te çözüldü, sonra buraya taşındı: 2026-07-31 taraması
+  // /hal/ görünümünde aynı kusurun hiç düzeltilmemiş olduğunu ölçtü
+  // (masaüstü 5, mobil 12 çakışma; /sorular/ ikisinde de 0).
+  //
+  // İKİ DENEME TUTMADI, tekrar denenmesin diye kayıtta:
+  //   1. genişliği "karakter sayısı × punto × 0,52" ile tahmin etmek
+  //      (masaüstü 2 / mobil 5 çakışma bıraktı),
+  //   2. aynı tahmini zoom katsayısına bölmek (masaüstü 4 / mobil 1).
+  // Tutan şey tahmin değil ÖLÇÜM: getBBox() metnin kendi yerel biriminde
+  // döner, yani düğüm koordinatlarıyla aynı uzayda — zoom dönüşümü işin
+  // içine girmiyor. Ölçüm pahalı olduğu için dize başına bir kez yapılır.
+  //
+  // Ayrıca ölçüldü: yalnız puntoyu büyütmek çözüm DEĞİL. /hal/'de 10,5px'ten
+  // 12px'e çıkarmak mobil çakışmayı 12'den 14'e taşıdı. Yer açan şey kaydırma.
+  function createLabelDeconflictor() {
+    const box = new Map();            // metin -> {w,h}
+    // İlk boya, kendi @font-face'lerimiz (font-display:swap) yüklenmeden
+    // ÖNCE bir yedek fontla olabilir -- getBBox() o an ölçtüğü genişliği
+    // sonsuza dek önbelleğe alıyordu (metin başına bir kez). Ölçüldü:
+    // aynı etiket yedek fontla ~%13 daha GENİŞ görünüyor -- yani gerçek
+    // font yüklendikten sonra kutu küçülmüyor, tam tersi: erken ölçüm çok
+    // DAR kalıyor ve deconfliction o günden sonra hep az davranıyordu
+    // (2026-08-07 UI denetimi: varsayılan açılışta, hiç tıklamadan çakışan
+    // etiketler). Fontlar hazır olunca önbellek bir kez temizleniyor;
+    // sahnelerin zaten sürekli çalışan animasyon döngüsü bir sonraki
+    // karede doğru ölçümle yeniden yerleştiriyor.
+    if (typeof document !== "undefined" && document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => box.clear());
+    }
+    function measure(node, txt) {
+      let m = box.get(txt);
+      if (!m) {
+        try { const b = node.getBBox(); m = { w: b.width, h: b.height }; }
+        catch (e) { m = { w: txt.length * 5.6, h: 12 }; }
+        if (m.w > 0) box.set(txt, m);
+        // İlk karelerde metin daha boyanmadan getBBox 0 dönebiliyor
+        // (2026-08-17, compare.js'te ölçüldü: sıfır genişlikli etiketler
+        // hiç ayrıştırılmadan aynı satıra yerleşip donuyordu) -- sıfır
+        // ölçüme güvenme, karakter tahminine düş (önbelleğe ALINMAZ,
+        // gerçek ölçüm bir sonraki çağrıda yeniden denenir).
+        if (!(m.w > 0)) m = { w: txt.length * 5.6, h: m.h || 12 };
+      }
+      return m;
+    }
+    // items: {lbl (d3 seçimi), txt, x, y, baseY, priority?, scale?, dir?}
+    // dir (ops.): +1/varsayılan aşağı, -1 yukarı kaçar (bkz. aşağıdaki not).
+    // priority yüksek olan önce yerleşir (kategoriler, dönüm noktaları).
+    // scale (ops., varsayılan 1): etiketin kendi düğüm grubuna uygulanan
+    // ek transform.scale(s) çarpanı (Ontoloji'nin 3B derinlik eğiminde
+    // her düğüm farklı s alıyor). x/y/half/h bu uzayda GÖRSEL ölçekle
+    // karşılaştırılmalı, yoksa derinlikçe küçülen bir düğümün etiketi
+    // "yeterince uzak" sayılıp komşusuyla ekranda üst üste biniyordu
+    // (2026-08-06, "Decree and Destiny" / "The Divine Names and
+    // Attributes" ile ölçüldü, varsayılan açılış görünümü 3B eğimli).
+    // obstacles (ops.): {x, y, half, h} -- sabit, kendisi kaymayan engeller
+    // (düğüm daireleri gibi). Önceden başka bir ETİKETLE çakışmıyor diye
+    // güvenli sayılan bir yazı, komşu bir düğümün DAİRESİNİN tam üstüne
+    // denk gelebiliyordu (2026-08-06, Ontoloji ana sayfasında ölçüldü) --
+    // motor yalnız yazı-yazı çakışmasına bakıyordu, yazı-daire'ye değil.
+    // pad (ops.): {x, y} -- ek güvenlik payı. Ontoloji sahnesi çok yavaş
+    // salınıyor (±2.6°, bkz. ontology.js SWAY_DEG); yerleşim bu salınımın
+    // TAM ORTASINDA (0°) hesaplanıyor ama gerçek çizim her an biraz
+    // dönmüş oluyor -- sınırda kalan çiftler salınımın ucunda yeniden
+    // çakışabiliyordu (2026-08-06 ölçüldü). Varsayılan pay küçük tutuluyor
+    // (salınımı olmayan /hal/ ve /sorular/ için yeterli).
+    // Çatışma-1 kararı (uzman paneli denetimi 2026-08-17, madde 2.9):
+    // ölçüm + yerleşim döngüsü etiket sayısıyla O(n²)'ye yaklaşıyor ve
+    // bazı sahneler bunu HER karede çağırıyor. 60+ etikette tam yerleşim
+    // 3 karede bire seyreltiliyor -- aradaki karelerde etiketler son
+    // kaydırmalarını koruyor (~50ms'lik yerleşim gecikmesi göze görünür
+    // değil; FPS ölçümü değişiklik öncesi/sonrası alındı). Eşik altında
+    // davranış değişmiyor.
+    let kare = 0;
+    return function deconflict(items, obstacles, pad) {
+      if (!items.length) return;
+      kare++;
+      if (items.length >= 60 && kare % 3 !== 1) return;
+      const padY = (pad && pad.y) || 2;
+      const padX = (pad && pad.x) || 5;
+      for (const it of items) {
+        const m = measure(it.lbl.node(), it.txt);
+        const sc = it.scale || 1;
+        it.half = (m.w / 2) * sc;
+        it.h = (m.h || 12) * sc;
+      }
+      items.sort((a, b) => ((b.priority || 0) - (a.priority || 0)) || (a.y - b.y));
+      const placed = (obstacles || []).map((o) => ({ x: o.x, y: o.y, half: o.half, h: o.h }));
+      for (const it of items) {
+        let y = it.y, guard = 0, clash = true;
+        // Sınır yerleşik öğe sayısına orantılı (2026-08-17, compare.js
+        // entegrasyonunda ölçülerek bulundu): sabit 24, Ontoloji'nin 15
+        // düğümünde hiç dolmuyordu ama compare'ın 29 düğüm + 29 etiketli
+        // yoğun merkezinde itme zinciri bitmeden tükeniyor, üç etiket
+        // AYNI satıra yerleşmiş kalıyordu (model uzayında ölçüldü).
+        const sinir = Math.max(24, placed.length * 2 + 8);
+        while (clash && guard++ < sinir) {
+          clash = false;
+          // Tek taramadaki BÜTÜN çakışmaların en altına tek hamlede atla
+          // (2026-08-17, compare.js entegrasyonunda ölçülerek bulundu):
+          // eskiden dizideki İLK çakışana göre atlanıyordu -- yoğun bir
+          // koridorda bu, piksel piksel sürünen ve guard'ı tüketen bir
+          // yakınsamaya dönüşüyordu (4000 iterasyonda 120px!); üç etiket
+          // aynı satırda donmuş kalıyordu. Tek çakışma varken davranış
+          // eskisiyle birebir aynı.
+          // Kaçış yönü. Varsayılan AŞAĞI (bütün eski çağıranlar böyle
+          // davranıyordu ve davranmaya devam ediyor). it.dir === -1 ise
+          // YUKARI: etiketini düğümünün üstüne koyan bir sahne (Ontoloji,
+          // "dışa bakan taraf" kuralı) aşağı itildiğinde etiket kendi
+          // düğümünün öbür yanına geçip 200 pikselden uzağa düşüyordu --
+          // yani motorun tek yönlü kaçışı, çağıranın yerleştirme kararını
+          // sessizce geri alıyordu.
+          const yon = it.dir === -1 ? -1 : 1;
+          let hedef = y;
+          for (const p of placed) {
+            const dyGap = (it.h + p.h) / 2 + padY;
+            if (Math.abs(y - p.y) < dyGap && Math.abs(it.x - p.x) < it.half + p.half + padX) {
+              if (yon === 1) { if (p.y + dyGap > hedef) hedef = p.y + dyGap; }
+              else if (p.y - dyGap < hedef) hedef = p.y - dyGap;
+              clash = true;
+            }
+          }
+          if (clash) y = hedef;
+        }
+        placed.push({ x: it.x, y, half: it.half, h: it.h });
+        // Uygulanan y ATTR, düğümün kendi transform.scale(s)'ine tekrar
+        // tabi olacak (label o grubun çocuğu) -- görsel kaydırma miktarını
+        // geri yerel birime çevirmek için s'e bölünüyor.
+        //
+        // KOŞULSUZ yazılıyor (2026-08-17, compare.js entegrasyonunda
+        // ölçülerek bulundu): eskiden yalnız `y !== it.y` iken yazılıyordu
+        // -- kuvvet simülasyonunun kalabalık İLK karelerinde 100+ piksel
+        // itilen bir etiket, düğümler dağılıp çakışma KALKINCA eski attr'ını
+        // koruyordu; model onu kaydırılmamış sanıp üstüne başka etiket
+        // yerleştiriyordu (compare'da üç etiket aynı satıra binmiş olarak
+        // ölçüldü: y attr 3.5 / 31 / 120). Çakışma yokken y === it.y olduğu
+        // için bu satır kaymayı kendiliğinden SIFIRLIYOR.
+        it.lbl.attr("y", it.baseY + (y - it.y) / (it.scale || 1));
+      }
+    };
+  }
+
+  // Leader-line: deconflict sonrası kaydırılan bir etiketten kendi düğümüne
+  // ince bir kılavuz çizgi. G37 (Eleştiri Arkeolojisi 1400-1450 Şam-Kahire
+  // yoğunluğu) bu kalıbı doğdurdu; artık aynı ihtiyacı olan başka
+  // görünümlere (Seyahat Atlası'nın Mekke/Tâif çakışması, Menziller
+  // zirvesindeki etiket sıkışması) tekrar yazmadan uygulayabilelim diye
+  // ortak motora taşındı.
+  //
+  // Çağıran, deconflictLabels() bittikten sonra items dizisini geri
+  // veriyor; her item'da .lbl (etiket), .baseY (deconflict öncesi konum),
+  // .anchor (etiketin düğüm merkezindeki başlangıcı, ops. varsayılan
+  // {x:0,y:0}) bulunmalı. Line etiket ile aynı SVG grubuna, etiketten
+  // ÖNCE eklenir (altta çizilsin diye). Sınıf adı çağıranın CSS'iyle
+  // eşleşmeli.
+  //
+  // options: {className, threshold, gap}
+  //   className: line'ın CSS sınıfı (ör. "seyahat-durak__leader")
+  //   threshold: kayma bu değerden az ise line eklenmez (varsayılan 4)
+  //   gap: line'ın etikete yaklaşırken bırakacağı boşluk (varsayılan 3px)
+  function attachLeaderLines(items, options) {
+    const opts = options || {};
+    const cls = opts.className || "leader-line";
+    const threshold = opts.threshold != null ? opts.threshold : 4;
+    const gap = opts.gap != null ? opts.gap : 3;
+    for (const it of items) {
+      const lblNode = it.lbl.node();
+      if (!lblNode || !lblNode.parentNode) continue;
+      const parent = d3.select(lblNode.parentNode);
+      const yFinal = +it.lbl.attr("y");
+      const kayma = yFinal - it.baseY;
+      if (Math.abs(kayma) < threshold) continue;
+      const anchor = it.anchor || { x: 0, y: 0 };
+      const labelX = +it.lbl.attr("x") || 0;
+      const y2 = kayma > 0 ? yFinal - gap : yFinal + gap;
+      // Etiket öncesine ekle -- çizim sırası SVG'de belirleyici.
+      const existing = parent.select("." + cls);
+      const line = existing.empty()
+        ? parent.insert("line", () => lblNode).attr("class", cls)
+        : existing;
+      line.attr("x1", anchor.x).attr("y1", anchor.y)
+        .attr("x2", labelX).attr("y2", y2);
+    }
+  }
+
+  // KAPI — bkz. ETKILESIM_DILI.md: "geçiş dekor değil, dönüşümdür."
+  //
+  // İki bölüm arasındaki ilişki metafizik olarak "içinde" ise (Esmâ, Zât'ın
+  // ilk belirişinin İÇİDİR), geçiş de "içine girme" gibi görünmeli — yan
+  // yana iki sekme gibi değil. Bu yüzden kapıdan geçerken sahne kesilmiyor:
+  // kapı olan düğüm BÜYÜYEREK gidilen haritanın merkezine oturuyor, yeni
+  // sahne onun içinden açılıyor.
+  //
+  // Ucuz tutuldu (planın kendi ölçüsü: "tek canvas hissinin ~%80'i,
+  // maliyetinin ~%20'siyle"): iki grafiği tek bir canvas'a taşımıyoruz;
+  // yalnız kapı düğümünün ekrandaki dairesini alıp hedefin merkezine doğru
+  // büyütüyoruz. Gerçek grafikler altında sessizce yer değiştiriyor.
+  //
+  // reduced-motion'da hiç çalışmaz — atlanır, taklit edilmez. Doğrudan bir
+  // adrese gelindiğinde de çağrılmaz (çağıran taraf karar verir):
+  // gelinmemiş bir yerden çıkış animasyonu yalan olurdu.
+  function gateTransition(opts, onSwitch) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const kaynak = opts.fromRect;
+    if (reduce || !kaynak || !kaynak.width) { onSwitch(); return; }
+
+    // Hedef merkez, GÖRÜNÜR olan sahne alanından ölçülür. Gidilecek görünümün
+    // sarmalayıcısı o an `hidden` olduğu için ölçüsü 0x0'dır -- ilk yazımda
+    // hedef olarak o alınmıştı ve daire ekranın sol üst köşesine (0,0) doğru
+    // açılıyordu. İki graf görünümü aynı alanı paylaştığı için görünür olanı
+    // ölçmek hem doğru hem sağlam.
+    let hedefEl = document.querySelector(".graph-wrap:not([hidden])");
+    if (opts.targetEl && opts.targetEl.getBoundingClientRect().width > 0) hedefEl = opts.targetEl;
+    const hedef = hedefEl && hedefEl.getBoundingClientRect().width > 0
+      ? hedefEl.getBoundingClientRect()
+      : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+    const hx = hedef.left + hedef.width / 2;
+    const hy = hedef.top + hedef.height / 2;
+
+    const daire = document.createElement("div");
+    daire.className = "gate-orb";
+    daire.setAttribute("aria-hidden", "true");
+    const r0 = Math.max(6, Math.min(kaynak.width, kaynak.height) / 2);
+    daire.style.left = (kaynak.left + kaynak.width / 2) + "px";
+    daire.style.top = (kaynak.top + kaynak.height / 2) + "px";
+    daire.style.width = daire.style.height = (r0 * 2) + "px";
+    // Yalnız DÜZ bir renk kabul ediliyor. SVG'de bir düğümün `fill`i
+    // gradyan olabiliyor (`url(#...)`) ve bu CSS'te geçerli bir
+    // background-image olarak ayrıştığı için sınıfın rengini eziyor,
+    // daire de görünmez kalıyordu (ilk yazımda öyle oldu, ölçülüp
+    // düzeltildi: computed background "rgba(0,0,0,0) none" çıkıyordu).
+    if (opts.color && /^(rgb|#|hsl)/i.test(opts.color.trim())) {
+      daire.style.background = `radial-gradient(circle at 50% 50%, ${opts.color} 0%, ${opts.color} 45%, transparent 72%)`;
+    }
+    document.body.appendChild(daire);
+
+    // Büyüyen daire hâlâ AYRILAN sahnenin rengini taşıyor -- kaynak
+    // düğümden alındı. Ama VARILAN yerin kendi kimliği yok sayılmasın diye,
+    // dairenin kenarında hedef görünümün kendi --series-* rengini taşıyan
+    // ince, DOLGUSUZ bir halka beliriyor (opts.targetColor; çağıran taraf
+    // hangi görünüme gidildiğini bildiği için rengi o veriyor -- bu ortak
+    // katman görünüm-özel bir renk haritası tutmuyor). Bu iki şekli GORSEL_
+    // DIL.md'nin yasakladığı "iç içe eşmerkezli çember"e döndürmemek için
+    // ikisi aynı ritimde sönmüyor: halka dairenin kenarında BAŞLAYIP kendi
+    // hızında dışa doğru genişleyerek sönüyor, dairenin sönüşünden daha
+    // uzun sürüyor ve ayrı bir gecikmeyle başlıyor -- iki eşmerkezli sabit
+    // kopya değil, iki farklı tempoda yaşayan iki şekil.
+    let halka = null;
+    if (opts.targetColor && /^(rgb|#|hsl)/i.test(String(opts.targetColor).trim())) {
+      halka = document.createElement("div");
+      halka.className = "gate-ring";
+      halka.setAttribute("aria-hidden", "true");
+      halka.style.left = hx + "px";
+      halka.style.top = hy + "px";
+      halka.style.borderColor = opts.targetColor;
+      document.body.appendChild(halka);
+    }
+
+    // İki hareket, tek devir: önce kapı merkeze doğru büyür (sahne onun
+    // içine çekilir), sonra yeni sahne onun içinden açılırken daire söner.
+    const olcek = Math.max(6, hedef.height / (r0 * 2));
+    const buyume = daire.animate(
+      [
+        { transform: "translate(-50%, -50%) scale(1)", opacity: 0.85 },
+        { transform: `translate(-50%, -50%) translate(${hx - (kaynak.left + kaynak.width / 2)}px, ${hy - (kaynak.top + kaynak.height / 2)}px) scale(${olcek})`, opacity: 0.5 },
+      ],
+      { duration: 620, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" }
+    );
+
+    buyume.onfinish = () => {
+      onSwitch();
+      const sonme = daire.animate([{ opacity: 0.5 }, { opacity: 0 }],
+        { duration: 420, easing: "ease-out", fill: "forwards" });
+      sonme.onfinish = () => daire.remove();
+      // Animasyon API'si bir sebeple sessiz kalırsa daire ekranda asılı
+      // kalmasın: her hâlükârda temizleyen bir emniyet.
+      setTimeout(() => daire.remove(), 900);
+
+      if (halka) {
+        // Halkanın başlangıç çapı, büyüyen dairenin VARDIĞI çap -- yani
+        // "kenarında" başlıyor, kendi hızıyla biraz daha dışa taşıp sönüyor.
+        const bitisCap = r0 * 2 * olcek;
+        halka.style.width = halka.style.height = bitisCap + "px";
+        const acilma = halka.animate(
+          [
+            { transform: "translate(-50%, -50%) scale(1)", opacity: 0.9 },
+            { transform: "translate(-50%, -50%) scale(1.18)", opacity: 0 },
+          ],
+          { duration: 640, delay: 70, easing: "ease-in", fill: "forwards" }
+        );
+        acilma.onfinish = () => halka.remove();
+        setTimeout(() => halka.remove(), 1100);
+      }
+    };
+    setTimeout(() => {
+      if (daire.isConnected && buyume.playState !== "finished") {
+        buyume.cancel();
+        onSwitch();
+        daire.remove();
+        if (halka) halka.remove();
+      }
+    }, 1600);
+  }
+
+  // "Değinmek" — bkz. ETKILESIM_DILI.md'nin dördüncü fiili: hover'ın
+  // gösterdiği şey, tıklamanın göstereceğinin KÜÇÜLTÜLMÜŞ hâli olmalı.
+  //
+  // Kenarlarda bu tutmuyordu: Ontoloji'de bir çizgiye değinmek yalnız onu
+  // vurguluyordu (hiç metin yok), Hâller'de ise ilişkinin TÜRÜNÜ yazıyordu
+  // ("yankı") ama GEREKÇESİNİ değil. Yani "bu ikisi neden bağlı" sorusunun
+  // cevabı ancak tıklayınca görünüyordu. Bir çizgi çizip gerekçesini
+  // saklamak, sitenin "biz bunu böyle okuyoruz" duruşunun tersidir.
+  //
+  // İlk cümle(ler)i alır: kısa bir gerekçe tek cümlede biterse ikinciyi de
+  // ekler. Cümle sınırı ancak noktalamadan SONRA büyük harf geliyorsa
+  // kabul ediliyor -- "s.58", "bkz.", "c.14", "vb." gibi kısaltmalar
+  // yüzünden cümle ortasından kesilmesin diye.
+  const CUMLE_SINIRI = /(?<=[.!?…])\s+(?=[A-ZÂÎÛÖÜÇĞİŞ"'«])/;
+  function ilkCumleler(metin, hedef) {
+    if (!metin) return "";
+    const parcalar = String(metin).split(CUMLE_SINIRI);
+    let out = parcalar[0] || "";
+    for (let i = 1; i < parcalar.length && out.length < (hedef || 110); i++) out += " " + parcalar[i];
+    if (out.length > 260) out = out.slice(0, 257).replace(/\s+\S*$/, "") + "…";
+    return out;
+  }
+
+  // Kenar önizlemesi: başlık (iki uç ya da ilişkinin adı), varsa tür etiketi,
+  // ve gerekçenin ilk cümlesi. `guven` verilirse bizim okuma güvenimizi de
+  // yazar -- sitede zaten panelde gösterilen etiketin aynısı.
+  function edgeReasonHtml(opts) {
+    const parts = ['<div class="node-hover-tip__title">' + opts.title + "</div>"];
+    if (opts.kindLabel) parts.push('<div class="node-hover-tip__eyebrow">' + opts.kindLabel + "</div>");
+    const gerekce = ilkCumleler(opts.reason);
+    if (gerekce) parts.push('<div class="node-hover-tip__short">' + gerekce + "</div>");
+    if (opts.confidence) parts.push('<div class="node-hover-tip__conf">' + opts.confidence + "</div>");
+    return parts.join("");
+  }
+
+  // "Bir adım geri" (Esc) — bkz. ETKILESIM_DILI.md'nin üçüncü fiili.
+  //
+  // 2026-08-03'e kadar ESC beş dosyada beş ayrı `keydown` dinleyicisiyle
+  // yazılmıştı; daha kötüsü, SIRLAR'ın geri davranışı kendi dosyasında
+  // değil ontology.js'in içinde özel bir dal olarak yaşıyordu
+  // (`window.__sirlarGraphApp.isFocused() -> unfocusTheme()`). Bir
+  // görünümün davranışının başka bir dosyada durması, sözleşmenin
+  // olmadığının en açık işaretiydi.
+  //
+  // Sözleşme: ortak katman NE ZAMAN sorusunu bilir (hangi görünüm açık,
+  // sıra kimde), görünüm NE YAPILACAĞINI bilir. Görünümün geri-adım
+  // fonksiyonu bir adım aldıysa `true` döner ve zincir orada durur;
+  // `false` dönerse genel geri adım (açık paneli kapat) devreye girer.
+  const stepBacks = [];
+  // wrapId ver: yalnız o id'li eleman görünürken (!hidden) fn() denenir --
+  // graf görünümlerinin kullandığı özgün sözleşme. wrapId=null ver: fn()
+  // her Escape'te denenir, "açık mıyım" kararını kendisi verip true/false
+  // döner -- 2026-08-15'te lightbox/nav-drawer/kavram-defteri/search/
+  // sessiz-mod/durus-kontrol/futuhat-popup/graph-hint için eklendi: dokuz
+  // bağımsız Escape dinleyicisinin hiçbiri stopPropagation() çağırmıyordu,
+  // iki katman (örn. çekmece + lightbox) aynı anda açıksa tek bir Escape
+  // hepsini birden kapatıyordu -- ETKILESIM_DILI'nin yasakladığı "hepsini
+  // kapat" kalıbı. Artık hepsi bu tek merkezi sıraya kayıtlı, sırada kim
+  // önce "ben kapattım" (true) derse zincir orada duruyor.
+  function registerStepBack(wrapId, fn) {
+    stepBacks.push({ wrapId: wrapId, fn: fn });
+  }
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    for (let i = 0; i < stepBacks.length; i++) {
+      const wrapId = stepBacks[i].wrapId;
+      if (wrapId) {
+        const wrap = document.getElementById(wrapId);
+        if (!wrap || wrap.hidden) continue;
+      }
+      if (stepBacks[i].fn() === true) return;
+    }
+    const panel = document.getElementById("detail-panel");
+    if (panel && !panel.hidden) panel.hidden = true;
+  });
+
+  // Recenter ("geri çekilmek") — bkz. ETKILESIM_DILI.md'nin ikinci fiili.
+  // Altı graf görünümünün altısında da bir `.graph-recenter` düğmesi var ve
+  // her biri kendi bağlama satırını, kendi tekrar-bağlama koruyucusunu
+  // (dataset.wiredHal / dataset.wiredSir / hiç) ayrı yazmıştı -- Esmâ'nınki
+  // ise HİÇ yazılmamıştı: düğme duruyor, hiçbir dinleyicisi yok, tıklayınca
+  // sahne başlangıca dönmüyordu (2026-08-03'te ölçülüp Playwright ile
+  // doğrulandı). "Bağlanmamış düğme" o yüzden bu tur yasak oldu ve bağlama
+  // işi tek bir yere alındı: bir görünüm reset'in NE OLDUĞUNU bilir, bağlama
+  // disiplinini burası bilir.
+  function wireRecenter(buttonId, reset) {
+    const btn = document.getElementById(buttonId);
+    if (!btn || btn.dataset.wiredRecenter) return null;
+    btn.dataset.wiredRecenter = "1";
+    btn.addEventListener("click", () => reset());
+    return btn;
+  }
+
+  // "Bir benzetmeyle" bloğu. Dört görünümde (esma/hal/ontology/sorular)
+  // gövdesiyle birlikte kopyalanmıştı; 2026-07-31 taraması yakaladı.
+  // Benzetmeler şu an görünen yüzden kaldırıldı ve gizli düzenleme kipiyle
+  // geri açılıyor (bkz. assets/edit-mode.js) — görünürlük koşulu tek yerde
+  // dursun ki kip değişirse dört dosyayı ayrı ayrı düzeltmek gerekmesin.
+  function analogyHtml(analogy) {
+    if (!analogy || !(window.DostAnalogy && window.DostAnalogy.visible())) return "";
+    const I18n = window.DostI18n;
+    const etiket = I18n.pick3({ tr: "Bir benzetmeyle", en: "In one analogy", pt: "Numa analogia" });
+    return `<div class="detail-analogy"><p class="detail-analogy__label">${etiket}</p>`
+         + `<p>${I18n.pick3(analogy)}</p></div>`;
+  }
+
+  // "Resize" tepkisi — pencere/orientation değişirken tam layout+render'ı
+  // her piksel olayında değil, hareket durduktan sonra bir kez çalıştırır.
+  // 11 görünüm (hal/menziller/sorular/esma/sirlar-graph/eser-agi/
+  // elestiri-arkeolojisi/kuran-dokusu/seyahat-atlasi/acik-sorular/
+  // bilmiyoruz) aynı `window.addEventListener("resize", onResize)` +
+  // debounce'suz tam yeniden-hesaplama desenini ayrı ayrı taşıyordu
+  // (2026-08-06 denetiminde bulundu) -- kenarı sürükleyerek yeniden
+  // boyutlandırmak saniyede onlarca kez güç-yönlendirmeli bir grafiği
+  // yeniden hesaplatabiliyordu.
+  function debounceResize(fn, waitMs) {
+    waitMs = typeof waitMs === "number" ? waitMs : 150;
+    let timer = null;
+    return function () {
+      const args = arguments;
+      const self = this;
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(self, args), waitMs);
+    };
+  }
+
+  // Mobil alternatif liste (kaynak: assets/ontoloji-mobil-liste.js, G57
+  // CONFIRMED, 2026-08-10) -- D3 force-graph'lar dar ekranda okunmuyor;
+  // "Bu bir kimlik değil, bir kolaylık" duruşuyla aynı veriyi düz bir
+  // listeye çeviriyor, "Haritayı aç" düğmesi gerçek grafiği yine sunuyor.
+  // Ontoloji'de tek başına doğrulanmış desen; uzman paneli denetiminin
+  // O-01/F4 bulgusu (2026-08-16) aynı kök nedenin en az 8 başka görünümde
+  // (başta Esmâ'nın 101 düğümü, Sırlar'ın 104 kenarı) açık kaldığını
+  // gösterdi -- burada tek yardımcıya çıkarılıyor ki yayılması dosya
+  // başına yeniden yazmak yerine bir çağrı olsun.
+  //
+  // opts: {
+  //   wrapEl, listEl, mediaQuery (ops., vars. "(max-width: 640px)"),
+  //   fetchUrl, extractNodes(data) -> [{id, name:{tr,en,pt}, short:{tr,en,pt}}],
+  //   groups (ops.): [{title:{tr,en,pt}|null, ids:[...]}] -- statik gruplama
+  //     (id'ler veri yüklenmeden biliniyorsa, ör. Ontoloji'nin OMURGA/YAN'ı).
+  //   groupBy(node)->anahtar, groupOrder:[anahtar,...] (ops.), groupTitle(anahtar)
+  //     ->{tr,en,pt} (ops.) -- dinamik gruplama (id'ler veri yüklenmeden
+  //     bilinmiyorsa, ör. Esmâ'nın celâl/cemâl/kemâl dağılımı). `groups`
+  //     verilmişse bu üçü yok sayılır.
+  //   groups/groupBy hiçbiri verilmezse: tek, başlıksız grup (düğümler
+  //     extractNodes sırasıyla).
+  //   pipClass(node) (ops.): satır işaretine ek sınıf.
+  //   title:{tr,en,pt}, note:{tr,en,pt}, graphButtonLabel:{tr,en,pt},
+  //   goTo(id): düğüme git,
+  //   onGraphOpen(): "Haritayı aç" tıklanınca (resize dispatch çağırana kalır).
+  // }
+  function createMobileListFallback(opts) {
+    const wrapEl = opts.wrapEl, listEl = opts.listEl;
+    if (!wrapEl || !listEl) return null;
+    const I18n = window.DostI18n;
+    function tt(v) {
+      if (I18n && typeof I18n.pick3 === "function") return I18n.pick3(v || {});
+      return (v && (v.tr || v.en || v.pt)) || "";
+    }
+    let sonNodes = null;
+
+    function satirHtml(node) {
+      const ad = tt(node.name);
+      const ozet = tt(node.short);
+      const pip = (opts.pipClass && opts.pipClass(node)) || "";
+      return `<li><button class="mobil-liste__satir" type="button" data-id="${node.id}">
+        <span class="mobil-liste__pip ${pip}"></span>
+        <span class="mobil-liste__govde">
+          <span class="mobil-liste__ad">${ad}</span>
+          ${ozet ? `<span class="mobil-liste__ozet">${ozet}</span>` : ""}
+        </span>
+      </button></li>`;
+    }
+
+    function groupsHtml(nodes) {
+      const byId = new Map(nodes.map((n) => [n.id, n]));
+      let gruplar = opts.groups;
+      if (!gruplar && opts.groupBy) {
+        // Esmâ tarzı: gruplar veri yüklenmeden bilinmiyor (celâl/cemâl/kemâl
+        // dağılımı), o yüzden statik id listesi yerine düğüm başına anahtar
+        // üreten bir fonksiyon + sabit sıra veriliyor.
+        const byKey = new Map();
+        nodes.forEach((n) => {
+          const k = opts.groupBy(n);
+          if (!byKey.has(k)) byKey.set(k, []);
+          byKey.get(k).push(n.id);
+        });
+        const order = opts.groupOrder || Array.from(byKey.keys());
+        gruplar = order.filter((k) => byKey.has(k)).map((k) => ({
+          title: opts.groupTitle ? opts.groupTitle(k) : null,
+          ids: byKey.get(k),
+        }));
+      }
+      if (gruplar) {
+        const bilinenler = new Set(gruplar.flatMap((g) => g.ids));
+        const kalanlar = nodes.filter((n) => !bilinenler.has(n.id));
+        if (kalanlar.length) gruplar = gruplar.concat([{ title: null, ids: kalanlar.map((n) => n.id) }]);
+      } else {
+        gruplar = [{ title: null, ids: nodes.map((n) => n.id) }];
+      }
+      return gruplar.map((g, i) => {
+        const gnodes = g.ids.map((id) => byId.get(id)).filter(Boolean);
+        if (!gnodes.length) return "";
+        const baslik = g.title
+          ? `<h3 class="mobil-liste__baslik" style="font-size:0.95rem;margin-top:${i ? "18px" : "0"}">${tt(g.title)}</h3>`
+          : "";
+        return baslik + `<ul class="mobil-liste__ul">${gnodes.map(satirHtml).join("")}</ul>`;
+      }).join("");
+    }
+
+    function doldur(nodes) {
+      sonNodes = nodes;
+      listEl.innerHTML = `
+        <h2 class="mobil-liste__baslik">${tt(opts.title)}</h2>
+        <p class="mobil-liste__not">${tt(opts.note)}</p>
+        ${groupsHtml(nodes)}
+        <button class="mobil-liste__grafik-btn" type="button">${tt(opts.graphButtonLabel)}</button>
+      `;
+      listEl.querySelectorAll(".mobil-liste__satir").forEach((btn) => {
+        btn.addEventListener("click", () => opts.goTo(btn.dataset.id));
+      });
+      const grafikBtn = listEl.querySelector(".mobil-liste__grafik-btn");
+      if (grafikBtn) {
+        grafikBtn.addEventListener("click", () => {
+          wrapEl.classList.add("grafik-acik");
+          requestAnimationFrame(() => {
+            if (opts.onGraphOpen) opts.onGraphOpen();
+            else window.dispatchEvent(new Event("resize"));
+          });
+        });
+      }
+    }
+
+    function yukle() {
+      fetchJson(opts.fetchUrl).then((d) => doldur(opts.extractNodes(d) || [])).catch(() => {
+        // Sessizce başarısız ol: masaüstünde liste zaten hiç gösterilmez.
+      });
+    }
+
+    const mq = window.matchMedia(opts.mediaQuery || "(max-width: 640px)");
+    if (mq.matches) {
+      yukle();
+    } else {
+      const kez = () => { if (mq.matches) { yukle(); mq.removeEventListener("change", kez); } };
+      mq.addEventListener("change", kez);
+    }
+
+    return { onLangChange: () => { if (sonNodes) doldur(sonNodes); } };
+  }
+
+  // Kenar erişilebilirliği (K-01/K-03, uzman paneli denetimi 2026-08-17):
+  // Ontoloji/Esmâ'nın kenar-isabet desenindeki erişilebilirlik katmanı
+  // (tabindex + rol + aria-label + Enter/Boşluk + odak geri bildirimi)
+  // tek yardımcıya çıkarıldı ki hal/sirlar/sorular aynı sözleşmeyi tekrar
+  // yazmadan kullanabilsin (registerStepBack/createZoomBehavior ile aynı
+  // konsolidasyon deseni). `sel` bir D3 seçimi; opts:
+  //   label(d) -> string (zorunlu; "Değinmek" fiilinin ekran-okuyucu metni)
+  //   role (ops., vars. "button" -- yalnız okunacaksa "img" verilebilir)
+  //   onActivate(d, e) (ops.; verilirse Enter/Boşluk çalışır)
+  //   onFocus(d, e) / onBlur() (ops.; hover'daki görsel vurgunun klavye
+  //     karşılığı -- "yalnız fareye ait özellik" yasağı)
+  function wireEdgeAccessibility(sel, opts) {
+    sel
+      .attr("tabindex", 0)
+      .attr("role", opts.role || "button")
+      .attr("aria-label", (d) => opts.label(d));
+    if (opts.onFocus) sel.on("focus.a11y", (e, d) => opts.onFocus(d, e));
+    if (opts.onBlur) sel.on("blur.a11y", () => opts.onBlur());
+    if (opts.onActivate) {
+      sel.on("keydown.a11y", (e, d) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          opts.onActivate(d, e);
+        }
+      });
+    }
+    return sel;
+  }
+
+  // Ürün denetimi D1 (2026-09-02): 6 dosyada (crosslink-preview/edit-mode/
+  // futuhat/review/search/share-mode.js) bağımsız escapeHtml vardı, iki
+  // farklı teknikle (regex+map vs. DOM textContent->innerHTML) ve tutarsız
+  // null-korumasıyla (bazıları String(null)="null" basıyordu). Ölçüldü:
+  // DOM tekniği & < > kaçırıyor ama " KAÇIRMIYOR (metin bağlamında zararsız,
+  // ama tek fonksiyona taşırken en güvenli ortak payda seçildi). Regex
+  // tabanlı, & < > " kaçıran, null-safe TEK sürüm.
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]
+    ));
+  }
+
+  // Ürün denetimi D3 (2026-09-02): hal.js ve esma.js'teki FCA (Formal
+  // Concept Analysis) küme-odağı altyazısı ve düğme-bağlama kodu yalnız DOM
+  // id önekinde (hal-fca-*/esma-fca-*) ayrışıyordu -- burada ortaklandı.
+  // fcaClusterHtml/openFcaLightbox ve asıl küme ODAĞI (enterClusterFocus/
+  // exitClusterFocus) bilerek ortaklanmadı: üye alanı adı (uyeler/esma),
+  // düğüm şekli ve kamera mekaniği (hal.js: orderedNodes/fitView, esma.js:
+  // revealLevel/fitVisible/idleRotate) görünüme özgü -- paylaşılan bir
+  // kabuk yalnızca geri çağırma yığını olurdu (bkz. proje notları: erken
+  // soyutlama).
+  const FCA_SHOW_LABEL = { tr: "Haritada göster", en: "Show on the map", pt: "Mostrar no mapa" };
+  function fcaCaption(prefix) {
+    return {
+      show(kume, tt) {
+        const cap = document.getElementById(`${prefix}-fca-caption`);
+        const text = document.getElementById(`${prefix}-fca-caption-nitelik`);
+        if (!cap || !text) return;
+        text.textContent = kume.nitelikler.map((n) => tt(n.label)).join(" · ");
+        cap.hidden = false;
+      },
+      hide() {
+        const cap = document.getElementById(`${prefix}-fca-caption`);
+        if (cap) cap.hidden = true;
+      },
+    };
+  }
+  function wireFcaButton(prefix, onClick) {
+    const btn = document.getElementById(`${prefix}-fca-btn`);
+    if (!btn || btn.dataset.wiredFcaButton) return;
+    btn.dataset.wiredFcaButton = "1";
+    btn.addEventListener("click", onClick);
+  }
+
+  return { getVar, analogyHtml, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+})();
