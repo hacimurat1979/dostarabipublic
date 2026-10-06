@@ -37,7 +37,7 @@
 
   var VIEWS = {
     __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-BRzLS2A7b2GtSzC/029wyFnItyzgtts/kZu3yvo2aXTdQgM2qDhVAN4QjbBOlJfK" },
-    __kavramApp: { src: "assets/kavram.js", integrity: "sha384-cB0CHRDcCKIabXy545C7bSjQNEmI5EBsIZdV4wxkybxE2biVzqdL2hAr7dDmyvnH" },
+    __kavramApp: { src: "assets/kavram.js", integrity: "sha384-a3+XwdLH+pj7FP2tCuQPO3YDdxHTUxmHD+rJHwsEsvN1zAOq3OWEH5nsV9FsUNCk" },
     __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-nIFZDSqrBwHlvPJqtVx/Jgr+P4JtIuJki94cVcIk2Zhk+8d6D9HaiOFUE3f80zIB" },
     __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-3DAmRScI+L9wWXXhl7hJ+vPPOCivyCDlNFjOkGi+POHuSA/16/KYsSWuqWgoKJ/9" },
     __vahdetApp: { src: "assets/vahdet.js", integrity: "sha384-2rN3S/i2hCI+gsfcxXbYk077iG7ineliJ4mSDwiZoVruUR8eOOqc9ctW2W4Q7I79" },
