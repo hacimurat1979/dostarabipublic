@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-v3";
+const CACHE_VERSION = "dost-sw-v4";  // v4 (2026-10-06): yorum ayıklaması -- eski veri önbelleği eski (yorumlu) özetleri gösteriyordu
 const SHELL_URLS = ["./", "./index.html", "./assets/style.css", "./assets/vendor/d3-custom.min.js"];
 
 self.addEventListener("install", (event) => {

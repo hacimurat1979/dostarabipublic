@@ -54,7 +54,15 @@ window.DostI18n = (function () {
     const lang = getLang();
     scope.querySelectorAll("[data-tr]").forEach((el) => {
       const v = el.dataset[lang] || el.dataset.en || el.dataset.tr;
-      el.textContent = v;
+      // Metni içinde bağlantı taşıyan statik öğe (index.html'deki
+      // .hakkinda-poem__source: "<a href=futuhat/c12k147>"): textContent
+      // <a>'yı silip etiketi düz metin olarak basıyordu -- ontology.js
+      // applyStatic'i açılışta çağırdığı için bağlantı ilk yüklemede
+      // kopuyordu (2026-10-06 bağlanmamış düğme taraması). Değer
+      // index.html'in kendi yazılmış metni, veri/kullanıcı girdisi değil;
+      // innerHTML yalnız zaten çocuk öğe taşıyan öğelerde.
+      if (el.children.length) el.innerHTML = v;
+      else el.textContent = v;
     });
     // Metin taşımayan ama ada ihtiyacı olan öğeler (ana graf svg'leri gibi)
     // adlarını data-{dil}-aria-label ile veriyor -- textContent'e yazmak

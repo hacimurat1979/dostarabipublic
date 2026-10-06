@@ -23,24 +23,23 @@
   // Wires up a decrease/increase button pair sharing the site-wide
   // --detail-font-scale variable and dost-font-scale storage key, so the
   // reading-panel and Fütûhât toolbar controls stay in sync with each other.
-  function bindFontScaleButtons(decreaseEl, increaseEl) {
-    let scale = getStoredScale();
-    applyScale(scale);
+  // Ölçek bütün düğme çiftlerinin paylaştığı tek değişkende (2026-10-06):
+  // önceden her çift kendi kapanımında bir kopya tutuyordu -- araç
+  // çubuğunda ölçek değişince okuma panelindeki A-/A+ eski değerden
+  // sıçrıyordu. Depo (localStorage) engelliyse de çalışır.
+  let current = null;
 
-    if (decreaseEl) {
-      decreaseEl.addEventListener("click", () => {
-        scale = Math.max(MIN_SCALE, Math.round((scale - STEP) * 100) / 100);
-        applyScale(scale);
-        storeScale(scale);
-      });
+  function bindFontScaleButtons(decreaseEl, increaseEl) {
+    if (current === null) current = getStoredScale();
+    applyScale(current);
+
+    function step(delta) {
+      current = Math.min(MAX_SCALE, Math.max(MIN_SCALE, Math.round((current + delta) * 100) / 100));
+      applyScale(current);
+      storeScale(current);
     }
-    if (increaseEl) {
-      increaseEl.addEventListener("click", () => {
-        scale = Math.min(MAX_SCALE, Math.round((scale + STEP) * 100) / 100);
-        applyScale(scale);
-        storeScale(scale);
-      });
-    }
+    if (decreaseEl) decreaseEl.addEventListener("click", () => step(-STEP));
+    if (increaseEl) increaseEl.addEventListener("click", () => step(STEP));
   }
 
   window.DostFontScale = { getStoredScale, applyScale, bindFontScaleButtons };

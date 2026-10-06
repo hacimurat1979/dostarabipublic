@@ -56,7 +56,7 @@
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-jGMyHf2FmsoxMzhIees9cckXaNUce1llkPllNa1C+FEtwkryHYFugE+J/gKWPCcd" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-N1uSiPe8lffbKjlqmlkz4tGyIFwhxCaNT/EQCkRu0D7JRpFWny4WZLrmV0asTO6c" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-8DMi+ndcYocH8RT225ZPxcC0pmi0ChHG3NiFoYbTFJhrAc1k9B4Iz7O0H20nGenB" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-1fiswUyPfMQ3x4yRzul7OX2UwP5U40j2uiqLdQDtd9TTmOedtk2o1HfEOp2pDCSo" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-bmz2T6mhS94YKm3U+VLYGCQWwzJhMrYgJKZHTovWJfN6KYbFKIRAFM/w9r6vSfDt" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-mt0ikh8D/Yuo0BC0WYDpGHMSt7hFl/KgK7G4lRfmNRFvogaRqkHnZIkYhOOWhqJO" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-QgCqx0oiM2uUWN4NfoO0RYMw9Vl1crt43kzKE4JzgG9To7+0U7bsNrmm3BAG5MVn" },
     __fususApp: { src: "assets/fusus.js", integrity: "sha384-hthm8scYI5UnQN80SpAsoWhagPfKoVMuY7vsV2GCqOjV0SjkfdGWvpIXREiFeuV5" },
