@@ -1337,7 +1337,11 @@
           .map((no) => {
             const part = futuhatData.parts.find((p) => p.cilt === c.cilt && p.kisim === no);
             if (part) {
-              return `<button class="futuhat-part-chip futuhat-part-chip--active" type="button" data-id="${part.id}">${tt({ tr: "Kısım " + roman(no), en: "Part " + roman(no), pt: "Parte " + roman(no) })}</button>`;
+              // --current şablonda da basılıyor: yoğunluk verisi gelince
+              // liste yeniden çiziliyor ve vurgu yalnız activatePart()'ta
+              // eklendiği için kayboluyordu.
+              const cur = part.id === activePartId ? " futuhat-part-chip--current" : "";
+              return `<button class="futuhat-part-chip futuhat-part-chip--active${cur}" type="button" data-id="${part.id}">${tt({ tr: "Kısım " + roman(no), en: "Part " + roman(no), pt: "Parte " + roman(no) })}</button>`;
             }
             return `<span class="futuhat-part-chip futuhat-part-chip--soon" title="${tt({ tr: "Yakında", en: "Coming soon", pt: "Em breve" })}">${roman(no)}</span>`;
           })
@@ -1931,12 +1935,18 @@
     }
     renderMap();
     renderParts();
-    if (partsEl) {
-      partsEl.querySelectorAll(".futuhat-part-chip[data-id]").forEach((chip) => {
-        chip.addEventListener("click", () => {
-          window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: chip.dataset.id });
-          activatePart(chip.dataset.id);
-        });
+    // Olay devri (2026-10-06): dinleyici çiplere değil partsEl'in kendisine
+    // bağlı. renderParts() innerHTML'i baştan yazıyor ve yukarıdaki
+    // yogunlukYukle() onu veri gelince YENİDEN çağırıyor -- çiplere tek tek
+    // bağlanan dinleyiciler o ikinci çizimde kayboluyor, kısım düğmeleri
+    // görünür ama tıklamaya tepkisiz kalıyordu (kullanıcı tespiti).
+    if (partsEl && !partsEl.dataset.chipDelegated) {
+      partsEl.dataset.chipDelegated = "1";
+      partsEl.addEventListener("click", (e) => {
+        const chip = e.target.closest(".futuhat-part-chip[data-id]");
+        if (!chip || !partsEl.contains(chip)) return;
+        window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: chip.dataset.id });
+        activatePart(chip.dataset.id);
       });
     }
     activatePart(activePartId);
