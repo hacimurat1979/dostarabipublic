@@ -347,12 +347,14 @@ window.__kavramApp = (function () {
   // Vurgu `wrapEl` üzerindeki data-kzr-active ile CSS'e taşınıyor (bkz.
   // assets/style.css [data-kzr-active] kuralları) -- görünümün davranışı
   // yine bu dosyada, ama gerçek büyütme/soluklaştırma CSS geçişiyle olur.
+  let kzrPinned = null;   // tıklamayla sabitlenen tür (bkz. bindKzrLegend)
+
   function kzrLegendHtml() {
     return (
-      `<div class="kzr-legend" role="list">` +
+      `<div class="kzr-legend" role="group" aria-label="${escapeHtmlKavram(tt({ tr: "Malzeme türleri", en: "Material types", pt: "Tipos de material" }))}">` +
       KZR_TYPES.map(
         (t) =>
-          `<button type="button" class="kzr-legend__item" data-kzr-type="${t.key}" role="listitem">` +
+          `<button type="button" class="kzr-legend__item" data-kzr-type="${t.key}" aria-pressed="${kzrPinned === t.key}">` +
           `<span class="kzr-legend__swatch kzr-legend__swatch--${t.key}" aria-hidden="true"></span>` +
           `<span class="kzr-legend__label">${tt(t.label)}</span>` +
           `</button>`
@@ -361,16 +363,44 @@ window.__kavramApp = (function () {
     );
   }
 
+  // Tıklama vurguyu SABİTLER (2026-10-06): önceden yalnız hover/focus
+  // vardı -- düğme görünümünde ama tıklamaya tepkisiz, dokunmatik ekranda
+  // ise hiçbir şey yapmıyordu. Değinmek (hover) tıklamanın küçük hâlini
+  // gösterir; tıklamak onu kalıcı kılar; aynı satıra tekrar tıklamak ya da
+  // Esc (bir adım geri) sabitlemeyi kaldırır.
+  function kzrShow(type) {
+    if (type) wrapEl.dataset.kzrActive = type;
+    else delete wrapEl.dataset.kzrActive;
+  }
+
+  function kzrSetPinned(type) {
+    kzrPinned = type;
+    listEl.querySelectorAll(".kzr-legend__item").forEach((b) => {
+      b.setAttribute("aria-pressed", String(b.dataset.kzrType === type));
+    });
+    kzrShow(type);
+  }
+
   function bindKzrLegend() {
     listEl.querySelectorAll(".kzr-legend__item").forEach((btn) => {
       const type = btn.dataset.kzrType;
-      const on = () => { wrapEl.dataset.kzrActive = type; };
-      const off = () => { delete wrapEl.dataset.kzrActive; };
+      const on = () => kzrShow(type);
+      const off = () => kzrShow(kzrPinned);
       btn.addEventListener("mouseenter", on);
       btn.addEventListener("mouseleave", off);
       btn.addEventListener("focus", on);
       btn.addEventListener("blur", off);
+      btn.addEventListener("click", () => kzrSetPinned(kzrPinned === type ? null : type));
     });
+    kzrShow(kzrPinned);
+    if (!document.documentElement.dataset.kzrEscBound) {
+      document.documentElement.dataset.kzrEscBound = "1";
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape" || !kzrPinned || listEl.hidden || wrapEl.hidden) return;
+        e.stopImmediatePropagation();
+        kzrSetPinned(null);
+      }, true);
+    }
   }
 
   function renderList() {
@@ -389,9 +419,9 @@ window.__kavramApp = (function () {
       pt: "Um resumo derivado de dados de onde cada conceito aparece pela primeira vez nas Revelações de Meca e nos Engastes da Sabedoria, onde aparece com mais densidade, e com qual mistério/diagrama/versículo/hadith é registrado junto. Não uma afirmação -- uma tentativa de varredura; o método está ao pé da página.",
     });
     const gaugeNote = tt({
-      tr: "Her adın yanındaki halka, o kavram için ne kadar malzeme biriktiğini gösterir -- kısım/fass sayısı, birlikte anıldığı esmâ, ilişkili sır/çizim/âyet/hadis toplanarak (kendi grubu içinde ölçeklenmiş). Halkanın renkli dilimleri bu malzemenin hangi türden geldiğini gösterir -- altta lejantın üzerine gelmek/Tab'lamak bir türü öne çıkarır.",
-      en: "The ring beside each name shows how much material has accumulated for that concept -- part/chapter count, co-occurring Names, and related mysteries/diagrams/verses/hadiths added together (scaled within its own group). The ring's colored slices show which type each piece is -- hovering or tabbing to a row in the legend below highlights one type.",
-      pt: "O anel ao lado de cada nome mostra quanto material se acumulou para aquele conceito -- número de partes/capítulos, Nomes coocorrentes, e mistérios/diagramas/versículos/hadiths relacionados somados (escalado dentro do próprio grupo). As fatias coloridas do anel mostram de qual tipo vem cada parte -- passar o mouse ou usar Tab numa linha da legenda abaixo destaca um tipo.",
+      tr: "Her adın yanındaki halka, o kavram için ne kadar malzeme biriktiğini gösterir -- kısım/fass sayısı, birlikte anıldığı esmâ, ilişkili sır/çizim/âyet/hadis toplanarak (kendi grubu içinde ölçeklenmiş). Halkanın renkli dilimleri bu malzemenin hangi türden geldiğini gösterir -- altta lejantın üzerine gelmek/Tab'lamak bir türü öne çıkarır, tıklamak vurguyu sabitler (tekrar tıklamak ya da Esc kaldırır).",
+      en: "The ring beside each name shows how much material has accumulated for that concept -- part/chapter count, co-occurring Names, and related mysteries/diagrams/verses/hadiths added together (scaled within its own group). The ring's colored slices show which type each piece is -- hovering or tabbing to a row in the legend below highlights one type, and clicking pins it (click again or press Esc to release).",
+      pt: "O anel ao lado de cada nome mostra quanto material se acumulou para aquele conceito -- número de partes/capítulos, Nomes coocorrentes, e mistérios/diagramas/versículos/hadiths relacionados somados (escalado dentro do próprio grupo). As fatias coloridas do anel mostram de qual tipo vem cada parte -- passar o mouse ou usar Tab numa linha da legenda abaixo destaca um tipo, e clicar fixa o destaque (clique de novo ou Esc para soltar).",
     });
     listEl.innerHTML =
       `<p class="kavram-list__intro">${intro}</p>` +
