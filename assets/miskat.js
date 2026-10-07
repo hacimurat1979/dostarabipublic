@@ -330,7 +330,14 @@
         + "</ul></footer>";
     }
 
+    // Metnin sonunda önceki/sonraki (2026-10-07; bkz. graph-utils readingNavHtml).
+    html += window.DostGraphUtils.readingNavHtml(
+      data.hadisler.filter(function (x) { return x.status === "active"; }).map(function (x) {
+        return { id: x.id, label: t(x.etiket === "haber" ? { tr: x.no + ". Haber", en: "Report " + x.no, pt: "Relato " + x.no } : { tr: x.no + ". Hadis", en: "Hadith " + x.no, pt: "Hadith " + x.no }), title: t(x.title) };
+      }), h.id);
+
     articleEl.innerHTML = html;
+    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
     mountHelixBlocks(articleEl, helixes, captions);
     var printBtn = articleEl.querySelector(".fusus-print-btn");
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });

@@ -826,6 +826,43 @@ window.DostGraphUtils = (function () {
   // Benzetmeler şu an görünen yüzden kaldırıldı ve gizli düzenleme kipiyle
   // geri açılıyor (bkz. assets/edit-mode.js) — görünürlük koşulu tek yerde
   // dursun ki kip değişirse dört dosyayı ayrı ayrı düzeltmek gerekmesin.
+  // Okuma gezintisi (2026-10-07 tarama bulgusu): Fütûhât/Füsûs/Mişkât'ta bir
+  // metnin sonunda "önceki / sonraki" yoktu; mobilde sonraki kısma geçmenin
+  // tek yolu sayfanın en altındaki uzun listeydi. items: sıralı
+  // [{id, label, title}] (label "Kısım XXXIII" gibi, title metnin başlığı);
+  // onGo(id) görünümün kendi açma fonksiyonu. HTML'i döndürür; bağlama
+  // wireReadingNav ile, çizimden sonra yapılır.
+  function readingNavHtml(items, currentId) {
+    const I18n = window.DostI18n;
+    const i = items.findIndex((x) => x.id === currentId);
+    if (i < 0) return "";
+    const prev = items[i - 1], next = items[i + 1];
+    const btn = (it, yon) => {
+      if (!it) return `<span class="okuma-gezinti__bos"></span>`;
+      const ok = yon === "onceki" ? "← " : "";
+      const ok2 = yon === "sonraki" ? " →" : "";
+      const etiket = I18n.pick3(yon === "onceki"
+        ? { tr: "Önceki", en: "Previous", pt: "Anterior" }
+        : { tr: "Sonraki", en: "Next", pt: "Seguinte" });
+      return `<button type="button" class="okuma-gezinti__btn okuma-gezinti__btn--${yon}" data-okuma-git="${escapeHtml(it.id)}">`
+        + `<span class="okuma-gezinti__yon">${yon === "onceki" ? `${ok}${etiket} · ${escapeHtml(it.label)}` : `${escapeHtml(it.label)} · ${etiket}${ok2}`}</span>`
+        + `<span class="okuma-gezinti__baslik">${escapeHtml(it.title || "")}</span></button>`;
+    };
+    const aria = I18n.pick3({ tr: "Okuma gezintisi", en: "Reading navigation", pt: "Navegação de leitura" });
+    return `<nav class="okuma-gezinti" aria-label="${escapeHtml(aria)}">${btn(prev, "onceki")}${btn(next, "sonraki")}</nav>`;
+  }
+
+  function wireReadingNav(rootEl, onGo) {
+    if (!rootEl) return;
+    rootEl.querySelectorAll("[data-okuma-git]").forEach((b) => {
+      b.addEventListener("click", () => {
+        onGo(b.dataset.okumaGit);
+        const top = rootEl.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+      });
+    });
+  }
+
   function analogyHtml(analogy) {
     if (!analogy || !(window.DostAnalogy && window.DostAnalogy.visible())) return "";
     const I18n = window.DostI18n;
@@ -1058,5 +1095,5 @@ window.DostGraphUtils = (function () {
     btn.addEventListener("click", onClick);
   }
 
-  return { getVar, analogyHtml, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { getVar, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();

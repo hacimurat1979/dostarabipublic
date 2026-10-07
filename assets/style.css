@@ -278,7 +278,7 @@
      --kzr-kisim BİLEREK yeni bir renk DEĞİL, --helix-gold-rim'in takma adı:
      halka zaten o rengi (sarmalın düğüm rengi) "kısım/fas" için
      kullanıyordu, iki farklı yerde aynı şeyi iki ayrı tonla göstermeyelim.
-     Diğer beşi bu tarama için yeni -- kasıtlı olarak --series-*/--menziller-*
+     Diğer beşi bu tarama için yeni -- kasıtlı olarak --series-* / --menziller-*
      ailesindeki hiçbir tonla aynı hex değil, çünkü oradaki renkler başka
      görünümlerin (Sırlar'ın kendi alt kategorileri, Sorular'ın kendi
      kategorileri) kendi kimliğini taşıyor; burada karışırlarsa iki ayrı
@@ -10460,6 +10460,11 @@ mark.durus-vurgu-es {
    geçişi var, kendiliğinden kapanmaz (kullanıcı ESC/boşluğa tıklayarak çıkar
    -- ayrı bir çıkış düğmesi yok, ETKILESIM_DILI'nin "bir adım geri" ve
    "boşluğa tıklama" fiilleri zaten bu kipi kapatıyor). */
+/* display:flex [hidden]'ı eziyordu: gizli FCA rozeti ve geri düğmesi boş
+   hap olarak görünüyordu (2026-10-07 tarama bulgusu). */
+.esma-fca-caption[hidden],
+.graph-back[hidden] { display: none; }
+
 .esma-fca-caption {
   position: absolute;
   top: 64px;
@@ -12266,3 +12271,61 @@ body.daphne-okuma-acik { overflow: hidden; }
   .daphne-okuma__ic { padding: 12px 14px 56px; }
   .daphne-okuma__baslik { font-size: 1.15rem; }
 }
+
+/* Okuma gezintisi (2026-10-07): Fütûhât/Füsûs/Mişkât metninin sonunda
+   önceki/sonraki. Bkz. graph-utils.js readingNavHtml. */
+.okuma-gezinti {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 40px 0 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.okuma-gezinti__btn,
+.okuma-gezinti__bos {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.okuma-gezinti__btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: none;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-orta) var(--ease-standart), border-color var(--dur-orta) var(--ease-standart);
+}
+.okuma-gezinti__btn--sonraki { text-align: right; align-items: flex-end; }
+.okuma-gezinti__btn:hover,
+.okuma-gezinti__btn:focus-visible { background: var(--surface-1); border-color: var(--text-secondary); }
+.okuma-gezinti__yon {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.okuma-gezinti__baslik {
+  /* -webkit-line-clamp flex içinde blok kutuya çevrilip yüksekliği
+     çöküyordu (başlık görünmüyordu); iki satırlık yükseklik sınırı. */
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  max-height: 2.7em;
+  overflow: hidden;
+}
+.okuma-gezinti__yon,
+.okuma-gezinti__baslik { flex-shrink: 0; }
+@media (max-width: 560px) {
+  .okuma-gezinti { flex-direction: column; }
+  /* dikey dizilimde flex-basis:0 yüksekliği sıfırdan başlatıyordu */
+  .okuma-gezinti__btn { flex: none; }
+  .okuma-gezinti__bos { display: none; }
+}
+@media print { .okuma-gezinti { display: none; } }
