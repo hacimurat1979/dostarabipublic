@@ -3582,21 +3582,12 @@
   const analogyHtml = (a) => window.DostGraphUtils.analogyHtml(a);
 
   function showNodeDetail(d) {
-    const metadataHtml = window.__graphEnhancement
-      ? (() => {
-          const meta = window.__graphEnhancement.getMetadata(d.id);
-          if (!meta) return "";
-          return `<div class="detail-block detail-block--metadata">
-            <p class="detail-metadata__category">${meta.category}</p>
-            <p class="detail-metadata__meaning">${meta.meaning}</p>
-          </div>`;
-        })()
-      : "";
-
+    // 2026-10-07: panelin başındaki "kategori + anlam" satırı
+    // (assets/graph-enhancement.js) kaldırıldı -- kaynaksız, bizim yazdığımız
+    // bir tanımdı; düğümün kendi özeti (short/summary) okumadan geliyor.
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Varlık Mertebesi", en: "Level of Being", pt: "Nível do Ser" })}</p>
       <h2 class="detail-title">${I18n.pick3(d.name)}</h2>
-      ${metadataHtml}
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(d.short)}</h3>
         <p>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>

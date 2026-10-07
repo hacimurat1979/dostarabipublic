@@ -244,9 +244,9 @@
       name: { tr: "Celâl — Yücelik", en: "Jalal — Majesty", pt: "Jalal — Majestade" },
       short: { tr: "Kahır, azamet ve aşkınlık isimleri", en: "Names of severity, majesty and transcendence", pt: "Nomes de severidade, majestade e transcendência" },
       summary: {
-        tr: "Celâl kutbu, Hakk'ın yüceliğini, kahrını ve kuldan uzaklığını (tenzih) dile getiren isimleri toplar — el-Kahhâr, el-Azîz, el-Müntakim gibi. İbn Arabî'ye göre Celâl hiçbir zaman çıplak tecelli etmez; her azamet, bir Cemâl'in (yakınlık, rahmet) içinden gelir.",
-        en: "The pole of Majesty gathers the Names that voice God's loftiness, severity and remoteness from the servant (transcendence) — al-Qahhar, al-'Aziz, al-Muntaqim. For Ibn Arabi, Majesty never discloses itself bare; every act of severity comes clothed in a Beauty (nearness, mercy).",
-        pt: "O polo da Majestade reúne os Nomes que expressam a altivez, a severidade e a distância de Deus em relação ao servo (transcendência) — al-Qahhar, al-'Aziz, al-Muntaqim. Para Ibn Arabi, a Majestade nunca se revela nua; todo ato de severidade vem revestido de uma Beleza (proximidade, misericórdia)."
+        tr: "Celâl kutbu, Hakk'ın yüceliğini ve kahrını dile getiren isimleri toplar — el-Kahhâr, el-Azîz, el-Müntakim gibi.",
+        en: "The pole of Majesty gathers the Names that voice God's loftiness and severity — al-Qahhar, al-'Aziz, al-Muntaqim.",
+        pt: "O polo da Majestade reúne os Nomes que expressam a altivez e a severidade de Deus — al-Qahhar, al-'Aziz, al-Muntaqim."
       },
       // Kutup özeti sentetik bir gruplama (bkz. yukarıdaki "sentetik" notu),
       // ama Celâl'i ayrı bir bölüm olarak ele alan asıl kaynak burada --
@@ -257,9 +257,9 @@
       name: { tr: "Cemâl — Güzellik", en: "Jamal — Beauty", pt: "Jamal — Beleza" },
       short: { tr: "Rahmet, yakınlık ve lütuf isimleri", en: "Names of mercy, nearness and grace", pt: "Nomes de misericórdia, proximidade e graça" },
       summary: {
-        tr: "Cemâl kutbu, Hakk'ın güzelliğini, yakınlığını ve kula lütfunu (teşbih) dile getiren isimleri toplar — er-Rahmân, el-Latîf, el-Vedûd gibi. Cemâl, Celâl'i kuşatan daha geniş dairedir: her tecelli önce bir güzellik olarak gelir.",
-        en: "The pole of Beauty gathers the Names that voice God's beauty, nearness and grace toward the servant (immanence) — ar-Rahman, al-Latif, al-Wadud. Beauty is the wider circle enclosing Majesty: every self-disclosure arrives first as a beauty.",
-        pt: "O polo da Beleza reúne os Nomes que expressam a beleza, a proximidade e a graça de Deus para com o servo (imanência) — ar-Rahman, al-Latif, al-Wadud. A Beleza é o círculo mais amplo que envolve a Majestade: toda autorrevelação chega primeiro como uma beleza."
+        tr: "Cemâl kutbu, Hakk'ın güzelliğini, yakınlığını ve kula lütfunu dile getiren isimleri toplar — er-Rahmân, el-Latîf, el-Vedûd gibi.",
+        en: "The pole of Beauty gathers the Names that voice God's beauty, nearness and grace toward the servant — ar-Rahman, al-Latif, al-Wadud.",
+        pt: "O polo da Beleza reúne os Nomes que expressam a beleza, a proximidade e a graça de Deus para com o servo — ar-Rahman, al-Latif, al-Wadud."
       },
       sources: ["Fütûhât-ı Mekkiyye, Cilt 9 (Ekrem Demirli çev.) — İki Yüz Kırk İkinci Bölüm: Cemâl"]
     },
@@ -267,9 +267,9 @@
       name: { tr: "Kemâl — Kemâl (İkisi Birden)", en: "Kamal — Perfection (Both at Once)", pt: "Kamal — Perfeição (Ambos ao Mesmo Tempo)" },
       short: { tr: "Celâl ile Cemâl'i birleştiren isimler", en: "Names uniting Majesty and Beauty", pt: "Nomes que unem Majestade e Beleza" },
       summary: {
-        tr: "Kemâl kutbu, Celâl ile Cemâl'i bir arada taşıyan, ikisinin ötesinde bir bütünlüğe işaret eden isimleri toplar — Allah, el-Melik, el-Kuddûs gibi; ayrıca isimlerin sınıflandırıldığı grup başlıkları (Zâtî/Nispetî/Fiilî) da bu kutupta durur.",
-        en: "The pole of Perfection gathers the Names that carry Majesty and Beauty together, pointing to a wholeness beyond both — Allah, al-Malik, al-Quddus; the classifying group-headings (Names of the Essence / of relation / of act) also rest here.",
-        pt: "O polo da Perfeição reúne os Nomes que carregam Majestade e Beleza juntas, apontando para uma totalidade além de ambas — Allah, al-Malik, al-Quddus; os títulos de grupo classificadores (Nomes da Essência / de relação / de ato) também repousam aqui."
+        tr: "Kemâl kutbu, Celâl ile Cemâl'i bir arada taşıyan isimleri toplar — Allah, el-Melik, el-Kuddûs gibi; ayrıca isimlerin sınıflandırıldığı grup başlıkları (Zâtî/Nispetî/Fiilî) da bu kutupta durur.",
+        en: "The pole of Perfection gathers the Names that carry Majesty and Beauty together — Allah, al-Malik, al-Quddus; the classifying group-headings (Names of the Essence / of relation / of act) also rest here.",
+        pt: "O polo da Perfeição reúne os Nomes que carregam Majestade e Beleza juntas — Allah, al-Malik, al-Quddus; os títulos de grupo classificadores (Nomes da Essência / de relação / de ato) também repousam aqui."
       },
       // "Kemâl" bağımsız bir isim düğümü değil (bkz. esma.json); özetin
       // dayandığı bölüm "allah" ve grup başlıklarının (zati-grup vd.) da
