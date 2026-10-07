@@ -847,7 +847,6 @@
   if (terimlerBtn) terimlerBtn.addEventListener("click", () => { setMainView("terimler"); updateHash("terimler"); });
   if (cizimlerBtn) cizimlerBtn.addEventListener("click", () => { setMainView("cizimler"); updateHash("cizimler"); });
   if (sorularBtn) sorularBtn.addEventListener("click", () => { setMainView("sorular"); updateHash("sorular"); });
-  if (acikSorularBtn) acikSorularBtn.addEventListener("click", () => { setMainView("aciksorular"); updateHash("acik-sorular"); });
   if (bilmiyoruzBtn) bilmiyoruzBtn.addEventListener("click", () => { setMainView("bilmiyoruz"); updateHash("bilmiyoruz"); });
   if (elestiriArkeolojisiBtn) elestiriArkeolojisiBtn.addEventListener("click", () => { setMainView("elestiriArkeolojisi"); updateHash("elestiri-arkeolojisi"); });
   if (hocalarBtn) hocalarBtn.addEventListener("click", () => { setMainView("hocalar"); updateHash("hocalar"); });
@@ -958,14 +957,6 @@
         tr: "Fütûhât'ın 13. ve 476. bölümlerini yan yana koyan bir şema: Arş'ı taşıyan dört esas ile kalbi taşıyan dört esas, iki iç içe sarmal olarak.",
         en: "A diagram placing Chapters 13 and 476 of the Futuhat side by side: the four supports that bear the Throne and the four that bear the heart, as two nested spirals.",
         pt: "Um diagrama que junta os Capítulos 13 e 476 das Futuhat: os quatro suportes que sustentam o Trono e os quatro que sustentam o coração, como duas espirais entrelaçadas.",
-      },
-    },
-    "acik-sorular": {
-      title: { tr: "Açık Sorular", en: "Open Questions", pt: "Perguntas em Aberto" },
-      desc: {
-        tr: "Okurken bize kalan, kapanmamış sorular — ve her biri için okuma kaydımızda ne bulduğumuz, ne bulamadığımız.",
-        en: "Questions left with us while reading, still unclosed — and, for each, what we found and what we did not find in our reading record.",
-        pt: "Perguntas que ficaram connosco ao ler, ainda por fechar — e, para cada uma, o que encontrámos e o que não encontrámos no nosso registo de leitura.",
       },
     },
     bilmiyoruz: {
@@ -1229,9 +1220,12 @@
     window.__sorularApp && window.__sorularApp.goToNode(id);
   }
 
-  function goToAcikSorular(id) {
-    setMainView("aciksorular");
-    if (id) window.__acikSorularApp && window.__acikSorularApp.goToNode(id);
+  // Açık Sorular 2026-10-07'de yayından kaldırıldı (içeriği bizim
+  // sorularımızdı -- CLAUDE.md "YALNIZ okumaların özeti"). Eski bağlantılar
+  // kırılmasın diye /acik-sorular ana sayfaya düşüyor.
+  function goToAcikSorular() {
+    setMainView("ontology");
+    try { history.replaceState(null, "", (window.__dostRouteBase || "") + "/"); } catch (e) { /* eski tarayıcı */ }
   }
 
   function goToBilmiyoruz(id) {

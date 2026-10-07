@@ -227,14 +227,6 @@
           });
         });
       }),
-      window.DostGraphUtils.fetchJson("data/ibn-arabi/acik-sorular.json").then((d) => {
-        (d.sorular || []).forEach((s) => {
-          index.push({
-            view: "acik-sorular", id: s.id, label: s.soru, sub: s.dogdugu_yer,
-            searchText: allLangText(s.soru) + " " + allLangText(s.dogdugu_yer),
-          });
-        });
-      }),
       window.DostGraphUtils.fetchJson("data/ibn-arabi/bilmiyoruz.json").then((d) => {
         (d.maddeler || []).forEach((m) => {
           index.push({
