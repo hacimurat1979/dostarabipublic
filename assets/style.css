@@ -5659,6 +5659,11 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
      kullanıyor -- burada yalnız z-index'i yükseltmek yeterli. */
   .detail-panel__close { z-index: 61; }
   .detail-panel__print { right: 64px; z-index: 61; }
+  .typography-controls { padding-right: 228px; }
+  /* Paylaş ve Defter de panelin (z-index:60) üstünde kalmalı -- yalnız
+     kapat/yazdır yükseltilmişti, ikisi panelin altında kalıyordu. */
+  .detail-panel__share,
+  .detail-panel__notebook { z-index: 61; }
   .btn-ghost { padding: 8px 11px; font-size: 0.8rem; }
   .lang-btn { padding: 8px 12px; }
   .welcome-screen__stage { width: min(78vw, 300px); }
@@ -5928,7 +5933,6 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
 .typography-controls {
   display: flex;
   gap: 8px;
-  justify-content: flex-end;
   /* The panel's own close/print/notebook buttons are position:fixed at the
      same top offset with a higher z-index (see .detail-panel__close/
      __print/__notebook), reserving roughly the rightmost 164px of the
@@ -5944,7 +5948,14 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
      edge -- kept here instead so the bar's own opaque background covers
      that space too, closing the scroll-peephole that padding on the
      scrolling ancestor left open. */
-  padding: 12px 164px 12px 0;
+  /* 2026-10-07: pay 3 düğmeye göreydi (164px); sonradan Paylaş ve Görsel
+     kart eklenince masaüstünde A−/A+ tamamen, mobilde Paylaş/Defter'in
+     altında kalıyordu -- Paylaş'a dokunmak yazıyı büyütüyordu. A−/A+ artık
+     çubuğun SOL başında; sağda bütün sabit düğmelerin bandı ayrılıyor
+     (masaüstü 5 düğme: en soldaki right:224px + 44px = 268px; mobil 4
+     düğme: right:172px + 44px = 216px; 12px nefes payı). */
+  justify-content: flex-start;
+  padding: 12px 280px 12px 0;
   border-bottom: 1px solid var(--gridline);
   position: sticky;
   top: 0;

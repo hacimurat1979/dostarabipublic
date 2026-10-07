@@ -7,7 +7,7 @@ ve `scripts/sync-to-live.py` ile buraya kopyalanır.
 Burada yapılan bir değişiklik bir sonraki senkronda kaybolur.
 
 Kuralların tam ve güncel hâli özel repodaki `CLAUDE.md`'dedir.
-Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-06).
+Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-07).
 
 ## Geçerli temel kurallar
 
@@ -20,6 +20,8 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-06).
   kullanılmaz) ve kendi kurduğumuz bağlantılar yazılmaz.
   Kendi çıkarımlarımız ancak kullanıcıyla birlikte karar verildikten
   sonra işlenir.
+- **Açık Sorular yayından kaldırıldı (2026-10-07):** içeriği bizim
+  sorularımızdı; `/acik-sorular` ana haritaya düşüyor.
 - **Mişkâtü'l-Envâr'da** her sayfa hadisin kendi Türkçe metniyle açılır.
 - **Üç dil (TR/EN/PT) birlikte güncellenir.**
 - **Yaptığımız işi olduğundan farklı göstermeyiz:**

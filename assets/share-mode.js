@@ -185,11 +185,10 @@
   function loadSirlar() { return cachedFetch("sirlar", "data/ibn-arabi/sirlar.json"); }
   // "Hikâye" ve "Bir Soru" şablonlarının havuzu yalnız sorular.json'a
   // bağlıydı (48 soru) -- bir süre sonra aynı kayıtlara dönmeye başlıyordu
-  // (kullanıcı bildirimi, 2026-09-13). Bilmiyoruz/Açık Sorular da sitenin
+  // (kullanıcı bildirimi, 2026-09-13). Bilmiyoruz da sitenin
   // ZATEN yayında olan, kürasyonlu kayıtları -- yeni metin YAZMADAN
   // (bkz. dosya başı KURAL) bu iki şablonun havuzunu genişletiyoruz.
   function loadBilmiyoruz() { return cachedFetch("bilmiyoruz", "data/ibn-arabi/bilmiyoruz.json"); }
-  function loadAcikSorular() { return cachedFetch("acik-sorular", "data/ibn-arabi/acik-sorular.json"); }
   function loadOntoloji() { return cachedFetch("ontoloji", "data/ibn-arabi/ontology.json"); }
   function loadEsma() { return cachedFetch("esma", "data/ibn-arabi/esma.json"); }
   function loadFelsefiTerimler() { return cachedFetch("felsefi-terimler", "data/ibn-arabi/felsefi-terimler.json"); }
@@ -398,13 +397,10 @@
     if (tpl === "soru") {
       // Havuz yalnız Sorular'a bağlıydı (48 soru) -- bir süre sonra aynı
       // kayıtlara dönmeye başlıyordu (kullanıcı bildirimi, 2026-09-13).
-      // Açık Sorular sitenin kendi "soru" alanını zaten TAŞIYAN, gerçekten
-      // soru cümlesi olarak yazılmış 19 kayıt daha -- yeni metin YOK,
-      // yalnız ikinci bir gerçek havuz.
-      return Promise.all([loadSorular(), loadAcikSorular()]).then(([sd, ad]) => {
+      // 2026-10-07: Açık Sorular yayından kalktı, havuz yine yalnız Sorular.
+      return loadSorular().then((sd) => {
         const pool = [];
         (sd.categories || []).forEach((c) => (c.questions || []).forEach((q) => pool.push(q.question)));
-        (ad.sorular || []).forEach((s) => { if (s.soru) pool.push(s.soru); });
         if (!pool.length) return null;
         return {
           tpl: "soru",
