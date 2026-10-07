@@ -198,8 +198,8 @@
       + '<button type="button" class="fusus-figure__expand" data-expand="' + esc(key) + '" aria-label="'
       + esc(t({ tr: "Çizimi büyüt", en: "Enlarge diagram", pt: "Ampliar diagrama" })) + '">⤢</button>'
       + '<figcaption class="fusus-figure__cap">'
-      + (block.caption ? linkify(t(block.caption)) : "")
-      + (block.source ? '<cite>' + esc(t(block.source)) + "</cite>" : "")
+      + (window.DostGraphUtils.has3(block.caption) ? linkify(t(block.caption)) : "")
+      + (window.DostGraphUtils.has3(block.source) ? '<cite>' + esc(t(block.source)) + "</cite>" : "")
       + "</figcaption></figure>";
   }
 
@@ -241,8 +241,8 @@
   }
 
   function lightboxCaptionText(block) {
-    if (block.caption) return t(block.caption);
-    if (block.source) return t(block.source);
+    if (window.DostGraphUtils.has3(block.caption)) return t(block.caption);
+    if (window.DostGraphUtils.has3(block.source)) return t(block.source);
     return "";
   }
 
@@ -373,7 +373,15 @@
       isDefaultLanding = !id && !loadLastHadis();
       activeId = h.id;
       saveLastHadis(h.id);
+      // Sarmal yeniden kuruluyor: odak haritadaysa (klavyeyle seçim) eski
+      // düğümle birlikte <body>'ye düşüyordu -- yeni sahnenin odaktaki
+      // düğümüne geri veriliyor (2026-10-07 taraması).
+      var odakHaritada = !!(mapEl && document.activeElement && mapEl.contains(document.activeElement));
       renderMap();
+      if (odakHaritada) {
+        var yeniOdak = mapEl.querySelector(".helix-scene__node.is-focus");
+        if (yeniOdak) { try { yeniOdak.focus({ preventScroll: true }); } catch (e) { /* eski tarayıcı */ } }
+      }
       renderList();
       renderArticle(h);
       if (window.__dostNav) window.__dostNav.setHash("miskat", h.id);

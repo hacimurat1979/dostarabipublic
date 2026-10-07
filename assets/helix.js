@@ -246,7 +246,7 @@
       '<p class="helix-scene__note-label"><span class="helix-scene__note-no">'
       + (sc.focus + 1) + "/" + sc.nodes.length + "</span> "
       + esc(pick(node.label)) + "</p>"
-      + (node.note ? '<p class="helix-scene__note-body">' + pick(node.note) + "</p>" : "");
+      + (window.DostGraphUtils.has3(node.note) ? '<p class="helix-scene__note-body">' + pick(node.note) + "</p>" : "");
     sc.note.setAttribute("aria-label", sira);
   }
 

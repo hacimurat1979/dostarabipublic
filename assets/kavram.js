@@ -160,7 +160,7 @@ window.__kavramApp = (function () {
     const skorBar = gosterSkor
       ? `<span class="kavram-anlamsal__skor" style="--skor:${Math.max(0, item.skor).toFixed(3)}" title="${(item.skor * 100).toFixed(1)}%"></span>`
       : "";
-    const gerekce = item.gerekce
+    const gerekce = window.DostGraphUtils.has3(item.gerekce)
       ? `<span class="futuhat-anlamsal-box__sebep">${tt(item.gerekce)}</span>`
       : `<span class="futuhat-anlamsal-box__sebep">${tt(item.ozet)}</span>`;
     return `<a class="futuhat-anlamsal-box__item kavram-anlamsal__item" href="${item.route.replace(/^\//, "")}" data-nav-route="${item.route}">` +

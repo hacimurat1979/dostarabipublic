@@ -292,7 +292,7 @@ window.__seyahatAtlasiApp = (function () {
       const tx = margin - minX * k + Math.max(0, (availW - routeW * k) / 2);
       const ty = margin - minY * k + Math.max(0, (wrapH - margin * 2 - routeH * k) / 2);
       const newT = d3.zoomIdentity.translate(tx, ty).scale(k);
-      svg.transition().duration(420).call(zoom.transform, newT);
+      (window.matchMedia("(prefers-reduced-motion: reduce)").matches ? svg : svg.transition().duration(420)).call(zoom.transform, newT);
     });
   }
 
@@ -301,7 +301,7 @@ window.__seyahatAtlasiApp = (function () {
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Seyahat Atlası", en: "Travel Atlas", pt: "Atlas de Viagem" })}</p>
       <h2 class="detail-title">${duraklar.length} ${tt({ tr: "durak", en: "stops", pt: "paragens" })}</h2>
-      <div class="detail-block detail-block--soru"><p>${linkify(tt(data.not))}</p></div>
+      ${window.DostGraphUtils.has3(data.not) ? `<div class="detail-block detail-block--soru"><p>${linkify(tt(data.not))}</p></div>` : ""}
       <details class="eser-agi-kaynak-detay">
         <summary>${tt({ tr: "Kaynak ve yöntem", en: "Source and method", pt: "Fonte e método" })}</summary>
         <ul class="bilmiyoruz-madde__kaynaklar">${data.kaynaklar.map((k) => {
@@ -315,7 +315,7 @@ window.__seyahatAtlasiApp = (function () {
 
   function ortala(animate) {
     if (!zoom) return;
-    const hedef = animate ? svg.transition().duration(420) : svg;
+    const hedef = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches ? svg.transition().duration(420) : svg;
     hedef.call(zoom.transform, d3.zoomIdentity);
   }
 
