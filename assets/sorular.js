@@ -1299,7 +1299,7 @@
       <p class="detail-eyebrow"><button class="sorular-back-link" type="button">← ${tt({ tr: "Bütün Sorular", en: "All Questions", pt: "Todas as Perguntas" })}</button></p>
       <h2 class="detail-title">${I18n.pick3(q.question)}</h2>
       <p class="sorular-category-tag">${cat ? I18n.pick3(cat.name) : ""}</p>
-      <div class="detail-block detail-block--ibnarabi"><p>${linkify(I18n.pick3(q.answer), "sorular", q.id)}</p>${sourceHtml(q)}</div>
+      <div class="detail-block detail-block--ibnarabi">${window.DostGraphUtils.has3(q.answer) ? `<p>${linkify(I18n.pick3(q.answer), "sorular", q.id)}</p>` : ""}${sourceHtml(q)}</div>
       ${analogyHtml(q.analogy)}${soruSahneHtml(q.id)}${crossLinkHtml(q)}${sirlarHtml(q)}${relatedQuestionsHtml(q)}`;
     detailContent.querySelector(".sorular-back-link").addEventListener("click", () => showAllQuestionsList());
     // Köprü verisi geç gelirse paneli tazele -- ilk açılışta bağlar

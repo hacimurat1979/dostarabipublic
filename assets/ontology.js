@@ -284,6 +284,7 @@
       window.__neredenBaslamaliApp && window.__neredenBaslamaliApp.onLangChange();
     }
     else if (currentMainView === "kavram") window.__kavramApp && window.__kavramApp.onLangChange();
+    else if (currentMainView === "yolculuk") window.__yolculukApp && window.__yolculukApp.onLangChange();
     else if (currentMainView === "ayethadis") window.__ayetHadisApp && window.__ayetHadisApp.onLangChange();
     // Ontoloji görünümündeki mobil alternatif liste (grafik ekrana sığmazsa).
     // Aynı sayfada yaşadığı için ontoloji dalı gibi else-if içine
@@ -1691,7 +1692,9 @@
     // yeniden sığar. (Kart kapanınca aşağıdaki boşluk geri kazanılır;
     // yeniden sığdırmasaydık sahne sebepsiz yere yukarıda asılı kalırdı.)
     document.addEventListener("dost:start-hint", () => {
-      if (ontologyWrap.hidden) return;
+      // Mobilde harita "Haritayı aç"a kadar display:none -- 0 genişlikte
+      // sığdırma translate(NaN,NaN) üretiyordu (2026-10-07 taraması).
+      if (ontologyWrap.hidden || !svg.node().clientWidth) return;
       const sel = reduceMotion ? svg : svg.transition().duration(520);
       sel.call(zoom.transform, computeFitTransform());
     });
@@ -2036,7 +2039,7 @@
       // kullanıcı gördüğü çizgiye değil başka bir yere değinir.
       if (hitSel) hitSel.attr("d", (d) => edgePath(d));
       // 3B'de uzaktakiler önce çizilsin ki örtüşme doğru olsun.
-      if (tilt > 0.02) nodeSel.sort((a, b) => (b.__z || 0) - (a.__z || 0));
+      if (tilt > 0.02) window.DostGraphUtils.sortKeepFocus(nodeSel, (a, b) => (b.__z || 0) - (a.__z || 0));
       nodeSel
         .attr("transform", (d) => `translate(${d.px},${d.py}) scale(${nodeScale(d).toFixed(3)})`)
         // Atmosfer: uzaktaki düğüm soluklaşır (Hâller'deki aynı ölçü).
@@ -2491,13 +2494,21 @@
   const glossaryTermsByLang = { tr: [], en: [], pt: [] };
 
   function registerGlossaryTerm(id, termDict, defDict) {
+    let eklendi = false;
     ["tr", "en", "pt"].forEach((lang) => {
       const term = termDict && termDict[lang];
       const def = defDict && defDict[lang];
       if (!term || !def) return;
-      glossaryTermsByLang[lang].push({ id, term, def, folded: foldForLang(lang, term) });
+      const list = glossaryTermsByLang[lang];
+      const i = list.findIndex((t) => t.id === id);
+      const entry = { id, term, def, folded: foldForLang(lang, term) };
+      if (i >= 0) {
+        if (list[i].term === term && list[i].def === def) return;   // aynı kayıt: önbellek geçerli
+        list[i] = entry;
+      } else list.push(entry);
+      eklendi = true;
     });
-    invalidateGlossifyCache();
+    if (eklendi) invalidateGlossifyCache();
   }
 
   // glossify()/linkify() render on essentially every paragraph on the site
@@ -2521,7 +2532,8 @@
       const key = t.folded.toLowerCase();
       if (!byFoldedLower.has(key)) byFoldedLower.set(key, t);
     });
-    const pattern = sorted.map((t) => `(?<![\\p{L}])${escapeRegExp(t.folded)}(?![\\p{L}])`).join("|");
+    // Bakışlar alternasyonun dışında -- gerekçe buildLinkifyCache'te.
+    const pattern = `(?<![\\p{L}])(?:${sorted.map((t) => escapeRegExp(t.folded)).join("|")})(?![\\p{L}])`;
     return { regex: new RegExp(pattern, "giu"), byFoldedLower };
   }
   function getGlossifyCache(lang) {
@@ -2676,6 +2688,7 @@
 
   function registerCrossLinkTerm(nameDict, view, id, summaryDict) {
     if (!nameDict) return;
+    let eklendi = false;
     ["tr", "en", "pt"].forEach((lang) => {
       const term = nameDict[lang];
       if (!term) return;
@@ -2710,10 +2723,14 @@
         if (registeredVariantKeys.has(dedupeKey)) return;
         registeredVariantKeys.add(dedupeKey);
         crossLinkTermsByLang[lang].push({ term: v, view, id, strict });
+        eklendi = true;
       });
     });
     if (summaryDict) crossLinkSummaries.set(view + ":" + id, summaryDict);
-    invalidateLinkifyCache();
+    // Yalnız yeni bir varyant eklendiyse: aynı terimleri yeniden kaydetmek
+    // (ör. Terimler her açılışta) önbelleği boşuna silip bir sonraki
+    // linkify'da dev regex'i yeniden derletiyordu (2026-10-07: ~2 sn).
+    if (eklendi) invalidateLinkifyCache();
   }
 
   // Same rationale/cache shape as glossify()'s cache above -- see comment there.
@@ -2730,7 +2747,11 @@
       const key = t.folded.toLowerCase();
       if (!byFoldedLower.has(key)) byFoldedLower.set(key, t);
     });
-    const pattern = terms.map((t) => `(?<![\\p{L}])${escapeRegExp(t.folded)}(?![\\p{L}])`).join("|");
+    // Bakışlar alternasyonun DIŞINDA: her alternatife ayrı (?<!…)/(?!…)
+    // koymak V8'de ilk exec'te ~1,5 sn (4x CPU'da ~9 sn) derleme demekti;
+    // tek dış bakışla ~13 ms. Anlam aynı -- bir alternatif sonraki bakışta
+    // düşerse motor sıradaki alternatifi dener, eskisi gibi.
+    const pattern = `(?<![\\p{L}])(?:${terms.map((t) => escapeRegExp(t.folded)).join("|")})(?![\\p{L}])`;
     return { regex: new RegExp(pattern, "giu"), byFoldedLower };
   }
   function getLinkifyCache(lang) {
@@ -3541,7 +3562,10 @@
   }
 
   function insightsHtml(insights, sources, excludeView, excludeId) {
-    if (!insights || !insights.length) return "";
+    // Metni ayıklamada boşalan içgörüler yalnız künye taşıyan boş bir
+    // <details> olarak çiziliyordu (2026-10-07 taraması).
+    insights = (insights || []).filter((ins) => window.DostGraphUtils.has3(ins.text));
+    if (!insights.length) return "";
     return `<div class="insight-group">${insights.map((ins, i) => {
       const cite = sourcesForInsight(ins, sources);
       return `

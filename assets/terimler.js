@@ -100,18 +100,23 @@
     // sözlük olamaz -- scripts/dil-denetimi.py {tr,en,pt} anahtarlı HER
     // sözlüğü "üç dilli metin" sayıp içindekileri string bekliyor, ve bu
     // yapı onu çökertiyordu (2026-08-04'te ölçüldü).
-    const secenekler = kayit.diller.map((d, i) =>
-      `<button class="ceviri-kaybi__dil${i === 0 ? " on" : ""}" type="button" data-dil="${d.dil}">${tt(CEVIRI_DIL_ADI[d.dil])}: ${d.kelime}</button>`
+    // Ayıklamadan (2026-10-05) sonra `kayip` metinleri boş: o hâlde dil
+    // seçenekleri düğme değil düz etiket -- basınca hiçbir şey göstermeyen
+    // bir düğme "bağlanmamış düğme" olurdu.
+    const kayipVar = kayit.diller.some((d) => window.DostGraphUtils.has3(d.kayip));
+    const secenekler = kayit.diller.map((d, i) => kayipVar
+      ? `<button class="ceviri-kaybi__dil${i === 0 ? " on" : ""}" type="button" data-dil="${d.dil}">${tt(CEVIRI_DIL_ADI[d.dil])}: ${d.kelime}</button>`
+      : `<span class="ceviri-kaybi__dil">${tt(CEVIRI_DIL_ADI[d.dil])}: ${d.kelime}</span>`
     ).join("");
     return `<div class="ceviri-kaybi">
       <p class="detail-eyebrow detail-eyebrow--section">${tt({
         tr: "Çevrilirken ne düştü", en: "What fell away in translation", pt: "O que se perdeu na tradução" })}</p>
       <p class="ceviri-kaybi__kok"><span class="ceviri-kaybi__harf" dir="rtl" lang="ar">${kayit.kok.harf}</span>
         <span class="ceviri-kaybi__translit">${kayit.kok.translit}</span></p>
-      <p class="ceviri-kaybi__kok-anlam">${tt(kayit.kok.anlam)}</p>
+      ${window.DostGraphUtils.has3(kayit.kok.anlam) ? `<p class="ceviri-kaybi__kok-anlam">${tt(kayit.kok.anlam)}</p>` : ""}
       <div class="ceviri-kaybi__diller">${secenekler}</div>
-      <p class="ceviri-kaybi__kayip" id="ceviri-kaybi-kayip">${tt(kayit.diller[0].kayip)}</p>
-      <p class="ceviri-kaybi__not">${tt(ceviriKaybi.meta.not)}</p>
+      ${kayipVar ? `<p class="ceviri-kaybi__kayip" id="ceviri-kaybi-kayip">${tt(kayit.diller[0].kayip)}</p>` : ""}
+      ${window.DostGraphUtils.has3(ceviriKaybi.meta && ceviriKaybi.meta.not) ? `<p class="ceviri-kaybi__not">${tt(ceviriKaybi.meta.not)}</p>` : ""}
     </div>`;
   }
 
@@ -1824,7 +1829,7 @@
       .join("");
     return `<p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Çelişen Yorumlar", en: "Differing Readings", pt: "Leituras Divergentes" })}</p>
       <div class="divergent-views">${cards}</div>
-      ${t.celisen_yorumlar_not ? `<p class="divergent-views__not">${linkify(tt(t.celisen_yorumlar_not), "terimler", t.id)}</p>` : ""}`;
+      ${window.DostGraphUtils.has3(t.celisen_yorumlar_not) ? `<p class="divergent-views__not">${linkify(tt(t.celisen_yorumlar_not), "terimler", t.id)}</p>` : ""}`;
   }
 
   // Terim gruplarındaki GROUP_HUE'ya paralel, ama bölüm bazında: her görünüm
@@ -1875,14 +1880,14 @@
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt((group && group.name) || {})}</p>
       <h2 class="detail-title">${tt(t.title)}${t.arabic ? ` <span class="detail-title__arabic">${t.arabic}</span>` : ""}</h2>
-      <div class="detail-block detail-block--ibnarabi">
+      ${window.DostGraphUtils.has3(t.felsefi_tanim) ? `<div class="detail-block detail-block--ibnarabi">
         <h3>${tt({ tr: "Felsefi Tanım", en: "Philosophical Definition", pt: "Definição Filosófica" })}</h3>
         <p>${linkify(tt(t.felsefi_tanim), "terimler", t.id)}</p>
-      </div>
-      <div class="detail-block">
+      </div>` : ""}
+      ${window.DostGraphUtils.has3(t.ibn_arabi_yorumu) ? `<div class="detail-block">
         <h3>${tt({ tr: "İbn Arabî'nin Yorumu", en: "Ibn Arabi's Interpretation", pt: "A Interpretação de Ibn Arabi" })}</h3>
         <p>${linkify(tt(t.ibn_arabi_yorumu), "terimler", t.id)}</p>
-      </div>
+      </div>` : ""}
       ${ceviriKaybiHtml(t.id)}
       ${analogyHtml(t)}
       ${termDiagramHtml(group, t)}

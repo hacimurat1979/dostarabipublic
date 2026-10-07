@@ -111,7 +111,7 @@ window.__vahdetApp = (function () {
   }
 
   function maddeHtml(m) {
-    const gerilim = m.gerilim
+    const gerilim = window.DostGraphUtils.has3(m.gerilim)
       ? `<div class="vahdet-gerilim">` +
         `<span class="vahdet-gerilim__label">${esc(
           tt({ tr: "Açık kalan gerilim", en: "The tension we leave open", pt: "A tensão que deixamos em aberto" })

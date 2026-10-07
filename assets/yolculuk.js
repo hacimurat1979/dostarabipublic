@@ -308,7 +308,7 @@ window.__yolculukApp = (function () {
     const tx = w / 2 - (box.x + box.width / 2) * scale;
     const ty = h / 2 - (box.y + box.height / 2) * scale;
     const t = d3.zoomIdentity.translate(tx, ty).scale(scale);
-    (animate ? svg.transition().duration(600) : svg).call(zoom.transform, t);
+    (animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches ? svg.transition().duration(600) : svg).call(zoom.transform, t);
   }
 
   function vurgula(id, kind) {
@@ -335,7 +335,7 @@ window.__yolculukApp = (function () {
     focusId = d.id; focusKind = "durak";
     const eserlerBurada = eserlerByDurakId.get(d.id) || [];
     const eserSatirlari = eserlerBurada.map((e) =>
-      `<li><button class="yolculuk-panel__eser-btn" data-eser-id="${e.id}">${e.eser}</button> <span class="yolculuk-panel__meta">${e.yil.miladi}${e.yil.kesin ? "" : " (yaklaşık)"}</span></li>`
+      `<li><button class="yolculuk-panel__eser-btn" data-eser-id="${e.id}">${e.eser}</button> <span class="yolculuk-panel__meta">${e.yil.miladi}${e.yil.kesin ? "" : " " + tt({tr:"(yaklaşık)",en:"(approx.)",pt:"(aprox.)"})}</span></li>`
     ).join("");
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({tr:"Durak",en:"Stop",pt:"Paragem"})}</p>

@@ -284,7 +284,7 @@ window.__elestiriArkeolojisiApp = (function () {
     const rol = data.roller[birincilRol(d)] || {};
     tooltip.innerHTML =
       `<strong>${tt(d.ad)}</strong>` +
-      `<span class="node-hover-tip__meta">${tt(rol)} · ${tt(d.sehir)} · ö. ${d.olum.hicri ? d.olum.hicri + "/" : ""}${d.olum.miladi}</span>`;
+      `<span class="node-hover-tip__meta">${tt(rol)} · ${tt(d.sehir)} · ${tt({ tr: "ö.", en: "d.", pt: "m." })} ${d.olum.hicri ? d.olum.hicri + "/" : ""}${d.olum.miladi}</span>`;
     tooltip.hidden = false;
     GU.moveTooltip(tooltip, wrapEl, ev);
   }
@@ -410,7 +410,7 @@ window.__elestiriArkeolojisiApp = (function () {
       <p class="detail-eyebrow">${tt(data.bolgeler[d.bolge])}
         <span class="elestiri-rol-rozet elestiri-rol-rozet--${birincilRol(d)}">${tt(rol)}</span></p>
       <h2 class="detail-title">${tt(d.ad)}</h2>
-      <p class="elestiri-kimlik">${tt(d.sehir)} — ö. ${d.olum.hicri ? d.olum.hicri + "/" : ""}${d.olum.miladi}${d.olum.kesin ? "" : " " + tt({ tr: "(kesin değil)", en: "(uncertain)", pt: "(incerto)" })}</p>
+      <p class="elestiri-kimlik">${tt(d.sehir)} — ${tt({ tr: "ö.", en: "d.", pt: "m." })} ${d.olum.hicri ? d.olum.hicri + "/" : ""}${d.olum.miladi}${d.olum.kesin ? "" : " " + tt({ tr: "(kesin değil)", en: "(uncertain)", pt: "(incerto)" })}</p>
       <div class="detail-block detail-block--soru"><p>${tt(d.ozet)}</p></div>
       ${kaynakSatiri(d.kaynak)}
       ${iliskiliBaglarHtml(d.id)}

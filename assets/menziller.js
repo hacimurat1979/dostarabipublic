@@ -409,8 +409,7 @@
       nodeLayer.selectAll("path.menziller-ring-seg").each(function (d) { items.push({ el: this, z: d.__z || 0 }); });
       items.push({ el: moonLayer.node(), z: 0 });
       items.sort((a, b) => a.z - b.z);
-      const parent = nodeLayer.node();
-      items.forEach((it) => parent.appendChild(it.el));
+      GU.orderKeepFocus(items.map((it) => it.el), true);
     }
   }
 
@@ -614,7 +613,7 @@
     const L = menzilLabels();
     const varyant = n.varyant
       ? `<p class="menzil-varyant">${tt({ tr: "Bir diğer adı", en: "Also called", pt: "Também chamada" })}: ${n.varyant}</p>` : "";
-    const notu = n.not
+    const notu = GU.has3(n.not)
       ? `<div class="detail-analogy"><p class="detail-analogy__label">${tt({ tr: "Bir çekince", en: "A caveat", pt: "Uma ressalva" })}</p><p>${tt(n.not)}</p></div>` : "";
     detailContent.innerHTML = `
       <p class="detail-eyebrow"><button class="menzil-back-link" type="button">← ${tt({ tr: "Halkaya dön", en: "Back to the ring", pt: "Voltar ao anel" })}</button></p>
@@ -634,6 +633,14 @@
     detailPanel.hidden = false;
     window.__dostNav && window.__dostNav.setHash("menziller", String(n.sira));
     ensureFrame();
+    // Klavyeyle (Enter) açılışta odak <body>'ye düşüyordu (2026-10-07
+    // taraması) -- düğüme geri ver ki ok/Tab gezintisi kaldığı yerden sürsün.
+    requestAnimationFrame(() => {
+      const a = document.activeElement;
+      if (a && a !== document.body) return;
+      const el = nodeLayer.node().querySelector(`g.menzil-node[data-sira="${n.sira}"]`);
+      if (el) { try { el.focus({ preventScroll: true }); } catch (e) { /* eski tarayıcı */ } }
+    });
   }
 
   function showIntro(openPanel) {
@@ -642,8 +649,8 @@
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Menziller", en: "The Mansions", pt: "As Mansões" })}</p>
       <h2 class="detail-title">${tt({ tr: "Yirmi Sekiz Ay Menzili", en: "The Twenty-Eight Mansions of the Moon", pt: "As Vinte e Oito Mansões da Lua" })}</h2>
-      <div class="detail-block detail-block--ibnarabi"><p>${tt(data.intro)}</p></div>
-      <div class="detail-block detail-block--ibnarabi"><p>${tt(data.center.not)}</p></div>
+      ${GU.has3(data.intro) ? `<div class="detail-block detail-block--ibnarabi"><p>${tt(data.intro)}</p></div>` : ""}
+      ${GU.has3(data.center.not) ? `<div class="detail-block detail-block--ibnarabi"><p>${tt(data.center.not)}</p></div>` : ""}
       ${tt(data.katmanNotu) ? `<div class="detail-analogy"><p class="detail-analogy__label">${tt({ tr: "Sarmal ne gösteriyor", en: "What the spiral shows", pt: "O que a espiral mostra" })}</p><p>${tt(data.katmanNotu)}</p></div>` : ""}
       ${notlar ? `<p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Çekincelerimiz", en: "Our caveats", pt: "As nossas ressalvas" })}</p>
       <ul class="menzil-notlar">${notlar}</ul>` : ""}

@@ -299,8 +299,8 @@ window.__acikSorularApp = (function () {
       ${arama}
       <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Olası okumalar", en: "Possible readings", pt: "Leituras possíveis" })}</p>
       ${okumalar}
-      <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Kapanması için ne gerekir", en: "What would close it", pt: "O que a fecharia" })}</p>
-      <div class="detail-block detail-block--soru"><p>${tt(d.ne_gerekir)}</p></div>
+      ${window.DostGraphUtils.has3(d.ne_gerekir) ? `<p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Kapanması için ne gerekir", en: "What would close it", pt: "O que a fecharia" })}</p>
+      <div class="detail-block detail-block--soru"><p>${tt(d.ne_gerekir)}</p></div>` : ""}
       ${baglarHtml(d)}`;
     wireBaglar();
     detailPanel.hidden = false;

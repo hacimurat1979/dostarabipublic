@@ -18,6 +18,9 @@ window.DostGraphUtils = (function () {
   // siliniyor ki geçici bir ağ hatası kalıcı bir başarısızlığa dönüşmesin.
   const jsonCache = new Map();
   function fetchJson(url) {
+    // Anahtar mutlak URL: "data/x.json", "/data/x.json" ve base()+"/data/…"
+    // aynı dosyayı iki kez indirip ayrıştırıyordu (2026-10-07 taraması).
+    try { url = new URL(url, document.baseURI).href; } catch (e) {}
     if (jsonCache.has(url)) return jsonCache.get(url);
     const p = fetch(url).then((r) => {
       if (!r.ok) throw new Error(`fetchJson: ${url} -> HTTP ${r.status}`);
@@ -27,8 +30,76 @@ window.DostGraphUtils = (function () {
     return p;
   }
 
+  // Değer önbelleği: grafik döngüleri her karede getVar çağırıyor ve her
+  // çağrı bir getComputedStyle demekti (2026-10-07 taraması: Sırlar
+  // masaüstünde boşta profilin üçte biri stil hesabı). Tema/stil değişince
+  // (html/body'nin class, data-theme ya da style özniteliği, sistem renk
+  // şeması) önbellek boşaltılıyor.
+  let _varCache = new Map();
+  let _varWatch = false;
+  function _varReset() { _varCache = new Map(); }
+  // 3B derinlik sıralaması (z'ye göre DOM sırasını değiştirmek) düğümleri
+  // insertBefore/appendChild ile yeniden takıyor; taşınan bir öğe klavye
+  // odağını kaybediyor. Hâl/Sırlar/Ontoloji/Menziller'de 3B kipte bu
+  // ~120 ms'de bir oluyordu: Tab'la gelinen düğüm odağını hemen <body>'ye
+  // bırakıyordu (2026-10-07 taraması). Bu yardımcı odaklı öğeyi yerinde
+  // bırakıp ötekileri onun önüne/arkasına diziyor -- sonuç aynı sıra.
+  // `els`: aynı ebeveynin çocukları, istenen sırada.
+  function orderKeepFocus(els, appendAll) {
+    if (!els.length) return;
+    const parent = els[0].parentNode;
+    const a = document.activeElement;
+    const fi = a && a !== document.body ? els.findIndex((el) => el === a || el.contains(a)) : -1;
+    if (fi < 0) {
+      if (appendAll) { els.forEach((el) => parent.appendChild(el)); return; }
+      for (let i = els.length - 2, next = els[els.length - 1]; i >= 0; i--) {
+        if (els[i].nextSibling !== next) parent.insertBefore(els[i], next);
+        next = els[i];
+      }
+      return;
+    }
+    const f = els[fi];
+    for (let i = fi - 1, next = f; i >= 0; i--) {
+      if (els[i].nextSibling !== next) parent.insertBefore(els[i], next);
+      next = els[i];
+    }
+    for (let i = fi + 1, prev = f; i < els.length; i++) {
+      if (prev.nextSibling !== els[i]) parent.insertBefore(els[i], prev.nextSibling);
+      prev = els[i];
+    }
+  }
+  // d3 selection.sort(cmp) karşılığı (veriye göre karşılaştırır).
+  function sortKeepFocus(sel, cmp) {
+    const els = sel.nodes().filter(Boolean);
+    els.sort((x, y) => cmp(x.__data__, y.__data__));
+    orderKeepFocus(els, false);
+  }
+
+  // Üç dilli bir alanın gerçekten metin taşıyıp taşımadığı. 2026-10-05
+  // ayıklamasından beri boşalan alanlar silinmiyor, {tr:"",en:"",pt:""}
+  // oluyor -- `x.alan ? … : ""` korumaları bu nesneyi doğru sayıp başlıklı
+  // boş kutular çiziyordu. Düz dize de kabul eder.
+  function has3(o) {
+    if (!o) return false;
+    if (typeof o === "string") return !!o.trim();
+    return ["tr", "en", "pt"].some((k) => typeof o[k] === "string" && o[k].trim() !== "");
+  }
+
   function getVar(name) {
-    return getComputedStyle(document.body).getPropertyValue(name).trim();
+    if (!_varWatch && document.body) {
+      _varWatch = true;
+      const mo = new MutationObserver(_varReset);
+      const o = { attributes: true, attributeFilter: ["class", "style", "data-theme"] };
+      mo.observe(document.documentElement, o);
+      mo.observe(document.body, o);
+      if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", _varReset);
+    }
+    let v = _varCache.get(name);
+    if (v === undefined) {
+      v = getComputedStyle(document.body).getPropertyValue(name).trim();
+      _varCache.set(name, v);
+    }
+    return v;
   }
 
   // Bir görünümün requestAnimationFrame döngüsü, o görünüm ekranda DEĞİLKEN
@@ -40,8 +111,20 @@ window.DostGraphUtils = (function () {
   // binip bütün siteyi (metin kutularına yazmayı bile) yavaşlatıyordu.
   // 2026-07-25'te kullanıcının "sayfa yavaşladı, harfler geç çıkıyor"
   // bildirimiyle yakalandı.
+  //
+  // Mobilde (≤640px) createMobileListFallback kurulu bir görünüm
+  // "Haritayı aç"a basılana kadar grafiği CSS ile gizler (style.css,
+  // `#…-wrap:not(.grafik-acik) > *:not(.…-mobil-liste)`) -- sarmalayıcı
+  // görünür ama svg 0 genişlikte. 2026-10-07 ön yüz taramasında bu hâlde
+  // döngülerin saniyede 60 kare sürdüğü ölçüldü (Esmâ/Sırlar 4x CPU'da
+  // boşta %99 doluluk); aynı CSS koşulu burada da aranıyor. "Haritayı aç"
+  // wakeViews()'u çağırıyor ki döngüler uyansın.
+  const _mobilMq = window.matchMedia ? window.matchMedia("(max-width: 640px)") : null;
   function isViewActive(wrapEl) {
-    return !!wrapEl && !wrapEl.hidden && document.visibilityState !== "hidden";
+    if (!wrapEl || wrapEl.hidden || document.visibilityState === "hidden") return false;
+    if (_mobilMq && _mobilMq.matches && !wrapEl.classList.contains("grafik-acik")
+        && wrapEl.querySelector(':scope > [class$="-mobil-liste"]')) return false;
+    return true;
   }
 
   // Kendi kendini durduran rAF döngüsü -- menziller/sorular/sirlar-graph/
@@ -87,9 +170,13 @@ window.DostGraphUtils = (function () {
     _wakeSubs.push(fn);
     if (_wakeSubs.length === 1) {
       document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") _wakeSubs.forEach((f) => { try { f(); } catch (e) {} });
+        if (document.visibilityState === "visible") wakeViews();
       });
+      if (_mobilMq) _mobilMq.addEventListener("change", wakeViews);
     }
+  }
+  function wakeViews() {
+    _wakeSubs.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
   }
 
   function moveTooltip(tooltip, wrapEl, event) {
@@ -274,6 +361,30 @@ window.DostGraphUtils = (function () {
     // düğmesini kaydedip kapanışta odağı yanlış yere taşıyabiliyordu.
     if (panel.dataset.focusWired) return;
     panel.dataset.focusWired = "1";
+    // Diyaloğun erişilebilir adı panelin başlığı olmalı; eskiden
+    // aria-labelledby="detail-content" bütün panel metnini (1300+ karakter)
+    // ad olarak okutuyordu (2026-10-07 taraması). İçerik her değiştiğinde
+    // ilk başlık #detail-panel-title kimliğini alıyor.
+    const content = document.getElementById("detail-content");
+    function adlandir() {
+      const h = content && content.querySelector(".detail-title, h2, h3");
+      const eski = document.getElementById("detail-panel-title");
+      if (eski && eski !== h) eski.removeAttribute("id");
+      if (h) {
+        h.id = "detail-panel-title";
+        panel.setAttribute("aria-labelledby", "detail-panel-title");
+        panel.removeAttribute("aria-label");
+      } else {
+        panel.removeAttribute("aria-labelledby");
+        const L = window.DostI18n
+          ? window.DostI18n.pick3({ tr: "Ayrıntı", en: "Details", pt: "Detalhes" }) : "Ayrıntı";
+        panel.setAttribute("aria-label", L);
+      }
+    }
+    if (content) {
+      new MutationObserver(adlandir).observe(content, { childList: true });
+      adlandir();
+    }
     let lastFocused = null;
     const observer = new MutationObserver(() => {
       if (panel.hidden) {
@@ -995,6 +1106,7 @@ window.DostGraphUtils = (function () {
       if (grafikBtn) {
         grafikBtn.addEventListener("click", () => {
           wrapEl.classList.add("grafik-acik");
+          wakeViews();
           requestAnimationFrame(() => {
             if (opts.onGraphOpen) opts.onGraphOpen();
             else window.dispatchEvent(new Event("resize"));
@@ -1095,5 +1207,5 @@ window.DostGraphUtils = (function () {
     btn.addEventListener("click", onClick);
   }
 
-  return { getVar, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { getVar, has3, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();

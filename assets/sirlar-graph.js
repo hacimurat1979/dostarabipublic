@@ -483,7 +483,7 @@
     const merged = enter.merge(nodeSel);
     nodeSel.exit().remove();
     // Derinlik sırası: uzaktakiler önce çizilsin ki örtüşme doğru olsun.
-    if (tilt3d && tilt3d.value > 0.02) merged.sort((a, b) => (b.__z || 0) - (a.__z || 0));
+    if (tilt3d && tilt3d.value > 0.02) GU.sortKeepFocus(merged, (a, b) => (b.__z || 0) - (a.__z || 0));
 
     const t3 = tilt3d ? tilt3d.value : 0;
     const labelItems = [];

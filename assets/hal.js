@@ -694,7 +694,7 @@
     gsel.exit().remove();
 
     // Derinlik sırası: uzaktakiler önce çizilsin (3B'de doğru örtüşme).
-    if (tilt > 0.02) merged.sort((a, b) => b.__z - a.__z);
+    if (tilt > 0.02) GU.sortKeepFocus(merged, (a, b) => b.__z - a.__z);
 
     const pendingLabels = [];
     merged.each(function (d) {

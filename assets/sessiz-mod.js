@@ -19,7 +19,7 @@
   // kullanıcı "menüm nereye gitti" yaşayabiliyordu (denetimin kendisini de
   // yanılttı). Mod açıkken silik bir rozet, ne olduğunu ve çıkışı söylüyor.
   function rozetMetni() {
-    var lang = (window.I18n && typeof I18n.current === "function" && I18n.current()) ||
+    var lang = (window.DostI18n && typeof window.DostI18n.getLang === "function" && window.DostI18n.getLang()) ||
       document.documentElement.getAttribute("lang") || "tr";
     if (String(lang).indexOf("en") === 0) return "Silent mode — press Esc to leave";
     if (String(lang).indexOf("pt") === 0) return "Modo silencioso — Esc para sair";

@@ -28,7 +28,7 @@
       return tt(s.title) + (s.pageRange ? `, s. ${s.pageRange}.` : "");
     }
     if (s.cite) {
-      return s.cite + (s.note ? " — " + tt(s.note) : "");
+      return s.cite + (window.DostGraphUtils.has3(s.note) ? " — " + tt(s.note) : "");
     }
     return tt(s);
   }
@@ -359,7 +359,7 @@
     (part.sections || []).forEach((s, si) => {
       (s.blocks || []).forEach((b, bi) => {
         if (b.type !== "diagram" || b.useMainDiagram) return;
-        fn({ diagramId: `s${si}-b${bi}`, tree: b.tree, triad: b.triad, pair: b.pair, sectionHeading: s.heading, caption: b.caption || b.source });
+        fn({ diagramId: `s${si}-b${bi}`, tree: b.tree, triad: b.triad, pair: b.pair, sectionHeading: s.heading, caption: window.DostGraphUtils.has3(b.caption) ? b.caption : b.source });
       });
     });
   }
@@ -383,7 +383,7 @@
   function collectDiagramsList(part) {
     const out = [];
     forEachDiagramBlock(part, (d) => {
-      out.push({ diagramId: d.diagramId, label: d.sectionHeading, caption: d.caption || part.mainDiagram.caption });
+      out.push({ diagramId: d.diagramId, label: d.sectionHeading, caption: window.DostGraphUtils.has3(d.caption) ? d.caption : part.mainDiagram.caption });
     });
     return out;
   }
@@ -555,7 +555,7 @@
   }
 
   function showTip(d, event) {
-    if (!tooltip || !d.data.note) return;
+    if (!tooltip || !window.DostGraphUtils.has3(d.data.note)) return;
     showTipHTML(`<div class="node-hover-tip__title">${tt(d.data.label)}</div><p>${tt(d.data.note)}</p>`);
     moveTip(event);
   }
@@ -1411,7 +1411,7 @@
         (it, i) => `
           <button class="futuhat-popup__row" type="button" data-popup-idx="${i}">
             <span class="futuhat-popup__row-title">${tt(it.label)}</span>
-            ${it.note ? `<span class="futuhat-popup__row-note">${tt(it.note)}</span>` : ""}
+            ${window.DostGraphUtils.has3(it.note) ? `<span class="futuhat-popup__row-note">${tt(it.note)}</span>` : ""}
           </button>
         `,
         (it) => navigateToDiagram(it.diagramId, it.nodeId)
@@ -1426,7 +1426,7 @@
         (it, i) => `
           <button class="futuhat-popup__row" type="button" data-popup-idx="${i}">
             <span class="futuhat-popup__row-title">${tt(it.label)}</span>
-            ${it.caption ? `<span class="futuhat-popup__row-note">${tt(it.caption)}</span>` : ""}
+            ${window.DostGraphUtils.has3(it.caption) ? `<span class="futuhat-popup__row-note">${tt(it.caption)}</span>` : ""}
           </button>
         `,
         (it) => navigateToDiagram(it.diagramId, null)
@@ -1441,7 +1441,7 @@
         (it, i) => `
           <button class="futuhat-popup__row" type="button" data-popup-idx="${i}">
             <span class="futuhat-popup__row-title">${tt(it.parentLabel)} → ${tt(it.childLabel)}</span>
-            ${it.note ? `<span class="futuhat-popup__row-note">${tt(it.note)}</span>` : ""}
+            ${window.DostGraphUtils.has3(it.note) ? `<span class="futuhat-popup__row-note">${tt(it.note)}</span>` : ""}
           </button>
         `,
         (it) => navigateToDiagram(it.diagramId, it.nodeId)
@@ -1525,7 +1525,7 @@
 
       <section class="futuhat-maindiagram" data-diagram-id="main">
         <div class="futuhat-tree" id="futuhat-main-tree"></div>
-        <p class="futuhat-diagram-source">${linkify(tt(part.mainDiagram.caption))}</p>
+        ${window.DostGraphUtils.has3(part.mainDiagram.caption) ? `<p class="futuhat-diagram-source">${linkify(tt(part.mainDiagram.caption))}</p>` : ""}
       </section>
 
       <div class="futuhat-sections" id="futuhat-sections"></div>
@@ -1589,16 +1589,18 @@
           const mount = document.createElement("div");
           mount.className = "futuhat-tree futuhat-tree--inline";
           dCard.appendChild(mount);
-          if (block.caption) {
+          if (window.DostGraphUtils.has3(block.caption)) {
             const capP = document.createElement("p");
             capP.className = "futuhat-inline-diagram__caption";
             capP.innerHTML = linkify(tt(block.caption));
             dCard.appendChild(capP);
           }
-          const srcP = document.createElement("p");
-          srcP.className = "futuhat-diagram-source";
-          srcP.textContent = tt(block.source);
-          dCard.appendChild(srcP);
+          if (window.DostGraphUtils.has3(block.source)) {
+            const srcP = document.createElement("p");
+            srcP.className = "futuhat-diagram-source";
+            srcP.textContent = tt(block.source);
+            dCard.appendChild(srcP);
+          }
           secEl.appendChild(dCard);
 
           if (block.triad) {
@@ -1622,7 +1624,7 @@
           }
 
           mount.classList.add("futuhat-tree--clickable");
-          const lightboxCaption = block.caption ? tt(block.caption) : tt(block.source);
+          const lightboxCaption = window.DostGraphUtils.has3(block.caption) ? tt(block.caption) : tt(block.source);
           mount.addEventListener("click", () => openDiagramLightbox(mount, lightboxCaption));
           addEnlargeButton(dCard, mount, lightboxCaption);
         }
