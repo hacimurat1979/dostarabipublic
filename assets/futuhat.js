@@ -1491,6 +1491,18 @@
       </div>`;
   }
 
+  // Metnin sonunda önceki/sonraki kısım (2026-10-07; bkz. graph-utils
+  // readingNavHtml). Sıra cilt, sonra kısım numarası.
+  function okumaGezintiHtml(part) {
+    const sirali = futuhatData.parts.slice().sort((a, b) => (a.cilt - b.cilt) || (a.kisim - b.kisim));
+    const items = sirali.map((p) => ({
+      id: p.id,
+      label: tt({ tr: "Kısım " + roman(p.kisim), en: "Part " + roman(p.kisim), pt: "Parte " + roman(p.kisim) }),
+      title: stripTags(tt(p.title)),
+    }));
+    return window.DostGraphUtils.readingNavHtml(items, part.id);
+  }
+
   function renderPart(part) {
     articleEl.innerHTML = `
       ${startHintHtml(part)}
@@ -1528,7 +1540,13 @@
           ${part.sources.map((s, i) => `<li data-source-index="${i}">${sourceLabel(s)}</li>`).join("")}
         </ul>
       </section>
+
+      ${okumaGezintiHtml(part)}
     `;
+    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), (id) => {
+      window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: id, kaynak: "gezinti" });
+      activatePart(id);
+    });
 
     const mainTreeEl = document.getElementById("futuhat-main-tree");
     renderRadialTree(mainTreeEl, part.mainDiagram.tree, {

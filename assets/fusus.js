@@ -336,7 +336,14 @@
         + "</ul></footer>";
     }
 
+    // Metnin sonunda önceki/sonraki (2026-10-07; bkz. graph-utils readingNavHtml).
+    html += window.DostGraphUtils.readingNavHtml(
+      data.fasses.filter(function (x) { return x.status === "active"; }).map(function (x) {
+        return { id: x.id, label: t({ tr: x.no + ". Fass · " + t(x.prophet), en: "Bezel " + x.no + " · " + t(x.prophet), pt: "Engaste " + x.no + " · " + t(x.prophet) }), title: t(x.title) };
+      }), f.id);
+
     articleEl.innerHTML = html;
+    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
     mountHelixBlocks(articleEl, helixes, captions);
     renderAnlamsalBaglantilar(f);
     renderYakinPasajlar(f);
