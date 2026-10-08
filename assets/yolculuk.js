@@ -399,18 +399,18 @@ window.__yolculukApp = (function () {
     const belirsizSayisi = sehirBelirsizEserler.length;
     const belirsizListe = belirsizSayisi
       ? `<p class="yolculuk-belirsiz">${tt({
-          tr: "Bu grafikte yer alamayan " + belirsizSayisi + " eser var (şehri belirsiz -- mekân eksenine giremez): ",
-          en: belirsizSayisi + " work" + (belirsizSayisi > 1 ? "s" : "") + " cannot appear on this graph (city uncertain -- outside the spatial axis): ",
-          pt: belirsizSayisi + " obra" + (belirsizSayisi > 1 ? "s" : "") + " não pode" + (belirsizSayisi > 1 ? "m" : "") + " aparecer neste gráfico (cidade incerta -- fora do eixo espacial): "
+          tr: "Bu grafikte yer alamayan " + belirsizSayisi + " eser var (şehri belirsiz — mekân eksenine giremez): ",
+          en: belirsizSayisi + " work" + (belirsizSayisi > 1 ? "s" : "") + " cannot appear on this graph (city uncertain — outside the spatial axis): ",
+          pt: belirsizSayisi + " obra" + (belirsizSayisi > 1 ? "s" : "") + " não pode" + (belirsizSayisi > 1 ? "m" : "") + " aparecer neste gráfico (cidade incerta — fora do eixo espacial): "
         })}${sehirBelirsizEserler.map((e) => `<button class="yolculuk-belirsiz__btn" data-eser-id="${e.id}">${e.eser}</button>`).join(", ")}.</p>`
       : "";
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({tr:"Yolculuk",en:"The Journey",pt:"A Jornada"})}</p>
       <h2 class="detail-title">${duraklar.length} ${tt({tr:"durak",en:"stops",pt:"paragens"})}, ${eserler.length} ${tt({tr:"eser",en:"works",pt:"obras"})}</h2>
       <div class="detail-block detail-block--soru"><p>${tt({
-        tr: "Eser Ağı ve Seyahat Atlası'nın birleşmesi -- iki izdüşümlü. **Atlas** izdüşümünde her durak coğrafi konumunda ve her eser o durakta yazıldığı için durağın yakınında. **Zaman** izdüşümünde aynı düğümler yer değiştirir: x=yıl, y=boylam. Harita düzleşir, zaman açılır. Endülüs-Fas gidiş gelişleri sol üstte dalgalanma, 1200'deki kopuş ortada dik bir tırmanış, Şam'daki son on yedi yıl sağda düz bir hat olur. Üstteki iki düğmeyle izdüşümü değiştirin.",
-        en: "The combining of the Works Timeline with the Travel Atlas -- two projections. In **Atlas** each stop sits at its geographic position, each work next to the stop where it was written. In **Time** the same nodes take new positions: x=year, y=longitude. The map flattens, time unfolds. The Andalusia-Morocco crossings become an undulation at upper left, the 1200 rupture a steep climb in the middle, the last seventeen years in Damascus a straight line to the right. Use the two buttons above to switch projections.",
-        pt: "A união da Linha do Tempo das Obras com o Atlas de Viagem -- duas projeções. No **Atlas** cada paragem está na sua posição geográfica, cada obra ao lado da paragem onde foi escrita. Em **Tempo** os mesmos nós tomam novas posições: x=ano, y=longitude. O mapa aplana-se, o tempo desdobra-se. As travessias Al-Andalus–Marrocos tornam-se uma ondulação no canto superior esquerdo, a rutura de 1200 uma subida abrupta no meio, os últimos dezassete anos em Damasco uma linha reta à direita. Use os dois botões acima para alternar as projeções."
+        tr: "Eser Ağı ve Seyahat Atlası'nın birleşmesi — iki izdüşümlü. **Atlas** izdüşümünde her durak coğrafi konumunda ve her eser o durakta yazıldığı için durağın yakınında. **Zaman** izdüşümünde aynı düğümler yer değiştirir: x=yıl, y=boylam. Harita düzleşir, zaman açılır. Endülüs-Fas gidiş gelişleri sol üstte dalgalanma, 1200'deki kopuş ortada dik bir tırmanış, Şam'daki son on yedi yıl sağda düz bir hat olur. Üstteki iki düğmeyle izdüşümü değiştirin.",
+        en: "The combining of the Works Timeline with the Travel Atlas — two projections. In **Atlas** each stop sits at its geographic position, each work next to the stop where it was written. In **Time** the same nodes take new positions: x=year, y=longitude. The map flattens, time unfolds. The Andalusia-Morocco crossings become an undulation at upper left, the 1200 rupture a steep climb in the middle, the last seventeen years in Damascus a straight line to the right. Use the two buttons above to switch projections.",
+        pt: "A união da Linha do Tempo das Obras com o Atlas de Viagem — duas projeções. No **Atlas** cada paragem está na sua posição geográfica, cada obra ao lado da paragem onde foi escrita. Em **Tempo** os mesmos nós tomam novas posições: x=ano, y=longitude. O mapa aplana-se, o tempo desdobra-se. As travessias Al-Andalus–Marrocos tornam-se uma ondulação no canto superior esquerdo, a rutura de 1200 uma subida abrupta no meio, os últimos dezassete anos em Damasco uma linha reta à direita. Use os dois botões acima para alternar as projeções."
       })}</p></div>
       ${belirsizListe}`;
     detailPanel.hidden = false;

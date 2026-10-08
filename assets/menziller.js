@@ -20,6 +20,7 @@
 
   const I18n = window.DostI18n;
   const GU = window.DostGraphUtils;
+  const deconflictLabels = GU.createLabelDeconflictor();
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const svg = d3.select("#menziller-graph");
   const svgNode = svg.node();
@@ -232,9 +233,9 @@
         .attr("cx", dx).attr("cy", dy).attr("r", r);
     });
     moonLayer.append("title").text(tt({
-      tr: "Menzillerin ait olduğu Ay -- sarmal onun etrafında geziniyor.",
-      en: "The Moon these mansions belong to -- the spiral moves around it.",
-      pt: "A Lua a que pertencem estas mansões -- a espiral move-se à sua volta.",
+      tr: "Menzillerin ait olduğu Ay — sarmal onun etrafında geziniyor.",
+      en: "The Moon these mansions belong to — the spiral moves around it.",
+      pt: "A Lua a que pertencem estas mansões — a espiral move-se à sua volta.",
     }));
     // Ay altında etiket: 3B varsayılan görünümde center katmanı (Nefes-i
     // Rahmânî yazısı) sönümlü olduğu için Ay uzun süre etiketsiz duruyordu
@@ -258,13 +259,17 @@
     // activeId burada kamerayı taşıyor (bir menzil seçilince sahne ona
     // yaklaşıyor), o yüzden geri çekilirken o da bırakılıyor.
     GU.wireRecenter("menziller-recenter", () => {
-      activeId = null; showIntro();
+      // Seçim bırakılır ve panel kapanır (Hâller'deki clearFocus gibi);
+      // eskiden giriş panelini AÇIYORDU -- hem "panel yalnız seçimde açılır"
+      // kuralına aykırıydı hem görünür genişliği daraltıp ilk bakışa
+      // dönmeyi engelliyordu (2026-10-08).
+      activeId = null; showIntro(false); detailPanel.hidden = true;
       // ETKILESIM_DILI.md'nin kendi tanımı: Recenter kaydırma/yakınlaştırma
       // yanında "serbest döndürme"yi de sıfırlamalı. yaw/pitch'e hiç
       // dokunulmuyordu -- sürükleyerek döndürülmüş bir sahnede Recenter
       // yalnız kadrajı düzeltiyor, açı aynı kalıyordu (UI denetimi bulgusu).
       yaw = 0; pitch = 0.18;
-      fitView(true);
+      geriCekil();
     });
     svg.on("click", () => { if (activeId) { activeId = null; showIntro(); ensureFrame(); } });
   }
@@ -364,6 +369,7 @@
     const merged = enter.merge(gsel);
     gsel.exit().remove();
 
+    const etiketler = [], kureler = [];
     merged.each(function (n) {
       const g = d3.select(this);
       const isActive = activeId === n.sira;
@@ -391,10 +397,17 @@
       g.select(".menzil-node__harf").attr("y", 4 * dep)
         .style("font-size", (1.3 * dep).toFixed(2) + "rem")
         .text(n.harfArapca);
-      g.select(".menzil-node__label").attr("y", r + 14)
+      const lbl = g.select(".menzil-node__label").attr("y", r + 14)
         .classed("menzil-node__label--active", isActive)
         .text(n.menzil);
+      etiketler.push({ lbl, txt: n.menzil, x: n.x, y: n.y + r + 14, baseY: r + 14,
+        priority: (isActive ? 10 : 0) + (isHover ? 5 : 0) + dep });
+      kureler.push({ x: n.x, y: n.y, half: r, h: r * 2 });
     });
+    // Etiketler birbirinin üstüne yığılıyordu (2026-10-08 taraması: 13 çift,
+    // Hen'a/Zirâ/Nesre/Tarf/Cebhe bir yumak) -- öteki görünümlerin ortak
+    // çakışma çözücüsü; küreler engel, seçili/öndeki etiket önce yerleşir.
+    deconflictLabels(etiketler, kureler);
 
     // Derinlik sıralaması: ring parçaları + düğümler + Ay AYNI katmanın
     // çocukları, hepsi z'ye göre TEK bir listede sıralanıp DOM'a o sırayla
@@ -418,7 +431,7 @@
     tiltFrom = tilt; tiltTarget = target; tiltAnimStart = performance.now();
     if (target < 0.5) { yaw = 0; pitch = 0.18; }
     ensureFrame();
-    setTimeout(() => { if (!wrapEl.hidden) fitView(true); }, reduceMotion ? 30 : TILT_DUR + 60);
+    setTimeout(() => { if (!wrapEl.hidden) { ilkBakis.delete(bakisAnahtari()); fitView(true); } }, reduceMotion ? 30 : TILT_DUR + 60);   // Kipe geçildiği anki çerçeve o kipin yeni "başlangıç bakışı"dır.
   }
 
   // Açılışta doğrudan sarmala eğ (kullanıcı kararı, 2026-07-26): bu haritanın
@@ -428,7 +441,7 @@
   function openIn3D() {
     tilt = 1; tiltFrom = 1; tiltTarget = 1;
     ensureFrame();
-    setTimeout(() => { if (!wrapEl.hidden) fitView(false); }, 60);
+    setTimeout(() => { if (!wrapEl.hidden) { ilkBakis.delete(bakisAnahtari()); fitView(false); } }, 60);   // Kipe geçildiği anki çerçeve o kipin yeni "başlangıç bakışı"dır.
     const btn = document.getElementById("menziller-3d-toggle");
     if (btn) { btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); }
   }
@@ -523,6 +536,23 @@
     return { x0, x1, y0, y1 };
   }
 
+  // Ortala ("geri çekilmek", ETKILESIM_DILI.md): başlangıçtaki bakışa
+  // dönmeli. Eskiden her basışta çerçeve o anki konumlardan YENİDEN
+  // hesaplanıyordu -- 3B dönüş ve etiket yerleşimi yüzünden her seferinde
+  // biraz farklı çıkıyor, ölçekle birlikte kayıyordu (2026-10-08 taraması:
+  // Hâller'de Nefs/Tövbe alt kenarda kesiliyordu). İlk sığdırmanın dönüşümü
+  // pencere boyutu + 2B/3B kipi başına saklanır; Ortala ona döner (kip
+  // korunur), boyut değiştiyse yeniden hesaplanır.
+  const ilkBakis = new Map();
+  function bakisAnahtari() {
+    return visibleWidth() + "x" + height + ":" + (tiltTarget > 0.5 ? 3 : 2);
+  }
+  function geriCekil() {
+    const t = ilkBakis.get(bakisAnahtari());
+    if (!t || !zoomBehavior) { fitView(true); return; }
+    const sel = !reduceMotion ? svg.transition().duration(450).ease(d3.easeCubicInOut) : svg;
+    sel.call(zoomBehavior.transform, t);
+  }
   function fitView(animate) {
     if (!zoomBehavior || !nodeLayer) return;
     const pad = 26;
@@ -533,6 +563,7 @@
     const k = Math.max(0.5, Math.min(3, Math.min(vw / bw, height / bh)));
     const mx = (b.x0 + b.x1) / 2, my = (b.y0 + b.y1) / 2;
     const t = d3.zoomIdentity.translate(vw / 2 - k * mx, height / 2 - k * my).scale(k);
+    if (vw > 0 && isFinite(t.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), t);
     const sel = (animate && !reduceMotion) ? svg.transition().duration(450).ease(d3.easeCubicInOut) : svg;
     sel.call(zoomBehavior.transform, t);
   }
@@ -753,7 +784,7 @@
         // id yoksa (ya da bulunamazsa) panel kendiliğinden AÇILMAZ -- öteki
         // görünümlerdeki 2026-08-06 kararı: panel yalnız seçimde açılır.
         // Mobilde tam ekran açılıp listeyi örtüyordu (2026-10-08 taraması).
-        if (n) openMenzil(n); else showIntro(false);
+        if (n) openMenzil(n); else showIntro(false);   // showIntro adresi /menziller yapar
       });
     },
     onLangChange() {

@@ -260,12 +260,25 @@
     </svg>
   `;
 
+  // Künye satırları üç dilli olabilir (2026-10-08: "371. Bölüm, 1. Şekil"
+  // EN/PT sayfalarında Türkçe kalıyordu); eski düz dize de kabul edilir.
+  function refMetni(r) { return r && typeof r === "object" ? tt(r) : (r || ""); }
+  // Dokuz harita künyeleri ("böl." = bölüm, "vr." = varak) EN/PT'de de
+  // Türkçe görünüyordu; kısaltmalar gösterimde dile çevrilir.
+  function citeMetni(c) {
+    const lang = I18n && I18n.getLang ? I18n.getLang() : "tr";
+    if (!c || lang === "tr") return c || "";
+    const muze = lang === "pt" ? "TİEM/Museu Evkaf" : "TİEM/Evkaf Museum";
+    return c.replace(/^Fütûhât,/, "Futuhat,").replace(/böl\. /g, "sec. ")
+      .replace(/TİEM\/Evkaf Müzesi/g, muze).replace(/vr\. /g, "fol. ");
+  }
+
   function cardHtml(item) {
     const renderer = cizimRenderers[item.diagram.type];
     const svg = renderer ? renderer(item.diagram) : "";
     return `
       <article class="cizim-card">
-        <p class="cizim-card__ref">${item.source_ref}</p>
+        <p class="cizim-card__ref">${refMetni(item.source_ref)}</p>
         <h2 class="cizim-card__name">${tt(item.name)}</h2>
         <div class="cizim-card__svg-wrap" data-cizim-id="${item.id}" role="button" tabindex="0"
              aria-label="${tt({ tr: "Büyüt", en: "Enlarge", pt: "Ampliar" })}">${svg}</div>
@@ -289,7 +302,7 @@
     window.DostLightbox.open({
       closeLabel: tt({ tr: "Kapat", en: "Close", pt: "Fechar" }),
       svgHtml: svg,
-      ref: item.source_ref,
+      ref: refMetni(item.source_ref),
       name: tt(item.name),
     });
   }
@@ -308,7 +321,7 @@
   const BIRLESIK_STEPS = [
     { id: 'ama', shortLabel: { tr: 'Bulut', en: 'The Cloud', pt: 'A Nuvem' },
       label: { tr: 'Bulut (Amâ)', en: 'The Cloud (al-ʿamāʾ)', pt: 'A Nuvem (al-ʿamāʾ)' },
-      gloss: { tr: 'Dizinin başlangıcı: varlığın ilk mertebeleri, "merhametli bir buhar" olan Bulut\'ta açılıyor. "Dünyanın sûreti bütünüyle küresel bir dairedir" -- Şeyh\'in kendi sözü.',
+      gloss: { tr: 'Dizinin başlangıcı: varlığın ilk mertebeleri, "merhametli bir buhar" olan Bulut\'ta açılıyor. "Dünyanın sûreti bütünüyle küresel bir dairedir" — Şeyh\'in kendi sözü.',
         en: 'The start of the sequence: the first levels of being unfold within the Cloud, "a merciful vapor." "The form of the world in its entirety is a spherical circle" — in the Shaykh\'s own words.',
         pt: 'O início da sequência: os primeiros níveis do ser desdobram-se na Nuvem, "um vapor misericordioso." "A forma do mundo na sua totalidade é um círculo esférico" — nas palavras do próprio Xeique.' },
       cite: 'Fütûhât, 9.316 (Tyser 2023, böl. 4.1; TİEM/Evkaf Müzesi 1870, vr. 90a)' },
@@ -320,13 +333,13 @@
       cite: 'Tyser 2023, böl. 4.2; TİEM/Evkaf Müzesi 1870, vr. 90b' },
     { id: 'atlas', shortLabel: { tr: 'Atlas Feleği', en: 'Sphere of Atlas', pt: 'Esfera de Atlas' },
       label: { tr: 'Atlas Feleği, Cennetler, Sabit Yıldızlar Küresi, Tûbâ Ağacı', en: 'The Sphere of Atlas, the Gardens, the Root of the Starry Sphere, the Tree of Ṭūbā', pt: 'A Esfera de Atlas, os Jardins, a Raiz da Esfera Estelar, a Árvore de Ṭūbā' },
-      gloss: { tr: 'İniş sürüyor. Atlas feleği ile sabit yıldızlar küresi arasında sekiz cennet konağı sıralanıyor -- her biri, Şeriat\'a tâbi bir organa (göz, kulak, dil, el, mide, üreme organı, ayak, kalp) karşılık geliyor.',
+      gloss: { tr: 'İniş sürüyor. Atlas feleği ile sabit yıldızlar küresi arasında sekiz cennet konağı sıralanıyor — her biri, Şeriat\'a tâbi bir organa (göz, kulak, dil, el, mide, üreme organı, ayak, kalp) karşılık geliyor.',
         en: 'The descent continues. Between the sphere of Atlas and the sphere of the fixed stars, eight paradisal abodes are arrayed — each corresponding to a bodily member subject to the Law (eye, ear, tongue, hand, stomach, reproductive organ, leg, heart).',
         pt: 'A descida continua. Entre a esfera de Atlas e a esfera das estrelas fixas, alinham-se oito moradas paradisíacas — cada uma correspondendo a um membro do corpo sujeito à Lei (olho, ouvido, língua, mão, estômago, órgão reprodutor, perna, coração).' },
       cite: 'Tyser 2023, böl. 4.3; TİEM/Evkaf Müzesi 1870, vr. 91a' },
     { id: 'sabit-yildizlar-insan', shortLabel: { tr: 'Sabit Yıldızlar', en: 'Fixed Stars', pt: 'Estrelas Fixas' },
       label: { tr: 'Sabit Yıldızlar Küresi, Gökkubbeler, Yer, Dört Mertebe ve İnsan', en: 'The Sphere of the Fixed Stars, the Domes of the Heavens, the Earth, the Four Realms, and Man', pt: 'A Esfera das Estrelas Fixas, as Cúpulas dos Céus, a Terra, os Quatro Reinos e o Homem' },
-      gloss: { tr: 'Bir çadır biçiminde: dünyanın üstünde yedi gök, yedi gezegen. Bütün küreleri dikey bir "direk" kesiyor -- Kur\'an\'daki görünmez direğe (13:2) işaret eden bu çizgi, İbn Arabî\'ye göre İnsân-ı Kâmil\'dir; gökleri yeryüzüne düşmekten O tutuyor.',
+      gloss: { tr: 'Bir çadır biçiminde: dünyanın üstünde yedi gök, yedi gezegen. Bütün küreleri dikey bir "direk" kesiyor — Kur\'an\'daki görünmez direğe (13:2) işaret eden bu çizgi, İbn Arabî\'ye göre İnsân-ı Kâmil\'dir; gökleri yeryüzüne düşmekten O tutuyor.',
         en: 'In the shape of a tent: seven heavens above the earth, seven planets. A vertical "pillar" crosses all the spheres — this line, pointing to the invisible pillar of the Qur\'an (13:2), is, for Ibn al-ʿArabī, the Perfect Man; through him God holds the heavens from falling upon the earth.',
         pt: 'Em forma de tenda: sete céus acima da terra, sete planetas. Um "pilar" vertical atravessa todas as esferas — esta linha, apontando para o pilar invisível do Alcorão (13:2), é, para Ibn al-ʿArabī, o Homem Perfeito; é através dele que Deus impede os céus de caírem sobre a terra.' },
       cite: 'Fütûhât, 9.313 (Tyser 2023, böl. 4.4; TİEM/Evkaf Müzesi 1870, vr. 91b)' },
@@ -338,13 +351,13 @@
       cite: 'Tyser 2023, böl. 4.5; TİEM/Evkaf Müzesi 1870, vr. 92a' },
     { id: 'cehennem-kapilari', shortLabel: { tr: 'Cehennem Kapıları', en: 'Gates of Hell', pt: 'Portões do Inferno' },
       label: { tr: 'Cehennemin Kapıları, Konakları ve İnen Dereceleri', en: 'The Gates of Hell, Its Abodes, and Its Descending Levels', pt: 'Os Portões do Inferno, as suas Moradas e Níveis Descendentes' },
-      gloss: { tr: 'Cehennemin yedi kapısı, insanın Şeriat\'a tâbi yedi organına karşılık geliyor. Şemanın tam merkezinde, kalbi örten bir kapı duruyor -- insanın içindeki "gayb"ın yeri. "İnsanın dünyadaki bâtını, ahirette zâhir olur."',
+      gloss: { tr: 'Cehennemin yedi kapısı, insanın Şeriat\'a tâbi yedi organına karşılık geliyor. Şemanın tam merkezinde, kalbi örten bir kapı duruyor — insanın içindeki "gayb"ın yeri. "İnsanın dünyadaki bâtını, ahirette zâhir olur."',
         en: 'Hell\'s seven gates correspond to the seven bodily members subject to the Law. At the very center of the diagram stands a door veiling the heart — the place of the unseen within man. "What is interior in man in this world becomes exterior in the hereafter."',
         pt: 'Os sete portões do inferno correspondem aos sete membros do corpo sujeitos à Lei. No centro exato do diagrama ergue-se uma porta que vela o coração — o lugar do invisível dentro do homem. "O que é interior no homem neste mundo torna-se exterior no além."' },
       cite: 'Fütûhât, 9.356 (Tyser 2023, böl. 4.6; TİEM/Evkaf Müzesi 1870, vr. 92b)' },
     { id: 'esma-hazretleri', shortLabel: { tr: 'İlahî İsimler', en: 'Divine Names', pt: 'Nomes Divinos' },
       label: { tr: 'İlahî İsimler Huzuru, Alt Dünya, Ahiret, Berzah', en: 'The Presence of the Divine Names, the Lowest World, the Hereafter, the Intermediary World', pt: 'A Presença dos Nomes Divinos, o Mundo Inferior, o Além, o Mundo Intermédio' },
-      gloss: { tr: 'İlahî isimlerin de kendi aralarında bir düzeni var: "öncüler" ve "hizmetkârlar." Varlığın sebebi olan yedi ana isim -- Hayy, Alîm, Mürîd, Kâdir, Kâil, Cevvâd, Muksit -- bu dünya, ahiret ve ikisi arasındaki berzahın kesiştiği yerde beliriyor.',
+      gloss: { tr: 'İlahî isimlerin de kendi aralarında bir düzeni var: "öncüler" ve "hizmetkârlar." Varlığın sebebi olan yedi ana isim — Hayy, Alîm, Mürîd, Kâdir, Kâil, Cevvâd, Muksit — bu dünya, ahiret ve ikisi arasındaki berzahın kesiştiği yerde beliriyor.',
         en: 'The divine names, too, have their own order: "chiefs" and "servants." Seven principal names — the Living, the Knower, the One who wills, the One who is able, the One who speaks, the Most-Generous, the Equitable — appear at the point where this world, the hereafter, and the barzakh between them meet.',
         pt: 'Também os nomes divinos têm a sua própria ordem: "chefes" e "servos." Sete nomes principais — o Vivo, o Sabedor, Aquele que quer, Aquele que pode, Aquele que fala, o Generosíssimo, o Equânime — aparecem no ponto onde este mundo, o além, e o barzakh entre eles se encontram.' },
       cite: 'Tyser 2023, böl. 4.7; TİEM/Evkaf Müzesi 1870, vr. 93a' },
@@ -356,7 +369,7 @@
       cite: 'Tyser 2023, böl. 4.8; TİEM/Evkaf Müzesi 1870, vr. 93b' },
     { id: 'kozmos', shortLabel: { tr: 'Kozmosun Tamamı', en: 'The Whole Cosmos', pt: 'Todo o Cosmos' },
       label: { tr: 'Kozmosun tamamı — sekiz haritanın sentezi', en: 'The entirety of the cosmos — a synthesis of eight maps', pt: 'A totalidade do cosmos — uma síntese de oito mapas' },
-      gloss: { tr: 'Şeklinin merkezi, Rü\'yet Kum Tepesi\'yle aynı biçimi taşıyor -- ahiret, dünyanın tam merkezinde duruyor. İbn Arabî\'nin kendi ifadesiyle: "dünya, Bulut ile Allah\'ın bakışı arasında beliriyor."',
+      gloss: { tr: 'Şeklinin merkezi, Rü\'yet Kum Tepesi\'yle aynı biçimi taşıyor — ahiret, dünyanın tam merkezinde duruyor. İbn Arabî\'nin kendi ifadesiyle: "dünya, Bulut ile Allah\'ın bakışı arasında beliriyor."',
         en: 'The shape of its center matches that of the Dune of Vision — the hereafter sits at the very core of the world. In Ibn al-ʿArabī\'s own words: "the world appears between the Cloud and the glance of God."',
         pt: 'A forma do seu centro corresponde à da Duna da Visão — o além situa-se no próprio núcleo do mundo. Nas palavras do próprio Ibn al-ʿArabī: "o mundo aparece entre a Nuvem e o olhar de Deus."' },
       cite: 'Fütûhât, 9.461 (Tyser 2023, böl. 4.9; TİEM/Evkaf Müzesi 1870, vr. 93b-94a)' },
@@ -444,7 +457,7 @@
     window.DostLightbox.open({
       closeLabel: tt({ tr: 'Kapat', en: 'Close', pt: 'Fechar' }),
       svgHtml: svg,
-      ref: (idx + 1) + ' / ' + BIRLESIK_STEPS.length + ' — ' + s.cite,
+      ref: (idx + 1) + ' / ' + BIRLESIK_STEPS.length + ' — ' + citeMetni(s.cite),
       name: tt(s.label),
       caption: tt(s.gloss),
     });
@@ -522,7 +535,7 @@
 
   function birlesikHaritaHtml() {
     return `<article class="cizim-card cizim-card--birlesik">
-      <p class="cizim-card__ref">Fütûhât, 9.316–9.461 — 371. Bab</p>
+      <p class="cizim-card__ref">${tt({ tr: 'Fütûhât, 9.316–9.461 — 371. Bab', en: 'Futuhat, 9.316–9.461 — Chapter 371', pt: 'Futuhat, 9.316–9.461 — Capítulo 371' })}</p>
       <h2 class="cizim-card__name">${tt({ tr: '371. Bab: Dokuz Harita', en: 'Chapter 371: Nine Maps', pt: 'Capítulo 371: Nove Mapas' })}</h2>
       <p class="cizim-card__desc">${tt({
         tr: 'İbn Arabî\'nin, Fütûhât\'ın ikinci telifine kendi eliyle çizdiği dokuz harita — kendi ifadesiyle "tek bir kompozisyon" olarak görülmesini istediği bir dizi. Ayrıyken dokuz çizim, sürgüyü kaydırınca tek bir kompozisyon. Her haritaya ayrı ayrı tıklayıp büyütebilirsin.',
@@ -552,7 +565,7 @@
   function render() {
     if (!data) return;
     const cards = data.diagrams.map(cardHtml).join("");
-    const sources = (data.sources || []).map((s) => `<li>${s}</li>`).join("");
+    const sources = (data.sources || []).map((s) => `<li>${refMetni(s)}</li>`).join("");
     listEl.innerHTML = `
       ${CIZIM_DEFS}
       <p class="cizimler-intro">${linkify(tt(data.intro), null)}</p>

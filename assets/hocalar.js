@@ -290,6 +290,8 @@ window.__hocalarApp = (function () {
       yukle().then(() => {
         const d = hocalar.find((x) => x.id === id);
         if (d) panelGoster(d);
+        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
+        else if (id && window.__dostNav) window.__dostNav.setHash("hocalar");
       });
     },
   };

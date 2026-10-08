@@ -118,9 +118,9 @@ window.__okumaYollariApp = (function () {
   function render() {
     if (!contentEl || !data) return;
     const intro = `<p class="okuma-yolu-intro">${esc(tt({
-      tr: "Her konu için üç durak: önce kısa bir makale, sonra bir kitap, sonra Şeyh'in kendi metnine dönüş. Zorunlu bir sıra değil -- yalnız bir öneri.",
-      en: "Three stops per topic: first a short article, then a book, then a return to the Shaykh's own text. Not a required order -- only a suggestion.",
-      pt: "Três paradas por tema: primeiro um artigo curto, depois um livro, depois um regresso ao próprio texto do Xeique. Não é uma ordem obrigatória -- apenas uma sugestão.",
+      tr: "Her konu için üç durak: önce kısa bir makale, sonra bir kitap, sonra Şeyh'in kendi metnine dönüş. Zorunlu bir sıra değil — yalnız bir öneri.",
+      en: "Three stops per topic: first a short article, then a book, then a return to the Shaykh's own text. Not a required order — only a suggestion.",
+      pt: "Três paradas por tema: primeiro um artigo curto, depois um livro, depois um regresso ao próprio texto do Xeique. Não é uma ordem obrigatória — apenas uma sugestão.",
     }))}</p>`;
     contentEl.innerHTML = intro + data.yollar.map(yolHtml).join("");
     contentEl.querySelectorAll(".okuma-yolu-kademe__git").forEach((btn) => {

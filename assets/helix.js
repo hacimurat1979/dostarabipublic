@@ -105,6 +105,11 @@
     sc.svg.setAttribute("height", h);
   }
 
+  // Etiket genişliği yedek fontla ölçülürse dar kalır; web fontları
+  // yüklenince ölçümler bir kez tazelenir (graph-utils deconflictor'ındaki
+  // aynı ders).
+  var fontSurumu = 0;
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fontSurumu++; });
   var SVGNS = "http://www.w3.org/2000/svg";
   function svgEl(name) { return document.createElementNS(SVGNS, name); }
 
@@ -206,6 +211,7 @@
         : (sc.numbered && !/^\d/.test(ham) ? (it.i + 1) + " · " + ham : ham);
       if (el.__label !== label) {
         el.__label = label;
+        el.__baseLen = null;   // genişlik yeniden ölçülecek (aşağıda)
         el.title.textContent = pick(node.label);
         el.text.textContent = label;
         el.g.setAttribute("aria-label", pick(node.label));
@@ -223,6 +229,45 @@
       el.text.setAttribute("text-anchor", anchor);
       el.text.setAttribute("style", "font-size:" + (11.5 * p.depth).toFixed(1)
         + "px;opacity:" + (0.45 + 0.55 * p.depth).toFixed(2));
+      it.anchor = anchor; it.lx = p.x + off; it.ly = anchor === "middle" ? p.y - r - 8 : p.y + 4; it.r = r;
+    });
+
+    // Etiket yerleşimi (2026-10-08 taraması): (1) kenara yakın etiketler
+    // sahnenin dışına taşıyordu (mobilde "23. Lokmân" x=-25'ten başlıyordu)
+    // -- sahne sınırına kenetlenir; (2) yirmi yedi fassın hepsi okunduğu
+    // için "sparse" kip artık her adı yazıyor ve adlar birbirinin ve öndeki
+    // düğümlerin üstüne biniyordu -- önce odaktaki, sonra öndeki (derin
+    // olmayan) etiket yerleşir; çakışan arkadaki etiket o karede gizlenir.
+    // Genişlik etiket değişince bir kez ölçülür (derinlikle orantılı).
+    var yerlesen = [];
+    var cemberler = pts.map(function (it) { return { x: it.p.x, y: it.p.y, r: it.r, z: it.p.depth, i: it.i }; });
+    pts.slice().sort(function (a, b) {
+      if (a.i === sc.focus) return -1;
+      if (b.i === sc.focus) return 1;
+      return b.p.depth - a.p.depth;
+    }).forEach(function (it) {
+      var el = sc.gs[it.i];
+      if (!el.__label) { el.text.removeAttribute("visibility"); return; }
+      if (el.__baseLen == null || el.__lenSurum !== fontSurumu) {
+        el.__lenSurum = fontSurumu;
+        try { el.__baseLen = el.text.getComputedTextLength() / Math.max(0.2, it.p.depth); } catch (e) { el.__baseLen = 0; }
+      }
+      var len = el.__baseLen * it.p.depth, fs = 11.5 * it.p.depth;
+      var x0 = it.anchor === "start" ? it.lx : it.anchor === "end" ? it.lx - len : it.lx - len / 2;
+      var kay = 0, pay = 4;
+      if (x0 < pay) kay = pay - x0;
+      else if (x0 + len > sc.w - pay) kay = (sc.w - pay) - (x0 + len);
+      if (kay) { x0 += kay; el.text.setAttribute("x", (it.lx + kay).toFixed(1)); }
+      var kutu = { x0: x0 - 3, x1: x0 + len + 3, y0: it.ly - fs * 1.0, y1: it.ly + fs * 0.4 };
+      var carp = it.i !== sc.focus && (yerlesen.some(function (k) {
+        return kutu.x0 < k.x1 && kutu.x1 > k.x0 && kutu.y0 < k.y1 && kutu.y1 > k.y0;
+      }) || cemberler.some(function (c) {
+        if (c.i === it.i || c.z <= it.p.depth) return false;   // yalnız öndeki düğümler engel
+        var nx = Math.max(kutu.x0, Math.min(c.x, kutu.x1)), ny = Math.max(kutu.y0, Math.min(c.y, kutu.y1));
+        return (nx - c.x) * (nx - c.x) + (ny - c.y) * (ny - c.y) < c.r * c.r;
+      }));
+      if (carp) el.text.setAttribute("visibility", "hidden");
+      else { el.text.removeAttribute("visibility"); yerlesen.push(kutu); }
     });
 
     // Derinlik sıralaması (arkadakiler önce çizilsin) DOM sırasını

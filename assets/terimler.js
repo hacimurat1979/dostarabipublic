@@ -1867,7 +1867,11 @@
 
   function showTermDetail(id) {
     const t = glossaryData.terms[id];
-    if (!t) return;
+    if (!t) {
+      // Bulunamayan kimlik (/terimler/xyz-yok) adres çubuğunda kalmasın.
+      if (window.__dostNav) window.__dostNav.setHash("terimler");
+      return;
+    }
     window.dostTrack && window.dostTrack("kavram_sayfasi_goruntulendi", { id: t.id });
     const group = groupById(t.group);
     detailPanel.dataset.currentTerm = id;

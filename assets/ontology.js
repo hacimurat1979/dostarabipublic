@@ -1333,7 +1333,14 @@
     // gider; dil, kullanıcı seçimi olarak zaten yanında taşınır.
     rawPath = rawPath.replace(/^\/(en|pt)(?=\/|$)/, "") || "/";
     const m = /^\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular|acik-sorular|bilmiyoruz|elestiri-arkeolojisi|hocalar|eser-agi|seyahat-atlasi|yolculuk|kuran-dokusu|menziller|tasiyicilar|futuhat|fusus|miskat|hakkinda|kavram|ayethadis)(\/.*)?$/.exec(rawPath);
-    if (!m) return;
+    if (!m) {
+      // Tanınmayan bir yol (/blabla) sessizce ana haritaya düşüyordu ama
+      // bozuk adres çubukta kalıyordu (2026-10-08 taraması) -- köke çekilir.
+      if (rawPath !== "/" && rawPath !== "/index.html") {
+        try { history.replaceState(null, "", ROUTE_BASE + "/"); } catch (e) { /* eski tarayıcı */ }
+      }
+      return;
+    }
     const [, view, restRaw] = m;
     // id kısmı bir sonraki segment'e kadar bağıl-slaş içerebilir (örn.
     // "edge/nodeA-nodeB"), üstelik gerçek statik dosyalar (futuhat/c1k5/
@@ -1705,11 +1712,24 @@
       sel.call(zoom.transform, computeFitTransform());
     });
 
+    // Ortala ("geri çekilmek", ETKILESIM_DILI.md): başlangıçtaki bakışa
+    // dönmeli. Eskiden her basışta çerçeve o anki konumlardan YENİDEN
+    // hesaplanıyordu -- 3B dönüş ve etiket yerleşimi yüzünden her seferinde
+    // biraz farklı çıkıyor, ölçekle birlikte kayıyordu (2026-10-08 taraması:
+    // Hâller'de Nefs/Tövbe alt kenarda kesiliyordu). İlk sığdırmanın dönüşümü
+    // pencere boyutu + 2B/3B kipi başına saklanır; Ortala ona döner (kip
+    // korunur), boyut değiştiyse yeniden hesaplanır.
+    const ilkBakis = new Map();
+    function bakisAnahtari() { return width + "x" + height + ":" + (tiltTarget > 0.5 ? 3 : 2); }
+    function ilkBakisKaydet(t) {
+      if (width > 0 && height > 0 && t && isFinite(t.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), t);
+      return t;
+    }
     window.DostGraphUtils.wireRecenter("ontology-recenter", () => {
       // Seçim burada kamerayı taşımıyor (düğüme tıklamak yalnız paneli
       // açıyor), o yüzden yalnız çerçeve sıfırlanıyor -- seçili düğüm kalır.
       const sel = reduceMotion ? svg : svg.transition().duration(400);
-      sel.call(zoom.transform, computeFitTransform());
+      sel.call(zoom.transform, ilkBakis.get(bakisAnahtari()) || computeFitTransform());
     });
 
     // Etiket genişlikleri metne göre değişir (bkz. labelFor); ölçüm ucuz
@@ -2197,7 +2217,7 @@
       svg.call(zoom.transform, d3.zoomIdentity
         .translate(width / 2 - startScale * bx, height / 2 - startScale * by)
         .scale(startScale));
-      svg.transition().duration(2600).ease(d3.easeCubicInOut).call(zoom.transform, computeFitTransform());
+      svg.transition().duration(2600).ease(d3.easeCubicInOut).call(zoom.transform, ilkBakisKaydet(computeFitTransform()));
 
       nodes.forEach((n) => { n.__birth = 0; });
       birthRing = 0;
@@ -2325,7 +2345,8 @@
       setTimeout(() => {
         if (ontologyWrap.hidden) return;
         const sel = reduceMotion ? svg : svg.transition().duration(400);
-        sel.call(zoom.transform, computeFitTransform());
+        ilkBakis.delete(bakisAnahtari());   // Kipe geçildiği anki çerçeve o kipin yeni "başlangıç bakışı"dır.
+        sel.call(zoom.transform, ilkBakisKaydet(computeFitTransform()));
       }, reduceMotion ? 30 : TILT_DUR_3D + 60);
       ensureSpin();
     }
@@ -2413,7 +2434,7 @@
       tiltBtn.classList.add("is-on");
       tiltBtn.setAttribute("aria-pressed", "true");
       setTimeout(() => {
-        if (!ontologyWrap.hidden) svg.call(zoom.transform, computeFitTransform());
+        if (!ontologyWrap.hidden) svg.call(zoom.transform, ilkBakisKaydet(computeFitTransform()));
       }, 80);
       ensureSpin();
     }

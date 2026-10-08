@@ -44,7 +44,7 @@ window.__bilmiyoruzApp = (function () {
     const base = window.__dostRouteBase || "";
     const AILE = {
       sorular: { view: "sorular", href: "/sorular", baslik: { tr: "Sorular", en: "Questions", pt: "Perguntas" }, aciklama: { tr: "okuyucuya cevap veren bir SSS", en: "an FAQ that answers the reader", pt: "um FAQ que responde ao leitor" } },
-      bilmiyoruz: { view: "bilmiyoruz", href: "/bilmiyoruz", baslik: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" }, aciklama: { tr: "metnin kendi çözülmemiş noktaları -- biz sormuyoruz, sınırı o gösteriyor", en: "the text's own unresolved points -- not our question, its own limit", pt: "os próprios pontos não resolvidos do texto" } },
+      bilmiyoruz: { view: "bilmiyoruz", href: "/bilmiyoruz", baslik: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" }, aciklama: { tr: "metnin kendi çözülmemiş noktaları — biz sormuyoruz, sınırı o gösteriyor", en: "the text's own unresolved points — not our question, its own limit", pt: "os próprios pontos não resolvidos do texto" } },
     };
     const digerleri = Object.keys(AILE).filter((k) => k !== buradaki);
     const linkler = digerleri.map((k) => {
@@ -412,6 +412,8 @@ window.__bilmiyoruzApp = (function () {
       yukle().then(() => {
         const d = nodes.find((x) => x.id === id);
         if (d) panelGoster(d);
+        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
+        else if (id && window.__dostNav) window.__dostNav.setHash("bilmiyoruz");
       });
     },
   };

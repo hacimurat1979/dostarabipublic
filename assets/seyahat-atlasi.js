@@ -484,6 +484,8 @@ window.__seyahatAtlasiApp = (function () {
       yukle().then(() => {
         const d = durakById.get(id);
         if (d) durakPaneli(d);
+        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
+        else if (id && window.__dostNav) window.__dostNav.setHash("seyahat-atlasi");
       });
     },
   };

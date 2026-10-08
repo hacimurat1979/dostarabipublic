@@ -461,6 +461,8 @@ window.__kuranDokusuApp = (function () {
       yukle().then(() => {
         const d = sureByNo.get(parseInt(id, 10));
         if (d) surePaneli(d);
+        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
+        else if (id && window.__dostNav) window.__dostNav.setHash("kuran-dokusu");
       });
     },
   };
