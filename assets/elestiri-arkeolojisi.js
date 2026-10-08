@@ -403,6 +403,10 @@ window.__elestiriArkeolojisiApp = (function () {
   }
 
   function kisiPaneli(d) {
+    // Seçim adrese yazılır (/elestiri-arkeolojisi/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("elestiri-arkeolojisi", String(d.id));
     focusId = d.id;
     focusEdge = null;
     const rol = data.roller[birincilRol(d)] || {};
@@ -486,7 +490,15 @@ window.__elestiriArkeolojisiApp = (function () {
     GU.wireRecenter("elestiri-arkeolojisi-recenter", () => ortala(true));
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
     GU.registerStepBack("elestiri-arkeolojisi-wrap", () => {
-      if (focusId || focusEdge) { girisPaneli(); return true; }
+      if (focusId || focusEdge) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        if (window.__dostNav) window.__dostNav.setHash("elestiri-arkeolojisi");
+        return true;
+      }
       return false;
     });
     window.addEventListener("resize", GU.debounceResize(() => {

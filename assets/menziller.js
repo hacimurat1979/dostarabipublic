@@ -698,7 +698,9 @@
   // Bir adım geri: açık bir menzil varsa girişe dön.
   GU.registerStepBack("menziller-wrap", () => {
     if (!activeId) return false;
-    activeId = null; showIntro(); ensureFrame();
+    // Esc sözleşmesi: önce açık panel kapanır; giriş paneli açılmaz
+    // (2026-10-08 taraması).
+    activeId = null; showIntro(false); detailPanel.hidden = true; ensureFrame();
     return true;
   });
 
@@ -748,7 +750,10 @@
         if (!d) return;
         if (!nodes.length) build();
         const n = nodes.find((x) => String(x.sira) === String(id));
-        if (n) openMenzil(n); else showIntro();
+        // id yoksa (ya da bulunamazsa) panel kendiliğinden AÇILMAZ -- öteki
+        // görünümlerdeki 2026-08-06 kararı: panel yalnız seçimde açılır.
+        // Mobilde tam ekran açılıp listeyi örtüyordu (2026-10-08 taraması).
+        if (n) openMenzil(n); else showIntro(false);
       });
     },
     onLangChange() {

@@ -367,6 +367,10 @@ window.__eserAgiApp = (function () {
   }
 
   function eserPaneli(d) {
+    // Seçim adrese yazılır (/eser-agi/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("eser-agi", String(d.id));
     focusId = d.id;
     focusEdge = null;
     const katalogRozet = d.ozel === "katalog"
@@ -528,7 +532,15 @@ window.__eserAgiApp = (function () {
     svgNode.addEventListener("wheel", tekerlekleKaydir, { passive: false });
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
     GU.registerStepBack("eser-agi-wrap", () => {
-      if (focusId || focusEdge) { girisPaneli(); return true; }
+      if (focusId || focusEdge) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        if (window.__dostNav) window.__dostNav.setHash("eser-agi");
+        return true;
+      }
       return false;
     });
     window.addEventListener("resize", GU.debounceResize(() => {

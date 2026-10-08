@@ -296,6 +296,10 @@ window.__bilmiyoruzApp = (function () {
   }
 
   function panelGoster(d) {
+    // Seçim adrese yazılır (/bilmiyoruz/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("bilmiyoruz", String(d.id));
     focusId = d.id;
     const durum = data.durumlar[d.durum] || {};
     const kategori = data.kategoriler[d.kategori] || {};
@@ -365,7 +369,15 @@ window.__bilmiyoruzApp = (function () {
     GU.wireRecenter("bilmiyoruz-recenter", () => ortala(true));
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
     GU.registerStepBack("bilmiyoruz-wrap", () => {
-      if (focusId) { girisPaneli(); return true; }
+      if (focusId) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        if (window.__dostNav) window.__dostNav.setHash("bilmiyoruz");
+        return true;
+      }
       return false;
     });
     window.addEventListener("resize", GU.debounceResize(() => {

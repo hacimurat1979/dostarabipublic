@@ -43,6 +43,10 @@ window.__hocalarApp = (function () {
   }
 
   function panelGoster(d) {
+    // Seçim adrese yazılır (/hocalar/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("hocalar", String(d.id));
     focusId = d.id;
     // 2026-08-09 kullanıcı geri bildirimi: başka bir akademik site "Şems
     // hakkında şunları biliyoruz" der, Dostarabi "Dost onu nasıl anlatıyor?"
@@ -246,7 +250,15 @@ window.__hocalarApp = (function () {
     baglandi = true;
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
     GU.registerStepBack("hocalar-wrap", () => {
-      if (focusId) { girisPaneli(); return true; }
+      if (focusId) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        if (window.__dostNav) window.__dostNav.setHash("hocalar");
+        return true;
+      }
       return false;
     });
   }

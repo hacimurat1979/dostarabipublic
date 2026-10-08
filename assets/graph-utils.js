@@ -967,9 +967,37 @@ window.DostGraphUtils = (function () {
     if (!rootEl) return;
     rootEl.querySelectorAll("[data-okuma-git]").forEach((b) => {
       b.addEventListener("click", () => {
+        // Kaydırma dayanağı gezinti çubuğunun kendisi olamaz: onGo makaleyi
+        // yeniden çizince çubuk DOM'dan kopuyor, konumu 0 okunuyordu ve
+        // okuyucu yeni kısmın EN ALTINDA kalıyordu (2026-10-08 taraması).
+        // Çizimden sonra hâlâ sayfada duran ilk üst öğenin (makale kabı)
+        // tepesine kaydırılıyor; görünümler veriyi önbellekten bir söz
+        // (promise) içinde çizdiği için iki kare beklenir.
+        const atalar = [];
+        for (let el = rootEl.parentElement; el && el !== document.body; el = el.parentElement) atalar.push(el);
         onGo(b.dataset.okumaGit);
-        const top = rootEl.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+        const kaydir = () => {
+          const dayanak = atalar.find((el) => el.isConnected && el.getClientRects().length);
+          if (!dayanak) return;
+          const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 80;
+          const top = dayanak.getBoundingClientRect().top + window.scrollY - ust - 8;
+          window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+        };
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          kaydir();
+          // Fütûhât'ta yeni kısım ağdan gelebilir: makale kabının içeriği
+          // değiştiği anda bir kez daha (en çok 5 sn beklenir).
+          const dayanak = atalar.find((el) => el.isConnected);
+          if (!dayanak || !window.MutationObserver) return;
+          // Okuyucu bu arada kendisi kaydırdıysa dokunma.
+          const sonY = window.scrollY;
+          const mo = new MutationObserver(() => {
+            mo.disconnect();
+            if (Math.abs(window.scrollY - sonY) < 4) kaydir();
+          });
+          mo.observe(dayanak, { childList: true });
+          setTimeout(() => mo.disconnect(), 5000);
+        }));
       });
     });
   }

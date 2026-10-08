@@ -259,6 +259,12 @@
   I18n.applyStatic();
   I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
     render();
+    // Sekme başlığı ve açıklama dil değişince eski dilde kalıyordu
+    // (2026-10-08 taraması); geçerli rotanın görünümüyle yeniden yazılır.
+    try {
+      const ilk = location.pathname.slice(ROUTE_BASE.length).split("/").filter(Boolean)[0] || "ontoloji";
+      updateMeta(VIEW_META[ilk] ? ilk : "ontoloji");
+    } catch (e) { console.error(e); }
     if (currentMainView === "esma") window.__esmaApp && window.__esmaApp.onLangChange();
     else if (currentMainView === "hal") window.__halApp && window.__halApp.onLangChange();
     else if (currentMainView === "terimler") window.__terimlerApp && window.__terimlerApp.onLangChange();
@@ -513,8 +519,14 @@
     btn.hidden = false;
     const onScroll = () => {
       if (hakkindaWrap.hidden) return;
-      btn.classList.toggle("is-visible", window.scrollY > 480);
+      const gorunur = window.scrollY > 480;
+      btn.classList.toggle("is-visible", gorunur);
+      // Görünmezken (opacity 0, pointer-events none) Tab sırasında
+      // kalmasın -- klavye görünmeyen bir düğmeye düşüyordu (2026-10-08).
+      btn.tabIndex = gorunur ? 0 : -1;
+      btn.setAttribute("aria-hidden", String(!gorunur));
     };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     btn.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
