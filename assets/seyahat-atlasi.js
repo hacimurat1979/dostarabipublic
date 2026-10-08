@@ -247,6 +247,10 @@ window.__seyahatAtlasiApp = (function () {
   }
 
   function durakPaneli(d) {
+    // Seçim adrese yazılır (/seyahat-atlasi/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("seyahat-atlasi", String(d.id));
     focusId = d.id;
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${d.yil_baslangic}${d.yil_bitis !== d.yil_baslangic ? "–" + d.yil_bitis : ""}</p>
@@ -404,7 +408,15 @@ window.__seyahatAtlasiApp = (function () {
     GU.wireRecenter("seyahat-atlasi-recenter", () => ortala(true));
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
     GU.registerStepBack("seyahat-atlasi-wrap", () => {
-      if (focusId) { girisPaneli(); return true; }
+      if (focusId) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        if (window.__dostNav) window.__dostNav.setHash("seyahat-atlasi");
+        return true;
+      }
       return false;
     });
     window.addEventListener("resize", GU.debounceResize(() => {

@@ -241,12 +241,15 @@
   function renderNote(sc) {
     var node = sc.nodes[sc.focus];
     if (!node) { sc.note.innerHTML = ""; return; }
-    var sira = (I18n && I18n.getLang && I18n.getLang() === "tr") ? "Sırada" : "Step";
+    var sira = pick({ tr: "Sırada", en: "Step", pt: "Passo" });
     sc.note.innerHTML =
       '<p class="helix-scene__note-label"><span class="helix-scene__note-no">'
       + (sc.focus + 1) + "/" + sc.nodes.length + "</span> "
       + esc(pick(node.label)) + "</p>"
       + (window.DostGraphUtils.has3(node.note) ? '<p class="helix-scene__note-body">' + pick(node.note) + "</p>" : "");
+    // Gövdesi olmayan not (ayıklamada boşalan) yalnız başlık satırı kadar
+    // yer kaplasın -- 5.2rem'lik boş kutu kalıyordu (2026-10-08 taraması).
+    sc.note.classList.toggle("helix-scene__note--yalin", !window.DostGraphUtils.has3(node.note));
     sc.note.setAttribute("aria-label", sira);
   }
 

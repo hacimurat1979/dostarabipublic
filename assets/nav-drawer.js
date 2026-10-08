@@ -88,6 +88,10 @@
   function open() {
     drawer.hidden = false;
     toggle.setAttribute("aria-expanded", "true");
+    // Başlık kendi istifleme bağlamını kuruyor (z-index:50); çekmecenin
+    // 70'i ondan dışarı taşmıyordu ve mobilde Kavram Defterim / Sessiz Mod
+    // (z-index:60) son satırların üstüne biniyordu (2026-10-08 taraması).
+    document.documentElement.classList.add("nav-drawer-acik");
     const first = drawer.querySelector(".btn-ghost--active") || drawer.querySelector("button");
     if (first) first.focus();
   }
@@ -95,8 +99,15 @@
     if (drawer.hidden) return;
     drawer.hidden = true;
     toggle.setAttribute("aria-expanded", "false");
+    document.documentElement.classList.remove("nav-drawer-acik");
     if (focusToggle) toggle.focus();
   }
+  // Tab ile çekmeceden dışarı çıkılınca çekmece açık kalıyordu (odak
+  // haritadayken menü hâlâ üstte). Odak dışarı giderse kapanır.
+  drawer.addEventListener("focusout", (e) => {
+    const yeni = e.relatedTarget;
+    if (yeni && !drawer.contains(yeni) && !toggle.contains(yeni)) close();
+  });
 
   toggle.addEventListener("click", () => {
     if (drawer.hidden) open();
@@ -116,7 +127,6 @@
     window.DostGraphUtils.registerStepBack("nav-drawer", () => { close(true); return true; });
   }
 
-  // --- Fütûhât+Füsûs birleşik okuma ilerlemesi ----------------------------
   // 2026-10-08: çekmecede Füsûs ile Mişkât düğmeleri arasında duran
   // birleşik okuma ilerlemesi halkası (wireOkumaIlerleme) kaldırıldı --
   // bir gezinme öğesi değildi, düğme sırasının arasına sıkışıp yerinden

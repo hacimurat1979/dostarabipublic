@@ -178,7 +178,11 @@
         + (on ? ' data-id="' + esc(h.id) + '"' : ' disabled aria-disabled="true"')
         + ' title="' + esc(t(h.pageRange)) + " — " + esc(on ? yazildi : bekliyor) + '">'
         + '<span class="fusus-chip__no">' + h.no + "</span>"
-        + '<span class="fusus-chip__name">' + esc(t(hadisLabel(h))) + "</span>"
+        // Numara zaten fusus-chip__no'da; hadisLabel de numara taşıdığı için
+        // düğme "1 1. Hadis" / "12 Hadith 12" okunuyordu (2026-10-08).
+        + '<span class="fusus-chip__name">' + esc(t(h.etiket === "haber"
+          ? { tr: "Haber", en: "Report", pt: "Relato" }
+          : { tr: "Hadis", en: "Hadith", pt: "Hadith" })) + "</span>"
         + "</button>";
     }).join("");
     listEl.querySelectorAll("button[data-id]").forEach(function (b) {

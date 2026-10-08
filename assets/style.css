@@ -841,6 +841,9 @@ a.btn-ghost { text-decoration: none; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Çekmece açıkken başlık (ve içindeki çekmece) yüzen düğmelerin (60)
+   üstüne çıkar -- bkz. nav-drawer.js open(). */
+.nav-drawer-acik .app-header { z-index: 65; }
 .nav-drawer {
   position: fixed;
   top: calc(var(--app-header-height, 80px) + 2px);
@@ -7820,6 +7823,11 @@ body.cizim-lightbox-open {
 #sorular-nehir-toggle {
   left: 220px;
 }
+/* "Bütün sorulara dön" gizliyken (giriş hâli) onun 52px'lik yeri boş
+   kalıyordu, ⓘ ile eğim düğmesi arasında delik açılıyordu (2026-10-08
+   taraması) -- düğmeler bir yer sola kayar. */
+#sorular-wrap:has(> .graph-back[hidden]) #sorular-3d-toggle { left: 116px; }
+#sorular-wrap:has(> .graph-back[hidden]) #sorular-nehir-toggle { left: 168px; }
 /* B1: "ne kadar eminiz" düğmesi, eğim düğmesinin hemen sağında. */
 .graph-confidence-toggle {
   position: absolute;
@@ -9122,6 +9130,8 @@ body.share-stage-open { overflow: hidden; }
   /* Not paneli düğümden düğüme geçerken sayfa zıplamasın diye alt sınır. */
   min-height: 5.2rem;
 }
+.helix-scene__note--yalin { min-height: 0; }
+.helix-scene__note--yalin .helix-scene__note-label { margin-bottom: 0; }
 .helix-scene__note-label {
   margin: 0 0 0.35rem;
   font-weight: 600;

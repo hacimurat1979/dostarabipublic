@@ -297,6 +297,10 @@ window.__kuranDokusuApp = (function () {
   }
 
   function surePaneli(d) {
+    // Seçim adrese yazılır (/kuran-dokusu/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("kuran-dokusu", String(d.no));
     focusSureNo = d.no;
     focusBabId = null;
     const ilgiliKenarlar = kenarlar.filter((k) => k.sureNo === d.no);
@@ -380,7 +384,15 @@ window.__kuranDokusuApp = (function () {
     GU.wireRecenter("kuran-dokusu-recenter", () => ortala(true));
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
     GU.registerStepBack("kuran-dokusu-wrap", () => {
-      if (focusSureNo != null || focusBabId != null) { girisPaneli(); return true; }
+      if (focusSureNo != null || focusBabId != null) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        if (window.__dostNav) window.__dostNav.setHash("kuran-dokusu");
+        return true;
+      }
       return false;
     });
     window.addEventListener("resize", GU.debounceResize(() => {
