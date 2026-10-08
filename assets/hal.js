@@ -350,7 +350,7 @@
       // aynı kalıyordu (UI denetimi bulgusu; menziller.js'te aynı eksiklik).
       yaw = 0; pitch = 0.62;
       if (clusterFocus) exitClusterFocus();
-      fitView(true);
+      geriCekil();
     });
     svg.on("click", () => {
       if (currentDetailNode || currentRelation) clearFocus();
@@ -378,7 +378,7 @@
     ensureFrame();
     // Eğim bittikten sonra çerçeveyi yeniden sığdır (sarmal düz halkadan
     // belirgin biçimde daha uzun; aksi hâlde üst/alt uçlar dışarı taşıyor).
-    setTimeout(() => { if (!wrapEl.hidden) fitView(true); }, reduceMotion ? 30 : TILT_DUR + 60);
+    setTimeout(() => { if (!wrapEl.hidden) { ilkBakis.delete(bakisAnahtari()); fitView(true); } }, reduceMotion ? 30 : TILT_DUR + 60);   // Kipe geçildiği anki çerçeve o kipin yeni "başlangıç bakışı"dır.
   }
   // Açılışta doğrudan sarmala eğ: düğmenin durumunu da eşitler ki kullanıcı
   // bir sonraki tıklamada 2B'ye dönsün.
@@ -388,7 +388,7 @@
   function openIn3D() {
     tilt = 1; tiltFrom = 1; tiltTarget = 1;
     ensureFrame();
-    setTimeout(() => { if (!wrapEl.hidden) fitView(false); }, 60);
+    setTimeout(() => { if (!wrapEl.hidden) { ilkBakis.delete(bakisAnahtari()); fitView(false); } }, 60);   // Kipe geçildiği anki çerçeve o kipin yeni "başlangıç bakışı"dır.
     const btn = document.getElementById("hal-3d-toggle");
     if (btn) { btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); }
   }
@@ -697,6 +697,7 @@
     if (tilt > 0.02) GU.sortKeepFocus(merged, (a, b) => b.__z - a.__z);
 
     const pendingLabels = [];
+    const kureler = [];
     merged.each(function (d) {
       const g = d3.select(this);
       const b = breath(d, ts);
@@ -734,6 +735,7 @@
       else tr.style("opacity", 0);
       g.select(".hal-sphere").attr("r", r);
       g.select(".hal-sheen").attr("r", r);
+      if (op >= 0.35) kureler.push({ x: d.x + b.dx, y: d.y + b.dy, half: r, h: r * 2 });
       const lbl = g.select(".hal-label");
       const baseY = r + (d.stage === "hayret" ? 20 : LANDMARK.has(d.stage) ? 16 : 13);
       const txt = labelFor(d);
@@ -752,7 +754,9 @@
         });
       }
     });
-    deconflictLabels(pendingLabels);
+    // Küreler de engel (2026-10-08 taraması: sol üst kümede "Cem ve Fark",
+    // "Fenâ ve Bekâ", "İstikamet" komşu kürelerin arkasında kalıyordu).
+    deconflictLabels(pendingLabels, kureler);
 
     // --- Hayret shimmer ---
     if (!reduceMotion && shimmer.length) {
@@ -803,6 +807,23 @@
 
   // members (ops.): yalnız bu alt kümeye sığdır (küme odağı) -- verilmezse
   // eskisi gibi bütün sarmalı + dönüş yayının tepe noktasını kapsar.
+  // Ortala ("geri çekilmek", ETKILESIM_DILI.md): başlangıçtaki bakışa
+  // dönmeli. Eskiden her basışta çerçeve o anki konumlardan YENİDEN
+  // hesaplanıyordu -- 3B dönüş ve etiket yerleşimi yüzünden her seferinde
+  // biraz farklı çıkıyor, ölçekle birlikte kayıyordu (2026-10-08 taraması:
+  // Hâller'de Nefs/Tövbe alt kenarda kesiliyordu). İlk sığdırmanın dönüşümü
+  // pencere boyutu + 2B/3B kipi başına saklanır; Ortala ona döner (kip
+  // korunur), boyut değiştiyse yeniden hesaplanır.
+  const ilkBakis = new Map();
+  function bakisAnahtari() {
+    return (svgNode.clientWidth || 900) + "x" + (svgNode.clientHeight || 640) + ":" + (tiltTarget > 0.5 ? 3 : 2);
+  }
+  function geriCekil() {
+    const t = ilkBakis.get(bakisAnahtari());
+    if (!t) { fitView(true); return; }
+    const sel = !reduceMotion ? svg.transition().duration(500).ease(d3.easeCubicInOut) : svg;
+    sel.call(zoomBehavior.transform, t);
+  }
   function fitView(animate, members) {
     const w = svgNode.clientWidth || 900, h = svgNode.clientHeight || 640;
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
@@ -826,6 +847,7 @@
     const [mn, mx] = zoomBehavior.scaleExtent();
     const k = Math.max(mn, Math.min(mx, Math.min(w / bw, h / bh)));
     const t = d3.zoomIdentity.translate(w / 2 - k * (x0 + bw / 2), h / 2 - k * (y0 + bh / 2)).scale(k);
+    if (!members && svgNode.clientWidth && isFinite(t.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), t);
     const sel = (animate && !reduceMotion) ? svg.transition().duration(500).ease(d3.easeCubicInOut) : svg;
     sel.call(zoomBehavior.transform, t);
   }

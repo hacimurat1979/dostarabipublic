@@ -569,6 +569,8 @@ window.__elestiriArkeolojisiApp = (function () {
       yukle().then(() => {
         const d = kisiById.get(id);
         if (d) kisiPaneli(d);
+        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
+        else if (id && window.__dostNav) window.__dostNav.setHash("elestiri-arkeolojisi");
       });
     },
   };

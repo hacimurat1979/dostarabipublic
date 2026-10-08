@@ -1480,9 +1480,9 @@
     return `
       <div class="futuhat-start-hint">
         <p>${tt({
-          tr: "Bu, okumanın en son ulaştığı yer -- 18 ciltlik bir okumanın neredeyse sonu. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
-          en: "This is where the reading currently stands -- near the end of an 18-volume reading. If you're new here, you may want to start from the beginning.",
-          pt: "É aqui que a leitura chegou -- perto do fim de uma leitura de 18 volumes. Se você é novo aqui, talvez queira começar do início.",
+          tr: "Bu, okumanın en son ulaştığı yer — 18 ciltlik bir okumanın neredeyse sonu. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
+          en: "This is where the reading currently stands — near the end of an 18-volume reading. If you're new here, you may want to start from the beginning.",
+          pt: "É aqui que a leitura chegou — perto do fim de uma leitura de 18 volumes. Se você é novo aqui, talvez queira começar do início.",
         })}</p>
         <button type="button" class="futuhat-start-hint__btn" data-start-id="${first.id}">${tt({
           tr: "Baştan başla", en: "Start from the beginning", pt: "Começar do início",

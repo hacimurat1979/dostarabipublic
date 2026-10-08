@@ -19,7 +19,7 @@ window.__ayetHadisApp = (function () {
   const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
 
   let dataPromise = null;
-  let kuran = null, ayetDizin = null, hadisDizin = null;
+  let kuran = null, ayetDizin = null, hadisDizin = null, hadisMetin = {};
 
   // ayet-onizleme.js (künye hover kutusu) da AYNI üç dosyayı indiriyor; onun
   // GU.fetchJson önbelleğiyle gerçekten paylaşabilmemiz için o modülün
@@ -40,6 +40,7 @@ window.__ayetHadisApp = (function () {
         kuran = k;
         ayetDizin = ad.dizin || {};
         hadisDizin = hd.dizin || {};
+        hadisMetin = hd.metin || {};
         if (window.DostViewStatus) window.DostViewStatus.hide("ayethadis-wrap");
         return true;
       })
@@ -141,6 +142,9 @@ window.__ayetHadisApp = (function () {
           )}</span>` +
           `<span class="ayethadis-item__n">${item.list.length}</span>` +
           `</div>` +
+          // Kartta hadisin kendisi yoktu, yalnız genel bir başlık (2026-10-08
+          // taraması). Metin, sitede zaten alıntılanan biçimiyle dizinden gelir.
+          (hadisMetin[item.ref] ? `<p class="ayethadis-item__meal">“${esc(tt(hadisMetin[item.ref]))}”</p>` : "") +
           `<div class="ayethadis-item__locs">${locHtml(item.list)}</div>` +
           `</article>`
         );

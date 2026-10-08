@@ -493,9 +493,29 @@
     loadPagefind().then((pf) => {
       if (!pf || token !== fullTextToken) return;
       return pf.search(q).then((r) =>
-        Promise.all(r.results.slice(0, FULLTEXT_MAX).map((x) => x.data()))
-      ).then((rows) => renderFullText(rows, token));
+        Promise.all(r.results.slice(0, FULLTEXT_MAX * 2).map((x) => x.data()))
+      ).then((rows) => renderFullText(rows.filter((row) => gercekEslesme(row, q)).slice(0, FULLTEXT_MAX), token));
     }).catch(() => {});
+  }
+
+  // pagefind gevşek eşleştiriyor: "zzqqxx" gibi anlamsız bir sorgu bile
+  // "zındık" geçen pasajları getiriyordu (2026-10-08 taraması). Bir satır,
+  // vurgulanan (<mark>) sözcüklerinden biri sorgunun bir sözcüğüyle aynı
+  // kökten başlıyorsa (ilk 4 harf, aksan ve büyük/küçük harf yok sayılarak)
+  // tutulur.
+  function katla(t) {
+    return String(t || "").toLocaleLowerCase("tr").replace(/ı/g, "i")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  function gercekEslesme(row, q) {
+    const isaretli = [];
+    String((row && row.excerpt) || "").replace(/<mark>(.*?)<\/mark>/g, (_, w) => { isaretli.push(katla(w)); return ""; });
+    if (!isaretli.length) return false;
+    const sorgu = katla(q).split(" ").filter((w) => w.length >= 2);
+    return sorgu.some((w) => {
+      const kok = w.slice(0, Math.min(4, w.length));
+      return isaretli.some((m) => m.split(" ").some((x) => x.length >= 2 && (x.startsWith(kok) || kok.startsWith(x.slice(0, 4)))));
+    });
   }
 
   function renderResults(items) {

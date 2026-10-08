@@ -116,7 +116,22 @@
   // Bir bölüme tıklanınca çekmece kapanır — gezinme ontology.js'in aynı
   // click dinleyicisiyle zaten gerçekleşiyor (iki dinleyici, tek tık).
   drawer.addEventListener("click", (e) => {
-    if (e.target.closest("button")) close();
+    if (!e.target.closest("button")) return;
+    close();
+    // Çekmece kapanınca odak gizlenen düğmeyle birlikte <body>'ye
+    // düşüyordu; klavye kullanıcısı yeni bölümün başından Tab'lamak
+    // zorundaydı (2026-10-08 taraması). Odak açılan görünüme taşınır
+    // (görünüm geçişi ontology.js'in aynı tıklama dinleyicisinde oluyor,
+    // o yüzden bir kare sonra).
+    requestAnimationFrame(() => {
+      const a = document.activeElement;
+      if (a && a !== document.body && !drawer.contains(a)) return;
+      const hedef = document.querySelector("main > section:not([hidden]):not(.detail-panel)");
+      if (!hedef) return;
+      if (!hedef.hasAttribute("tabindex")) hedef.setAttribute("tabindex", "-1");
+      hedef.classList.add("odak-hedefi");
+      try { hedef.focus({ preventScroll: true }); } catch (err) { /* eski tarayıcı */ }
+    });
   });
   document.addEventListener("click", (e) => {
     if (!drawer.hidden && !drawer.contains(e.target) && !toggle.contains(e.target)) close();
