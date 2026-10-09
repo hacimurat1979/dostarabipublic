@@ -198,25 +198,11 @@
     svg.selectAll("*").remove();
     svg.attr("viewBox", `0 0 ${width} ${height}`).attr("preserveAspectRatio", "xMidYMid meet");
     defs = svg.append("defs");
-    nodes.forEach((n, i) => {
-      const c = d3.color(hueFor(i)) || d3.color("#888");
-      const rg = defs.append("radialGradient").attr("id", "menzil-sphere-" + n.sira)
-        .attr("cx", "38%").attr("cy", "32%").attr("r", "72%");
-      rg.append("stop").attr("offset", "0%").attr("stop-color", c.brighter(0.55).formatHex());
-      rg.append("stop").attr("offset", "52%").attr("stop-color", c.formatHex());
-      rg.append("stop").attr("offset", "100%").attr("stop-color", c.darker(0.85).formatHex());
-    });
-    // Ay'ın kendi küresi -- düğümlerin ZATEN kullandığı "radyal gradyanla
-    // top" tekniğinin (yukarısı) aynısı, yalnız büyütülmüş ve gümüşi.
-    // GORSEL_DIL.md'nin "sahte 3B yapma" kuralı kutu-perspektifi/parlaklık
-    // numaralarını yasaklıyor; bu sayfa zaten kendi 28 küresinde bu deseni
-    // taşıyor, Ay'ı aynı dilde büyütmek yeni bir ihlal değil, tutarlılık.
-    const moonGrad = defs.append("radialGradient").attr("id", "menzil-moon-grad")
-      .attr("cx", "36%").attr("cy", "30%").attr("r", "75%");
-    moonGrad.append("stop").attr("offset", "0%").attr("stop-color", "#f4f2ea");
-    moonGrad.append("stop").attr("offset", "55%").attr("stop-color", "#d9d6c9");
-    moonGrad.append("stop").attr("offset", "100%").attr("stop-color", "#9c988a");
-
+    // Düğümler ve Ay düz dolgu (2026-10-09, gorsel-gramer). Eskiden her
+    // menzil ve Ay sol üstten parlayan bir radyal gradyanla "küre" gibi
+    // çiziliyordu, Ay'ın üstünde de krater lekeleri ve altın bir ışıma
+    // vardı -- sahte 3B ve süs ışık (GORSEL_DIL). Derinlik artık yalnız
+    // atmosferik puslanmayla (render: uzaktaki menzil solar ve bulanıklaşır).
     zoomLayer = svg.append("g").attr("class", "menziller-canvas");
     // Ring parçaları + düğümler + Ay AYNI katmanın çocukları: 3B'de sarmalın
     // Ay'ın önünden/arkasından geçmesi gerçek bir derinlik-sıralamasıdır
@@ -224,14 +210,8 @@
     // yeniden kuruluyor, "sahte" bir üst-üste-bindirme değil).
     nodeLayer = zoomLayer.append("g").attr("class", "menziller-scene");
     moonLayer = nodeLayer.append("g").attr("class", "menziller-moon").attr("aria-hidden", "true");
-    moonLayer.append("circle").attr("class", "menziller-moon__glow");
-    moonLayer.append("circle").attr("class", "menziller-moon__body").attr("fill", "url(#menzil-moon-grad)");
-    // Yüzeydeki birkaç koyu leke -- gerçek bir krater haritası değil,
-    // "düz bir top değil, Ay" diye okunması için birkaç düzensiz leke.
-    [[-4, -2, 3.4], [3, 5, 2.6], [-2, 6, 1.9], [5, -4, 1.6]].forEach(([dx, dy, r]) => {
-      moonLayer.append("circle").attr("class", "menziller-moon__leke")
-        .attr("cx", dx).attr("cy", dy).attr("r", r);
-    });
+    // Ay: düz, sessiz bir disk.
+    moonLayer.append("circle").attr("class", "menziller-moon__body");
     moonLayer.append("title").text(tt({
       tr: "Menzillerin ait olduğu Ay — sarmal onun etrafında geziniyor.",
       en: "The Moon these mansions belong to — the spiral moves around it.",
@@ -327,13 +307,7 @@
     const breathM = reduceMotion ? 1 : 1 + 0.015 * Math.sin(ts / 4200);
     moonLayer.attr("transform", `translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${(breathM).toFixed(3)})`)
       .style("opacity", tilt);
-    moonLayer.select(".menziller-moon__glow").attr("r", moonR * 1.35);
     moonLayer.select(".menziller-moon__body").attr("r", moonR);
-    moonLayer.selectAll(".menziller-moon__leke").each(function (d, idx) {
-      const spots = [[-0.36, -0.18, 0.31], [0.27, 0.45, 0.24], [-0.18, 0.55, 0.17], [0.45, -0.36, 0.15]];
-      const s = spots[idx];
-      d3.select(this).attr("cx", (s[0] * moonR).toFixed(1)).attr("cy", (s[1] * moonR).toFixed(1)).attr("r", (s[2] * moonR).toFixed(1));
-    });
 
     // Merkezdeki nefes işareti yalnız 2B'de anlamlı: 3B'de halka yatınca
     // merkez sarmalın ortasına düşüyor ve düğümlerin arkasında kalıyor.
@@ -367,7 +341,7 @@
       .on("focus", (e, n) => { hoveredId = n.sira; showTooltip(n, e); })
       .on("blur", () => { hoveredId = null; hideTooltip(); });
     enter.append("circle").attr("class", "menzil-node__glow");
-    enter.append("circle").attr("class", "menzil-node__sphere").attr("fill", (n) => `url(#menzil-sphere-${n.sira})`);
+    enter.append("circle").attr("class", "menzil-node__sphere");
     enter.append("text").attr("class", "menzil-node__harf").attr("text-anchor", "middle");
     enter.append("line").attr("class", "menzil-node__leader");
     enter.append("text").attr("class", "menzil-node__label").attr("text-anchor", "middle");
@@ -384,8 +358,14 @@
       const dep = 1 + (n.__depth - 1) * tilt;
       const r = (isActive ? 24 : 18) * breath * (isHover ? 1.08 : 1) * dep;
       const fade = tilt > 0 ? Math.max(0.35, Math.min(1, 0.35 + 0.9 * (dep - 0.55))) : 1;
+      // Atmosferik puslanma: solmaya ek olarak uzaktaki menzil hafifçe
+      // bulanıklaşır (2026-10-09; sahte 3B kürenin yerine derinliğin tek
+      // kodlaması). Seçili/değinilen menzil puslanmaz.
+      const pus = (tilt > 0 && !isActive && !isHover)
+        ? Math.round(Math.max(0, Math.min(1.6, (1 - dep) * 4 * tilt)) * 5) / 5 : 0;
       g.attr("transform", `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`)
-        .style("opacity", (activeId && !isActive ? 0.42 : 1) * fade);
+        .style("opacity", (activeId && !isActive ? 0.42 : 1) * fade)
+        .style("filter", pus > 0 ? `blur(${pus}px)` : null);
       // Perdeli (henüz okunmadığımız) düğümlerde çevresel parıltı da bir tık
       // soluk -- GORSEL_DIL.md: "Matlık (opacity) = Perdelenme". Küre ve
       // harfteki asıl matlık .menzil-node--perdeli CSS kuralında (opacity
@@ -393,8 +373,9 @@
       // opacity'ye aynı çarpanı ekliyoruz ki stil çakışmasın.
       g.select(".menzil-node__glow").attr("r", r * 1.9)
         .style("fill", hueFor(n.sira - 1))
-        .style("opacity", (isActive ? 0.42 : 0.15) * (isHover ? 1.6 : 1) * (n.okunmus ? 1 : 0.7));
-      g.select(".menzil-node__sphere").attr("r", r);
+        // Işık yalnız seçimde/değinmede (zuhûr); sürekli ışıma süs ışıktı.
+        .style("opacity", (isActive ? 0.42 : isHover ? 0.24 : 0) * (n.okunmus ? 1 : 0.7));
+      g.select(".menzil-node__sphere").attr("r", r).attr("fill", hueFor(n.sira - 1));
       // Halka döndüğü için harf ve etiketi kendi noktaları etrafında ters
       // çevirip dik tutuyoruz.
       // Etiketler artık grup döndürmesiyle değil, düğümün kendi ekran

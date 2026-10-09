@@ -132,10 +132,20 @@
     return { tr: h.no + ". Hadis", en: "Hadith " + h.no, pt: "Hadith " + h.no };
   }
 
+  function hadisIndex(id) {
+    for (var i = 0; i < data.hadisler.length; i++) if (data.hadisler[i].id === id) return i;
+    return 0;
+  }
+
   // --- açılış haritası: 101 hadisin sarmalı (yalnız yazılmışlar tıklanabilir) ---
+  // "Buradasın" (2026-10-09, görsel taraması madde 5): sarmal bir kez
+  // kurulur; okunan hadis ışıkla belirir, öbürleri sarmal üzerindeki
+  // uzaklığa göre puslanır. Başka hadis seçilince sahne yeniden kurulmaz,
+  // dönerek onu öne getirir (setCurrent).
   function renderMap() {
     if (!mapEl || !window.DostHelix) return;
-    if (mapScene) { mapScene.destroy(); mapScene = null; }
+    var cur = hadisIndex(activeId);
+    if (mapScene) { mapScene.setCurrent(cur); renderSerit(cur); return; }
     var nodes = data.hadisler.map(function (h) {
       return {
         id: h.id,
@@ -161,12 +171,36 @@
       labelMode: "none",
       spinSpeed: 0.5,
       title: { tr: "Yüz bir hadisin sarmalı", en: "The spiral of the hundred and one hadith", pt: "A espiral dos cento e um hadith" },
+      current: cur,
       onActivate: function (node) {
         var h = hadisById(node.id);
         if (!h) return;
         if (h.status !== "active") return;   // henüz okunmamış hadis açılmaz
         activate(h.id);
       },
+    });
+    renderSerit(cur);
+  }
+
+  // Mobil şerit (2026-10-09, görsel taraması madde 14): aynı sarmal,
+  // yapışkan 56 px'lik bir şeritte -- okuma metni ilk ekranda başlasın diye.
+  // Masaüstünde CSS gizler (.fusus-serit); büyük sarmal orada kalır.
+  var seritScene = null;
+  function renderSerit(cur) {
+    if (!window.DostHelix.mountStrip) return;
+    if (seritScene) { seritScene.setCurrent(cur); return; }
+    var shell = wrap.querySelector(".fusus-shell");
+    if (!shell || !articleEl) return;
+    var seritEl = document.createElement("div");
+    seritEl.className = "fusus-serit";
+    shell.insertBefore(seritEl, articleEl);
+    seritScene = window.DostHelix.mountStrip(seritEl, {
+      nodes: data.hadisler.map(function (h) {
+        return { id: h.id, label: hadisLabel(h), disabled: h.status !== "active" };
+      }),
+      current: cur,
+      title: { tr: "Yüz bir hadisin sarmalı", en: "The spiral of the hundred and one hadith", pt: "A espiral dos cento e um hadith" },
+      onActivate: function (node) { activate(node.id); },
     });
   }
 
@@ -191,6 +225,7 @@
     listEl.querySelectorAll("button[data-id]").forEach(function (b) {
       b.addEventListener("click", function () { activate(b.dataset.id); });
     });
+    window.DostGraphUtils.cipOrtala(listEl);
   }
 
   // --- bir hadisin yazısı --------------------------------------------------
@@ -290,16 +325,13 @@
 
     var html = "";
     if (isDefaultLanding && data.hadisler[0] && data.hadisler[0].id !== h.id) {
-      html += '<div class="futuhat-start-hint fusus-start-hint">'
-        + "<p>" + esc(t({
-          tr: "Bu, okumanın en son ulaştığı yer. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
-          en: "This is where the reading currently stands. If you're new here, you may want to start from the beginning.",
-          pt: "É aqui que a leitura chegou. Se você é novo aqui, talvez queira começar do início.",
-        })) + "</p>"
-        + '<button type="button" class="futuhat-start-hint__btn" data-start-hadis="' + esc(data.hadisler[0].id) + '">'
-        + esc(t({ tr: "Baştan başla", en: "Start from the beginning", pt: "Começar do início" })) + "</button>"
-        + '<button type="button" class="futuhat-start-hint__close" aria-label="' + esc(t({ tr: "Kapat", en: "Close", pt: "Fechar" })) + '">×</button>'
-        + "</div>";
+      // Bant yerine küçük bir halka çipi (2026-10-09, görsel taraması
+      // madde 14): mobilde ~170 px tutan bant okumayı aşağı itiyordu.
+      html += window.DostGraphUtils.baslangicCipiHtml("data-start-hadis", data.hadisler[0].id, {
+        tr: "Bu, okumanın en son ulaştığı yer. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
+        en: "This is where the reading currently stands. If you're new here, you may want to start from the beginning.",
+        pt: "É aqui que a leitura chegou. Se você é novo aqui, talvez queira começar do início.",
+      }, "fusus-start-hint");
     }
 
     var bolumEtiket = t({ tr: "Bölüm", en: "Section", pt: "Seção" });
@@ -368,6 +400,13 @@
     articleEl.innerHTML = html;
     window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
     mountHelixBlocks(articleEl, helixes, captions);
+    // Üç ses: tırnakla başlayan <em> ayrı dokuda; değinince künye
+    // (graph-utils dostSozIsaretle).
+    window.DostGraphUtils.dostSozIsaretle(articleEl, {
+      // Kaydın künyesi (pageRange) bölüm/hadis numarasını zaten taşıyor.
+      baslik: t({ tr: "Mişkâtü'l-Envâr", en: "Mishkat al-Anwar", pt: "Mishkat al-Anwar" }),
+      sayfa: t(h.pageRange),
+    });
     var printBtn = articleEl.querySelector(".fusus-print-btn");
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
     var shareBtn = articleEl.querySelector(".fusus-share-btn");
@@ -380,17 +419,10 @@
       else kartBtn.addEventListener("click", function () { window.__dostShare.open({ view: "miskat", id: h.id }); });
     }
     var startBtn = articleEl.querySelector("[data-start-hadis]");
-    var startClose = articleEl.querySelector(".fusus-start-hint .futuhat-start-hint__close");
     if (startBtn) {
       startBtn.addEventListener("click", function () {
         isDefaultLanding = false;
         activate(startBtn.getAttribute("data-start-hadis"));
-      });
-    }
-    if (startClose) {
-      startClose.addEventListener("click", function () {
-        var hint = articleEl.querySelector(".fusus-start-hint");
-        if (hint) hint.remove();
       });
     }
   }
@@ -441,6 +473,7 @@
       if (!data || !activeId) return;
       renderList();
       if (mapScene) mapScene.setLang();
+      if (seritScene) seritScene.setLang();
       renderArticle(hadisById(activeId));
     },
   };

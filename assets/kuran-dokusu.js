@@ -7,7 +7,8 @@
 // kanıtı değil, okuma sürecimizin küçük bir izi.
 //
 // YERLEŞIM. CLAUDE.md'nin daire/merkez ilkesi + roadmap'in kendi isteği
-// ("sûreler dış halka, bablar iç halka, kenarlar merkeze doğru").
+// ("sûreler dış halka, bablar iç halka, kenarlar merkeze doğru"). 2026-10-09:
+// iç içe iki halka yerine tek dairenin karşılıklı iki yayı -- bkz. yerlestir().
 //
 // Sûre düğümleri KUR'ÂN SIRASINDA ama EŞİT ARALIKLA diziliyor. Önceki iki
 // deneme de başarısızdı ve ikisi de aynı nedenden:
@@ -63,12 +64,10 @@ window.__kuranDokusuApp = (function () {
     return { w: Math.max(360, r.width), h: Math.max(360, r.height) };
   }
 
-  // Etiketler yarıçap yönünde uzadığı için halkanın yarıçapı tek başına
-  // ekrana sığmaya yetmiyor: en uzun sûre adı dışarı taşıyor. İlk denemede
-  // eski sabit 0.44 oranını bıraktım ve "The Night Journey" gibi uzun
-  // adlar tepede/dipte kırpıldı. Onun yerine en uzun etiketi ÖLÇÜP halkayı
-  // ona göre daraltıyoruz -- dil değişince de doğru kalsın diye (İngilizce
-  // sûre adları Türkçelerden belirgin uzun).
+  // Etiketler yarıçap yönünde uzadığı için yayın yarıçapı tek başına
+  // ekrana sığmaya yetmiyor: en uzun sûre adı dışarı taşıyor. En uzun
+  // etiketi ÖLÇÜP yayı ona göre daraltıyoruz -- dil değişince de doğru
+  // kalsın diye (İngilizce sûre adları Türkçelerden belirgin uzun).
   function enUzunEtiketGenisligi() {
     const olcu = svg.append("text")
       .attr("class", "kuran-dokusu-sure__etiket")
@@ -85,47 +84,100 @@ window.__kuranDokusuApp = (function () {
     return en;
   }
 
-  // Etikete kalan yatay yer (piksel). Dar ekranda halkayı sonsuza kadar
-  // küçültemeyiz -- 0.22 tabanı var -- ve o tabanda uzun bir İngilizce ad
-  // ekranı taşırıyor (390 pikselde "Those who set the Ranks" ölçüldü).
-  // Taşmaktansa kısaltıyoruz; tam ad `aria-label`de ve ipucunda duruyor.
+  // Etikete kalan yer (piksel). Dar ekranda yayı sonsuza kadar
+  // küçültemeyiz; taşmaktansa kısaltıyoruz -- tam ad `aria-label`de ve
+  // ipucunda duruyor.
   let etiketAlani = Infinity;
+
+  // Bölümlerin okuma sırası: Fütûhât cilt/kısım sırasıyla, Füsûs sonda.
+  function bolumSirasi(b) {
+    const m = /^c(\d+)k(\d+)$/.exec(b.id);
+    if (b.view === "futuhat" && m) return [0, +m[1], +m[2]];
+    const f = /(\d+)/.exec(b.id);
+    return [1, 0, f ? +f[1] : 0];
+  }
+
+  // YERLEŞİM (2026-10-09, gorsel-gramer). Eskiden iki eşmerkezli nokta
+  // halkası + çevre çizgisi + 69 kesişen kiriş vardı (GORSEL_DIL: iç içe
+  // eşmerkezli çember yasağı; kirişler bir yumak). Şimdi tek bir dairenin
+  // KARŞILIKLI iki yayı: sûreler Mushaf sırasıyla alt yayda (soldan sağa),
+  // Fütûhât/Füsûs bölümleri okuma sırasıyla üst yayda (soldan sağa). İki
+  // yayın arasında sağda ve solda bir boşluk var -- iç içe değil, yüz yüze.
+  // Kirişler varsayılan hâlde neredeyse görünmez; bir sûreye (ya da
+  // bölüme) değinince/seçince ondan çıkan ışık yolları belirir ve
+  // ilerledikçe söner (zuhûr); geri kalan her şey perdelenir (matlık).
+  const BOSLUK = 0.2; // yayların iki ucundaki boşluk (radyan)
+  let merkezX = 0, merkezY = 0;
+
+  // Açık lejant sol altta duruyor; geniş ekranda sahne onun sağında kalan
+  // alana ortalanır ki alt yayın sol ucu lejantın altında kalmasın.
+  function lejantSagKenari(w) {
+    const el = document.getElementById("kuran-dokusu-legend");
+    if (!el || el.classList.contains("legend--collapsed")) return 0;
+    const lr = el.getBoundingClientRect(), wr = wrapEl.getBoundingClientRect();
+    if (!lr.width) return 0;
+    const sag = lr.right - wr.left;
+    return sag < w * 0.4 ? sag : 0;
+  }
 
   function yerlestir() {
     const { w, h } = boyut();
-    const kucuk = Math.min(w, h);
-    // pay = etiket genişliği + en büyük düğüm yarıçapı + etiket boşluğu + nefes
-    const pay = enUzunEtiketGenisligi() + 12 + 7 + 10;
-    const R_OUTER = Math.max(kucuk * 0.22, Math.min(kucuk * 0.44, kucuk / 2 - pay));
-    const R_INNER = R_OUTER * 0.545;
-    etiketAlani = kucuk / 2 - R_OUTER - 12 - 7 - 6;
+    // Dar ekran: tam etiket payı yayı küçücük bırakıyordu (390 pikselde
+    // 35 sûre ~10 piksel aralıkla üst üste). Orada pay sabit ve kısa,
+    // düğümler küçük, etiketler seyreltiliyor (aşağıda adim); gizli kalan
+    // etiket değinince/odakta görünür, tam ad aria-label ve ipucunda.
+    const darEkran = w < 560;
+    const pay = darEkran ? 62 : enUzunEtiketGenisligi() + 12 + 7 + 10;
+    const sol = darEkran ? 0 : Math.max(0, lejantSagKenari(w) - 4);
+    const genislik = w - sol;
+    // Yatay: alt yayın uçlarındaki etiketler yana uzanıyor. Dikey: üstte
+    // yalnız düğüm, altta etiket payı.
+    const Ryatay = genislik / 2 - pay - (darEkran ? 4 : 12);
+    const Rdikey = (h - 56 - pay) / 2;
+    const R = Math.max(Math.min(w, h) * 0.2, Math.min(Ryatay, Rdikey));
+    merkezX = sol + genislik / 2;
+    merkezY = Math.max(R + 34, (h - (2 * R + pay + 24)) / 2 + R + 24);
+    etiketAlani = darEkran ? pay - 14
+      : Math.max(40, Math.min(pay - 29, h - merkezY - R - 26, genislik / 2 - R - 26));
+    const olcek = darEkran ? 0.6 : 1;
 
-    // Kur'ân sırasına göre, eşit aralıkla. Sıra veriden geldiği gibi
-    // varsayılmıyor: dizilim yanlışsa graf sessizce yanlış olur.
     const sirali = sureler.slice().sort((a, b) => a.no - b.no);
     const maxSureAtif = Math.max(...sureler.map((s) => s.atifSayisi));
+    const n = sirali.length;
+    const aralik = n > 1 ? (R * (Math.PI - 2 * BOSLUK)) / (n - 1) : 99;
+    const adim = Math.max(1, Math.ceil(13 / aralik));
     sirali.forEach((s, i) => {
-      const a = -Math.PI / 2 + (i / sirali.length) * 2 * Math.PI;
+      // Alt yay: sol uçtan (π - BOSLUK) sağ uca (BOSLUK), dipten geçerek.
+      const a = (Math.PI - BOSLUK) - (n > 1 ? i / (n - 1) : 0.5) * (Math.PI - 2 * BOSLUK);
       s.aci = a;
-      s.x = Math.cos(a) * R_OUTER;
-      s.y = Math.sin(a) * R_OUTER;
-      s.r = 4 + (s.atifSayisi / maxSureAtif) * 8;
+      s.sira = i;
+      s.x = Math.cos(a) * R;
+      s.y = Math.sin(a) * R;
+      s.r = (4 + (s.atifSayisi / maxSureAtif) * 8) * olcek;
+      s.etiketGizli = i % adim !== 0;
     });
 
+    const bSirali = bablar.slice().sort((a, b) => {
+      const x = bolumSirasi(a), y = bolumSirasi(b);
+      return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+    });
+    const m = bSirali.length;
     const maxBabAtif = Math.max(...bablar.map((b) => b.atifSayisi));
-    bablar.forEach((b, i) => {
-      const a = -Math.PI / 2 + (i / bablar.length) * 2 * Math.PI;
-      b.x = Math.cos(a) * R_INNER;
-      b.y = Math.sin(a) * R_INNER;
-      b.r = 2.5 + (b.atifSayisi / maxBabAtif) * 4;
+    bSirali.forEach((b, i) => {
+      // Üst yay: sol uçtan (π + BOSLUK) sağ uca (2π - BOSLUK), tepeden.
+      const a = (Math.PI + BOSLUK) + (m > 1 ? i / (m - 1) : 0.5) * (Math.PI - 2 * BOSLUK);
+      b.aci = a;
+      b.sira = i;
+      b.x = Math.cos(a) * R;
+      b.y = Math.sin(a) * R;
+      b.r = (2.5 + (b.atifSayisi / maxBabAtif) * 4) * (darEkran ? 0.75 : 1);
     });
 
-    return { w, h, R_OUTER, R_INNER };
+    return { w, h, R };
   }
 
-  // Kenar, merkeze doğru çekilmiş bir kontrol noktasıyla eğiliyor --
-  // roadmap'in "kenarlar merkeze doğru" isteği, "her şey merkeze bakıyor"
-  // ilkesinin bu graftaki karşılığı.
+  // Kiriş, merkeze doğru çekilmiş bir kontrol noktasıyla eğiliyor: alttaki
+  // sûreden üstteki bölüme, dairenin içinden geçen yumuşak bir yol.
   function kenarYolu(d) {
     const s = sureByNo.get(d.sureNo), b = babById.get(d.view + "/" + d.id);
     if (!s || !b) return "";
@@ -133,19 +185,30 @@ window.__kuranDokusuApp = (function () {
     const cx = mx * 0.35, cy = my * 0.35;
     return `M${s.x.toFixed(1)},${s.y.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}`;
   }
+  const kenarAnahtar = (d) => d.sureNo + "|" + d.view + "|" + d.id;
+  const gradId = (i) => "kd-isik-" + i;
 
   function ciz() {
-    const { w, h, R_OUTER, R_INNER } = yerlestir();
+    const { w, h, R } = yerlestir();
     svg.selectAll("*").remove();
     svg.attr("viewBox", `0 0 ${w} ${h}`);
+    const defs = svg.append("defs");
     g = svg.append("g").attr("class", "kuran-dokusu-scene");
-    const kok = g.append("g").attr("transform", `translate(${w / 2}, ${h / 2})`);
+    const kok = g.append("g").attr("transform", `translate(${merkezX}, ${merkezY})`);
 
-    kok.append("circle").attr("class", "kuran-dokusu-halka").attr("r", R_OUTER).attr("fill", "none");
-    kok.append("circle").attr("class", "kuran-dokusu-halka").attr("r", R_INNER).attr("fill", "none");
+    // Her kirişin kendi ışık gradyanı: yönü değinilen uçtan öteki uca
+    // (vurgula() koordinatları yazıyor). stop-color style= içinde: CSS
+    // değişkeni yalnız öyle çözülüyor (hal.js'teki aynı not).
+    kenarlar.forEach((k, i) => {
+      k.__i = i;
+      const gr = defs.append("linearGradient").attr("id", gradId(i)).attr("gradientUnits", "userSpaceOnUse");
+      gr.append("stop").attr("offset", "0%").attr("style", "stop-color:var(--series-theme);stop-opacity:0.95");
+      gr.append("stop").attr("offset", "65%").attr("style", "stop-color:var(--series-theme);stop-opacity:0.32");
+      gr.append("stop").attr("offset", "100%").attr("style", "stop-color:var(--series-theme);stop-opacity:0.04");
+    });
 
     const kenarG = kok.append("g").attr("class", "kuran-dokusu-kenarler");
-    const kenarSel = kenarG.selectAll("path.kuran-dokusu-kenar").data(kenarlar, (d) => d.sureNo + "|" + d.view + "|" + d.id).join("path")
+    kenarG.selectAll("path.kuran-dokusu-kenar").data(kenarlar, kenarAnahtar).join("path")
       .attr("class", "kuran-dokusu-kenar")
       .attr("d", kenarYolu)
       .attr("fill", "none")
@@ -153,36 +216,34 @@ window.__kuranDokusuApp = (function () {
       .attr("stroke-width", (d) => 1 + d.agirlik * 0.6);
 
     // İsabet şeridi (K-04/O-02, uzman paneli denetimi 2026-08-17): görünen
-    // çizgi 1-2px, fareyle/parmakla tutturmak zordu. ontology.js'teki
-    // path.link-hit deseniyle aynı -- görünmez, kalın (bkz. style.css
-    // .link-hit), etkileşimi taşıyan asıl şerit bu; görünen çizgi yalnız
-    // çizim (pointer-events kapalı, yukarıda).
-    const hitSel = kenarG.selectAll("path.link-hit").data(kenarlar, (d) => d.sureNo + "|" + d.view + "|" + d.id).join("path")
+    // çizgi ince, fareyle/parmakla tutturmak zor. ontology.js'teki
+    // path.link-hit deseniyle aynı -- görünmez, kalın; etkileşimi taşıyan
+    // asıl şerit bu.
+    const hitSel = kenarG.selectAll("path.link-hit").data(kenarlar, kenarAnahtar).join("path")
       .attr("class", "link-hit")
       .attr("d", kenarYolu)
       .attr("fill", "none");
 
-    hitSel.on("mouseenter", function (ev, d) { vurgula(d.sureNo, d.view + "/" + d.id, true); kenarIpucu(ev, d); })
+    hitSel.on("mouseenter", function (ev, d) { vurgula(d.sureNo, null, true, d); kenarIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
-      .on("mouseleave", function () { vurgula(null, null, false); GU.hideTooltip(tooltip); });
-    // Ürün denetimi P2-6 (2026-09-02): tabindex/role/aria-label/focus/blur
-    // ortak yardımcıya taşındı. role:"img" korunuyor -- bu kenar tıklanamaz,
-    // yalnız bilgi taşır (aktivasyon yok, orijinalde de keydown/click yoktu).
+      .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); });
+    // Ürün denetimi P2-6 (2026-09-02): role:"img" -- bu kenar tıklanamaz,
+    // yalnız bilgi taşır.
     GU.wireEdgeAccessibility(hitSel, {
       role: "img",
       label: (d) => kenarAriaLabel(d),
-      onFocus: (d, ev) => { vurgula(d.sureNo, d.view + "/" + d.id, true); kenarIpucu(ev, d); },
-      onBlur: () => { vurgula(null, null, false); GU.hideTooltip(tooltip); },
+      onFocus: (d, ev) => { vurgula(d.sureNo, null, true, d); kenarIpucu(ev, d); },
+      onBlur: () => { secimeDon(); GU.hideTooltip(tooltip); },
     });
 
-    // Sûre düğümleri (dış halka)
+    // Sûre düğümleri (alt yay)
     const sureG = kok.append("g").attr("class", "kuran-dokusu-sureler");
     const sureSel = sureG.selectAll("g.kuran-dokusu-sure").data(sureler, (d) => d.no).join("g")
       .attr("class", "kuran-dokusu-sure")
       .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
       .attr("tabindex", 0)
       .attr("role", "button")
-      .attr("aria-label", (d) => tt(d.ad));
+      .attr("aria-label", (d) => `${d.no}. ${tt(d.ad)} — ${d.atifSayisi} ${tt({ tr: "atıf", en: "citations", pt: "citações" })}`);
     sureSel.append("circle").attr("class", "kuran-dokusu-sure__vurus").attr("r", 14).attr("fill", "transparent");
     sureSel.append("circle").attr("class", "kuran-dokusu-sure__nokta").attr("r", (d) => d.r);
     // Tek bir gizli ölçüm düğümü: 35 etiketi tek tek düğüm yaratmadan
@@ -202,10 +263,9 @@ window.__kuranDokusuApp = (function () {
       return metin.slice(0, alt).trim() + "…";
     }
 
-    // Etiket yarıçap yönünde. Sol yarıda metin ters duracağı için 180
-    // derece çevirip sağa değil sola doğru yazıyoruz ("end" hizası) --
-    // döndürmenin işareti değişiyor, etiketin dışa doğru gitmesi değişmiyor.
-    sureSel.append("text").attr("class", "kuran-dokusu-sure__etiket")
+    // Etiket yarıçap yönünde, dışa (aşağı) doğru. Sol yarıda metin ters
+    // duracağı için 180 derece çevirip "end" hizasıyla yazıyoruz.
+    sureSel.append("text").attr("class", (d) => "kuran-dokusu-sure__etiket" + (d.etiketGizli ? " kuran-dokusu-sure__etiket--gizli" : ""))
       .attr("transform", (d) => {
         const derece = (d.aci * 180) / Math.PI;
         const uzaklik = d.r + 7;
@@ -220,15 +280,16 @@ window.__kuranDokusuApp = (function () {
 
     sureSel.on("mouseenter", function (ev, d) { vurgula(d.no, null, true); sureIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
-      .on("mouseleave", function () { vurgula(null, null, false); GU.hideTooltip(tooltip); })
+      .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); })
       .on("focus", function (ev, d) { vurgula(d.no, null, true); })
-      .on("blur", function () { vurgula(null, null, false); })
+      .on("blur", function () { secimeDon(); })
       .on("click", (ev, d) => surePaneli(d))
       .on("keydown", function (ev, d) {
         if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); surePaneli(d); }
+        else yayGezin(ev, sureSel, d);
       });
 
-    // Bab düğümleri (iç halka)
+    // Bölüm düğümleri (üst yay)
     const babG = kok.append("g").attr("class", "kuran-dokusu-bablar");
     const babSel = babG.selectAll("g.kuran-dokusu-bab").data(bablar, (d) => d.view + "/" + d.id).join("g")
       .attr("class", "kuran-dokusu-bab")
@@ -241,24 +302,78 @@ window.__kuranDokusuApp = (function () {
 
     babSel.on("mouseenter", function (ev, d) { vurgula(null, d.view + "/" + d.id, true); babIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
-      .on("mouseleave", function () { vurgula(null, null, false); GU.hideTooltip(tooltip); })
+      .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); })
       .on("focus", function (ev, d) { vurgula(null, d.view + "/" + d.id, true); })
-      .on("blur", function () { vurgula(null, null, false); })
+      .on("blur", function () { secimeDon(); })
       .on("click", (ev, d) => babPaneli(d))
       .on("keydown", function (ev, d) {
         if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); babPaneli(d); }
+        else yayGezin(ev, babSel, d);
       });
 
     zoom = GU.createZoomBehavior(svg, g, [0.6, 3.5]);
     ortala(false);
+    secimeDon();
   }
 
-  function vurgula(sureNo, babKey, on) {
+  // Klavye: ok tuşları aynı yay üzerinde bir sonraki/önceki düğüme geçer
+  // (odak = değinmek; ışık yolları odakla birlikte belirir).
+  function yayGezin(ev, sel, d) {
+    const ileri = ev.key === "ArrowRight" || ev.key === "ArrowDown";
+    const geri = ev.key === "ArrowLeft" || ev.key === "ArrowUp";
+    if (!ileri && !geri) return;
+    ev.preventDefault();
+    const liste = sel.nodes().slice().sort((a, b) => d3.select(a).datum().sira - d3.select(b).datum().sira);
+    const i = liste.findIndex((el) => d3.select(el).datum() === d);
+    const j = Math.max(0, Math.min(liste.length - 1, i + (ileri ? 1 : -1)));
+    if (liste[j]) liste[j].focus();
+  }
+
+  // Değinme bitince sahne seçili sûreye/bölüme (varsa) geri döner; yoksa
+  // varsayılan sönük hâle.
+  function secimeDon() {
+    if (focusSureNo != null) vurgula(focusSureNo, null, true);
+    else if (focusBabId != null) vurgula(null, focusBabId, true);
+    else vurgula(null, null, false);
+  }
+
+  // Işık yolları + perdelenme. `tekKenar` verilirse yalnız o kiriş yanar
+  // (kirişin kendisine değinme).
+  function vurgula(sureNo, babKey, on, tekKenar) {
     if (!g) return;
-    g.selectAll("path.kuran-dokusu-kenar").classed("kuran-dokusu-kenar--deginiliyor", (d) =>
-      on && ((sureNo != null && d.sureNo === sureNo) || (babKey != null && d.view + "/" + d.id === babKey)));
-    g.selectAll("g.kuran-dokusu-sure").classed("kuran-dokusu-sure--deginiliyor", (d) => on && sureNo != null && d.no === sureNo);
-    g.selectAll("g.kuran-dokusu-bab").classed("kuran-dokusu-bab--deginiliyor", (d) => on && babKey != null && d.view + "/" + d.id === babKey);
+    const yanan = new Set();
+    const sureSet = new Set(), babSet = new Set();
+    if (on) {
+      kenarlar.forEach((k) => {
+        const bk = k.view + "/" + k.id;
+        const esle = tekKenar ? k === tekKenar
+          : ((sureNo != null && k.sureNo === sureNo) || (babKey != null && bk === babKey));
+        if (!esle) return;
+        yanan.add(k);
+        sureSet.add(k.sureNo); babSet.add(bk);
+        // Işık değinilen uçtan çıkar, öteki uca doğru söner.
+        const s = sureByNo.get(k.sureNo), b = babById.get(bk);
+        if (!s || !b) return;
+        const kaynak = (babKey != null && !tekKenar) ? b : s;
+        const hedef = kaynak === s ? b : s;
+        svg.select("#" + gradId(k.__i))
+          .attr("x1", kaynak.x).attr("y1", kaynak.y).attr("x2", hedef.x).attr("y2", hedef.y);
+      });
+      if (sureNo != null) sureSet.add(sureNo);
+      if (babKey != null) babSet.add(babKey);
+    }
+    const odak = on && (sureSet.size || babSet.size);
+    g.classed("kuran-dokusu-scene--odak", !!odak);
+    g.selectAll("path.kuran-dokusu-kenar")
+      .classed("kuran-dokusu-kenar--isik", (d) => yanan.has(d))
+      .style("stroke", (d) => (yanan.has(d) ? `url(#${gradId(d.__i)})` : null));
+    g.selectAll("g.kuran-dokusu-sure")
+      .classed("kuran-dokusu-sure--deginiliyor", (d) => on && sureNo != null && d.no === sureNo)
+      .classed("kuran-dokusu--perdeli", (d) => !!odak && !sureSet.has(d.no));
+    g.selectAll("g.kuran-dokusu-bab")
+      .classed("kuran-dokusu-bab--deginiliyor", (d) => on && babKey != null && d.view + "/" + d.id === babKey)
+      .classed("kuran-dokusu-bab--yanan", (d) => !!odak && babSet.has(d.view + "/" + d.id))
+      .classed("kuran-dokusu--perdeli", (d) => !!odak && !babSet.has(d.view + "/" + d.id));
   }
 
   function ayetListHtml(ayetler) {
@@ -352,6 +467,7 @@ window.__kuranDokusuApp = (function () {
       <h2 class="detail-title">${sureler.length} ${tt({ tr: "sûre", en: "sûrahs", pt: "suratas" })}, ${bablar.length} ${tt({ tr: "bap", en: "chapters", pt: "capítulos" })}</h2>
       <div class="detail-block detail-block--soru"><p>${tt(data.not)}</p></div>`;
     detailPanel.hidden = false;
+    vurgula(null, null, false);
   }
 
   function ortala(animate) {
@@ -399,6 +515,12 @@ window.__kuranDokusuApp = (function () {
       if (!yuklendi || wrapEl.hidden) return;
       ciz();
     }));
+    // Lejant açılıp kapanınca sahnenin kullanabileceği genişlik değişiyor
+    // (bkz. lejantSagKenari): geçiş bitince yeniden yerleştir.
+    const lejantDugme = document.querySelector("#kuran-dokusu-legend .legend__toggle");
+    if (lejantDugme) lejantDugme.addEventListener("click", () => {
+      setTimeout(() => { if (yuklendi && !wrapEl.hidden) ciz(); }, 360);
+    });
   }
 
   // 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı -- Dalga 2.5): sûre-bab

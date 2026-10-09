@@ -23,7 +23,6 @@ window.__bilmiyoruzApp = (function () {
   const I18n = window.DostI18n;
   const GU = window.DostGraphUtils;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const deconflictLabels = GU.createLabelDeconflictor();
 
   const svg = d3.select("#bilmiyoruz-graph");
   const svgNode = svg.node();
@@ -59,20 +58,37 @@ window.__bilmiyoruzApp = (function () {
     </div>`;
   }
 
-  // Sise gömülme derinliği = maddenin durumuna göre sabit: tartışmalı bir
-  // mesele (alanın kendisi anlaşmamış) en derinde ve en bulanık, bizim
-  // sınırımız (ileride araştırmayla kapanabilir) görüş sınırına en yakın.
-  // derinlik: görüş yarıçapının ÜSTÜNE binen pay; blur: px cinsinden.
-  const SIS = {
-    tartismali:      { derinlik: 0.34, blur: 3.4 },
-    belirsiz:        { derinlik: 0.20, blur: 2.2 },
-    bizim_sinirimiz: { derinlik: 0.08, blur: 1.1 },
+  // Durumun görsel kodlaması (2026-10-09, gorsel-gramer dalgası).
+  // Veride ayrımı taşıyan alan `durum`. Sayfanın kendi manifestosu iki türü
+  // ayırıyor -- "alanın kendisi anlaşamıyor" (tartismali) ve "bizim
+  // doğrulayabildiğimiz burada bitiyor" (bizim_sinirimiz). GORSEL_DIL'in
+  // sabit eşleşmeleri buna birebir oturuyor:
+  //   - tartismali      -> DERİN GÖLGE (gölge = gizlilik): mesele nesnenin
+  //                        kendisinde örtülü; ortada bir cisim yok, gölge var.
+  //   - bizim_sinirimiz -> BULANIKLIK (bulanıklık = bilgisizlik): cisim
+  //                        orada, gözümüz onu çözemiyor.
+  //   - belirsiz        -> ikisinin arası: yarı gölge + hafif bulanıklık
+  //                        ("sınırları henüz net değil").
+  // Eskiden merkezde sıcak altın bir ışıma vardı (ışık = zuhûr; bilinmeyeni
+  // ışıkla merkezlemek eşleşmeyi tersine çeviriyordu) ve maddeler renkli
+  // ışık noktalarıydı; ikisi de kalktı. Her madde artık nötr bir sisin
+  // içinde duruyor.
+  // derinlik: görüş yarıçapının ÜSTÜNE binen pay (tartışmalı en derinde).
+  // golge: 0..1 gölge yoğunluğu. blur: cismin bulanıklığı, kullanıcı
+  // biriminde -- yakınlaşınca sahneyle birlikte ölçeklenir, yani etiket
+  // büyüyüp okunurken cisim yakından da aynı ölçüde çözülmez kalır
+  // (perde-zinciri'ndeki blurCore mantığı: ışık artar, çözünürlük artmaz).
+  const KODLAMA = {
+    tartismali:      { derinlik: 0.30, golge: 1.0, blur: 0,
+      ad: { tr: "Derin gölge", en: "Deep shadow", pt: "Sombra profunda" } },
+    belirsiz:        { derinlik: 0.18, golge: 0.45, blur: 1.8,
+      ad: { tr: "Yarı gölge, bulanık", en: "Half shadow, blurred", pt: "Meia sombra, desfocado" } },
+    bizim_sinirimiz: { derinlik: 0.08, golge: 0, blur: 3.4,
+      ad: { tr: "Bulanıklık", en: "Blur", pt: "Desfocado" } },
   };
-  const DURUM_VAR = {
-    tartismali: "--series-kemal",
-    belirsiz: "--series-theme",
-    bizim_sinirimiz: "--text-muted",
-  };
+  const DURUM_SIRASI = ["tartismali", "belirsiz", "bizim_sinirimiz"];
+  const kodAdi = (d) => (KODLAMA[d.durum] ? d.durum : "belirsiz");
+  const kod = (d) => KODLAMA[kodAdi(d)];
 
   let data = null;
   let nodes = [];
@@ -93,65 +109,147 @@ window.__bilmiyoruzApp = (function () {
     el.hidden = false;
   }
 
+  // SVG'nin KENDİ kutusu ölçülür. Eskiden sarmalayıcı (manifesto metni
+  // dahil) ölçülüyordu; viewBox gerçek alandan uzun kalınca tarayıcı
+  // sahneyi küçültüyor, etiketler masaüstünde ~10px, mobilde 7-8px
+  // görünüyordu (2026-10-09 görsel değerlendirmesi). Artık 1 kullanıcı
+  // birimi = 1 CSS pikseli; yazı boyutları gerçek boyutlardır.
   function boyut() {
-    const r = wrapEl.getBoundingClientRect();
-    return { w: Math.max(320, r.width), h: Math.max(320, r.height) };
+    const r = svgNode.getBoundingClientRect();
+    return { w: Math.max(300, r.width), h: Math.max(320, r.height) };
   }
+  function dar() { return boyut().w < 560; }
 
-  // Görüş yarıçapı: net iç alan buraya kadar; maddeler bunun DIŞINA,
-  // durumlarının sis derinliğine göre yerleşiyor.
+  // Görüş yarıçapı: maddeler bunun DIŞINA, durumlarının sis derinliğine
+  // göre yerleşiyor.
   function gorusYaricapi() {
     const { w, h } = boyut();
     return Math.min(w, h) * 0.24;
   }
 
+  const NESNE_R = 22; // bir maddenin sis yarıçapı (etiket mesafesi buna göre)
+
+  // Etiket ölçüleri: masaüstü 13px, dar ekran 12px (okunur alt sınır).
+  // Etiket artık kısaltılmıyor ("…" yok) -- satırlara bölünüyor.
+  function etiketOlcu() {
+    return dar() ? { fs: 12, satir: 14.5, gen: 132 } : { fs: 13, satir: 16.5, gen: 220 };
+  }
+  function satirBol(metin, gen, fs) {
+    const enFazla = Math.max(10, Math.floor(gen / (fs * 0.58)));
+    const out = [];
+    let cur = "";
+    String(metin || "").split(/\s+/).forEach((k) => {
+      if (!k) return;
+      if (!cur) cur = k;
+      else if ((cur + " " + k).length <= enFazla) cur += " " + k;
+      else { out.push(cur); cur = k; }
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+
+  // Yerleşim: geniş ekranda daire, etiket dışa doğru (sağda sola yaslı,
+  // solda sağa yaslı). Dar ekranda yanlara yer yok -- maddeler dikey bir
+  // elips üzerinde, etiket maddenin altında/üstünde ortalı; sonra üst üste
+  // binen etiket kutuları dikeyde birbirinden itilir.
   function yerlestir() {
     const n = nodes.length;
-    const R0 = gorusYaricapi();
+    if (!n) return;
+    const { w } = boyut();
+    const E = etiketOlcu();
+    const R = NESNE_R;
+    nodes.forEach((d) => { d.__satirlar = satirBol(tt(d.baslik), E.gen, E.fs); });
+    sinir = null;
+    if (!dar()) {
+      const R0 = gorusYaricapi();
+      nodes.forEach((d, i) => {
+        const Rr = R0 * (1 + kod(d).derinlik + 0.16);
+        const a = (-Math.PI / 2) + (i / n) * Math.PI * 2;
+        d.x = Math.cos(a) * Rr;
+        d.y = Math.sin(a) * Rr;
+        const lh = d.__satirlar.length * E.satir;
+        if (d.x > 6) { d.__anchor = "start"; d.__lx = R + 6; d.__ly = -lh / 2 + E.fs * 0.85; }
+        else if (d.x < -6) { d.__anchor = "end"; d.__lx = -(R + 6); d.__ly = -lh / 2 + E.fs * 0.85; }
+        else { d.__anchor = "middle"; d.__lx = 0; d.__ly = d.y >= 0 ? R + 6 + E.fs : -(R + 6) - lh + E.fs; }
+      });
+      return;
+    }
+    // Dar ekran: sahne yüksekliği içerikten hesaplanır (aşağıda sinir), yani
+    // elipsin dikey yarıçapı sabit bir başlangıç; çakışmalar itildikten
+    // sonra SVG içeriğe göre uzar (sayfa kaydırması kullanıcınındır).
+    const rx = Math.max(60, w / 2 - E.gen / 2 - 4);
+    const ry = 230;
     nodes.forEach((d, i) => {
-      const sis = SIS[d.durum] || SIS.belirsiz;
-      const R = R0 * (1 + sis.derinlik + 0.16);
       const a = (-Math.PI / 2) + (i / n) * Math.PI * 2;
-      d.x = Math.cos(a) * R;
-      d.y = Math.sin(a) * R;
+      const f = 0.84 + kod(d).derinlik * 0.5;
+      d.x = Math.cos(a) * rx * Math.min(1, f);
+      d.y = Math.sin(a) * ry * f;
+      const lh = d.__satirlar.length * E.satir;
+      d.__anchor = "middle"; d.__lx = 0;
+      d.__ly = d.y >= 0 ? R + 2 + E.fs : -(R + 4) - lh + E.fs;
     });
+    // Madde + etiketinin birleşik kutusu; çakışanlar dikeyde itilir.
+    const kutu = (d) => {
+      const top = d.y + d.__ly - E.fs;
+      const bot = top + d.__satirlar.length * E.satir;
+      return { l: d.x - E.gen / 2, r: d.x + E.gen / 2, t: Math.min(top, d.y - R), b: Math.max(bot, d.y + R) };
+    };
+    for (let tur = 0; tur < 80; tur++) {
+      let degisti = false;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const A = kutu(nodes[i]), B = kutu(nodes[j]);
+          if (A.r <= B.l || B.r <= A.l || A.b <= B.t || B.b <= A.t) continue;
+          const ustI = A.t <= B.t;
+          const ust = ustI ? nodes[i] : nodes[j];
+          const alt = ustI ? nodes[j] : nodes[i];
+          const binme = (ustI ? A.b - B.t : B.b - A.t) + 6;
+          ust.y -= binme / 2; alt.y += binme / 2;
+          degisti = true;
+        }
+      }
+      if (!degisti) break;
+    }
+    const kutular = nodes.map(kutu);
+    sinir = { t: Math.min(...kutular.map((k) => k.t), -40), b: Math.max(...kutular.map((k) => k.b), 40) };
   }
+
+  // Dar ekranda yerleşimin dikey sınırı (geniş ekranda null: sahne SVG'ye
+  // ortalanır).
+  let sinir = null;
 
   function ciz() {
     svg.selectAll("*").remove();
-    const { w, h } = boyut();
+    let { w, h } = boyut();
+    let cy = h / 2;
+    if (sinir) {
+      h = Math.ceil(sinir.b - sinir.t + 32);
+      cy = 16 - sinir.t;
+      svgNode.style.height = h + "px";
+    } else {
+      svgNode.style.height = "";
+    }
     svg.attr("viewBox", `0 0 ${w} ${h}`);
     const defs = svg.append("defs");
     g = svg.append("g").attr("class", "bilmiyoruz-scene");
-    const kok = g.append("g").attr("transform", `translate(${w / 2}, ${h / 2})`);
-    const R0 = gorusYaricapi();
+    const kok = g.append("g").attr("transform", `translate(${w / 2}, ${cy})`);
+    const E = etiketOlcu();
+    const R = NESNE_R;
 
-    // Görüş dairesi: net iç alan, kenara doğru sise geçiyor. Keskin bir
-    // halka DEĞİL (GORSEL_DIL: iç içe eşmerkezli çember yasağı) -- tek,
-    // yumuşak kenarlı bir alan; sınır bir çizgi değil bir SOLUŞ.
-    const gid = "bilmiyoruz-gorus-grad";
-    const gorusRenk = GU.getVar("--series-theme") || "#c9971a";
-    const grad = defs.append("radialGradient").attr("id", gid);
-    grad.append("stop").attr("offset", "0%").attr("stop-color", gorusRenk).attr("stop-opacity", 0.10);
-    grad.append("stop").attr("offset", "62%").attr("stop-color", gorusRenk).attr("stop-opacity", 0.05);
-    grad.append("stop").attr("offset", "100%").attr("stop-color", gorusRenk).attr("stop-opacity", 0);
-    kok.append("circle")
-      .attr("class", "bilmiyoruz-gorus")
-      .attr("r", R0 * 1.12)
-      .attr("fill", "url(#" + gid + ")");
+    // Filtreler durum başına değil KATMAN başına (sayı sabit kalsın):
+    // sis (her maddenin etrafındaki nötr pus), gölgenin yarı gölgesi ve
+    // her bulanıklık derecesi için bir blur. Değinmek bulanıklığı
+    // DEĞİŞTİRMEZ -- yalnız etiket öne çıkar (bkz. vurgula()).
+    const filtre = (id, sd) => defs.append("filter").attr("id", id)
+      .attr("x", "-80%").attr("y", "-80%").attr("width", "260%").attr("height", "260%")
+      .append("feGaussianBlur").attr("stdDeviation", sd);
+    filtre("bilmiyoruz-sis", 9);
+    filtre("bilmiyoruz-yarigolge", 4.2);
+    DURUM_SIRASI.forEach((k) => { if (KODLAMA[k].blur) filtre("bilmiyoruz-bulanik-" + k, KODLAMA[k].blur); });
 
-    // Durum başına bir blur filtresi (madde başına değil -- filtre sayısı
-    // sabit kalsın). Değinince blur'un yarısına iner ama sıfırlanmaz.
-    Object.keys(SIS).forEach((k) => {
-      const f = defs.append("filter").attr("id", "bilmiyoruz-sis-" + k)
-        .attr("x", "-60%").attr("y", "-60%").attr("width", "220%").attr("height", "220%");
-      f.append("feGaussianBlur").attr("stdDeviation", SIS[k].blur);
-      const f2 = defs.append("filter").attr("id", "bilmiyoruz-sis-" + k + "-yakin")
-        .attr("x", "-60%").attr("y", "-60%").attr("width", "220%").attr("height", "220%");
-      f2.append("feGaussianBlur").attr("stdDeviation", SIS[k].blur * 0.45);
-    });
-
-    // Merkez: bir cevap değil, bir sayı -- "kaç sınır işaretlendi".
+    // Merkez: bir cevap değil, bir sayı -- "kaç sınır işaretlendi". Arkasında
+    // ışık yok (eski altın ışıma kaldırıldı): bilmediğimizin ortası
+    // aydınlık değil, sessiz.
     const merkez = kok.append("g").attr("class", "bilmiyoruz-merkez");
     merkez.append("text").attr("class", "bilmiyoruz-merkez__sayi")
       .attr("text-anchor", "middle").attr("dy", "-0.05em").text(nodes.length);
@@ -160,52 +258,48 @@ window.__bilmiyoruzApp = (function () {
       .text(tt({ tr: "sınır işaretli", en: "limits marked", pt: "limites marcados" }));
 
     const sel = kok.selectAll("g.bilmiyoruz-madde").data(nodes, (d) => d.id).join("g")
-      .attr("class", "bilmiyoruz-madde")
+      .attr("class", (d) => "bilmiyoruz-madde bilmiyoruz-madde--" + kodAdi(d))
       .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
       .attr("tabindex", 0)
       .attr("role", "button")
-      .attr("aria-label", (d) => tt(d.baslik));
-
-    const R = 27;
+      .attr("aria-label", (d) => tt(d.baslik) + " — " + tt(data.durumlar[d.durum] || {}));
 
     sel.append("circle")
       .attr("class", "bilmiyoruz-madde__vurus")
-      .attr("r", R + 7)
+      .attr("r", R + 6)
       .attr("fill", "transparent");
 
-    // Sisin içindeki ışık: durumuna göre bulanık. Işık = zuhur; buradaki
-    // maddeler VAR (metin onları açıkça söylüyor) ama NET DEĞİL -- varlığı
-    // ışıkla, bilinemezliği bulanıklıkla kodlanıyor. reduced-motion'da da
-    // blur duruyor (hareket değil, durum kodlaması).
-    sel.append("circle")
-      .attr("class", (d) => "bilmiyoruz-madde__isik bilmiyoruz-madde__isik--" + d.durum)
-      .attr("r", 10)
-      .attr("fill", (d) => GU.getVar(DURUM_VAR[d.durum] || "--text-muted"))
-      .attr("filter", (d) => "url(#bilmiyoruz-sis-" + (SIS[d.durum] ? d.durum : "belirsiz") + ")");
+    // 1) Sis: her maddenin etrafında nötr bir pus -- madde görüşün
+    //    kenarında, sisin içinde duruyor.
+    sel.append("circle").attr("class", "bilmiyoruz-madde__sis")
+      .attr("r", R + 4).attr("filter", "url(#bilmiyoruz-sis)");
+    // 2) Gölge (gizlilik): tartışmalı maddede derin, belirsizde yarım.
+    //    Bir cisim değil, kenarı yumuşak bir karanlık.
+    sel.filter((d) => kod(d).golge > 0).append("circle")
+      .attr("class", "bilmiyoruz-madde__golge")
+      .attr("r", 15)
+      .attr("filter", "url(#bilmiyoruz-yarigolge)")
+      .style("opacity", (d) => (0.92 * kod(d).golge).toFixed(2));
+    // 3) Cisim (bulanık): orada olan ama gözümüzün çözemediği şey.
+    //    Tartışmalı maddede cisim çizilmez -- yalnız gölgesi var.
+    sel.filter((d) => kod(d).blur > 0).append("circle")
+      .attr("class", "bilmiyoruz-madde__nesne")
+      .attr("r", 9)
+      .attr("filter", (d) => "url(#bilmiyoruz-bulanik-" + kodAdi(d) + ")");
 
     sel.append("text").attr("class", "bilmiyoruz-madde__ikon")
-      .attr("text-anchor", "middle").attr("dy", "0.35em").text("?");
+      .attr("text-anchor", "middle").attr("dy", "0.36em").text("?");
 
-    // Ölçüm tabanlı deconflictLabels (hal.js/menziller/seyahat-atlası'nda
-    // kanıtlanmış) -- acik-sorular.js'teki aynı düzeltme: madde sayısı
-    // arttıkça komşu etiketler halkanın dışında bile üst üste binebiliyordu
-    // (kullanıcı isteği, "grafiği zenginleştir", 2026-08-16).
+    // Etiket: tam başlık, satırlara bölünmüş (yerleşimi yerlestir() kurdu).
     const etiketSel = sel.append("text").attr("class", "bilmiyoruz-madde__etiket")
-      .attr("text-anchor", (d) => (d.x > 6 ? "start" : d.x < -6 ? "end" : "middle"))
-      .attr("x", (d) => (d.x > 6 ? R + 8 : d.x < -6 ? -(R + 8) : 0))
-      .attr("y", (d) => (Math.abs(d.x) > 6 ? 4 : (d.y >= 0 ? R + 16 : -(R + 10))))
-      .text((d) => kisalt(tt(d.baslik), 30));
-
-    const pendingLabels = [];
+      .attr("text-anchor", (d) => d.__anchor)
+      .style("font-size", E.fs + "px");
     etiketSel.each(function (d) {
-      const lx = d.x > 6 ? R + 8 : d.x < -6 ? -(R + 8) : 0;
-      const ly = Math.abs(d.x) > 6 ? 4 : (d.y >= 0 ? R + 16 : -(R + 10));
-      pendingLabels.push({
-        lbl: d3.select(this), txt: kisalt(tt(d.baslik), 30),
-        x: d.x + lx, y: d.y + ly, baseY: ly,
+      const t = d3.select(this);
+      (d.__satirlar || []).forEach((satir, i) => {
+        t.append("tspan").attr("x", d.__lx).attr("y", d.__ly + i * E.satir).text(satir);
       });
     });
-    deconflictLabels(pendingLabels);
 
     sel.on("mouseenter", function (ev, d) { vurgula(d.id, true); ipucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
@@ -221,24 +315,39 @@ window.__bilmiyoruzApp = (function () {
     ortala(false);
   }
 
-  function kisalt(s, n) {
-    if (!s) return "";
-    if (s.length <= n) return s;
-    const kes = s.slice(0, n);
-    const i = kes.lastIndexOf(" ");
-    return (i > 12 ? kes.slice(0, i) : kes) + "…";
-  }
-
+  // Değinmek: etiket öne çıkar (okunur), cisim NETLEŞMEZ -- bulanıklık ve
+  // gölge aynen kalır. Eskiden değinince blur yarıya iniyordu; bu,
+  // bilinmeyenin bir hover'la "biraz çözüldüğünü" söylüyordu.
   function vurgula(id, on) {
     if (!g) return;
     g.selectAll("g.bilmiyoruz-madde").classed("bilmiyoruz-madde--deginiliyor", (d) => on && d.id === id);
-    // Değinilen ışık bir nebze toparlanır ama TAM netleşmez ("kaçan
-    // merkez") -- blur yarıya iner, sıfırlanmaz.
-    g.selectAll("circle.bilmiyoruz-madde__isik")
-      .attr("filter", (d) => {
-        const k = SIS[d.durum] ? d.durum : "belirsiz";
-        return "url(#bilmiyoruz-sis-" + k + ((on && d.id === id) ? "-yakin" : "") + ")";
-      });
+  }
+
+  // Lejant: iki kodlamanın (gölge / bulanıklık) ne dediği, verideki durum
+  // adlarıyla. JS'le kuruluyor ki statik rota kopyalarına bağlı kalmasın.
+  function lejantKur() {
+    let el = document.getElementById("bilmiyoruz-legend");
+    if (!el) {
+      // Sabit (absolute değil) bir satır, manifestonun hemen altında: grafiğin
+      // üstüne binmesin, SVG kalan alanı ölçsün.
+      el = document.createElement("div");
+      el.className = "bilmiyoruz-legend";
+      el.id = "bilmiyoruz-legend";
+      wrapEl.insertBefore(el, svgNode);
+    }
+    const ornek = (k) => `<svg class="bilmiyoruz-legend__ornek bilmiyoruz-madde--${k}" viewBox="-14 -14 28 28" width="28" height="28" aria-hidden="true">
+        <circle class="bilmiyoruz-madde__sis" r="12" filter="url(#bilmiyoruz-lj-sis)"></circle>
+        ${KODLAMA[k].golge ? `<circle class="bilmiyoruz-madde__golge" r="8" filter="url(#bilmiyoruz-lj-golge)" style="opacity:${(0.92 * KODLAMA[k].golge).toFixed(2)}"></circle>` : ""}
+        ${KODLAMA[k].blur ? `<circle class="bilmiyoruz-madde__nesne" r="5" filter="url(#bilmiyoruz-lj-${k})"></circle>` : ""}
+      </svg>`;
+    const satirlar = DURUM_SIRASI.map((k) =>
+      `<span class="bilmiyoruz-legend__item">${ornek(k)}<span><strong>${tt(KODLAMA[k].ad)}</strong> — ${tt((data && data.durumlar[k]) || {})}</span></span>`).join("");
+    el.innerHTML = `
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+        <filter id="bilmiyoruz-lj-sis" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4"/></filter>
+        <filter id="bilmiyoruz-lj-golge" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.2"/></filter>
+        ${DURUM_SIRASI.filter((k) => KODLAMA[k].blur).map((k) => `<filter id="bilmiyoruz-lj-${k}" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="${(KODLAMA[k].blur * 0.6).toFixed(2)}"/></filter>`).join("")}
+      </defs></svg>${satirlar}`;
   }
 
   function ipucu(ev, d) {
@@ -357,8 +466,6 @@ window.__bilmiyoruzApp = (function () {
       data = d;
       nodes = (d.maddeler || []).map((s) => Object.assign({}, s));
       yuklendi = true;
-      yerlestir();
-      ciz();
     });
   }
 
@@ -393,7 +500,7 @@ window.__bilmiyoruzApp = (function () {
       // seçildiğinde açılıyor (bkz. hocalar.js'teki aynı düzeltme).
       baglaBirKez();
       yukle().then(() => {
-        yerlestir(); ciz(); renderManifest();
+        renderManifest(); lejantKur(); yerlestir(); ciz();
       }).catch(() => {
         if (window.DostViewStatus) window.DostViewStatus.showError("bilmiyoruz-wrap", () => window.__bilmiyoruzApp.activate());
       });
@@ -401,7 +508,7 @@ window.__bilmiyoruzApp = (function () {
     onLangChange() {
       if (!yuklendi) return;
       renderManifest();
-      ciz();
+      lejantKur(); yerlestir(); ciz();
       if (focusId) {
         const d = nodes.find((x) => x.id === focusId);
         if (d) panelGoster(d); else if (!detailPanel.hidden) girisPaneli();

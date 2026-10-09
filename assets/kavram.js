@@ -513,6 +513,70 @@ window.__kavramApp = (function () {
       `</svg>`;
   }
 
+  // Kısım sarmalı (2026-10-09): Fütûhât'ta düz çizgi + üç nokta (ilk / en
+  // yoğun / son) yerine "Neredeyim" sarmalının küçük kopyası (helix.js
+  // DostHelix.kisimSarmali) -- her cilt bir tur; kavramın adının geçtiği her
+  // kısım, o kısımdaki yoğunluğuyla (binde; kavram-dagilim.json, aynı
+  // tarama) parlar. Kullanıcı sarmalı sürükleyerek döndürür. Bu bir sayım:
+  // neyin tekrar ettiğini gösterir, ne anlama geldiğini değil -- altındaki
+  // cümle bunu söylüyor. Veri gelmezse eski küçük çizelgeye düşülür.
+  let sarmalVeriPromise = null;
+  function sarmalVerisi() {
+    if (!sarmalVeriPromise) {
+      sarmalVeriPromise = Promise.all([
+        GU.fetchJson("data/ibn-arabi/okuma-yogunlugu.json"),
+        GU.fetchJson("data/ibn-arabi/kavram-dagilim.json"),
+      ])
+        .then(([yog, dag]) => ({ yog, dag: (dag && dag.kavramlar) || {} }))
+        .catch(() => { sarmalVeriPromise = null; return null; });
+    }
+    return sarmalVeriPromise;
+  }
+  let kavramSarmal = null;
+  function sarmalKur(k) {
+    if (kavramSarmal) { kavramSarmal.destroy(); kavramSarmal = null; }
+    const kutu = detailEl.querySelector(".kavram-sarmal");
+    if (!kutu || !k.futuhat) return;
+    const sahne = kutu.querySelector(".kavram-sarmal__sahne");
+    const yedek = () => {
+      if (!sahne.isConnected) return;
+      sahne.outerHTML = miniTimelineHtml("futuhat", k.futuhat);
+      const not = kutu.querySelector(".kavram-sarmal__not");
+      if (not) not.remove();
+    };
+    if (!window.DostHelix || !window.DostHelix.kisimSarmali) { yedek(); return; }
+    sarmalVerisi().then((v) => {
+      if (!sahne.isConnected) return;   // bu arada başka bir kavrama geçildi
+      const dag = v && v.dag[k.view + "/" + k.id];
+      if (!v || !dag || !v.yog || !(v.yog.ciltler || []).length) { yedek(); return; }
+      // Okunmuş kısımlar: okuma ölçüsü olan her kısım (yayımlananların
+      // hepsi) + kavramın geçtiği kısımlar. Başlık yalnız elimizde olan üç
+      // künyede (ilk / en yoğun / son); ötekilerde ad satırı cilt-kısımdır.
+      const yayin = new Map();
+      Object.keys(v.yog.kisimlar || {}).concat(Object.keys(dag)).forEach((id) => {
+        const m = /^c\d+k(\d+)$/.exec(id);
+        if (m) yayin.set(+m[1], { id, baslik: null });
+      });
+      [k.futuhat.ilk, k.futuhat.enYogun, k.futuhat.son].forEach((r) => {
+        const no = r && parseKisimNo(r.id);
+        if (no != null && yayin.has(no)) yayin.get(no).baslik = r.title;
+      });
+      kavramSarmal = window.DostHelix.kisimSarmali(sahne, {
+        ciltler: v.yog.ciltler,
+        parca: (no) => yayin.get(no) || null,
+        // Sifr kuşakları burada yok: küçük kopyada sayımı örtüyordu.
+        parlaklik: dag,
+        kucuk: true,
+        baslik: {
+          tr: "Fütûhât'ın kısımları: her cilt bir tur; kavramın geçtiği kısımlar parlar. Ok tuşlarıyla dolaş, Enter o kısmı Fütûhât'ta açar.",
+          en: "The parts of the Futuhat: each volume one turn; parts where the concept occurs glow. Move with the arrow keys; Enter opens that part in the Futuhat.",
+          pt: "As partes do Futuhat: cada volume uma volta; as partes em que o conceito ocorre brilham. Navegue com as setas; Enter abre essa parte no Futuhat.",
+        },
+        onSec: (id) => nav("futuhat", id),
+      });
+    });
+  }
+
   function bookBlock(label, book) {
     if (!book) return "";
     const rows = [
@@ -529,7 +593,19 @@ window.__kavramApp = (function () {
         ? tt({ tr: "kısımda", en: "parts", pt: "partes" })
         : tt({ tr: "fassta", en: "chapters", pt: "capítulos" })
       })</h3>` +
-      miniTimelineHtml(label, book) +
+      (label === "futuhat"
+        ? `<div class="kavram-sarmal"><div class="kavram-sarmal__sahne"></div>` +
+          `<p class="kavram-sarmal__not">${tt({
+            tr: "Her tur bir cilt; parlaklık, adın o kısımda ne sıklıkla geçtiği (binde). Sürükleyerek döndür; bir noktayı seçmek o kısmı Fütûhât'ta açar.",
+            en: "Each turn is a volume; brightness is how often the name occurs in that part (per mille). Drag to turn; selecting a dot opens that part in the Futuhat.",
+            pt: "Cada volta é um volume; o brilho é a frequência com que o nome ocorre nessa parte (por mil). Arraste para girar; selecionar um ponto abre essa parte no Futuhat.",
+          })}</p>` +
+          `<p class="kavram-sarmal__durus">${tt({
+            tr: "Neyin tekrar ettiğini gösterir, ne anlama geldiğini değil.",
+            en: "It shows what recurs, not what it means.",
+            pt: "Mostra o que se repete, não o que significa.",
+          })}</p></div>`
+        : miniTimelineHtml(label, book)) +
       rows
         .map(
           ([l, ref], i) =>
@@ -639,6 +715,7 @@ window.__kavramApp = (function () {
     parts.push(`<div class="kavram-anlamsal-mount"></div>`);
 
     detailEl.innerHTML = parts.join("");
+    sarmalKur(k);
     renderAnlamsalOmur(k, detailEl.querySelector(".kavram-anlamsal-mount"));
     // window.__dostNav.goTo("kavram", undefined) burada İŞE YARAMAZ:
     // setMainView zaten "kavram" görünümündeyken (bkz. currentMainView ===

@@ -23,11 +23,17 @@
   // Zât → Esmâ → A'yân → Tecellî → 3 âlem → İnsan-ı Kâmil → Kalp → Zât'a dönüş.
   // Halîfe/Velî/Perde/Kazâ/Teceddüd/Bilinen-Bilinmeyen "yan" kavramlar; ana
   // omurga altında ayrı bir grupta.
-  const OMURGA = [
-    "dhat", "sifat-asma", "ayan-sabite", "tecelli",
-    "alem-ervah", "alem-misal", "alem-ecsam",
-    "insan-i-kamil", "kalp",
-  ];
+  // 2026-10-09: masaüstü grafiği de aynı omurgayı çemberin çevresine diziyor;
+  // sıra tek yerde (ontology.js OMURGA -> window.DostOntolojiOmurga) dursun
+  // diye oradan okunuyor. ontology.js bu dosyadan önce yüklenir (index.html);
+  // yine de yoksa aynı sıra burada yedek olarak duruyor.
+  const OMURGA = (window.DostOntolojiOmurga && window.DostOntolojiOmurga.length)
+    ? window.DostOntolojiOmurga.slice()
+    : [
+      "dhat", "sifat-asma", "ayan-sabite", "tecelli",
+      "alem-ervah", "alem-misal", "alem-ecsam",
+      "insan-i-kamil", "kalp",
+    ];
   const YAN = [
     "kaza-kader", "perde", "teceddud",
     "veli", "halife", "bilinen-bilinmeyen",
