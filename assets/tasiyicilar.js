@@ -41,11 +41,9 @@
   var focusKey = null;
 
   function t(d) { return d ? I18n.pick3(d) : ""; }
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
   function linkify(x) {
     return window.__dostCrossLink ? window.__dostCrossLink.linkify(x) : x;
   }

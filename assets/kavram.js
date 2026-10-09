@@ -545,6 +545,9 @@ window.__kavramApp = (function () {
   }
 
   function renderDetail(k) {
+    // Sekme başlığı/canonical bu kavramın statik rotası (/kavram/<view>/<id>/,
+    // graph-utils.js DostMeta); açıklama görünümün genel açıklaması kalır.
+    if (window.DostMeta) window.DostMeta.setRecord("kavram", k.view + "/" + k.id, tt(k.isim));
     listEl.hidden = true;
     detailEl.hidden = false;
     const parts = [];

@@ -116,14 +116,21 @@
           });
         });
       }),
-      window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-atlas-index.json").then((d) => {
+      Promise.all([
+        window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-atlas-index.json"),
+        // 2026-10-09: bölüm başlıkları kısım indeksinden ayrı dosyaya
+        // taşındı (yalnız arama kullanıyor; Fütûhât görünümü ~100 KB gzip
+        // daha az indiriyor -- bkz. build-static-routes.py
+        // write_futuhat_split). Dosya yoksa (eski üretim) indeksteki
+        // sectionHeadings kullanılır.
+        window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-bolum-basliklari.json").catch(() => null),
+      ]).then(([d, basliklar]) => {
         // Gezinme yalnızca kısım (part) düzeyinde çalıştığı için, sonuç
         // olarak o kısmı gösteriyoruz -- ama bölüm başlıklarını da arama
         // metnine katıyoruz ki içindeki bir konu/harf aranınca da bulunsun.
-        // Hafif indeks section başlıklarını sectionHeadings olarak taşır
-        // (tam sections yalnızca kısım açılınca yüklenir -- atlas bölme).
+        const baslikParcalari = (basliklar && basliklar.parts) || {};
         (d.parts || []).forEach((p) => {
-          const sectionHeadings = (p.sectionHeadings || []).map((h) => allLangText(h)).join(" ");
+          const sectionHeadings = (baslikParcalari[p.id] || p.sectionHeadings || []).map((h) => allLangText(h)).join(" ");
           index.push({
             view: "futuhat",
             id: p.id,

@@ -46,5 +46,44 @@ window.DostViewStatus = (function () {
     if (el) el.hidden = true;
   }
 
-  return { showLoading, showError, hide };
+  // Görünüm BETİĞİ yüklenemedi ya da çöktü (2026-10-09, dalga-web; bkz.
+  // view-loader.js). Eskiden sahne boş kalıyor, köşedeki düğmeler (ortala,
+  // ipucu...) hiçbir şey yapmıyordu -- bağlanmamış düğme. Artık kısa bir
+  // kutu ve ÇALIŞAN bir "yeniden dene". Durum düğümü olmayan sarmalayıcıya
+  // (hakkinda-wrap) aynı yapı eklenir.
+  function showLoadError(wrapId, onRetry) {
+    let el = node(wrapId);
+    if (!el) {
+      const wrap = document.getElementById(wrapId);
+      if (!wrap) return;
+      el = document.createElement("div");
+      el.className = "view-status";
+      el.id = wrapId + "-status";
+      el.innerHTML = '<div class="view-status__spinner" aria-hidden="true"></div>'
+        + '<p class="view-status__text"></p><button class="view-status__retry" type="button" hidden></button>';
+      wrap.insertBefore(el, wrap.firstChild);
+    }
+    el.hidden = false;
+    el.classList.add("view-status--error");
+    el.setAttribute("role", "alert");
+    const text = el.querySelector(".view-status__text");
+    if (text) {
+      text.textContent = pick3({
+        tr: "Bu bölüm yüklenemedi.",
+        en: "This section couldn't load.",
+        pt: "Esta seção não pôde ser carregada.",
+      });
+    }
+    const retry = el.querySelector(".view-status__retry");
+    if (retry) {
+      retry.hidden = false;
+      retry.textContent = pick3({ tr: "Yeniden dene", en: "Try again", pt: "Tentar de novo" });
+      retry.onclick = function () {
+        showLoading(wrapId);
+        onRetry();
+      };
+    }
+  }
+
+  return { showLoading, showError, showLoadError, hide };
 })();

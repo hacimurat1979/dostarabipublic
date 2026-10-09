@@ -635,10 +635,9 @@
     for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
     return (h >>> 0).toString(36);
   }
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
   function yerelSusturulan() {
     try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); }
     catch (e) { return {}; }

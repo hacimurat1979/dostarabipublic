@@ -48,11 +48,9 @@
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
 
   // --- sarmalın parametrik tanımı --------------------------------------------
   // t tam sayı olduğunda o sıradaki düğümün yeri; kesirli değerler yolu

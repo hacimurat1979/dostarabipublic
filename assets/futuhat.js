@@ -249,6 +249,15 @@
   // true olduğunda renderPart() ilk parçaya bir bağlantı gösteriyor.
   let isDefaultLanding = false;
 
+  // Görünen kısım adresten ya da kullanıcının seçiminden mi geldi, yoksa
+  // görünüm kendiliğinden mi açtı (kaldığın yer / en son yazılan)?
+  // Kendiliğinden açılışta adres /futuhat/ kalır ve meta görünümün
+  // kendisidir (statik /futuhat/ sayfasıyla aynı canonical -- 2026-10-09,
+  // meta-testi.js). Eskiden adres sessizce /futuhat/<kısım>'a çevriliyor,
+  // canonical da o kısmı gösteriyordu: /futuhat/ sayfası arama motoruna
+  // "asıl adresim bir kısım" diyordu.
+  let kisimAdreste = false;
+
   // B2 "Kaldığın yer": deep-link olmadan girişte (menüden tıklama, açılış
   // ekranından "devam et" gibi) atlas'ın varsayılan activePartId'si yerine
   // okuyucunun son bıraktığı kısmı öneririz -- açık bir id her zaman kazanır.
@@ -1462,12 +1471,11 @@
     });
   }
 
+  // Tek meta kapısı (graph-utils.js DostMeta, 2026-10-09): canonical
+  // statik rotayla aynı ("/futuhat/<id>/", sondaki "/" dahil), og/twitter
+  // etiketleri de birlikte; açıklama düz metne çevrilip 160'a kesilir.
   function updatePartMeta(part) {
-    document.title = "Dost Arabî — " + tt(part.title);
-    const canonicalEl = document.querySelector('link[rel="canonical"]');
-    if (canonicalEl) canonicalEl.setAttribute("href", "https://dostarabi.com/futuhat/" + part.id);
-    const descEl = document.querySelector('meta[name="description"]');
-    if (descEl) descEl.setAttribute("content", tt(part.hero.summary));
+    window.DostMeta.setRecord("futuhat", part.id, tt(part.title), tt(part.hero.summary));
   }
 
   function firstPart() {
@@ -1882,7 +1890,7 @@
   }
 
   function sharePart(part) {
-    const url = location.origin + (window.__dostRouteBase || "") + "/futuhat/" + part.id;
+    const url = location.origin + (window.__dostRouteBase || "") + "/futuhat/" + part.id + "/";
     const title = tt({ tr: "Dost Arabî", en: "Dost Arabi", pt: "Dost Arabi" }) + " — " + tt(part.title);
     if (navigator.share) {
       navigator.share({ title, url }).catch(() => {});
@@ -1909,9 +1917,11 @@
     }, 1800);
   }
 
-  function activatePart(id) {
+  // otomatik: görünüm kısmı kendiliğinden açıyor (bkz. kisimAdreste).
+  function activatePart(id, otomatik) {
     const meta = partById(id);
     if (!meta) return;
+    if (!otomatik) kisimAdreste = true;
     activePartId = id;
     saveLastPart(id);
     if (partsEl) {
@@ -1927,12 +1937,14 @@
         wedge.classList.toggle("futuhat-map__kisim--current", wedge.dataset.id === id);
       });
     }
-    if (window.__dostNav) window.__dostNav.setHash("futuhat", id);
-    // setHash az önce genel "futuhat" başlık/canonical/description'ını yazdı
-    // (bkz. ontology.js updateMeta) -- bu kısma özel olanlarla en son biz
-    // üzerine yazıyoruz ki kazanan bu olsun. Meta (title+summary) indekste
-    // olduğu için anında; makale gövdesi ise tam kısım gelince render edilir.
-    updatePartMeta(meta);
+    if (kisimAdreste) {
+      if (window.__dostNav) window.__dostNav.setHash("futuhat", id);
+      // setHash az önce genel "futuhat" başlık/canonical/description'ını
+      // yazdı (bkz. ontology.js updateMeta) -- bu kısma özel olanlarla en
+      // son biz üzerine yazıyoruz ki kazanan bu olsun. Meta (title+summary)
+      // indekste olduğu için anında; makale gövdesi tam kısım gelince.
+      updatePartMeta(meta);
+    }
     // Zaten bir kısım görünüyorsa, yenisi yüklenene kadar onu bırak (boş
     // yanıp sönme olmasın); yalnızca ilk açılışta "yükleniyor" göster.
     const alreadyRendered = articleEl && articleEl.querySelector(".futuhat-hero");
@@ -1995,7 +2007,7 @@
         activatePart(chip.dataset.id);
       });
     }
-    activatePart(activePartId);
+    activatePart(activePartId, !kisimAdreste);
   }
 
   setupCrossLinkPreviews();
@@ -2026,7 +2038,8 @@
         // geçmiş olabilir. Geç gelen .then bekçisiz render+setHash yapıp
         // URL'yi ve başlığı artık bakılmayan görünüme yazıyordu.
         if (!window.DostGraphUtils.isViewActive(wrapEl)) return;
-        if (id && data.parts.some((p) => p.id === id)) {
+        kisimAdreste = !!(id && data.parts.some((p) => p.id === id));
+        if (kisimAdreste) {
           activePartId = id;
           isDefaultLanding = false;
         } else {

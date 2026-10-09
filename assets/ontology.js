@@ -260,10 +260,12 @@
   I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
     render();
     // Sekme başlığı ve açıklama dil değişince eski dilde kalıyordu
-    // (2026-10-08 taraması); geçerli rotanın görünümüyle yeniden yazılır.
+    // (2026-10-08 taraması); geçerli rotayla yeniden yazılır. Adres
+    // çubuğundaki dil öneki (varsa) i18n.js setLang'de zaten çevrildi;
+    // çekmecedeki bağlantıların öneki de onunla birlikte güncellenir.
     try {
-      const ilk = location.pathname.slice(ROUTE_BASE.length).split("/").filter(Boolean)[0] || "ontoloji";
-      updateMeta(VIEW_META[ilk] ? ilk : "ontoloji");
+      navHrefleriniGuncelle();
+      updateMeta(currentRoute.view, currentRoute.id);
     } catch (e) { console.error(e); }
     if (currentMainView === "esma") window.__esmaApp && window.__esmaApp.onLangChange();
     else if (currentMainView === "hal") window.__halApp && window.__halApp.onLangChange();
@@ -539,14 +541,33 @@
     onScroll();
   }
 
+  // 2026-10-09 (dalga-web): rota çözümü artık ontology.json'u BEKLEMİYOR
+  // (ilkRota, DOMContentLoaded'da). Eskiden /futuhat/c1k10/'a gelen biri
+  // bile önce ontoloji verisinin inip grafiğin kurulmasını bekliyordu.
+  // Grafik de yalnız ontoloji görünümü gerçekten açıkken kuruluyor: gizli
+  // bir <svg> 0x0 ölçülür ve sarmal 800x600 yedeğine göre dizilirdi.
+  let ontolojiVerisi = null;
+  let ontolojiKuruldu = false;
+  let bekleyenOntolojiId = null;
+  function ensureOntologyGraph() {
+    if (ontolojiKuruldu || !ontolojiVerisi || currentMainView !== "ontology") return false;
+    ontolojiKuruldu = true;
+    buildGraph(ontolojiVerisi);
+    if (bekleyenOntolojiId) {
+      const d = nodeById && nodeById.get(bekleyenOntolojiId);
+      bekleyenOntolojiId = null;
+      if (d) onNodeClick(d);
+    }
+    return true;
+  }
+
   function loadOntologyData() {
     if (window.DostViewStatus) window.DostViewStatus.showLoading("ontology-wrap");
     window.DostGraphUtils.fetchJson("data/ibn-arabi/ontology.json")
       .then((data) => {
-        buildGraph(data);
+        ontolojiVerisi = data;
         registerOntologyCrossLinks(data);
-        parseHashAndGo();
-        window.__dostAppReady = true;
+        ensureOntologyGraph();
         if (window.DostViewStatus) window.DostViewStatus.hide("ontology-wrap");
         // Doğuş (FAZ 1): yalnız gerçekten ana ekrandaysak — bir deep-link
         // başka görünüme ya da bir düğüme götürdüyse araya girmeyiz.
@@ -851,45 +872,56 @@
       window.__ayetHadisApp && window.__ayetHadisApp.activate();
     } else {
       currentDetailView = null;
+      if (view === "ontology") ensureOntologyGraph();
     }
   }
 
-  if (sirlarBtn) {
-    sirlarBtn.addEventListener("click", () => { goToSirlar(); updateHash("sirlar"); });
+  // Çekmecedeki görünüm kapıları (2026-10-09, dalga-web): artık gerçek
+  // <a href="/view/"> -- orta tık / yeni sekmede aç / bağlantıyı kopyala
+  // çalışıyor. Yalın sol tık yakalanır ve SPA içinde açılır: ÖNCE adres
+  // (pushState -- geri tuşu bir önceki görünüme döner), SONRA görünüm; böylece
+  // görünümün kendiliğinden seçtiği kayıt (Fütûhât'ta kaldığın kısım gibi)
+  // yeni bir tarih girdisi değil, bu girdinin düzeltmesi olur (bkz. updateHash).
+  // [düğme, rota görünümü, alt-sekme]
+  const NAV_KAPILARI = [
+    [ontologyBtn, "ontoloji"], [esmaBtn, "esma"], [halBtn, "hal"], [terimlerBtn, "terimler"],
+    [cizimlerBtn, "cizimler"], [sirlarBtn, "sirlar"], [sorularBtn, "sorular"], [bilmiyoruzBtn, "bilmiyoruz"],
+    [elestiriArkeolojisiBtn, "elestiri-arkeolojisi"], [hocalarBtn, "hocalar"], [eserAgiBtn, "eser-agi"],
+    [seyahatAtlasiBtn, "seyahat-atlasi"], [kuranDokusuBtn, "kuran-dokusu"], [menzillerBtn, "menziller"],
+    [tasiyicilarBtn, "tasiyicilar"], [futuhatBtn, "futuhat"], [fususBtn, "fusus"], [miskatBtn, "miskat"],
+    [hakkindaBtn, "hakkinda"], [kavramBtn, "kavram"], [ayethadisBtn, "ayethadis"],
+    // Okuma Yolları çekmece kapısı (2026-08-10, G50) ve Hakkında'nın dört
+    // alt-sekmesi (2026-08-15 @revise): görünüm hakkinda, alt-sekme id.
+    [okumaYollariBtn, "hakkinda", "okuma-yollari"],
+    [hakkindaSubSiirlerBtn, "hakkinda", "siirler"],
+    [hakkindaSubVahdetBtn, "hakkinda", "vahdet"],
+    [hakkindaSubOkumaYollariBtn, "hakkinda", "okuma-yollari"],
+    [hakkindaSubNeredenBaslamaliBtn, "hakkinda", "nereden-baslamali"],
+  ];
+  // Rota adı -> setMainView'in iç adı (ikisi çoğunlukla aynı).
+  const IC_GORUNUM = {
+    ontoloji: "ontology", "elestiri-arkeolojisi": "elestiriArkeolojisi", "eser-agi": "eserAgi",
+    "seyahat-atlasi": "seyahatAtlasi", "kuran-dokusu": "kuranDokusu",
+  };
+  function navGit(view, sub) {
+    updateHash(view, sub);
+    if (sub) goToHakkinda(sub);
+    else if (view === "sirlar") goToSirlar();
+    else setMainView(IC_GORUNUM[view] || view);
   }
-
-  if (ontologyBtn) ontologyBtn.addEventListener("click", () => { setMainView("ontology"); updateHash("ontoloji"); });
-  if (esmaBtn) esmaBtn.addEventListener("click", () => { setMainView("esma"); updateHash("esma"); });
-  if (halBtn) halBtn.addEventListener("click", () => { setMainView("hal"); updateHash("hal"); });
-  if (terimlerBtn) terimlerBtn.addEventListener("click", () => { setMainView("terimler"); updateHash("terimler"); });
-  if (cizimlerBtn) cizimlerBtn.addEventListener("click", () => { setMainView("cizimler"); updateHash("cizimler"); });
-  if (sorularBtn) sorularBtn.addEventListener("click", () => { setMainView("sorular"); updateHash("sorular"); });
-  if (bilmiyoruzBtn) bilmiyoruzBtn.addEventListener("click", () => { setMainView("bilmiyoruz"); updateHash("bilmiyoruz"); });
-  if (elestiriArkeolojisiBtn) elestiriArkeolojisiBtn.addEventListener("click", () => { setMainView("elestiriArkeolojisi"); updateHash("elestiri-arkeolojisi"); });
-  if (hocalarBtn) hocalarBtn.addEventListener("click", () => { setMainView("hocalar"); updateHash("hocalar"); });
-  if (eserAgiBtn) eserAgiBtn.addEventListener("click", () => { setMainView("eserAgi"); updateHash("eser-agi"); });
-  if (seyahatAtlasiBtn) seyahatAtlasiBtn.addEventListener("click", () => { setMainView("seyahatAtlasi"); updateHash("seyahat-atlasi"); });
-  if (kuranDokusuBtn) kuranDokusuBtn.addEventListener("click", () => { setMainView("kuranDokusu"); updateHash("kuran-dokusu"); });
-  if (menzillerBtn) menzillerBtn.addEventListener("click", () => { setMainView("menziller"); updateHash("menziller"); });
-  if (tasiyicilarBtn) tasiyicilarBtn.addEventListener("click", () => { setMainView("tasiyicilar"); updateHash("tasiyicilar"); });
-  if (futuhatBtn) futuhatBtn.addEventListener("click", () => { setMainView("futuhat"); updateHash("futuhat"); });
-  if (fususBtn) fususBtn.addEventListener("click", () => { setMainView("fusus"); updateHash("fusus"); });
-  if (miskatBtn) miskatBtn.addEventListener("click", () => { setMainView("miskat"); updateHash("miskat"); });
-  if (hakkindaBtn) hakkindaBtn.addEventListener("click", () => { setMainView("hakkinda"); updateHash("hakkinda"); });
-  // Okuma Yolları çekmece kapısı (2026-08-10, G50): görünümün kendisi
-  // hakkinda'nın alt-sekmesi olarak kalıyor; buradan yalnız o sekmeye
-  // gidiliyor ve URL derin-bağlantı olarak /hakkinda/okuma-yollari oluyor
-  // (parseHashAndGo bu yolu zaten çözüyor).
-  if (okumaYollariBtn) okumaYollariBtn.addEventListener("click", () => { goToHakkinda("okuma-yollari"); updateHash("hakkinda", "okuma-yollari"); });
-  // 2026-08-15 @revise: tost menüdeki "Dost Arabî Hakkında" grubunun altına,
-  // hakkinda-wrap'in kendi alt-sekmelerine (Şiirleri/Eleştiriler/Okuma
-  // Yolları) doğrudan giden üç düğme -- aynı goToHakkinda(sub) sözleşmesi.
-  if (hakkindaSubSiirlerBtn) hakkindaSubSiirlerBtn.addEventListener("click", () => { goToHakkinda("siirler"); updateHash("hakkinda", "siirler"); });
-  if (hakkindaSubVahdetBtn) hakkindaSubVahdetBtn.addEventListener("click", () => { goToHakkinda("vahdet"); updateHash("hakkinda", "vahdet"); });
-  if (hakkindaSubOkumaYollariBtn) hakkindaSubOkumaYollariBtn.addEventListener("click", () => { goToHakkinda("okuma-yollari"); updateHash("hakkinda", "okuma-yollari"); });
-  if (hakkindaSubNeredenBaslamaliBtn) hakkindaSubNeredenBaslamaliBtn.addEventListener("click", () => { goToHakkinda("nereden-baslamali"); updateHash("hakkinda", "nereden-baslamali"); });
-  if (kavramBtn) kavramBtn.addEventListener("click", () => { setMainView("kavram"); updateHash("kavram"); });
-  if (ayethadisBtn) ayethadisBtn.addEventListener("click", () => { setMainView("ayethadis"); updateHash("ayethadis"); });
+  function navHrefleriniGuncelle() {
+    NAV_KAPILARI.forEach(([el, view, sub]) => {
+      if (el && el.tagName === "A") el.setAttribute("href", window.__dostNav.href(view, sub));
+    });
+  }
+  NAV_KAPILARI.forEach(([el, view, sub]) => {
+    if (!el) return;
+    el.addEventListener("click", (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      navGit(view, sub);
+    });
+  });
 
   // --- Deep linking & cross-view navigation ---
   let pendingSirlarId = null;
@@ -1104,20 +1136,80 @@
     pt: "O Mapa do Ser de Ibn Arabi",
   };
 
-  function updateMeta(view) {
-    const meta = VIEW_META[view];
+  // Meta artık tek kapıdan (graph-utils.js DostMeta): canonical/og:url
+  // statik rotanın (build-static-routes.py) yazdığıyla birebir aynı --
+  // kayıt sayfası kendi adresini, dil kopyası kendi önekini, sondaki "/"
+  // dahil. Kayıtta (id varsa) başlık "zayıf" yazılır: görünüm modülü
+  // (Fütûhât kısmı gibi) kayda özel başlığı yazdıysa ezilmez.
+  // Hakkında'nın kendi statik rotası olan iki alt sekmesi -- başlık ve
+  // açıklama build-static-routes.py'deki set_meta() çağrılarıyla aynı (TR).
+  const HAKKINDA_ALT_META = {
+    "okuma-yollari": {
+      title: { tr: "Okuma Yolları", en: "Reading Paths", pt: "Caminhos de Leitura" },
+      desc: {
+        tr: "Konu konu, kaynak kartlarına bağlı okuma yolları: nereden başlamalı, hangi sırayla.",
+        en: "Topic-by-topic reading paths tied to source cards: where to start, in what order.",
+        pt: "Caminhos de leitura por tema, ligados aos cartões de fontes: por onde começar, em que ordem.",
+      },
+    },
+    "nereden-baslamali": {
+      title: { tr: "Nereden Başlamalı", en: "Where to Begin", pt: "Por Onde Começar" },
+      desc: {
+        tr: "Sitenin kendi haritası: birkaç duraklı yollar. Hangi kapıdan girilirse ne görülür.",
+        en: "The site's own map: paths of a few stops. Which door leads to what.",
+        pt: "O mapa do próprio site: caminhos de poucas paragens. Que porta leva a quê.",
+      },
+    },
+  };
+
+  function updateMeta(view, id) {
+    const meta = (view === "hakkinda" && id && HAKKINDA_ALT_META[id]) || VIEW_META[view];
     if (!meta) return;
-    document.title = "Dost Arabî — " + I18n.pick3(view === "ontoloji" ? HOME_TITLE : meta.title);
-    const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute("href", "https://dostarabi.com/" + (view === "ontoloji" ? "" : view));
-    const descEl = document.querySelector('meta[name="description"]');
-    if (descEl) descEl.setAttribute("content", I18n.pick3(meta.desc));
+    const r = window.DostMeta.route(view, id);
+    window.DostMeta.set({
+      fullTitle: "Dost Arabî — " + I18n.pick3(view === "ontoloji" ? HOME_TITLE : meta.title),
+      description: I18n.pick3(meta.desc),
+      canonical: r.canonical,
+      alternates: r.alternates,
+      weak: !!id,
+    });
   }
 
+  let currentRoute = { view: "ontoloji", id: undefined };
+
+  // Adres biçimi (2026-10-09): dil öneki korunur (/en/esma/), sondaki "/"
+  // statik rotalarla aynı; ev görünümü kökün kendisi (/ ya da /en/).
+  function routePath(view, id) {
+    const onek = ROUTE_BASE + window.DostMeta.langPrefix();
+    if (view === "ontoloji" && !id) return onek + "/";
+    return onek + "/" + view + "/" + (id ? id + "/" : "");
+  }
+
+  // Geçmiş (2026-10-09, dalga-web; ETKILESIM_DILI.md "Geri tuşu"): yol
+  // değişiyorsa pushState, aynı yolda yalnız meta güncellenir. İstisna
+  // OTOMATİK yol değişimleri: kullanıcı bir şeye dokunmadan gelen yol
+  // düzeltmeleri (sayfa açılışı, geri/ileri tuşunun çözümü, bir görünüme
+  // girer girmez modülün kendiliğinden seçtiği kayıt) replaceState olur --
+  // yoksa geri tuşu kullanıcının hiç seçmediği ara adımlara takılırdı.
+  // "Otomatik" = son kullanıcı girdisinden (pointerdown/keydown) beri
+  // bir sayfa açılışı / popstate / görünüm düzeyinde push olmuşsa.
+  let navOtomatik = true;
+  ["pointerdown", "keydown"].forEach((t) =>
+    document.addEventListener(t, () => { navOtomatik = false; }, true));
+
   function updateHash(view, id) {
-    const path = ROUTE_BASE + "/" + view + (id ? "/" + id : "");
-    if (location.pathname !== path) history.replaceState(null, "", path);
-    updateMeta(view);
+    if (view === "acik-sorular") { view = "ontoloji"; id = undefined; }
+    const path = routePath(view, id);
+    if (location.pathname !== path) {
+      const replace = navOtomatik;
+      try {
+        if (replace) history.replaceState(null, "", path);
+        else history.pushState(null, "", path);
+      } catch (e) { /* eski tarayıcı */ }
+      if (!replace && !id) navOtomatik = true;
+    }
+    currentRoute = { view, id };
+    updateMeta(view, id);
     if (id) pushBreadcrumb(view, id);
   }
 
@@ -1175,7 +1267,8 @@
 
   function goToOntologyNode(id) {
     setMainView("ontology");
-    const d = nodeById && nodeById.get(id);
+    if (!ontolojiKuruldu) { bekleyenOntolojiId = id || null; return; }
+    const d = id && nodeById && nodeById.get(id);
     if (d) onNodeClick(d);
   }
 
@@ -1242,7 +1335,7 @@
   // kırılmasın diye /acik-sorular ana sayfaya düşüyor.
   function goToAcikSorular() {
     setMainView("ontology");
-    try { history.replaceState(null, "", (window.__dostRouteBase || "") + "/"); } catch (e) { /* eski tarayıcı */ }
+    try { history.replaceState(null, "", routePath("ontoloji")); } catch (e) { /* eski tarayıcı */ }
   }
 
   function goToBilmiyoruz(id) {
@@ -1329,7 +1422,17 @@
     setMainView("ayethadis");
   }
 
-  function parseHashAndGo() {
+  // Rota adı -> görünümün sarmalayıcısı (geri tuşu aynı görünümün giriş
+  // hâline dönerken o görünümün kendi "bir adım geri" zinciri için).
+  function wrapIdFor(view) {
+    if (view === "ontoloji") return "ontology-wrap";
+    return view + "-wrap";
+  }
+
+  // fromPop: geri/ileri tuşu. Aynı görünümde kalınıp kayıt adresten
+  // düşmüşse (/esma/cemil/ -> /esma/) açık panel/seçim görünümün KENDİ
+  // geri adımıyla kapatılır.
+  function parseHashAndGo(fromPop) {
     let rawPath = location.pathname.slice(ROUTE_BASE.length) || "/";
     // SEO-03/04 (uzman paneli denetimi 2026-08-17): /en/ ve /pt/ önekli
     // statik kopyalar aynı uygulamayı taşıyor -- yönlendirici dil önekini
@@ -1337,6 +1440,9 @@
     // üzerinden okuyor). Sonraki gezinmeler öneksiz (TR-kanonik) URL'lere
     // gider; dil, kullanıcı seçimi olarak zaten yanında taşınır.
     rawPath = rawPath.replace(/^\/(en|pt)(?=\/|$)/, "") || "/";
+    // Kök (/ ya da /en/) ev görünümüdür: geri tuşuyla başka bir görünümden
+    // köke dönülünce ontoloji açılmalı (eskiden yalnız "yok sayılıyordu").
+    if (rawPath === "/" || rawPath === "/index.html") rawPath = "/ontoloji";
     const m = /^\/(ontoloji|esma|sirlar|hal|terimler|cizimler|sorular|acik-sorular|bilmiyoruz|elestiri-arkeolojisi|hocalar|eser-agi|seyahat-atlasi|yolculuk|kuran-dokusu|menziller|tasiyicilar|futuhat|fusus|miskat|hakkinda|kavram|ayethadis)(\/.*)?$/.exec(rawPath);
     if (!m) {
       // Tanınmayan bir yol (/blabla) sessizce ana haritaya düşüyordu ama
@@ -1366,7 +1472,14 @@
     // uymayan her şey (tırnak, açı ayracı, & vb. taşıyan) id'siz görünüm
     // durumuna düşürülüyor, hiçbir render fonksiyonuna ulaşmıyor.
     if (id && !/^[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)?$/.test(id)) id = undefined;
-    updateMeta(view);
+    const oncekiGorunum = currentRoute.view;
+    currentRoute = { view, id };
+    updateMeta(view, id);
+    if (fromPop && !id && view === oncekiGorunum) {
+      window.DostGraphUtils.stepBackView(wrapIdFor(view));
+      if (view === "hakkinda" && window.__siirlerApp) window.__siirlerApp.switchTo("hakkinda");
+      detailPanel.hidden = true;
+    }
     if (view === "ontoloji") goToOntologyNode(id);
     else if (view === "esma") goToEsma(id);
     else if (view === "sirlar") goToSirlar(id);
@@ -1392,7 +1505,10 @@
     else if (view === "ayethadis") goToAyetHadis();
   }
 
-  window.addEventListener("popstate", parseHashAndGo);
+  window.addEventListener("popstate", () => {
+    navOtomatik = true;
+    parseHashAndGo(true);
+  });
 
   // Site içi tüm gezinme #/view yerine gerçek /view yollarını kullanıyor
   // (bkz. 404.html) — bu yüzden linkify()'ın ürettiği <a class="cross-link">
@@ -1419,6 +1535,8 @@
 
   window.__dostNav = {
     goTo(view, id) {
+      // Önce adres (push), sonra görünüm -- bkz. updateHash.
+      updateHash(view, id);
       if (view === "ontoloji") goToOntologyNode(id);
       else if (view === "esma") goToEsma(id);
       else if (view === "sirlar") goToSirlar(id);
@@ -1442,16 +1560,17 @@
       else if (view === "hakkinda") goToHakkinda(id);
       else if (view === "kavram") goToKavram(id);
       else if (view === "ayethadis") goToAyetHadis();
-      updateHash(view, id);
     },
     setHash: updateHash,
     // Modüller kendi <a class="cross-link"> etiketlerini kurarken gerçek
     // bir href'e ihtiyaç duyuyor (yeni sekmede aç / bağlantıyı kopyala
     // çalışsın diye); ROUTE_BASE burada olduğu için helper da burada.
+    // Dil öneki ve sondaki "/" adres çubuğuyla aynı (routePath).
     href(view, id) {
-      return ROUTE_BASE + "/" + view + (id ? "/" + id : "");
+      return routePath(view, id);
     },
   };
+  navHrefleriniGuncelle();
 
   let simulation, nodeSel, pathSel, hitSel, labelSel, nodeById;
   // FAZ 1 (grafik-önce, 2026-08-03): buildGraph doğuş animasyonunu bu
@@ -1733,6 +1852,12 @@
     window.DostGraphUtils.wireRecenter("ontology-recenter", () => {
       // Seçim burada kamerayı taşımıyor (düğüme tıklamak yalnız paneli
       // açıyor), o yüzden yalnız çerçeve sıfırlanıyor -- seçili düğüm kalır.
+      // Serbest döndürme (3B'de boş alanı sürüklemek) de kaymış bakıştır --
+      // ETKILESIM_DILI "geri çekilmek"; eğim (kullanıcının seçtiği kip) kalır.
+      // Eskiden yalnız çerçeve sıfırlanıyor, sarmal döndürülmüş kalıyordu
+      // (2026-10-09, etkilesim-testi.js).
+      yaw = 0; pitch = 0.26;
+      paintPositions();
       const sel = reduceMotion ? svg : svg.transition().duration(400);
       sel.call(zoom.transform, ilkBakis.get(bakisAnahtari()) || computeFitTransform());
     });
@@ -2573,9 +2698,9 @@
     return glossifyCacheByLang[lang];
   }
 
-  function escapeHtmlAttr(s) {
-    return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml aynı dört karakteri
+  // kaçırıyor; yerel kopya kaldırıldı.
+  function escapeHtmlAttr(s) { return window.DostGraphUtils.escapeHtml(s); }
 
   // Runs after linkify(), on its HTML output -- splits on existing tags so
   // it only ever touches plain-text segments, never a cross-link's own
@@ -3704,7 +3829,7 @@
           targetColor: g.ringVar ? getVar(g.ringVar) : null,
           targetEl: document.getElementById(g.view + "-wrap"),
         },
-        () => { setMainView(g.view); updateHash(g.view); }
+        () => { updateHash(g.view); setMainView(g.view); }
       );
     });
   }
@@ -3746,4 +3871,16 @@
   function drag(sim) {
     return window.DostGraphUtils.createDragBehavior(sim);
   }
+
+  // İlk rota (2026-10-09): ontology.json'u beklemeden. DOMContentLoaded,
+  // bu dosyadan SONRA gelen defer betiklerinin (mobil liste, ipuçları...)
+  // de çalışmış olmasını garanti ediyor -- eski düzende rota zaten bir
+  // fetch'in arkasında olduğu için hep onlardan sonra çözülüyordu.
+  function ilkRota() {
+    parseHashAndGo(false);
+    window.__dostAppReady = true;
+  }
+  if (document.readyState === "loading" || document.readyState === "interactive") {
+    document.addEventListener("DOMContentLoaded", ilkRota, { once: true });
+  } else ilkRota();
 })();

@@ -11,8 +11,42 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-v4";  // v4 (2026-10-06): yorum ayıklaması -- eski veri önbelleği eski (yorumlu) özetleri gösteriyordu
-const SHELL_URLS = ["./", "./index.html", "./assets/style.css", "./assets/vendor/d3-custom.min.js"];
+const CACHE_VERSION = "dost-sw-e140bd52926a";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const SHELL_URLS = [
+  "./",
+  "./index.html",
+  "./assets/style.css",
+  "./manifest.json",
+  "./assets/favicon.svg",
+  "./data/ibn-arabi/ontology.json",
+  "./assets/welcome.js",
+  "./assets/theme.js",
+  "./assets/vendor/d3-custom.min.js",
+  "./assets/i18n.js",
+  "./assets/view-status.js",
+  "./assets/graph-utils.js",
+  "./assets/nav-drawer.js",
+  "./assets/helix.js",
+  "./assets/graph-hint.js",
+  "./assets/lightbox.js",
+  "./assets/kademe.js",
+  "./assets/search.js",
+  "./assets/font-scale.js",
+  "./assets/reading-mode.js",
+  "./assets/honorifics.js",
+  "./assets/anlamsal-yakin.js",
+  "./assets/view-loader.js",
+  "./assets/ontology.js",
+  "./assets/crosslink-preview.js",
+  "./assets/ayet-onizleme.js",
+  "./assets/start-hint.js",
+  "./assets/ontoloji-mobil-liste.js",
+  "./assets/secret-nav.js",
+  "./assets/sessiz-mod.js",
+  "./assets/kavram-defteri.js",
+  "./assets/fonts/SourceSans3-Regular-static.woff2",
+  "./assets/fonts/Fraunces-SemiBold-static.woff2",
+];
 
 self.addEventListener("install", (event) => {
   // cache.addAll() tarayıcının kendi HTTP önbelleğinden besleniyor -- satır

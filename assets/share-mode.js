@@ -2773,6 +2773,10 @@
   // --- gizli kelime ----------------------------------------------------
   let buffer = "";
   window.addEventListener("keydown", (e) => {
+    // Gizli kelimeyi index.html'de view-loader.js yakalıyor (bu betiği de
+    // o tembel indiriyor, 2026-10-09); burada yalnız yükleyicisiz sayfalar
+    // için.
+    if (window.__dostKipYukleyici) return;
     if (!e.key || e.key.length !== 1) return;
     if (e.metaKey) return;
     // AltGr (Ctrl+Alt) Türkçe klavyede "@" üretiyor -- bkz. edit-mode.js.

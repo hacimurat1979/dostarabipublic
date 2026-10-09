@@ -452,7 +452,11 @@
     // ait bir anlamı kalmıyordu. Sözleşmeye göre (ETKILESIM_DILI.md) burada
     // yalnız BAKIŞ sıfırlanır: açık kategori ve açık panel kullanıcının
     // seçimidir, korunur; çerçeve o seçime göre yeniden kurulur.
-    GU.wireRecenter("sorular-recenter", () => fitView(true));
+    // Serbest döndürme de geri alınır (ETKILESIM_DILI, 2026-10-09).
+    GU.wireRecenter("sorular-recenter", () => {
+      if (tilt3d) { tilt3d.resetView(); render(performance.now()); }
+      fitView(true);
+    });
     if (backBtn) { backBtn.hidden = !currentDetailQuestion && !expandedCatId; backBtn.onclick = () => showAllQuestionsList(); }
     // Boşluğa tıklamak: önce odağı bırakır, sonra açık kategoriyi kapatır.
     // toggleCategory()'nin aynı kapatma yolunda yaptığı gibi panel de
