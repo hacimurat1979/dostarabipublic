@@ -6015,6 +6015,11 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
 #detail-content {
   font-size: calc(0.95rem * var(--detail-font-scale));
   line-height: var(--detail-line-height);
+  /* Sağ/sol alttaki sabit Sessiz Mod ve Kavram Defterim düğmeleri (44px,
+     bottom:18px) panelin son satırlarının üstüne biniyordu; panel sonuna
+     o bant kadar boşluk -- son satır kaydırılarak düğmelerin üstüne
+     çıkabilsin (2026-10-08 taraması). */
+  padding-bottom: 72px;
 }
 
 #detail-content h2,
@@ -12247,3 +12252,13 @@ body.daphne-okuma-acik { overflow: hidden; }
   .okuma-gezinti__bos { display: none; }
 }
 @media print { .okuma-gezinti { display: none; } }
+
+/* Hakkında'daki 140px'lik dersin (yukarıda) bütün sayfa akışlı görünümlere
+   genişletilmiş hâli: son içerik sağ/sol alttaki sabit Sessiz Mod ve Kavram
+   Defterim düğmelerinin altında kalmasın (2026-10-08 taraması -- Füsûs/
+   Mişkât düğmeleri y≈797'de Kavram Defterim'in altındaydı). Dosya sonunda,
+   görünümlerin kendi padding kısaltmalarından sonra gelsin diye. */
+@media (max-width: 640px) {
+  .futuhat-wrap, .fusus-wrap, #kavram-wrap, #ayethadis-wrap,
+  [class$="-mobil-liste"] { padding-bottom: 76px; }
+}

@@ -803,6 +803,9 @@
   function clearFocus() {
     currentDetailNode = null; currentRelation = null; hoveredId = null;
     detailPanel.hidden = true; ensureFrame();
+    // Panel kapanınca adres de köke döner; yoksa yenilenen sayfa kapatılan
+    // kaydı yeniden açıyordu (2026-10-08 taraması).
+    if (!wrapEl.hidden && window.__dostNav) window.__dostNav.setHash("hal");
   }
 
   // members (ops.): yalnız bu alt kümeye sığdır (küme odağı) -- verilmezse
@@ -1024,6 +1027,9 @@
     const s = nodeById.get(r.source), t = nodeById.get(r.target);
     if (!s || !t) return;
     currentRelation = r; currentDetailNode = null;
+    // İlişki de adrese yazılır (/hal/edge/a-b): Paylaş seçili ilişki yerine
+    // görünümün kökünü veriyordu (2026-10-08 taraması).
+    window.__dostNav && window.__dostNav.setHash("hal", "edge/" + r.source + "-" + r.target);
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Sıradan Taşan Bağ", en: "A bond beyond the sequence", pt: "Um vínculo além da sequência" })}</p>
       <h2 class="detail-title">${I18n.pick3(s.name)} ↔ ${I18n.pick3(t.name)}</h2>
@@ -1145,7 +1151,10 @@
         if (!data) return;
         if (!built) buildGraph(data);
         const target = nodeById.get(id);
-        if (target) selectNode(target);
+        if (target) { selectNode(target); return; }
+        const r = GU.edgeKimligiCoz(id, (a, b) => relations.find((x) => (x.source === a && x.target === b) || (x.source === b && x.target === a)) || null);
+        if (r) showRelationDetail(r);
+        else if (id && window.__dostNav) window.__dostNav.setHash("hal");
       });
     },
     onLangChange() {

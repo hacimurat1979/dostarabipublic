@@ -23,10 +23,20 @@
   // aynı katman gerekecek: aksi hâlde ☰ etiketi bir ÖNCEKİ bölümün adında
   // asılı kalır ve kullanıcıya nerede olduğu hakkında yanlış bilgi verir --
   // yanlış etiket, hiç etiket olmamasından kötüdür.
+  // Hakkında'nın alt sekmelerinde (Şiirleri, Eleştiriler, Okuma Yolları,
+  // Nereden Başlamalı) etiket hep "Dost Arabî Hakkında" kalıyordu
+  // (2026-10-08 taraması) -- Hakkında açıkken etkin alt sekmenin adı yazılır.
+  const hakkindaWrap = document.getElementById("hakkinda-wrap");
   function updateLabel() {
     if (!label) return;
     const active = drawer.querySelector(".btn-ghost--active");
-    if (active) label.textContent = active.textContent.trim();
+    if (!active) return;
+    let metin = active.textContent.trim();
+    if (hakkindaWrap && !hakkindaWrap.hidden) {
+      const sub = hakkindaWrap.querySelector('.hakkinda-subtab[aria-selected="true"]');
+      if (sub && sub.id !== "hakkinda-subtab-hakkinda") metin = sub.textContent.trim();
+    }
+    if (label.textContent !== metin) label.textContent = metin;
   }
   new MutationObserver(updateLabel).observe(drawer, {
     subtree: true,
@@ -35,6 +45,13 @@
     childList: true,
     characterData: true,
   });
+  if (hakkindaWrap) {
+    new MutationObserver(updateLabel).observe(hakkindaWrap, { attributes: true, attributeFilter: ["hidden"] });
+    const sekmeler = hakkindaWrap.querySelector(".hakkinda-subtabs");
+    if (sekmeler) new MutationObserver(updateLabel).observe(sekmeler, {
+      subtree: true, attributes: true, attributeFilter: ["aria-selected"], childList: true, characterData: true,
+    });
+  }
   updateLabel();
 
   // GRUP COLLAPSE (2026-08-05, 2026-08-17 @revise: her ekranda varsayılan

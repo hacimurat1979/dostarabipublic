@@ -75,6 +75,19 @@ window.DostGraphUtils = (function () {
     orderKeepFocus(els, false);
   }
 
+  // "edge/a-b" kimliğini bir ilişkiye çözer. Düğüm kimlikleri kendileri tire
+  // taşıyabildiği için (sifat-asma) her bölme noktası denenir, gerçek bir
+  // ilişkiye denk gelen ilk ikili seçilir. bul(a, b) -> ilişki ya da null.
+  function edgeKimligiCoz(id, bul) {
+    if (!id || id.indexOf("edge/") !== 0) return null;
+    const govde = id.slice(5);
+    for (let i = govde.indexOf("-"); i > 0; i = govde.indexOf("-", i + 1)) {
+      const r = bul(govde.slice(0, i), govde.slice(i + 1));
+      if (r) return r;
+    }
+    return null;
+  }
+
   // Üç dilli bir alanın gerçekten metin taşıyıp taşımadığı. 2026-10-05
   // ayıklamasından beri boşalan alanlar silinmiyor, {tr:"",en:"",pt:""}
   // oluyor -- `x.alan ? … : ""` korumaları bu nesneyi doğru sayıp başlıklı
@@ -1235,5 +1248,5 @@ window.DostGraphUtils = (function () {
     btn.addEventListener("click", onClick);
   }
 
-  return { getVar, has3, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
