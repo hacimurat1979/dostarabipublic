@@ -27,8 +27,23 @@
   // Nereden Başlamalı) etiket hep "Dost Arabî Hakkında" kalıyordu
   // (2026-10-08 taraması) -- Hakkında açıkken etkin alt sekmenin adı yazılır.
   const hakkindaWrap = document.getElementById("hakkinda-wrap");
+  // Çekmecede düğmesi OLMAYAN görünümler (2026-10-09 görsel taraması:
+  // /yolculuk/ açıkken etiket "Ontoloji"de asılı kalıyordu -- yukarıdaki
+  // notun öngördüğü durum). Böyle bir görünüm görünürken etiket onun adını
+  // yazar; adlar ontology.js'teki görünüm başlıklarıyla aynı.
+  const NAV_DISI = [
+    { el: document.getElementById("yolculuk-wrap"), ad: { tr: "Yolculuk", en: "The Journey", pt: "A Jornada" } },
+  ].filter((x) => x.el);
+  function navDisiAd() {
+    const acik = NAV_DISI.find((x) => !x.el.hidden);
+    if (!acik) return null;
+    const I18n = window.DostI18n;
+    return I18n && I18n.pick3 ? I18n.pick3(acik.ad) : acik.ad.tr;
+  }
   function updateLabel() {
     if (!label) return;
+    const disAd = navDisiAd();
+    if (disAd) { if (label.textContent !== disAd) label.textContent = disAd; return; }
     const active = drawer.querySelector(".btn-ghost--active");
     if (!active) return;
     let metin = active.textContent.trim();
@@ -45,6 +60,7 @@
     childList: true,
     characterData: true,
   });
+  NAV_DISI.forEach((x) => new MutationObserver(updateLabel).observe(x.el, { attributes: true, attributeFilter: ["hidden"] }));
   if (hakkindaWrap) {
     new MutationObserver(updateLabel).observe(hakkindaWrap, { attributes: true, attributeFilter: ["hidden"] });
     const sekmeler = hakkindaWrap.querySelector(".hakkinda-subtabs");

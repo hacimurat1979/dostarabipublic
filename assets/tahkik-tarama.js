@@ -31,7 +31,14 @@
 (function () {
   "use strict";
 
-  var SURUM = "t6";
+  // t7 (2026-10-09): bulgular kayda bağlı ("aç →", kayıt kimliği, alan
+  // adresi, "düzeltme öner"); kaynak/alıntı alanları muaf (kapsam
+  // dosyasındaki muafAlan -- Mişkât `metin` hadisin kendisi); M7'ye <em>
+  // sayısı uyumu eklendi (Fütûhât D1 panosunun site geneline taşınmış
+  // hâli); susturmalar dışa aktarıma giriyor ve repodaki
+  // data/durus-susturulan.json'dan (tarama: "tahkik") okunuyor.
+  var SURUM = "t7";
+  var PAYLASILAN = "data/durus-susturulan.json";
 
   // Dosya listesi artık burada DEĞİL: data/ibn-arabi/tarama-kapsami.json.
   //
@@ -88,13 +95,38 @@
     return String(h >>> 0);
   }
 
-  function susturulan() {
+  function yerelSusturulan() {
     try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); }
     catch (e) { return {}; }
   }
-  function sustur(anahtar) {
-    var s = susturulan(); s[anahtar] = 1;
-    try { localStorage.setItem(DISMISS_KEY, JSON.stringify(s)); } catch (e) {}
+  var paylasilan = {};
+  var paylasilanSoz = null;
+  function paylasilaniYukle() {
+    if (!paylasilanSoz) {
+      paylasilanSoz = fetch(PAYLASILAN, { cache: "no-cache" }).then(function (r) {
+        return r.ok ? r.json() : [];
+      }).then(function (liste) {
+        (Array.isArray(liste) ? liste : []).forEach(function (k) {
+          if (k && k.anahtar && k.tarama === "tahkik") paylasilan[k.anahtar] = 1;
+        });
+      }).catch(function () {});
+    }
+    return paylasilanSoz;
+  }
+  function susturulan() {
+    var d = yerelSusturulan();
+    for (var k in paylasilan) if (!d[k]) d[k] = paylasilan[k];
+    return d;
+  }
+  function sustur(anahtar, bilgi) {
+    var s = yerelSusturulan();
+    var kayit = { zaman: new Date().toISOString() };
+    if (bilgi) for (var k in bilgi) if (bilgi[k] != null) kayit[k] = bilgi[k];
+    s[anahtar] = kayit;
+    try { localStorage.setItem(DISMISS_KEY, JSON.stringify(s)); }
+    catch (e) {
+      if (window.__dostRevise) window.__dostRevise.uyari("Susturma kaydedilemedi (depolama dolu ya da kapalı).");
+    }
   }
 
   // Metinlerin %19,5'i HTML etiketi taşıyor (<em> alıntı, <strong> sayı).
@@ -320,11 +352,12 @@
 
   // --- mercekler --------------------------------------------------------
 
-  function m7(triple, yol, etiket, bulgular) {
+  function m7(triple, yol, etiket, bulgular, baglam) {
     // Etiketsiz ölçüyoruz: bir dilde <em>/<strong> kullanılıp ötekinde
     // kullanılmaması karakter uzunluğunu kaydırıyor ve olmayan bir
     // "belirgin kısa" üretebiliyor. Okuyucunun gördüğü metni ölçmek doğrusu.
     var tr = duzMetin(triple.tr), en = duzMetin(triple.en), pt = duzMetin(triple.pt);
+    var DILLER_ = ["tr", "en", "pt"];
     var enUzun = Math.max(tr.length, en.length, pt.length);
     if (enUzun < EN_AZ_UZUNLUK) return;
 
@@ -334,7 +367,7 @@
     if (!pt.trim()) eksik.push("pt");
     if (eksik.length) {
       ekle(bulgular, "M7", "dil-bos", etiket, yol,
-           eksik.join("+") + " boş", tr || en || pt);
+           eksik.join("+") + " boş", tr || en || pt, baglam);
       return;
     }
 
@@ -345,7 +378,19 @@
     if (kisa.length) {
       ekle(bulgular, "M7", "dil-kisa", etiket, yol,
            kisa.join("+") + " belirgin kısa (" + tr.length + "/" + en.length + "/" + pt.length + " karakter)",
-           tr);
+           tr, baglam);
+    }
+
+    // <em> sayısı uyumu (t7): Fütûhât D1 panosunun ölçüsü site geneline.
+    // Alıntılar <em> ile işaretli; bir dilde alıntı düşmüşse ya da düz
+    // metne dönmüşse sayılar ayrışır. Ölçüt D1'inkiyle aynı: en az bir
+    // dilde <em> varken bir başka dolu dilde HİÇ yoksa.
+    var emSay = {};
+    DILLER_.forEach(function (d) { emSay[d] = (String(triple[d] || "").match(/<em>/g) || []).length; });
+    var emli = DILLER_.filter(function (d) { return emSay[d] > 0; });
+    if (emli.length && emli.length < 3) {
+      ekle(bulgular, "M7", "em-farki", etiket, yol,
+           "<em> sayısı " + emSay.tr + "/" + emSay.en + "/" + emSay.pt + " (tr/en/pt) — bir dilde alıntı işareti yok", tr, baglam);
     }
 
     var metin = { tr: tr, en: en, pt: pt };
@@ -367,17 +412,17 @@
       var ns = eksik[d].sort(function (a, b) { return a - b; });
       ekle(bulgular, "M7", "sayi-farki", etiket, yol,
            d + " dilinde eksik: " + ns.join(", ") + " (öteki iki dilde var, "
-           + d + "'de ne rakamla ne yazıyla geçiyor)", metin[d] || tr);
+           + d + "'de ne rakamla ne yazıyla geçiyor)", metin[d] || tr, baglam);
     });
   }
 
-  function m5(triple, yol, etiket, bulgular) {
+  function m5(triple, yol, etiket, bulgular, baglam) {
     var tr = duzMetin(triple.tr);
     if (!tr) return;
     var kelime = kelimeSay(tr);
     if (kelime > COK_UZUN_METIN) {
       ekle(bulgular, "M5", "uzun-metin", etiket, yol,
-           kelime + " kelime (~" + Math.max(1, Math.round(kelime / DK_KELIME)) + " dk okuma)", tr);
+           kelime + " kelime (~" + Math.max(1, Math.round(kelime / DK_KELIME)) + " dk okuma)", tr, baglam);
     }
     // Uzun cümle: tek bir cümlede eşiği aşan kelime sayısı.
     // Kapanış tırnağı/parantezi noktadan SONRA gelir; metinlerimiz alıntı
@@ -390,19 +435,25 @@
       var n = kelimeSay(cumleler[i]);
       if (n > UZUN_CUMLE) {
         ekle(bulgular, "M5", "uzun-cumle", etiket, yol,
-             n + " kelimelik tek cümle", cumleler[i]);
+             n + " kelimelik tek cümle", cumleler[i], baglam);
         break;   // alan başına bir kez yeter; amaç sayım değil dikkat
       }
     }
   }
 
-  function ekle(bulgular, mercek, tur, etiket, yol, aciklama, ornek) {
+  function ekle(bulgular, mercek, tur, etiket, yol, aciklama, ornek, baglam) {
     var kisa = String(ornek || "").slice(0, 220);
-    bulgular.push({
+    var b = {
       mercek: mercek, tur: tur, etiket: etiket, yol: yol,
       aciklama: aciklama, ornek: kisa,
       anahtar: mercek + "|" + tur + "|" + hash(etiket + "|" + kisa)
-    });
+    };
+    if (baglam) {
+      b.view = baglam.view; b.id = baglam.id;
+      b.dosya = baglam.dosya; b.kayit = baglam.kayit; b.alan = baglam.alan;
+      b.metin = baglam.metin;
+    }
+    bulgular.push(b);
   }
 
   // --- gezinme ----------------------------------------------------------
@@ -431,39 +482,79 @@
   var MUAF = { source: 1, sources: 1, kaynak: 1, kaynaklar: 1,
                cite: 1, url: 1, id: 1, view: 1, pageRange: 1, arabic: 1, ad: 1 };
 
-  function gez(o, yol, etiket, bulgular, derinlik) {
+  // Kaydın kimliği (durus-kontrol.js'teki kimlik() ile aynı ölçüt).
+  function kimlik(o) {
+    if (typeof o.id === "string") return o.id;
+    if (typeof o.url === "string" && o.ozet) return o.url;
+    if (typeof o.source === "string" && typeof o.target === "string") return o.source + "→" + o.target;
+    if (typeof o.from === "string" && typeof o.to === "string") return o.from + "→" + o.to;
+    return null;
+  }
+  function adresYaz(parcalar) {
+    var s = "";
+    parcalar.forEach(function (p) { s += typeof p === "number" ? "[" + p + "]" : (s ? "." : "") + p; });
+    return s;
+  }
+
+  // `ctx`: { d (kapsam kaydı), kok, kokSira, yolDizi, muaf }
+  function gez(o, yol, etiket, bulgular, derinlik, ctx) {
     if (!o || derinlik > 12) return;
+    ctx = ctx || { yolDizi: [], muaf: {} };
     if (Array.isArray(o)) {
-      for (var i = 0; i < o.length; i++) gez(o[i], yol, etiket, bulgular, derinlik + 1);
+      for (var i = 0; i < o.length; i++) {
+        gez(o[i], yol, etiket, bulgular, derinlik + 1, Object.assign({}, ctx, { yolDizi: ctx.yolDizi.concat([i]) }));
+      }
       return;
     }
     if (typeof o !== "object") return;
-    if (ucluMu(o)) { m7(o, yol, etiket, bulgular); m5(o, yol, etiket, bulgular); return; }
+    var c2 = ctx;
+    if (!ctx.kok && kimlik(o)) c2 = Object.assign({}, ctx, { kok: o, kokSira: ctx.yolDizi.length });
+    if (ucluMu(o)) {
+      var baglam = null;
+      if (c2.d) {
+        var kokId = c2.kok ? kimlik(c2.kok) : null;
+        var d = c2.d;
+        baglam = {
+          view: d.gorunum || null,
+          id: d.gorunumId != null ? (d.gorunumId || null) : (kokId && kokId.indexOf("→") < 0 ? kokId : null),
+          dosya: d.dosya || d.yol, kayit: kokId,
+          alan: c2.kok ? adresYaz(c2.yolDizi.slice(c2.kokSira)) : null,
+          metin: typeof o.tr === "string" ? o.tr : null,
+        };
+      }
+      m7(o, yol, etiket, bulgular, baglam); m5(o, yol, etiket, bulgular, baglam);
+      return;
+    }
     for (var k in o) {
       if (!Object.prototype.hasOwnProperty.call(o, k)) continue;
-      if (MUAF[k]) continue;
-      gez(o[k], yol, etiket, bulgular, derinlik + 1);
+      if (MUAF[k] || c2.muaf[k]) continue;
+      gez(o[k], yol, etiket, bulgular, derinlik + 1, Object.assign({}, c2, { yolDizi: c2.yolDizi.concat([k]) }));
     }
   }
 
-  function dosyaTara(yol, etiket, bulgular) {
-    return json(yol).then(function (d) { gez(d, yol, etiket, bulgular, 0); })
-      .catch(function () { /* dosya yoksa sessizce atla */ });
+  // d: kapsam kaydı ya da yol dizgesi (geriye uyum).
+  function dosyaTara(d, etiket, bulgular) {
+    if (typeof d === "string") d = { yol: d, etiket: etiket };
+    var muaf = {};
+    (d.muafAlan || []).forEach(function (a) { muaf[a] = 1; });
+    return json(d.yol).then(function (veri) {
+      gez(veri, d.yol, d.etiket || etiket, bulgular, 0, { d: d, yolDizi: [], muaf: muaf });
+    }).catch(function () { /* dosya yoksa sessizce atla */ });
   }
 
   function siteTara() {
     var bulgular = [];
-    return json(KAPSAM).then(function (kapsam) {
+    return paylasilaniYukle().then(function () { return json(KAPSAM); }).then(function (kapsam) {
       var isler = kapsam.dosyalar.map(function (d) {
-        return dosyaTara(d.yol, d.etiket, bulgular);
+        return dosyaTara(d, d.etiket, bulgular);
       });
       // Fütûhât kısımları ayrı dosyalarda; listeyi indeksten alıyoruz.
       // Kısım listesi okunamazsa tarama yine sonuç veriyor ama EKSİK
       // veriyor -- sessiz kalmasın diye konsola yazıyoruz.
       isler.push(json(kapsam.futuhat.indeks).then(function (idx) {
         return Promise.all((idx.parts || []).map(function (p) {
-          return dosyaTara(kapsam.futuhat.parcaKlasoru + p.id + ".json",
-                           "Fütûhât " + p.id, bulgular);
+          return dosyaTara({ yol: kapsam.futuhat.parcaKlasoru + p.id + ".json", etiket: "Fütûhât " + p.id,
+                             gorunum: "futuhat", dosya: "data/ibn-arabi/futuhat-atlas.json" }, null, bulgular);
         }));
       }).catch(function (e) {
         console.warn("Tahkik taraması: Fütûhât kısım listesi okunamadı", e);
@@ -485,7 +576,15 @@
   var panel = null;
   var sonBulgular = null;
 
-  function kapat() { if (panel) { panel.remove(); panel = null; } }
+  var birak = null;
+  function kapat() {
+    if (birak) { birak(); birak = null; }
+    if (panel) { panel.remove(); panel = null; }
+  }
+  function ui(d) {
+    var l = (window.DostI18n && window.DostI18n.getLang && window.DostI18n.getLang()) || "tr";
+    return d[l] || d.tr;
+  }
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
@@ -500,6 +599,7 @@
     "dil-bos": "bir dil boş",
     "dil-kisa": "bir dil belirgin kısa",
     "sayi-farki": "sayılar üç dilde farklı",
+    "em-farki": "alıntı işareti (<em>) üç dilde farklı",
     "uzun-metin": "çok uzun metin",
     "uzun-cumle": "çok uzun cümle"
   };
@@ -561,12 +661,21 @@
     Object.keys(gruplar).sort().forEach(function (m) {
       html += '<p class="detail-eyebrow detail-eyebrow--section">' + esc(MERCEK_ADI[m] || m) + "</p>";
       gruplar[m].forEach(function (b) {
-        html += '<div class="durus-site__bulgu">'
-          + '<p class="durus-site__ad">' + esc(b.etiket) + " — " + esc(TUR_ADI[b.tur] || b.tur) + "</p>"
+        var i = bs.indexOf(b);
+        html += '<div class="durus-site__bulgu durus-site__satir">'
+          + '<p class="durus-site__ad">' + esc(b.etiket) + (b.kayit ? " · " + esc(b.kayit) : "")
+          + " — " + esc(TUR_ADI[b.tur] || b.tur)
+          + (b.view ? ' <a class="durus-site__git" href="#" data-i="' + i + '">' + esc(ui({ tr: "aç →", en: "open →", pt: "abrir →" })) + "</a>" : "")
+          + "</p>"
           + '<p class="durus-site__neden">' + esc(b.aciklama) + "</p>"
           + (b.ornek ? '<p class="durus-site__ornek">' + esc(b.ornek) + "…</p>" : "")
-          + '<button type="button" class="durus-site__sustur" data-sustur="' + esc(b.anahtar) + '">Bu doğru — kaldır</button>'
-          + "</div>";
+          + (b.kayit ? '<p class="durus-site__adres"><code>' + esc([b.dosya, b.kayit, b.alan].filter(Boolean).join(" · ")) + "</code></p>" : "")
+          + '<div class="durus-site__eylem">'
+          + '<button type="button" class="durus-site__sustur" data-i="' + i + '" data-sustur="' + esc(b.anahtar) + '">Bu doğru — kaldır</button>'
+          + (b.kayit && b.alan && b.metin && window.__dostRevise && window.__dostDurus
+              ? '<button type="button" class="durus-site__oner" data-oner="' + i + '">' + esc(ui({ tr: "Düzeltme öner", en: "Suggest a fix", pt: "Sugerir correção" })) + "</button>"
+              : "")
+          + "</div></div>";
       });
     });
     govde.innerHTML = html;
@@ -577,9 +686,28 @@
         govde.scrollTop = 0;
       });
     });
+    govde.querySelectorAll("a.durus-site__git").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        var b = bs[Number(a.dataset.i)];
+        if (!b) return;
+        kapat();
+        if (window.__dostDurus) {
+          window.__dostDurus.gitVeVurgula(b.view, b.id, b.metin
+            ? { esler: [{ es: duzMetin(b.ornek).slice(0, 40), i: 0 }], metin: b.metin } : null);
+        }
+      });
+    });
+    govde.querySelectorAll("[data-oner]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var b = bs[Number(btn.dataset.oner)];
+        if (window.__dostDurus) window.__dostDurus.oneriAc(btn.closest(".durus-site__satir"), b, "tahkik");
+      });
+    });
     govde.querySelectorAll("[data-sustur]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        sustur(btn.getAttribute("data-sustur"));
+        var b = bs[Number(btn.dataset.i)];
+        sustur(btn.getAttribute("data-sustur"), b ? { tur: b.tur, dosya: b.dosya, kayit: b.kayit, alan: b.alan, ozet: b.aciklama } : null);
         sonBulgular = sonBulgular.filter(function (x) { return x.anahtar !== btn.getAttribute("data-sustur"); });
         ciz();
       });
@@ -598,6 +726,8 @@
       + '<div class="durus-site__body"><p class="durus-site__yukleniyor">Veri dosyaları taranıyor…</p></div>'
       + "</div>";
     document.body.appendChild(panel);
+    // Esc bir adım geri: @revise katman yığını (edit-mode.js).
+    if (window.DostReviseKatman) birak = window.DostReviseKatman.ac(kapat);
     panel.querySelector(".durus-site__backdrop").addEventListener("click", kapat);
     panel.querySelector(".durus-site__close").addEventListener("click", kapat);
 

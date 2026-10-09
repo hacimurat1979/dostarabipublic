@@ -285,12 +285,15 @@
       + '<button type="button" class="fusus-share-btn" title="Paylaş / Share / Compartilhar" aria-label="Paylaş / Share / Compartilhar">'
       + '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="10.8" x2="15.7" y2="6.7" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="13.2" x2="15.7" y2="17.3" stroke="currentColor" stroke-width="1.6"/></svg>'
       + "</button>"
+      + '<button type="button" class="fusus-kart-btn" title="Görsel kart oluştur / Create visual card / Criar cartão visual" aria-label="Görsel kart oluştur / Create visual card / Criar cartão visual">'
+      + '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16.5l4.8-4.8a1.4 1.4 0 0 1 2 0l2.9 2.9 2-2a1.4 1.4 0 0 1 2 0l2.3 2.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      + "</button>"
       + '<p class="fusus-article__eyebrow">'
       + esc(t({ tr: "Fass " + f.no, en: "Bezel " + f.no, pt: "Engaste " + f.no })) + " · "
       + esc(t(f.hikmet)) + "</p>"
       + '<h2 class="fusus-article__title">' + esc(t(f.title)) + "</h2>"
       + '<p class="fusus-article__range">' + esc(t(f.pageRange)) + "</p>"
-      + '<div class="fusus-article__summary">' + linkify(t(f.hero.summary)) + "</div>"
+      + '<div class="fusus-article__summary" data-dost-alan="hero.summary">' + linkify(t(f.hero.summary)) + "</div>"
       + "</header>";
 
     if (f.mainHelix) {
@@ -300,20 +303,22 @@
       html += helixBlockHtml(f.mainHelix, mk);
     }
 
-    f.sections.forEach(function (sec) {
+    f.sections.forEach(function (sec, si) {
       html += '<section class="fusus-section" id="' + esc(sec.id) + '">'
         + "<h3>" + esc(t(sec.heading)) + "</h3>";
-      sec.blocks.forEach(function (b) {
+      sec.blocks.forEach(function (b, bi) {
+        // @revise adresi: sections[i].blocks[j].<alan> (2026-10-09).
+        var adr = "sections[" + si + "].blocks[" + bi + "].";
         if (b.type === "p") {
-          html += "<p>" + linkify(t(b.text)) + "</p>";
+          html += '<p data-dost-alan="' + adr + 'text">' + linkify(t(b.text)) + "</p>";
         } else if (b.type === "serh") {
           html += '<div class="fusus-serh">'
             + '<div class="fusus-serh__col fusus-serh__col--konuk">'
             + '<span class="fusus-serh__eyebrow">' + esc(t({ tr: "Konuk'un okuduğu", en: "What Konuk reads", pt: "O que Konuk lê" })) + "</span>"
-            + "<p>" + linkify(t(b.konuk)) + "</p></div>"
+            + '<p data-dost-alan="' + adr + 'konuk">' + linkify(t(b.konuk)) + "</p></div>"
             + '<div class="fusus-serh__col fusus-serh__col--konevi">'
             + '<span class="fusus-serh__eyebrow">' + esc(t({ tr: "Konevî'nin eklediği", en: "What Qunawi adds", pt: "O que Qunawi acrescenta" })) + "</span>"
-            + "<p>" + linkify(t(b.konevi)) + "</p>"
+            + '<p data-dost-alan="' + adr + 'konevi">' + linkify(t(b.konevi)) + "</p>"
             + '<cite class="fusus-serh__kaynak">' + esc(t(b.kaynak)) + "</cite>"
             + "</div></div>";
         } else if (b.type === "helix") {
@@ -342,6 +347,8 @@
         return { id: x.id, label: t({ tr: x.no + ". Fass · " + t(x.prophet), en: "Bezel " + x.no + " · " + t(x.prophet), pt: "Engaste " + x.no + " · " + t(x.prophet) }), title: t(x.title) };
       }), f.id);
 
+    articleEl.dataset.dostDosya = "data/ibn-arabi/fusus-atlas.json";
+    articleEl.dataset.dostKaynak = f.id;
     articleEl.innerHTML = html;
     window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
     mountHelixBlocks(articleEl, helixes, captions);
@@ -351,6 +358,13 @@
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
     var shareBtn = articleEl.querySelector(".fusus-share-btn");
     if (shareBtn) shareBtn.addEventListener("click", function () { shareFass(f); });
+    // "Bu kaydı paylaş" (2026-10-09): künyeli görsel kart (share-mode.js).
+    // Paylaşım kipi yoksa düğme görünmez -- bağlanmamış düğme olmasın.
+    var kartBtn = articleEl.querySelector(".fusus-kart-btn");
+    if (kartBtn) {
+      if (!(window.__dostShare && window.__dostShare.open)) kartBtn.hidden = true;
+      else kartBtn.addEventListener("click", function () { window.__dostShare.open({ view: "fusus", id: f.id }); });
+    }
     var startBtn = articleEl.querySelector("[data-start-fass]");
     var startClose = articleEl.querySelector(".fusus-start-hint .futuhat-start-hint__close");
     if (startBtn) {

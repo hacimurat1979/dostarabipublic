@@ -1504,6 +1504,12 @@
   }
 
   function renderPart(part) {
+    // @revise adresi (2026-10-09): düzenleme kaydı hangi kaydın hangi
+    // alanına ait olduğunu bilsin. Yazım kaynağı atlas; tarayıcının
+    // okuyabildiği kopya kısım dosyası (öteki iki dil oradan okunur).
+    articleEl.dataset.dostDosya = "data/ibn-arabi/futuhat-atlas.json";
+    articleEl.dataset.dostKaynak = part.id;
+    articleEl.dataset.dostVeri = "data/ibn-arabi/futuhat-parts/" + part.id + ".json";
     articleEl.innerHTML = `
       ${startHintHtml(part)}
       <header class="futuhat-hero">
@@ -1516,16 +1522,19 @@
           <button class="futuhat-toolbar__btn futuhat-toolbar__btn--icon" id="futuhat-share" type="button" title="Paylaş / Share / Compartilhar" aria-label="Paylaş / Share / Compartilhar">
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="10.8" x2="15.7" y2="6.7" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="13.2" x2="15.7" y2="17.3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
+          <button class="futuhat-toolbar__btn futuhat-toolbar__btn--icon" id="futuhat-share-visual" type="button" title="Görsel kart oluştur / Create visual card / Criar cartão visual" aria-label="Görsel kart oluştur / Create visual card / Criar cartão visual">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16.5l4.8-4.8a1.4 1.4 0 0 1 2 0l2.9 2.9 2-2a1.4 1.4 0 0 1 2 0l2.3 2.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
         <p class="futuhat-hero__eyebrow">${tt({ tr: "Fütûhât-ı Mekkiyye", en: "al-Futuhat al-Makkiyya", pt: "al-Futuhat al-Makkiyya" })} · ${tt({ tr: "Cilt " + CILT_ROMAN[part.cilt], en: "Volume " + CILT_ROMAN[part.cilt], pt: "Volume " + CILT_ROMAN[part.cilt] })} · ${tt({ tr: "Kısım " + roman(part.kisim), en: "Part " + roman(part.kisim), pt: "Parte " + roman(part.kisim) })}</p>
         <h2 class="futuhat-hero__title">${tt(part.title)}</h2>
         ${pageRangeLabel(part.pageRange) ? `<p class="futuhat-hero__pages">${pageRangeLabel(part.pageRange)}</p>` : ""}
-        <p class="futuhat-hero__summary">${linkify(tt(part.hero.summary))}</p>
+        <p class="futuhat-hero__summary" data-dost-alan="hero.summary">${linkify(tt(part.hero.summary))}</p>
       </header>
 
       <section class="futuhat-maindiagram" data-diagram-id="main">
         <div class="futuhat-tree" id="futuhat-main-tree"></div>
-        ${window.DostGraphUtils.has3(part.mainDiagram.caption) ? `<p class="futuhat-diagram-source">${linkify(tt(part.mainDiagram.caption))}</p>` : ""}
+        ${window.DostGraphUtils.has3(part.mainDiagram.caption) ? `<p class="futuhat-diagram-source" data-dost-alan="mainDiagram.caption">${linkify(tt(part.mainDiagram.caption))}</p>` : ""}
       </section>
 
       <div class="futuhat-sections" id="futuhat-sections"></div>
@@ -1575,11 +1584,12 @@
             tr: "Bu kesitte bulamadığımız",
             en: "What we did not find in this section",
             pt: "O que não encontrámos nesta secção",
-          })}</p><p class="futuhat-bilmiyoruz-box__text">${linkify(tt(block.text))}</p>`;
+          })}</p><p class="futuhat-bilmiyoruz-box__text" data-dost-alan="sections[${si}].blocks[${bi}].text">${linkify(tt(block.text))}</p>`;
           secEl.appendChild(box);
         } else if (block.type === "p") {
           const p = document.createElement("p");
           p.className = "futuhat-section__p";
+          p.dataset.dostAlan = `sections[${si}].blocks[${bi}].text`;
           p.innerHTML = linkify(tt(block.text));
           secEl.appendChild(p);
         } else if (block.type === "diagram") {
@@ -1592,6 +1602,7 @@
           if (window.DostGraphUtils.has3(block.caption)) {
             const capP = document.createElement("p");
             capP.className = "futuhat-inline-diagram__caption";
+            capP.dataset.dostAlan = `sections[${si}].blocks[${bi}].caption`;
             capP.innerHTML = linkify(tt(block.caption));
             dCard.appendChild(capP);
           }
@@ -1780,6 +1791,13 @@
     return { toplam, uyumsuzBlok };
   }
 
+  // @revise artık sayfayı yenilemeden açılıp kapanıyor (2026-10-09); pano
+  // yalnız kısım çizilirken kurulduğu için kip değişince tazeleniyor.
+  document.addEventListener("dost-revise-kip", () => {
+    if (!activePartId || !articleEl || !articleEl.querySelector(".futuhat-hero")) return;
+    fetchPart(activePartId).then((part) => { if (part && activePartId === part.id) renderMeasurementPanel(part); });
+  });
+
   function renderMeasurementPanel(part) {
     const eski = document.getElementById("futuhat-olcum-panosu");
     if (eski) eski.remove();
@@ -1852,6 +1870,14 @@
     }
     if (shareBtn) {
       shareBtn.addEventListener("click", () => sharePart(part));
+    }
+    // "Bu kaydı paylaş" (2026-10-09): bu kısmın kendi alıntılarından,
+    // künyeli bir görsel kart (share-mode.js). Paylaşım kipi yüklenmemişse
+    // düğme hiç görünmez -- bağlanmamış düğme olmasın.
+    const kartBtn = document.getElementById("futuhat-share-visual");
+    if (kartBtn) {
+      if (!(window.__dostShare && window.__dostShare.open)) kartBtn.hidden = true;
+      else kartBtn.addEventListener("click", () => window.__dostShare.open({ view: "futuhat", id: part.id }));
     }
   }
 

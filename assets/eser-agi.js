@@ -562,7 +562,10 @@ window.__eserAgiApp = (function () {
       id: e.id,
       name: { tr: e.eser, en: e.eser, pt: e.eser },
       short: e.aciklama,
+      __katalog: e.ozel === "katalog",
     })),
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => (n.__katalog ? "var(--series-theme)" : "var(--series-ibnarabi)"),
     title: { tr: "Eser Ağı", en: "Network of Works", pt: "Rede de Obras" },
     note: {
       tr: "Ağı okumak için ekran dar geldi — eserler burada listede. Bir esere dokun, panelden bağlarını oku.",

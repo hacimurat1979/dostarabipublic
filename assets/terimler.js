@@ -1720,7 +1720,9 @@
   // Benzetmeler sitenin görünen yüzünden kaldırıldı; gizli anahtar
   // kelimeyle geri açılıyor (bkz. assets/edit-mode.js).
   function analogyHtml(t) {
-    if (!t.analogy || !(window.DostAnalogy && window.DostAnalogy.visible())) return "";
+    // `analogy` alanı 2026-10-05'te kaldırıldı; görünürlük bayrağı
+    // (DostAnalogy) da 2026-10-09'da gitti.
+    if (!t.analogy) return "";
     const metin = tt(t.analogy);
     if (!metin || !String(metin).trim()) return "";
     return `<div class="detail-analogy">
@@ -1816,20 +1818,25 @@
       <div class="bookmap-concept-tags">${chips}</div>`;
   }
 
+  // @revise adresi (2026-10-09).
+  function adres(kayit, alan) {
+    return ` data-dost-dosya="data/ibn-arabi/felsefi-terimler.json" data-dost-kaynak="${kayit}" data-dost-alan="${alan}"`;
+  }
+
   function celisenYorumlarHtml(t) {
     const views = t.celisen_yorumlar || [];
     if (!views.length) return "";
     const cards = views
       .map(
-        (v) => `<div class="divergent-view">
+        (v, i) => `<div class="divergent-view">
           <p class="divergent-view__kaynak">${v.kaynak}</p>
-          <p>${linkify(tt(v.gorus), "terimler", t.id)}</p>
+          <p${adres(t.id, `celisen_yorumlar[${i}].gorus`)}>${linkify(tt(v.gorus), "terimler", t.id)}</p>
         </div>`
       )
       .join("");
     return `<p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Çelişen Yorumlar", en: "Differing Readings", pt: "Leituras Divergentes" })}</p>
       <div class="divergent-views">${cards}</div>
-      ${window.DostGraphUtils.has3(t.celisen_yorumlar_not) ? `<p class="divergent-views__not">${linkify(tt(t.celisen_yorumlar_not), "terimler", t.id)}</p>` : ""}`;
+      ${window.DostGraphUtils.has3(t.celisen_yorumlar_not) ? `<p class="divergent-views__not"${adres(t.id, "celisen_yorumlar_not")}>${linkify(tt(t.celisen_yorumlar_not), "terimler", t.id)}</p>` : ""}`;
   }
 
   // Terim gruplarındaki GROUP_HUE'ya paralel, ama bölüm bazında: her görünüm
@@ -1886,11 +1893,11 @@
       <h2 class="detail-title">${tt(t.title)}${t.arabic ? ` <span class="detail-title__arabic">${t.arabic}</span>` : ""}</h2>
       ${window.DostGraphUtils.has3(t.felsefi_tanim) ? `<div class="detail-block detail-block--ibnarabi">
         <h3>${tt({ tr: "Felsefi Tanım", en: "Philosophical Definition", pt: "Definição Filosófica" })}</h3>
-        <p>${linkify(tt(t.felsefi_tanim), "terimler", t.id)}</p>
+        <p${adres(t.id, "felsefi_tanim")}>${linkify(tt(t.felsefi_tanim), "terimler", t.id)}</p>
       </div>` : ""}
       ${window.DostGraphUtils.has3(t.ibn_arabi_yorumu) ? `<div class="detail-block">
         <h3>${tt({ tr: "İbn Arabî'nin Yorumu", en: "Ibn Arabi's Interpretation", pt: "A Interpretação de Ibn Arabi" })}</h3>
-        <p>${linkify(tt(t.ibn_arabi_yorumu), "terimler", t.id)}</p>
+        <p${adres(t.id, "ibn_arabi_yorumu")}>${linkify(tt(t.ibn_arabi_yorumu), "terimler", t.id)}</p>
       </div>` : ""}
       ${ceviriKaybiHtml(t.id)}
       ${analogyHtml(t)}

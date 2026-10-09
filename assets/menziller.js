@@ -365,6 +365,7 @@
     enter.append("circle").attr("class", "menzil-node__glow");
     enter.append("circle").attr("class", "menzil-node__sphere").attr("fill", (n) => `url(#menzil-sphere-${n.sira})`);
     enter.append("text").attr("class", "menzil-node__harf").attr("text-anchor", "middle");
+    enter.append("line").attr("class", "menzil-node__leader");
     enter.append("text").attr("class", "menzil-node__label").attr("text-anchor", "middle");
     const merged = enter.merge(gsel);
     gsel.exit().remove();
@@ -400,14 +401,86 @@
       const lbl = g.select(".menzil-node__label").attr("y", r + 14)
         .classed("menzil-node__label--active", isActive)
         .text(n.menzil);
-      etiketler.push({ lbl, txt: n.menzil, x: n.x, y: n.y + r + 14, baseY: r + 14,
-        priority: (isActive ? 10 : 0) + (isHover ? 5 : 0) + dep });
+      // Ay'ın arkasında kalan düğüm (2026-10-09 görsel taraması): küresi
+      // Ay'ın diskinin içine düşen ve Ay'dan uzakta (z > 0) olan düğümü Ay
+      // zaten örtüyor (derinlik sıralaması aşağıda); etiketi de Ay'ın
+      // üstünde yüzmesin diye gizlenir ve çakışma çözümüne girmez.
+      const ayArkasi = tilt > 0.5 && (n.__z || 0) > 0
+        && Math.hypot(n.x - cx, n.y - cy) < moonR * breathM * 0.98;
+      const onde = isActive || isHover;
+      const it = { lbl, txt: n.menzil, x: n.x, y: n.y + r + 14, baseY: r + 14,
+        priority: (isActive ? 10 : 0) + (isHover ? 5 : 0) + dep, onde, r };
+      lbl.classed("menzil-node__label--gizli", ayArkasi && !onde);
+      if (ayArkasi && !onde) {
+        lbl.attr("x", 0).attr("text-anchor", "middle");
+        g.select(".menzil-node__leader").attr("visibility", "hidden");
+        return;
+      }
+      etiketler.push(it);
       kureler.push({ x: n.x, y: n.y, half: r, h: r * 2 });
     });
     // Etiketler birbirinin üstüne yığılıyordu (2026-10-08 taraması: 13 çift,
     // Hen'a/Zirâ/Nesre/Tarf/Cebhe bir yumak) -- öteki görünümlerin ortak
     // çakışma çözücüsü; küreler engel, seçili/öndeki etiket önce yerleşir.
+    // 2026-10-09: sarmalın dönüm yerlerinde düğümler üst üste bindiği için
+    // çözücü uzaktaki düğümün etiketini 100-300 px aşağı itiyordu; etiket
+    // kendi düğümünden kopuk bir sütunda kalıyordu. Kendi küresinden iki
+    // satırdan fazla uzağa itilen (seçili/değinilen değilse) etiket
+    // puslanır (gizlenir) ve kalanlar yeniden yerleştirilir; daha az itilen
+    // etiket düğümüne ince bir kılavuz çizgiyle bağlanır. Gizlenen ad
+    // değinince (hover/odak) ve panelde okunur.
     deconflictLabels(etiketler, kureler);
+    // Bir satırdan fazla aşağı itilen etiket (seçili/değinilen değilse)
+    // önce düğümünün yanına -- sağına, olmazsa soluna -- alınır; orada da
+    // yer yoksa puslanır. Yanına alınanlar ve gizlenenler ilk yerleşimden
+    // çıkarılıp kalanlar yeniden yerleştirilir (onlar artık engel değil).
+    const KAYMA_SINIRI = 24;
+    const kaymaOf = (it) => +it.lbl.attr("y") - it.baseY;
+    const tasan = etiketler.filter((it) => !it.onde && kaymaOf(it) > KAYMA_SINIRI);
+    let altta = etiketler;
+    if (tasan.length) {
+      altta = etiketler.filter((it) => tasan.indexOf(it) < 0);
+      tasan.forEach((it) => it.lbl.attr("y", it.baseY));
+      deconflictLabels(altta, kureler);
+    }
+    altta.forEach((it) => it.lbl.attr("x", 0).attr("text-anchor", "middle"));
+    // Yerleşik kutular (merkez + yarı genişlik/yükseklik, deconflictor ile
+    // aynı sözleşme): küreler + alttaki etiketlerin son konumları.
+    const kutular = kureler.map((k) => ({ x: k.x, y: k.y, half: k.half, h: k.h }));
+    altta.forEach((it) => kutular.push({ x: it.x, y: it.y + kaymaOf(it), half: it.half, h: it.h }));
+    const carpar = (b) => kutular.some((k) => Math.abs(b.y - k.y) < (b.h + k.h) / 2 + 2
+      && Math.abs(b.x - k.x) < b.half + k.half + 4);
+    tasan.sort((a, b) => b.priority - a.priority).forEach((it) => {
+      const ny = it.y - it.baseY;   // düğüm merkezinin y'si
+      // Adaylar sırayla: sağ, üst, sol, sonra sağda yarım satır aşağı/yukarı.
+      const sx = (yon) => it.x + yon * (it.r + 6 + it.half);
+      const adaylar = [
+        { yon: 1, x: sx(1), dy: 0 },
+        { yon: 0, x: it.x, dy: -(it.r + 6 + it.h / 2) },
+        { yon: -1, x: sx(-1), dy: 0 },
+        { yon: 1, x: sx(1), dy: it.h * 0.75 },
+        { yon: 1, x: sx(1), dy: -it.h * 0.75 },
+      ];
+      const yer = adaylar.find((b) => !carpar({ x: b.x, y: ny + b.dy, half: it.half, h: it.h }));
+      if (!yer) { it.gizli = true; it.lbl.classed("menzil-node__label--gizli", true).attr("x", 0).attr("text-anchor", "middle"); return; }
+      kutular.push({ x: yer.x, y: ny + yer.dy, half: it.half, h: it.h });
+      it.yan = true;
+      it.lbl.attr("x", (yer.yon * (it.r + 6)).toFixed(1))
+        .attr("y", (yer.dy + it.h * 0.32).toFixed(1))
+        .attr("text-anchor", yer.yon > 0 ? "start" : yer.yon < 0 ? "end" : "middle");
+    });
+    etiketler.forEach((it) => { if (!it.gizli) it.lbl.classed("menzil-node__label--gizli", false); });
+    // Kılavuz çizgi: alttaki etiket kendi yerinden belirgin kaymışsa
+    // küreden ona ince bir iz.
+    etiketler.forEach((it) => {
+      const lead = d3.select(it.lbl.node().parentNode).select(".menzil-node__leader");
+      const yF = +it.lbl.attr("y");
+      const kayma = yF - it.baseY;
+      if (it.gizli || it.yan || kayma < 6) { lead.attr("visibility", "hidden"); return; }
+      lead.attr("visibility", null)
+        .attr("x1", 0).attr("y1", (it.r + 2).toFixed(1))
+        .attr("x2", 0).attr("y2", (yF - it.h * 0.7).toFixed(1));
+    });
 
     // Derinlik sıralaması: ring parçaları + düğümler + Ay AYNI katmanın
     // çocukları, hepsi z'ye göre TEK bir listede sıralanıp DOM'a o sırayla
@@ -421,7 +494,12 @@
       nodeLayer.selectAll("g.menzil-node").each(function (n) { items.push({ el: this, z: n.__z || 0 }); });
       nodeLayer.selectAll("path.menziller-ring-seg").each(function (d) { items.push({ el: this, z: d.__z || 0 }); });
       items.push({ el: moonLayer.node(), z: 0 });
-      items.sort((a, b) => a.z - b.z);
+      // Uzak (büyük z) önce, yakın sonra çizilir -- hal.js'teki
+      // `b.__z - a.__z` ile aynı yön. 2026-10-09'a kadar ters sıralanıyordu
+      // (a.z - b.z): Ay'ın ARKASINDAKİ düğümler (Zübânâ, İklîl, Gafr, Simâk;
+      // z ≈ +330..+380, derinlik 0.89) Ay'ın önüne çiziliyor, etiketleri
+      // Ay'ın diskinin üstünde yüzüyordu.
+      items.sort((a, b) => b.z - a.z);
       GU.orderKeepFocus(items.map((it) => it.el), true);
     }
   }
@@ -754,6 +832,8 @@
       name: { tr: m.menzil, en: m.menzil, pt: m.menzil },
       short: m.zuhur,
     })),
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => hueFor(n.id - 1),
     title: { tr: "Menziller", en: "The Waystations", pt: "As Estações" },
     note: {
       tr: "Sarmalı okumak için ekran dar geldi — yirmi sekiz menzil burada seyir sırasıyla listede. Bir menzile dokun, paneli oku.",

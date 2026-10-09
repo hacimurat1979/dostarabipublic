@@ -1159,6 +1159,11 @@
 
   function setViewMode(mode) {
     if (viewMode === mode) return;
+    // Panel yalnız seçimle açılır (2026-10-09 görsel taraması): kip değişimi
+    // paneli kendiliğinden açmaz. Kullanıcı "Bütün Sorular" listesini zaten
+    // açık tutuyorsa açık kalır; bir soru/kategori açıksa o seçim aşağıda
+    // sıfırlandığı için panel de kapanır (karşılığı kalmayan içerik).
+    const listeAcikti = detailPanel && !detailPanel.hidden && !currentDetailQuestion && !expandedCatId;
     viewMode = mode;
     const nehirBtn = document.getElementById("sorular-nehir-toggle");
     const tiltBtn = document.getElementById("sorular-3d-toggle");
@@ -1178,7 +1183,8 @@
     // showAllQuestionsList() çağrılırsa, onun kendi fitView() çağrısı hâlâ
     // ESKİ moddaki nodes dizisine göre sığdırır -- bir anlık yanlış kadraj.
     rebuildScene(true);
-    showAllQuestionsList(true);
+    showAllQuestionsList(true, false);
+    if (detailPanel && !listeAcikti) detailPanel.hidden = true;
   }
 
   // --- Kademeli açılım: kategori aç / kapat ----------------------------------
@@ -1403,6 +1409,8 @@
     },
     groupBy: (n) => n.__cat,
     groupTitle: (catId) => mobilKategoriBaslik.get(catId) || null,
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => "var(" + (CATEGORY_COLOR_VAR[n.__cat] || "--series-theme") + ")",
     title: { tr: "Sorular", en: "Questions", pt: "Perguntas" },
     note: {
       tr: "Grafiği okumak için ekran dar geldi — sorular burada kümeleriyle listede. Bir soruya dokun, cevabı oku.",
@@ -1435,11 +1443,9 @@
         // üstünü örtüyor ve ilk dokunuşu yutuyordu (Puppeteer ile ölçüldü:
         // satır tıklaması panele gidiyordu). Liste görünürken panel
         // açılmadan içerik hazırlanıyor; masaüstü davranışı değişmedi.
-        else {
-          const mobilListeAktif = window.matchMedia("(max-width: 640px)").matches
-            && !wrapEl.classList.contains("grafik-acik");
-          showAllQuestionsList(undefined, !mobilListeAktif);
-        }
+        // 2026-10-09: masaüstünde de açılmıyor -- panel yalnız seçimle açılır
+        // (ETKILESIM_DILI "Seçmek"); içerik hazırlanır, panel kapalı kalır.
+        else showAllQuestionsList(undefined, false);
       });
     },
     onLangChange() {

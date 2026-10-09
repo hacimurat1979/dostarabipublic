@@ -959,12 +959,17 @@
   function hideTooltip() { GU.hideTooltip(tooltip); }
 
   // --- Detay paneli ---
+  // @revise adresi (2026-10-09).
+  const HAL_DOSYA = "data/ibn-arabi/hal.json";
+  function adres(kayit, alan) {
+    return kayit ? ` data-dost-dosya="${HAL_DOSYA}" data-dost-kaynak="${kayit}" data-dost-alan="${alan}"` : "";
+  }
   function insightsHtml(insights, excludeId) {
     if (!insights || !insights.length) return "";
     return `<div class="insight-group">${insights.map((ins, i) => `
       <details class="insight" ${i === 0 ? "open" : ""}>
         <summary>${I18n.pick3(ins.label)}</summary>
-        <p>${linkify(I18n.pick3(ins.text), "hal", excludeId)}</p>
+        <p${adres(excludeId, `insights[${i}].text`)}>${linkify(I18n.pick3(ins.text), "hal", excludeId)}</p>
         <cite>${ins.cite}</cite>
       </details>`).join("")}</div>`;
   }
@@ -993,7 +998,7 @@
       <div class="detail-block detail-block--edge">
         <h3>↔ ${I18n.pick3(other.name)}</h3>
         <p class="detail-eyebrow">${tt(KIND_LABEL[r.kind] || {})}</p>
-        <p>${linkify(tt(r.note), "hal", d.id)}</p>
+        <p${adres(r.source + "→" + r.target, "note")}>${linkify(tt(r.note), "hal", d.id)}</p>
         <cite>${r.cite}</cite>
         ${confidenceNoteHtml(r.confidence)}
       </div>`;
@@ -1013,7 +1018,7 @@
       <h2 class="detail-title">${I18n.pick3(d.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(d.short)}</h3>
-        <p>${linkify(I18n.pick3(d.summary), "hal", d.id)}</p>
+        <p${adres(d.id, "summary")}>${linkify(I18n.pick3(d.summary), "hal", d.id)}</p>
       </div>
       ${analogyHtml(d.analogy)}
       ${terkHtml(d)}
@@ -1035,7 +1040,7 @@
       <h2 class="detail-title">${I18n.pick3(s.name)} ↔ ${I18n.pick3(t.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <h3>${tt(KIND_LABEL[r.kind] || {})}</h3>
-        <p>${linkify(tt(r.note), "hal", null)}</p>
+        <p${adres(r.source + "→" + r.target, "note")}>${linkify(tt(r.note), "hal", null)}</p>
         <cite>${r.cite}</cite>
         ${confidenceNoteHtml(r.confidence)}
       </div>`;
@@ -1129,7 +1134,9 @@
     wrapEl: document.getElementById("hal-wrap"),
     listEl: document.getElementById("hal-mobil-liste"),
     fetchUrl: "data/ibn-arabi/hal.json",
-    extractNodes: (d) => d.nodes || [],
+    extractNodes: (d) => (d.nodes || []).map((n, i, a) => Object.assign({}, n, { __i: i, __n: a.length })),
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => { if (!journeyColor) buildColorScale(n.__n); return journeyColor(n.__i); },
     title: { tr: "Hâller", en: "The States", pt: "Os Estados" },
     note: {
       tr: "Sarmalı okumak için ekran dar geldi — on sekiz hâl burada seyir sırasıyla listede. Bir hâle dokun, paneli oku.",

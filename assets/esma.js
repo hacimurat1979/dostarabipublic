@@ -194,13 +194,19 @@
     if (VOLUME_SOURCE_MATCH[v]) return sources.filter((s) => s.includes(VOLUME_SOURCE_MATCH[v]));
     return [];
   }
+  // @revise adresi (2026-10-09). Kutup (cluster) düğümleri sentetik --
+  // veri dosyasında karşılıkları yok, adres almıyorlar.
+  const ESMA_DOSYA = "data/ibn-arabi/esma.json";
+  function adres(kayit, alan) {
+    return kayit ? ` data-dost-dosya="${ESMA_DOSYA}" data-dost-kaynak="${kayit}" data-dost-alan="${alan}"` : "";
+  }
   function insightsHtml(insights, sources, excludeId) {
     if (!insights || !insights.length) return "";
     return `<div class="insight-group">${insights.map((ins, i) => {
       const cite = sourcesForInsight(ins, sources);
       return `<details class="insight" ${i === 0 ? "open" : ""}>
         <summary>${volumeLabel(ins.volume)}</summary>
-        <p>${linkify(tt(ins.text), "esma", excludeId)}</p>
+        <p${adres(excludeId, `insights[${i}].text`)}>${linkify(tt(ins.text), "esma", excludeId)}</p>
         ${cite.length ? `<cite>${cite.join(" · ")}</cite>` : ""}
       </details>`;
     }).join("")}</div>`;
@@ -923,6 +929,18 @@
       // ekran dikdörtgeni burada da "dolu" bir kutu olarak SAYILIYOR --
       // etiketler ona da diğer etiketlere kaçtığı gibi kaçıyor.
       if (legendBox) placed.push(legendBox);
+      // Merkezdeki büyük küreler (Zât, Allah, üç kutup) de engel
+      // (2026-10-09 görsel taraması: "Cemâl — Güzellik" yukarı itile itile
+      // Zât'ın küresinin tam üstüne oturuyordu -- motor yalnız yazı-yazı
+      // çakışmasına bakıyordu, yazı-küreye değil).
+      nodes.forEach((n) => {
+        if (n.kind !== "zat" && n.kind !== "allah" && n.kind !== "cluster") return;
+        if (nodeOpacity(n) < 0.02) return;
+        const r = n.radius * n.pscale;
+        placed.push({ x0: n.px - r, x1: n.px + r, y0: n.py - r, y1: n.py + r });
+      });
+      const allahN = byId.get("allah");
+      const merkezX = allahN ? allahN.px : 0;
       // Zorunlu ("her zaman kazanır") etiketler eskiden BİRBİRLERİYLE hiç
       // çakışma kontrolüne girmeden sırayla yerleştiriliyordu -- Zât/Allah/
       // kutuplar sık sık üst üste biniyordu (2026-08-07 UI denetimi,
@@ -941,11 +959,31 @@
         if (legendBox && boxesOverlap(it.box, legendBox)) {
           dx = legendBox.x1 + 8 - it.box.x0;
         }
+        // Her satırda önce düğümün kendi yerinde, sonra merkezden DIŞA doğru
+        // yatay kaçışla denenir (en çok bir etiket genişliği); ikisi de
+        // doluysa bir satır yukarı çıkılır. Eskiden yalnız yukarı
+        // kaçılıyordu: merkezin yanındaki kutup başlığı Allah ve Zât'ın
+        // etiketlerinin arasından tırmanıp Zât'ın üstüne düşüyordu.
+        const genislik = it.box.x1 - it.box.x0;
+        const disa = it.n.px < merkezX ? -1 : 1;
+        const bosMu = (ddx, ddy) => {
+          const b = { x0: it.box.x0 + ddx, x1: it.box.x1 + ddx, y0: it.box.y0 + ddy, y1: it.box.y1 + ddy };
+          return placed.find((p) => boxesOverlap(b, p)) || null;
+        };
         let dy = 0, guard = 0;
         while (guard++ < 24) {
-          const b = { x0: it.box.x0 + dx, x1: it.box.x1 + dx, y0: it.box.y0 + dy, y1: it.box.y1 + dy };
-          const hit = placed.find((p) => boxesOverlap(b, p));
+          let hit = bosMu(dx, dy);
           if (!hit) break;
+          if (it.n.kind !== "zat" && it.n.kind !== "allah") {
+            let ddx = dx, adim = 0, yanBos = false;
+            while (hit && adim++ < 4) {
+              ddx = disa < 0 ? hit.x0 - 4 - (it.box.x1 - it.box.x0) - it.box.x0 : hit.x1 + 4 - it.box.x0;
+              if (Math.abs(ddx - dx) > genislik) break;
+              hit = bosMu(ddx, dy);
+              if (!hit) yanBos = true;
+            }
+            if (yanBos) { dx = ddx; break; }
+          }
           dy -= (it.box.y1 - it.box.y0) + 4; // yukarı doğru kaydır -- etiketler düğümün üstünde
         }
         if (dx || dy) {
@@ -1572,7 +1610,7 @@
     openPanel(`
       <p class="detail-eyebrow">${eyebrow}</p>
       <h2 class="detail-title">${tt(raw.name)} ${poleBadgeHtml(raw)}</h2>
-      <div class="detail-block detail-block--ibnarabi"><h3>${tt(raw.short)}</h3><p>${linkify(tt(raw.summary), "esma", raw.id)}</p>${clusterCiteHtml(sceneNode, raw)}</div>
+      <div class="detail-block detail-block--ibnarabi"><h3>${tt(raw.short)}</h3><p${sceneNode.kind === "cluster" ? "" : adres(raw.id, "summary")}>${linkify(tt(raw.summary), "esma", raw.id)}</p>${clusterCiteHtml(sceneNode, raw)}</div>
       ${analogyHtml(raw.analogy)}
       ${insightsHtml(raw.insights, raw.sources, raw.id)}
       ${relatedNamesHtml(sceneNode)}
@@ -1598,7 +1636,7 @@
     openPanel(`
       <p class="detail-eyebrow">${tt({ tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" })}</p>
       <h2 class="detail-title">${tt(raw.name)}</h2>
-      <div class="detail-block detail-block--ibnarabi"><h3>${tt(raw.short)}</h3><p>${linkify(tt(raw.summary), "esma", "zat")}</p></div>
+      <div class="detail-block detail-block--ibnarabi"><h3>${tt(raw.short)}</h3><p${adres("zat", "summary")}>${linkify(tt(raw.summary), "esma", "zat")}</p></div>
       ${analogyHtml(raw.analogy)}
       ${insightsHtml(raw.insights, raw.sources, "zat")}
       <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "İlişkiler", en: "Relations", pt: "Relações" })}</p>
@@ -1618,7 +1656,7 @@
       <h2 class="detail-title">${tt(from.name)} ↔ ${tt(to.name)} ${relationTypeBadgeHtml(r)}</h2>
       ${confidenceNoteHtml(r.confidence)}
       ${relationDiagramHtml(r)}
-      <div class="detail-block detail-block--ibnarabi"><p>${tt(r.label)}</p></div>
+      <div class="detail-block detail-block--ibnarabi"><p${adres(r.from + "→" + r.to, "label")}>${tt(r.label)}</p></div>
     `);
     detailPanel.hidden = false;
     wireRelationDiagram(r);
@@ -1871,7 +1909,10 @@
   // ilk açıldığı dilde donuk kalıyordu (sayfa dili ile popup dili uyuşmuyordu).
   let onboardRedraw = null;
   function maybeShowOnboarding() {
-    try { if (sessionStorage.getItem("dost-esma-onboard-seen")) return; } catch (_) {}
+    // localStorage (2026-10-09): sessionStorage her yeni sekmede sıfırlandığı
+    // için tanıtım kutusu her sekmede yeniden çıkıyordu. Görüldüğü bir kez
+    // kaydedilir; depolama yasaksa (gizli pencere) kutu yine çıkar.
+    try { if (localStorage.getItem("dost-esma-onboard-seen")) return; } catch (_) {}
     const steps = [
       { t: { tr: "O'ndan geldik, O'na gidiyoruz", en: "From Him we came, to Him we go", pt: "D'Ele viemos, a Ele vamos" },
         b: { tr: "Bu harita merkezde Allah ismiyle başlar — bütün isimleri kendinde toplayan İsm-i Âzam — ve onun ötesine, her isimlendirmenin ötesindeki Zât'a işaret eder.", en: "This map begins at the center with the Name Allah — the Name that gathers every Name within itself — and points beyond it, to the Essence beyond all naming.", pt: "Este mapa começa no centro com o Nome Allah — o Nome que reúne todos os Nomes em si — e aponta para além dele, para a Essência além de toda nomeação." } },
@@ -1900,7 +1941,7 @@
       ov.querySelector(".esmaX-onb__next").addEventListener("click", () => { if (i < steps.length - 1) { i++; draw(); } else done(); });
     }
     function done() {
-      try { sessionStorage.setItem("dost-esma-onboard-seen", "1"); } catch (_) {}
+      try { localStorage.setItem("dost-esma-onboard-seen", "1"); } catch (_) {}
       onboardRedraw = null;
       ov.classList.add("esmaX-onb--out");
       setTimeout(() => ov.remove(), reduceMotion ? 0 : 320);
@@ -2046,6 +2087,8 @@
     groupBy: (n) => n.pole || "neutral",
     groupOrder: ["kemal", "cemal", "celal", "neutral"],
     groupTitle: (pole) => POLE_LABEL[pole] || POLE_LABEL.neutral,
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => (n.id === "allah" ? "var(--series-theme)" : ({ celal: "var(--series-celal)", cemal: "var(--series-cemal)", kemal: "var(--series-kemal)" })[n.pole] || "var(--series-esma-neutral)"),
     title: { tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" },
     note: {
       tr: "Grafiği okumak için ekran dar geldi — yüz bir isim burada Celâl/Cemâl/Kemâl gruplarıyla listede. Bir isme dokun, paneli oku.",

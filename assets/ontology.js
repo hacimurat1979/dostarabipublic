@@ -366,14 +366,19 @@
     });
   }
 
-  // Görsel kart (P0-3, 2026-09-02): share-mode.js kendi paneli zaten var
-  // (window.__dostShare.open -> buildPanel, 13 şablon arasından seçim);
-  // burada yalnız keşfedilebilir bir kapı açıyoruz, share-mode'un iç
-  // mantığına dokunmuyoruz.
+  // Görsel kart (P0-3, 2026-09-02; "bu kaydı paylaş" 2026-10-09): düğme
+  // açık olan kaydı ({view, id} -- updateHash'in yazdığı /<view>/<id>
+  // yolundan) share-mode'a verir; panel o kaydın kartını kendiliğinden
+  // hazırlar. Eskiden seçeneksiz açılıyor, el-Cemîl açıkken rastgele bir
+  // Fütûhât alıntısı getiriyordu (seçimin habersiz başka yere gitmesi).
   const detailShareVisual = document.getElementById("detail-share-visual");
   if (detailShareVisual) {
     detailShareVisual.addEventListener("click", () => {
-      if (window.__dostShare && window.__dostShare.open) window.__dostShare.open();
+      if (!(window.__dostShare && window.__dostShare.open)) return;
+      const yol = location.pathname.slice(ROUTE_BASE.length).split("/").filter(Boolean);
+      const view = yol[0] || null;
+      const id = yol.length > 1 ? decodeURIComponent(yol.slice(1).join("/")) : null;
+      window.__dostShare.open(view ? { view: view, id: id } : undefined);
     });
   }
 
@@ -3588,17 +3593,26 @@
     return [];
   }
 
-  function insightsHtml(insights, sources, excludeView, excludeId) {
+  // @revise adresi (2026-10-09): her düzenlenebilir alan kendi
+  // dosya/kayıt/alan üçlüsünü taşır; kenarların kaydı "kaynak→hedef".
+  const ONT_DOSYA = "data/ibn-arabi/ontology.json";
+  function adres(kayit, alan) {
+    return kayit ? ` data-dost-dosya="${ONT_DOSYA}" data-dost-kaynak="${kayit}" data-dost-alan="${alan}"` : "";
+  }
+  const kenarKayit = (l) => (l.source && l.source.id ? l.source.id : l.source) + "→" + (l.target && l.target.id ? l.target.id : l.target);
+
+  function insightsHtml(insights, sources, excludeView, excludeId, kayit) {
     // Metni ayıklamada boşalan içgörüler yalnız künye taşıyan boş bir
     // <details> olarak çiziliyordu (2026-10-07 taraması).
-    insights = (insights || []).filter((ins) => window.DostGraphUtils.has3(ins.text));
+    const tum = insights || [];
+    insights = tum.filter((ins) => window.DostGraphUtils.has3(ins.text));
     if (!insights.length) return "";
     return `<div class="insight-group">${insights.map((ins, i) => {
       const cite = sourcesForInsight(ins, sources);
       return `
       <details class="insight" ${i === 0 ? "open" : ""}>
         <summary>${volumeLabel(ins.volume)}</summary>
-        <p>${linkify(I18n.pick3(ins.text), excludeView, excludeId)}</p>
+        <p${adres(kayit, `insights[${tum.indexOf(ins)}].text`)}>${linkify(I18n.pick3(ins.text), excludeView, excludeId)}</p>
         ${cite.length ? `<cite>${cite.join(" · ")}</cite>` : ""}
       </details>
     `;
@@ -3617,11 +3631,11 @@
       <h2 class="detail-title">${I18n.pick3(d.name)}</h2>
       <div class="detail-block detail-block--ibnarabi">
         <h3>${I18n.pick3(d.short)}</h3>
-        <p>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>
+        <p${adres(d.id, "summary")}>${linkify(I18n.pick3(d.summary), "ontoloji", d.id)}</p>
       </div>
       ${analogyHtml(d.analogy)}
       ${entityDiagramHtml(d)}
-      ${insightsHtml(d.insights, d.sources, "ontoloji", d.id)}
+      ${insightsHtml(d.insights, d.sources, "ontoloji", d.id, d.id)}
       ${gateHtml(d)}
       ${relatedEdgesHtml(d)}
     `;
@@ -3706,8 +3720,8 @@
       return `<div class="detail-block detail-block--edge">
         <h3>${arrow} ${I18n.pick3(other.name)} — <em>${I18n.pick3(l.relation)}</em></h3>
         ${confidenceNoteHtml(l.confidence)}
-        <p>${linkify(I18n.pick3(l.nature), null, null)}</p>
-        ${insightsHtml(l.insights, null, null, null)}
+        <p${adres(kenarKayit(l), "nature")}>${linkify(I18n.pick3(l.nature), null, null)}</p>
+        ${insightsHtml(l.insights, null, null, null, kenarKayit(l))}
       </div>`;
     }).join("");
     return `<p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "İlişkiler", en: "Relations", pt: "Relações" })}</p>${items}`;
@@ -3720,8 +3734,8 @@
       ${confidenceNoteHtml(l.confidence)}
       ${entityDiagramHtml(l)}
       <div class="detail-block detail-block--ibnarabi">
-        <p>${linkify(I18n.pick3(l.nature), null, null)}</p>
-        ${insightsHtml(l.insights, null, null, null)}
+        <p${adres(kenarKayit(l), "nature")}>${linkify(I18n.pick3(l.nature), null, null)}</p>
+        ${insightsHtml(l.insights, null, null, null, kenarKayit(l))}
       </div>
     `;
     detailPanel.hidden = false;

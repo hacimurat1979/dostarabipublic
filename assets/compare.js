@@ -328,15 +328,42 @@
     // Simülasyonun İLK karelerinde getBBox metin daha boyanmadan 0 genişlik
     // döndürebiliyor (ölçüldü: üç etiket aynı satırda donmuş kalmıştı) --
     // sahne durulunca, fontlar da yüklüyken, SON bir tam yerleşim geçişi.
+    // Sığdırma (2026-10-09 görsel taraması): dar ekranda sahne kuvvet
+    // simülasyonunun kurduğu genişlikte kalıyor, düğüm ve etiketlerin bir
+    // kısmı tuvalin dışına taşıyordu. Başlangıç bakışı artık bütün sahneyi
+    // (etiketler dahil) tuvale sığdıran çerçeve; büyütmez, yalnız küçültür.
+    // Kullanıcı kendisi kaydırıp yakınlaştırdıysa simülasyonun sonraki
+    // durulmaları (sürükleme sonrası) bakışı geri almaz.
+    let kullaniciOynadi = false;
+    function sigdirTransform() {
+      const bb = zoomLayer.node().getBBox();
+      if (!bb.width || !bb.height) return d3.zoomIdentity;
+      const W = svg.node().clientWidth || width, H = svg.node().clientHeight || height;
+      const pad = 24;
+      const k = Math.max(0.2, Math.min(1, (W - pad * 2) / bb.width, (H - pad * 2) / bb.height));
+      return d3.zoomIdentity
+        .translate(W / 2 - k * (bb.x + bb.width / 2), H / 2 - k * (bb.y + bb.height / 2))
+        .scale(k);
+    }
+    function sigdir(animate) {
+      const t = sigdirTransform();
+      (animate ? svg.transition().duration(420) : svg).call(zoomBehavior.transform, t);
+    }
     simulation.on("end", () => {
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(etiketleriYerlestir);
-      else etiketleriYerlestir();
+      const sonra = () => { etiketleriYerlestir(); if (!kullaniciOynadi) sigdir(true); };
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(sonra);
+      else sonra();
     });
 
-    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.4, 3]);
+    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.2, 3]);
+    zoomBehavior.on("start.sigdir", (ev) => { if (ev.sourceEvent) kullaniciOynadi = true; });
+    nodeSel.on("pointerdown.sigdir", () => { kullaniciOynadi = true; });
+    // Simülasyon durulmadan önce de (ilk ~2 sn) sahne taşmasın: kısa bir
+    // ısınmadan sonra bir kez sığdır.
+    setTimeout(() => { if (!kullaniciOynadi) sigdir(false); }, 700);
     window.DostGraphUtils.wireRecenter("compare-recenter", () => {
-      const sel = svg.transition().duration(420);
-      sel.call(zoomBehavior.transform, d3.zoomIdentity);
+      kullaniciOynadi = false;
+      sigdir(true);
     });
 
     daphneApp = { nodes, links, conceptById, themes };
