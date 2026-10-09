@@ -55,11 +55,9 @@ window.__ayetHadisApp = (function () {
     return dataPromise;
   }
 
-  function esc(s) {
-    return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => (
-      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]
-    ));
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
 
   function sureAdi(ref) {
     const no = parseInt(ref.split(":")[0], 10);

@@ -269,6 +269,10 @@
       // dokunulmuyordu -- sürükleyerek döndürülmüş bir sahnede Recenter
       // yalnız kadrajı düzeltiyor, açı aynı kalıyordu (UI denetimi bulgusu).
       yaw = 0; pitch = 0.18;
+      // Açı sıfırlandı ama sahne yeniden boyanmıyordu: kendiliğinden dönüş
+      // yokken (prefers-reduced-motion) düğümler döndürülmüş yerde
+      // kalıyordu (2026-10-09, etkilesim-testi.js).
+      ensureFrame();
       geriCekil();
     });
     svg.on("click", () => { if (activeId) { activeId = null; showIntro(); ensureFrame(); } });

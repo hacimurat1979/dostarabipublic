@@ -450,7 +450,13 @@ window.DostGraphUtils = (function () {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let tilt = 0, target = 0, from = 0, animStart = 0;
     let yaw = 0, pitch = o.pitch == null ? 0.26 : o.pitch;
+    const pitch0 = pitch;
     let dragging = false;
+    // Recenter ("geri çekilmek", ETKILESIM_DILI): serbest döndürme de
+    // kaymış bakıştır -- açı başlangıca döner, seçilmiş eğim (tilt) kalır.
+    // (2026-10-09, etkilesim-testi.js: Sırlar/Sorular'da ortala dönmüş
+    // sahneyi döndürülmüş bırakıyordu.)
+    function resetView() { yaw = 0; pitch = pitch0; }
 
     function set(t, instant) {
       from = tilt; target = t; animStart = performance.now();
@@ -540,7 +546,7 @@ window.DostGraphUtils = (function () {
       if (btn) { btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); }
     }
     return {
-      set: set, step: step, project: project, wireDrag: wireDrag,
+      set: set, step: step, project: project, wireDrag: wireDrag, resetView: resetView,
       wireToggle: wireToggle, markOn: markOn,
       get value() { return tilt; },
       get on() { return target > 0.5; },
@@ -1263,5 +1269,222 @@ window.DostGraphUtils = (function () {
     btn.addEventListener("click", onClick);
   }
 
-  return { getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  // Sayı + Türkçe ek (2026-10-09, dalga-web). "Cilt X'in" gibi hatalar
+  // (doğrusu X'un: "on") ekin sayının OKUNUŞUNA göre seçilmemesinden
+  // doğuyordu. Okunuşun son kelimesi ünlü uyumunu ve sert/yumuşak
+  // ünsüzü belirler: 1'in, 2'nin, 3'ün, 4'ün, 5'in, 6'nın, 9'un, 10'un,
+  // 30'un, 40'ın, 60'ın, 100'ün, 1000'in. Roma rakamı da verilebilir
+  // ("X", "XIII"). tur: "in" (ilgi), "i" (belirtme), "e" (yönelme),
+  // "de" (bulunma), "den" (ayrılma), "inci" (sıra). Dönen değer sayının
+  // kendisi + kesme + ek.
+  const SAYI_BIRLER = ["", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"];
+  const SAYI_ONLAR = ["", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"];
+  function romaCoz(r) {
+    const d = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+    let t = 0;
+    for (let i = 0; i < r.length; i++) {
+      const v = d[r[i]], sonraki = d[r[i + 1]] || 0;
+      if (!v) return NaN;
+      t += sonraki > v ? -v : v;
+    }
+    return t;
+  }
+  function sayiSonKelime(n) {
+    if (n === 0) return "sıfır";
+    if (n % 10) return SAYI_BIRLER[n % 10];
+    if (n % 100) return SAYI_ONLAR[Math.floor(n / 10) % 10];
+    if (n % 1000) return "yüz";
+    if (n % 1e6) return "bin";
+    if (n % 1e9) return "milyon";
+    return "milyar";
+  }
+  function sayiEki(sayi, tur) {
+    const yazim = String(sayi);
+    const n = /^\d+$/.test(yazim) ? parseInt(yazim, 10) : romaCoz(yazim.toUpperCase());
+    if (!isFinite(n)) return yazim;
+    const kelime = sayiSonKelime(n);
+    const unluler = kelime.match(/[aıoueiöü]/g);
+    const unlu = unluler[unluler.length - 1];
+    const son = kelime[kelime.length - 1];
+    const unluBitis = /[aıoueiöü]/.test(son);
+    const dt = /[fstkçşhp]/.test(son) ? "t" : "d";
+    const dort = { a: "ı", ı: "ı", o: "u", u: "u", e: "i", i: "i", ö: "ü", ü: "ü" }[unlu];
+    const iki = /[aıou]/.test(unlu) ? "a" : "e";
+    const ek = {
+      in: (unluBitis ? "n" : "") + dort + "n",
+      i: (unluBitis ? "y" : "") + dort,
+      e: (unluBitis ? "y" : "") + iki,
+      de: dt + iki,
+      den: dt + iki + "n",
+      inci: (unluBitis ? "" : dort) + "nc" + dort,
+    }[tur || "in"];
+    return ek ? yazim + "'" + ek : yazim;
+  }
+
+  // Tarih (popstate) karşılığı: bir görünümün kendi "bir adım geri"
+  // zincirini, geri alacak bir şey kalmayana kadar (en çok `azami` kez)
+  // çalıştırır. Geri tuşu bir görünümün giriş hâline dönerken açık
+  // paneli/seçimi o görünümün KENDİ geri adımıyla kapatır -- davranış
+  // görünümün dosyasında kalır (ETKILESIM_DILI.md).
+  function stepBackView(wrapId, azami) {
+    let n = 0;
+    for (let tur = 0; tur < (azami || 6); tur++) {
+      const wrap = document.getElementById(wrapId);
+      if (!wrap || wrap.hidden) return n;
+      let aldi = false;
+      for (let i = 0; i < stepBacks.length; i++) {
+        if (stepBacks[i].wrapId !== wrapId) continue;
+        if (stepBacks[i].fn() === true) { aldi = true; n++; break; }
+      }
+      if (!aldi) break;
+    }
+    return n;
+  }
+
+  return { getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+})();
+
+// DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,
+// og/twitter etiketleri ve hreflang tek kapıdan yazılır. Kural
+// scripts/build-static-routes.py set_meta() ile BİREBİR aynı biçimdir --
+// JS yüklendikten sonra DOM'daki canonical, statik HTML'dekinin aynısı
+// olmalı (scripts/meta-testi.js bunu sınar):
+//   - ev: https://dostarabi.com/ , /en/ , /pt/
+//   - görünüm: https://dostarabi.com/<view>/ (dil kopyası: /en/<view>/)
+//     + dörtlü hreflang bloğu (tr/en/pt-BR/x-default)
+//   - statik rotası olan kayıt (futuhat|fusus|miskat/<id>,
+//     kavram/<view>/<id>, hakkinda/okuma-yollari|nereden-baslamali):
+//     https://dostarabi.com/<view>/<id>/ -- dil kopyası yok, hreflang yok
+//   - statik rotası OLMAYAN kayıt (esma/cemil gibi; doğrudan istek GitHub
+//     Pages'te 404 döner): görünümün canonical'ı -- 404 veren bir adresi
+//     "asıl adres" diye göstermemek için.
+// Eskiden ontology.js updateMeta her kaydı üst görünümün canonical'ıyla,
+// dil önekini düşürerek ve sondaki "/" olmadan yazıyordu.
+window.DostMeta = (function () {
+  "use strict";
+  const SITE = "https://dostarabi.com";
+  const PREFIX = "Dost Arabî — ";
+  // build-static-routes.py VIEW_META'daki görünümlerin hepsinin /en/ ve
+  // /pt/ kopyası var (ontology.js VIEW_META üç dilli); ev sayfası da.
+  // Yeni bir görünüm eklenirse buraya da yazılır -- meta-testi.js /en/
+  // kopyalarının hepsini sınadığı için unutulursa test kırılır.
+  const DIL_KOPYALI = new Set(["ontoloji", "esma", "hal", "terimler", "cizimler", "sirlar", "sorular", "bilmiyoruz", "elestiri-arkeolojisi", "hocalar", "eser-agi", "seyahat-atlasi", "yolculuk", "kuran-dokusu", "menziller", "tasiyicilar", "futuhat", "fusus", "miskat", "hakkinda", "kavram", "ayethadis"]);
+  const ROTALI_KAYIT = /^(?:(?:futuhat|fusus|miskat)\/[A-Za-z0-9_-]+|kavram\/[a-z-]+\/[A-Za-z0-9_-]+|hakkinda\/(?:okuma-yollari|nereden-baslamali))$/;
+  const TAG_RE = /<[^>]+>/g;
+
+  function routeBase() { return window.__dostRouteBase || ""; }
+
+  // Adres çubuğundaki dil öneki (/en/, /pt/) -- yoksa "tr".
+  function urlLang() {
+    const yol = location.pathname.slice(routeBase().length);
+    const m = /^\/(en|pt)(?=\/|$)/.exec(yol);
+    return m ? m[1] : "tr";
+  }
+  function langPrefix(lang) {
+    const l = lang || urlLang();
+    return l === "en" || l === "pt" ? "/" + l : "";
+  }
+
+  // Bir rota için {canonical, alternates}. lang: adresin dil öneki (UI
+  // dili değil -- canonical adresi anlatır, arayüzü değil).
+  function route(view, id, lang) {
+    const l = lang || urlLang();
+    const v = view === "ontology" ? "ontoloji" : view;
+    if (id) {
+      const yol = v + "/" + id;
+      if (ROTALI_KAYIT.test(yol)) return { canonical: SITE + "/" + yol + "/", alternates: null };
+    }
+    const govde = v === "ontoloji" ? "" : v + "/";
+    const canonical = SITE + langPrefix(l) + "/" + govde;
+    if (!DIL_KOPYALI.has(v)) return { canonical, alternates: null };
+    return {
+      canonical,
+      alternates: { tr: SITE + "/" + govde, en: SITE + "/en/" + govde, pt: SITE + "/pt/" + govde },
+    };
+  }
+
+  // scripts/_text_utils.py truncate() ile aynı.
+  function truncate(s, maks) {
+    maks = maks || 160;
+    if (!s || s.length <= maks) return s;
+    const cut = s.slice(0, maks);
+    return cut.slice(0, cut.lastIndexOf(" ")) + "…";
+  }
+  function duzMetin(s) {
+    const d = document.createElement("textarea");
+    d.innerHTML = String(s == null ? "" : s).replace(TAG_RE, "");
+    return d.value;
+  }
+
+  function setAttr(sel, attr, val) {
+    const el = document.head.querySelector(sel);
+    if (el) el.setAttribute(attr, val);
+  }
+
+  function setAlternates(alternates) {
+    const eski = document.head.querySelectorAll('link[rel="alternate"][hreflang]');
+    if (!alternates) { eski.forEach((e) => e.remove()); return; }
+    const hedef = [["tr", alternates.tr], ["en", alternates.en], ["pt-BR", alternates.pt], ["x-default", alternates.tr]];
+    if (eski.length === 4) {
+      hedef.forEach(([hl, href], i) => { eski[i].setAttribute("hreflang", hl); eski[i].setAttribute("href", href); });
+      return;
+    }
+    eski.forEach((e) => e.remove());
+    const canonicalEl = document.head.querySelector('link[rel="canonical"]');
+    const sonraki = canonicalEl ? canonicalEl.nextSibling : null;
+    hedef.forEach(([hl, href]) => {
+      const l = document.createElement("link");
+      l.rel = "alternate";
+      l.setAttribute("hreflang", hl);
+      l.setAttribute("href", href);
+      document.head.insertBefore(l, sonraki);
+    });
+  }
+
+  // Son "güçlü" (kayda özel) yazımın canonical'ı: görünüm düzeyindeki
+  // genel bir güncelleme (weak) aynı adres için kayda özel başlığı
+  // ezmesin diye.
+  let kayitCanonical = null;
+
+  // opts: {title (başlık soneki; "Dost Arabî — " öneki burada eklenir),
+  //        fullTitle (öneksiz tam başlık), description (HTML olabilir;
+  //        düz metne çevrilip 160'a kesilir), canonical (tam URL),
+  //        alternates ({tr,en,pt} | null), lang (<html lang>),
+  //        weak (true: bu canonical için önceden kayda özel başlık
+  //        yazıldıysa title/description'a dokunma)}
+  function set(opts) {
+    opts = opts || {};
+    const canonical = opts.canonical;
+    const zayifAtla = !!(opts.weak && canonical && canonical === kayitCanonical);
+    if (!opts.weak) kayitCanonical = canonical || null;
+    else if (canonical !== kayitCanonical) kayitCanonical = null;
+    if (!zayifAtla) {
+      const baslik = opts.fullTitle || (opts.title ? PREFIX + duzMetin(opts.title) : null);
+      if (baslik) {
+        document.title = baslik;
+        setAttr('meta[property="og:title"]', "content", baslik);
+        setAttr('meta[name="twitter:title"]', "content", baslik);
+      }
+      if (opts.description != null) {
+        const d = truncate(duzMetin(opts.description));
+        setAttr('meta[name="description"]', "content", d);
+        setAttr('meta[property="og:description"]', "content", d);
+        setAttr('meta[name="twitter:description"]', "content", d);
+      }
+    }
+    if (canonical) {
+      setAttr('link[rel="canonical"]', "href", canonical);
+      setAttr('meta[property="og:url"]', "content", canonical);
+    }
+    if ("alternates" in opts) setAlternates(opts.alternates);
+    if (opts.lang) document.documentElement.lang = opts.lang;
+  }
+
+  // Bir kayıt için kısa yol: route() + set().
+  function setRecord(view, id, title, description) {
+    const r = route(view, id);
+    set({ title, description, canonical: r.canonical, alternates: r.alternates });
+  }
+
+  return { route, set, setRecord, urlLang, langPrefix, truncate, SITE };
 })();

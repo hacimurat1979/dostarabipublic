@@ -952,8 +952,14 @@
   } catch (e) {}
 
   // --- giriş yolları ------------------------------------------------------
+  // view-loader.js (index.html) bu betiği @revise ilk yazıldığında ya da
+  // #revise / uzun basmayla tembel indiriyor ve gizli kelimeyi KENDİSİ
+  // yakalıyor; açma/kapama bu kapıdan (2026-10-09). compare.html'de
+  // yükleyici yok -- orada aşağıdaki kendi dinleyicimiz çalışır.
+  window.__dostEditMode = { toggle: kipDegistir, isOn: () => editModeOn };
+
   // 1) Klavye: "@revise".
-  window.addEventListener("keydown", (e) => {
+  if (!window.__dostKipYukleyici) window.addEventListener("keydown", (e) => {
     if (e.key.length !== 1) return;
     // AltGr (Ctrl+Alt) Türkçe klavyede "@" üretiyor; bu bileşimi
     // engellemiyoruz. Tek başına Ctrl/Alt ya da Meta ise kısayoldur.

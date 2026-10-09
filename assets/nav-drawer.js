@@ -125,7 +125,7 @@
     // 70'i ondan dışarı taşmıyordu ve mobilde Kavram Defterim / Sessiz Mod
     // (z-index:60) son satırların üstüne biniyordu (2026-10-08 taraması).
     document.documentElement.classList.add("nav-drawer-acik");
-    const first = drawer.querySelector(".btn-ghost--active") || drawer.querySelector("button");
+    const first = drawer.querySelector(".btn-ghost--active") || drawer.querySelector(".btn-ghost");
     if (first) first.focus();
   }
   function close(focusToggle) {
@@ -149,7 +149,11 @@
   // Bir bölüme tıklanınca çekmece kapanır — gezinme ontology.js'in aynı
   // click dinleyicisiyle zaten gerçekleşiyor (iki dinleyici, tek tık).
   drawer.addEventListener("click", (e) => {
-    if (!e.target.closest("button")) return;
+    // Görünüm kapıları 2026-10-09'dan beri gerçek <a href> (orta tık /
+    // yeni sekme çalışsın diye); grup başlıkları hâlâ <p role="button">.
+    if (!e.target.closest("a.btn-ghost, button")) return;
+    // Ctrl/⌘/Shift tık yeni sekmede/pencerede açar -- bu sayfa yerinde kalır.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     close();
     // Çekmece kapanınca odak gizlenen düğmeyle birlikte <body>'ye
     // düşüyordu; klavye kullanıcısı yeni bölümün başından Tab'lamak

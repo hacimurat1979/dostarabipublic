@@ -88,6 +88,9 @@
     const b = base();
     let path = location.pathname;
     if (b && path.startsWith(b)) path = path.slice(b.length);
+    // Dil öneki (/en/, /pt/) adreste korunuyor (2026-10-09) -- kısım
+    // anahtarına dahil değil.
+    path = path.replace(/^\/(en|pt)(?=\/|$)/, "");
     return path.replace(/^\/+|\/+$/g, "");
   }
 
@@ -132,11 +135,9 @@
     tip.style.top = y + "px";
   }
 
-  function esc(s) {
-    return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => (
-      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]
-    ));
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
 
   function icerik(ref) {
     const a = veri && veri.ayetler && veri.ayetler[ref];

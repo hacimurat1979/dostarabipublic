@@ -1,19 +1,22 @@
 /**
- * FAZ 5: "Anlamca yakın pasajlar" — tarayıcıda, saf JS ile kosinüs hesabı.
+ * FAZ 5: "Anlamca yakın pasajlar".
  *
- * Plan metni: "gömme vektörlerini statik dosyadan okuyup tarayıcıda saf JS
- * ile kosinüs hesaplayan bir 'anlamca yakın pasajlar' özelliği yaz.
- * transformers.js'i runtime'a SOKMA — vektörler derleme zamanında
- * üretilecek." Vektörlerin kendisi scripts/anlamsal-komsuluk.mjs ile
- * derleme zamanında (Node/transformers.js, offline) üretiliyor; bu dosya
- * yalnız üretilmiş int8 vektörleri okuyup dot-product hesaplıyor --
- * hiçbir model/kütüphane tarayıcıya inmiyor.
+ * Vektörler scripts/anlamsal-komsuluk.mjs ile derleme zamanında
+ * (Node/transformers.js, offline) üretiliyor -- hiçbir model/kütüphane
+ * tarayıcıya inmiyor.
  *
- * Veri: data/ibn-arabi/pasaj-vektorleri-<dil>.bin (ham Int8Array, satır
- * başı `boyut` bayt) + aynı adı taşıyan .json manifest (kisim/route/
- * başlık/kısa alıntı, .bin ile SIRA hizalı). Yalnız istenince (bir kısım/
- * fass sayfasında "Göster"e tıklanınca) indirilir, önbelleğe alınır --
- * her sayfa yüklemesinde otomatik inmiyor.
+ * 2026-10-09 (dalga-web): kosinüs artık TARAYICIDA da hesaplanmıyor. Sonuç
+ * her ziyaretçi için aynı olduğu halde "Göster"e basan herkes ~1,7 MB int8
+ * vektör (pasaj-vektorleri-<dil>.bin) + ~950 KB manifest indirip kısmın her
+ * pasajını 2.000+ pasajla karşılaştırıyordu (~16 milyon çarpma; mobilde
+ * saniyeler). Komşuluklar scripts/pasaj-komsu-uret.js ile derleme
+ * zamanında, AYNI algoritmayla (int8 nokta çarpımı, her hedef kısımdan en
+ * iyi pasaj, ilk 5) hesaplanıp data/ibn-arabi/pasaj-komsulari-<dil>.json'a
+ * (~65 KB gzip) yazılıyor; bu dosya yalnız onu okuyor. Vektör dosyaları
+ * özel repoda üreticinin girdisi olarak kalıyor, yayına gitmiyor.
+ *
+ * Yalnız istenince (bir kısım/fass sayfasında "Göster"e tıklanınca)
+ * indirilir; ortak fetchJson önbelleğinden paylaşılır.
  *
  * DURUŞ: bu bir ÖNERİdir, Dost'un çapraz-referansı değildir -- aynı
  * temkin data/ibn-arabi/anlamsal-baglantilar.json (elle onaylanmış alt
@@ -24,75 +27,18 @@
 window.DostAnlamsalYakin = (function () {
   "use strict";
 
-  var cache = {}; // dil -> Promise<{view, dim, olcek, pasajlar}> | null (başarısızsa)
-
-  function loadLang(lang) {
-    if (lang in cache) return cache[lang];
-    var p = Promise.all([
-      fetch("data/ibn-arabi/pasaj-vektorleri-" + lang + ".bin").then(function (r) {
-        if (!r.ok) throw new Error("vektor .bin bulunamadı: " + r.status);
-        return r.arrayBuffer();
-      }),
-      fetch("data/ibn-arabi/pasaj-vektorleri-" + lang + ".json").then(function (r) {
-        if (!r.ok) throw new Error("manifest bulunamadı: " + r.status);
-        return r.json();
-      }),
-    ]).then(function (parts) {
-      return { view: new Int8Array(parts[0]), dim: parts[1].boyut, pasajlar: parts[1].pasajlar };
-    }).catch(function (e) {
-      // graph-utils.js'in fetchJson'ıyla aynı ilke: geçici bir ağ hatası
-      // kalıcı bir başarısızlığa dönüşmesin -- önbellekte başarısız Promise
-      // kalırsa bir sonraki çağıran (bugün tek çağrı yeri var, ama API bunu
-      // dışlamıyor) tekrar denemeden hep aynı hatayı alırdı.
-      delete cache[lang];
-      throw e;
-    });
-    cache[lang] = p;
-    return p;
-  }
-
-  function cosine(view, dim, i, j) {
-    var offA = i * dim, offB = j * dim;
-    var dot = 0, na = 0, nb = 0;
-    for (var d = 0; d < dim; d++) {
-      var a = view[offA + d], b = view[offB + d];
-      dot += a * b; na += a * a; nb += b * b;
-    }
-    if (!na || !nb) return 0;
-    return dot / Math.sqrt(na * nb);
-  }
-
   /**
-   * kisimId'ye ait pasajları, AYNI dilde farklı kısımlardaki en yakın
-   * pasajlarla eşleştirir. Her hedef kısımdan yalnız en iyi eşleşme
-   * tutulur (bir kısımla 3 ayrı pasaj eşleşse bile listede bir kez
-   * görünür). Döner: [{ skor, kisim, route, baslik, ozet }, ...] (skor
-   * büyükten küçüğe sıralı).
+   * kisimId'ye en yakın (farklı kısımlardaki) pasajlar -- önceden
+   * hesaplanmış listeden. Döner: [{ skor, kisim, route, baslik, ozet }, ...]
+   * (skor büyükten küçüğe sıralı, en çok topN).
    */
   function bul(kisimId, lang, topN) {
-    return loadLang(lang).then(function (data) {
-      var kendiIdx = [];
-      for (var i = 0; i < data.pasajlar.length; i++) {
-        if (data.pasajlar[i].kisim === kisimId) kendiIdx.push(i);
-      }
-      if (!kendiIdx.length) return [];
-      var enIyi = Object.create(null);
-      for (var a = 0; a < kendiIdx.length; a++) {
-        for (var b = 0; b < data.pasajlar.length; b++) {
-          var hedef = data.pasajlar[b];
-          if (hedef.kisim === kisimId) continue;
-          var s = cosine(data.view, data.dim, kendiIdx[a], b);
-          var mevcut = enIyi[hedef.kisim];
-          if (!mevcut || s > mevcut.skor) enIyi[hedef.kisim] = { skor: s, pasaj: hedef };
-        }
-      }
-      return Object.keys(enIyi)
-        .map(function (k) { return enIyi[k]; })
-        .sort(function (x, y) { return y.skor - x.skor; })
-        .slice(0, topN || 5)
-        .map(function (m) {
-          return { skor: m.skor, kisim: m.pasaj.kisim, route: m.pasaj.route, baslik: m.pasaj.baslik, ozet: m.pasaj.ozet };
-        });
+    return window.DostGraphUtils.fetchJson("data/ibn-arabi/pasaj-komsulari-" + lang + ".json").then(function (data) {
+      var liste = (data.kisimlar && data.kisimlar[kisimId]) || [];
+      return liste.slice(0, topN || 5).map(function (k) {
+        var p = data.pasajlar[k[0]];
+        return { skor: k[1], kisim: p.kisim, route: p.route, baslik: p.baslik, ozet: p.ozet };
+      });
     });
   }
 

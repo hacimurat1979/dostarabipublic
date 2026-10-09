@@ -29,6 +29,11 @@
   var data = null;
   var dataPromise = null;
   var activeId = null;
+  // Görünen hadis adresten / kullanıcı seçiminden mi geldi, yoksa görünüm
+  // kendiliğinden mi açtı (kaldığın yer / varsayılan)? Kendiliğinden
+  // açılışta adres /miskat/ kalır, meta görünümün kendisidir -- statik
+  // /miskat/ sayfasıyla aynı canonical (2026-10-09, scripts/meta-testi.js).
+  var adreste = false;
   var mapScene = null;
   var sectionScenes = [];
   var crossLinkSubscribed = false;
@@ -47,11 +52,9 @@
   var isDefaultLanding = false;
 
   function t(d) { return d ? I18n.pick3(d) : ""; }
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
 
   // Yazdır düğmesinin yanına paylaş düğmesi (kullanıcı isteği, 2026-08-16):
   // futuhat.js/fusus.js'teki sharePart/showToast ile aynı desen.
@@ -263,7 +266,23 @@
     return html;
   }
 
+  // Statik sayfanın açıklaması gibi (build-static-routes.py _miskat_metin):
+  // hadisin kendi metni + râvi; yoksa hero özeti.
+  function hadisMetni(h) {
+    var bloklar = h.blocks || [];
+    for (var i = 0; i < bloklar.length; i++) {
+      var b = bloklar[i];
+      if (b.type === "hadis" && b.metin && t(b.metin)) {
+        var metin = t(b.metin).replace(/\n\n/g, " ");
+        return b.ravi && t(b.ravi) ? metin + " (" + t(b.ravi) + ")" : metin;
+      }
+    }
+    return t(h.hero && h.hero.summary);
+  }
+
   function renderArticle(h) {
+    // Sekme başlığı/canonical bu hadisin kendisi (graph-utils.js DostMeta).
+    if (adreste && window.DostMeta) window.DostMeta.setRecord("miskat", h.id, t(h.title), hadisMetni(h));
     clearSectionScenes();
     var helixes = {};
     var captions = {};
@@ -376,7 +395,8 @@
     }
   }
 
-  function activate(id) {
+  // otomatik: görünüm kaydı kendiliğinden açıyor (bkz. adreste).
+  function activate(id, otomatik) {
     load().then(function () {
       if (!data) return;
       // Yavaş ağ bekçisi: veri gelene kadar kullanıcı başka görünüme
@@ -387,6 +407,7 @@
       if (!window.DostGraphUtils.isViewActive(wrap)) return;
       var h = hadisById(id) || (!id ? hadisById(loadLastHadis()) : null) || hadisById(data.activeHadisId) || data.hadisler[0];
       if (!h) return;
+      if (!otomatik) adreste = true;
       isDefaultLanding = !id && !loadLastHadis();
       activeId = h.id;
       saveLastHadis(h.id);
@@ -401,7 +422,7 @@
       }
       renderList();
       renderArticle(h);
-      if (window.__dostNav) window.__dostNav.setHash("miskat", h.id);
+      if (adreste && window.__dostNav) window.__dostNav.setHash("miskat", h.id);
       if (!crossLinkSubscribed && window.__dostCrossLink && window.__dostCrossLink.onReady) {
         crossLinkSubscribed = true;
         window.__dostCrossLink.onReady(function () {
@@ -412,7 +433,10 @@
   }
 
   window.__miskatApp = {
-    activate: function (id) { activate(id || activeId || null); },
+    activate: function (id) {
+      if (id) activate(id, false);
+      else activate(activeId || null, !adreste);
+    },
     onLangChange: function () {
       if (!data || !activeId) return;
       renderList();

@@ -236,7 +236,12 @@
 
     // exitReading burada da bir KAMERA geri alma: focusOnTheme sahneyi
     // temaya yaklaştırıyor (bkz. ETKILESIM_DILI.md, ikinci fiil).
-    GU.wireRecenter("sirlar-recenter", () => { exitReading(); fitAll(); });
+    // Serbest döndürme de geri alınır (ETKILESIM_DILI, 2026-10-09).
+    GU.wireRecenter("sirlar-recenter", () => {
+      exitReading();
+      if (tilt3d) { tilt3d.resetView(); render(performance.now()); }
+      fitAll();
+    });
 
     // "Bir adım geri": açık panel varsa sıra ortak katmanın (false dönüyoruz,
     // o kapatıyor); panel kapalıyken odaklı bir tema varsa odağı bırakıyoruz.

@@ -30,6 +30,11 @@
   var data = null;
   var dataPromise = null;
   var activeId = null;
+  // Görünen fass adresten / kullanıcı seçiminden mi geldi, yoksa görünüm
+  // kendiliğinden mi açtı (kaldığın yer / varsayılan)? Kendiliğinden
+  // açılışta adres /fusus/ kalır, meta görünümün kendisidir -- statik
+  // /fusus/ sayfasıyla aynı canonical (2026-10-09, scripts/meta-testi.js).
+  var adreste = false;
   var mapScene = null;
   var sectionScenes = [];
   var crossLinkSubscribed = false;
@@ -48,11 +53,9 @@
   var isDefaultLanding = false;
 
   function t(d) { return d ? I18n.pick3(d) : ""; }
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
+  // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
+  function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
 
   // Yazdır düğmesinin yanına paylaş düğmesi (kullanıcı isteği, 2026-08-16):
   // futuhat.js'teki sharePart/showToast ile aynı desen -- navigator.share
@@ -260,6 +263,9 @@
   }
 
   function renderArticle(f) {
+    // Sekme başlığı/canonical bu fassın kendisi (statik rotayla aynı biçim,
+    // graph-utils.js DostMeta) -- eskiden genel "Füsûs" başlığı kalıyordu.
+    if (adreste && window.DostMeta) window.DostMeta.setRecord("fusus", f.id, t(f.title), t(f.hero && f.hero.summary));
     clearSectionScenes();
     var helixes = {};
     var captions = {};
@@ -470,7 +476,8 @@
     });
   }
 
-  function activate(id) {
+  // otomatik: görünüm kaydı kendiliğinden açıyor (bkz. adreste).
+  function activate(id, otomatik) {
     load().then(function () {
       if (!data) return;
       // Yavaş ağ bekçisi: veri gelene kadar kullanıcı başka görünüme
@@ -481,6 +488,7 @@
       if (!window.DostGraphUtils.isViewActive(wrap)) return;
       var f = fassById(id) || (!id ? fassById(loadLastFass()) : null) || fassById(data.activeFassId) || data.fasses[0];
       if (!f) return;
+      if (!otomatik) adreste = true;
       isDefaultLanding = !id && !loadLastFass();
       activeId = f.id;
       saveLastFass(f.id);
@@ -495,7 +503,7 @@
       }
       renderList();
       renderArticle(f);
-      if (window.__dostNav) window.__dostNav.setHash("fusus", f.id);
+      if (adreste && window.__dostNav) window.__dostNav.setHash("fusus", f.id);
       if (!crossLinkSubscribed && window.__dostCrossLink && window.__dostCrossLink.onReady) {
         crossLinkSubscribed = true;
         window.__dostCrossLink.onReady(function () {
@@ -506,7 +514,10 @@
   }
 
   window.__fususApp = {
-    activate: function (id) { activate(id || activeId || null); },
+    activate: function (id) {
+      if (id) activate(id, false);
+      else activate(activeId || null, !adreste);
+    },
     onLangChange: function () {
       if (!data || !activeId) return;
       renderList();

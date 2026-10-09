@@ -17,15 +17,38 @@ window.DostI18n = (function () {
     return "tr";
   }
 
+  // Sitenin kök yolu (<base href>; canlıda "", önizlemede bir alt yol).
+  function routeBase() {
+    const baseEl = document.querySelector("base");
+    if (!baseEl) return "";
+    try {
+      return new URL(baseEl.getAttribute("href"), location.origin).pathname.replace(/\/+$/, "");
+    } catch (e) { return ""; }
+  }
+
+  // Adres çubuğundaki dil öneki (/en/..., /pt/...) ya da null.
+  function urlLang() {
+    let yol = location.pathname;
+    const b = routeBase();
+    if (b && yol.startsWith(b)) yol = yol.slice(b.length);
+    const m = /^\/(en|pt)(?=\/|$)/.exec(yol);
+    return m ? m[1] : null;
+  }
+
   function getLang() {
+    // 2026-10-09 (dalga-web): adresin dil öneki her şeyin önünde. /en/esma/
+    // bağlantısı İngilizce sayfa vaat ediyor; daha önce Türkçe seçmiş bir
+    // ziyaretçide bile (localStorage) o bağlantı İngilizce açılmalı --
+    // eskiden localStorage öneki eziyordu ve /en/ sayfası Türkçe açılıyordu.
+    // Önek ancak kullanıcı dil seçicisinden dil değiştirince değişir
+    // (setLang adresi de çevirir).
+    const onek = urlLang();
+    if (onek) return onek;
     let l = null;
     try { l = localStorage.getItem("dost-lang"); } catch (e) {}
     if (LANGS.includes(l)) return l;
     // SEO-03/04 (uzman paneli denetimi 2026-08-17): /en/ ve /pt/ önekli
-    // statik kopyalar <html data-dost-lang="en"> taşıyor -- o sayfaya
-    // arama motorundan/dış bağlantıdan gelen ziyaretçi, tarayıcı dili ne
-    // olursa olsun sayfanın vaat ettiği dille karşılanmalı. Kullanıcının
-    // kendi seçimi (localStorage) yine de her şeyin üstünde.
+    // statik kopyalar <html data-dost-lang="en"> da taşıyor.
     const attr = document.documentElement.getAttribute("data-dost-lang");
     if (LANGS.includes(attr)) return attr;
     return detectBrowserLang();
@@ -34,6 +57,17 @@ window.DostI18n = (function () {
   function setLang(l) {
     if (!LANGS.includes(l)) return;
     try { localStorage.setItem("dost-lang", l); } catch (e) {}
+    // Adreste dil öneki varsa yeni dile çevrilir (TR: önek kalkar) --
+    // önek getLang'de localStorage'dan önce geldiği için eskisi kalsaydı
+    // seçim yeniden yüklemede geri alınırdı. Öneksiz (TR-kanonik) adres
+    // öneksiz kalır; seçim localStorage'da taşınır.
+    const onek = urlLang();
+    if (onek && onek !== l) {
+      const b = routeBase();
+      const govde = location.pathname.slice(b.length).replace(/^\/(en|pt)(?=\/|$)/, "") || "/";
+      const yeni = b + (l === "tr" ? "" : "/" + l) + govde;
+      try { history.replaceState(history.state, "", yeni + location.search + location.hash); } catch (e) {}
+    }
   }
 
   // obj has keys like `${base}_tr`, `${base}_en`, `${base}_pt`
@@ -102,5 +136,5 @@ window.DostI18n = (function () {
     });
   }
 
-  return { LANGS, getLang, setLang, pick, pick3, applyStatic, renderLangSwitcher };
+  return { LANGS, getLang, setLang, urlLang, pick, pick3, applyStatic, renderLangSwitcher };
 })();
