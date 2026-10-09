@@ -34,6 +34,12 @@
     ".hakkinda-content__subtitle",
     ".hakkinda-content__section p",
     ".hakkinda-poem",
+    // Daphne bölümü (compare.html, 2026-10-09): okuma görünümündeki özet,
+    // eksen gerekçeleri ve sorular da düzenlenebilir.
+    ".daphne-okuma__ozet",
+    ".daphne-okuma__govde .daphne-profile-card__note",
+    ".daphne-bag__neden",
+    ".daphne-soru__metin",
   ].join(", ");
 
   // Görsel not: bu sayfa için bir metin notu ("burada şu değişmeli"),
@@ -260,6 +266,13 @@
       after: after,
       timestamp: new Date().toISOString(),
     };
+    // Kaydın hangi dosyanın hangi alanına ait olduğu (varsa): Daphne
+    // okuma görünümü data-dost-dosya/-kaynak/-alan taşıyor -- Claude'un
+    // düzeltmeyi doğru JSON alanına geri yazabilmesi için.
+    const kap = el.closest("[data-dost-kaynak]");
+    if (kap) { entry.dosya = kap.dataset.dostDosya || ""; entry.kayit = kap.dataset.dostKaynak; }
+    const alanEl = el.closest("[data-dost-alan]");
+    if (alanEl) entry.alan = alanEl.dataset.dostAlan;
     const idx = el.dataset.dostEditIdx;
     if (idx !== undefined && queue[Number(idx)]) {
       entry.before = queue[Number(idx)].before; // ilk orijinal metni koru

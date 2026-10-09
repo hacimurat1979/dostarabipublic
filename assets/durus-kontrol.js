@@ -456,6 +456,8 @@
     ".hakkinda-content__section p", ".hakkinda-content__subtitle",
     ".tasiyici-intro__p", ".tasiyici-sira p", ".tasiyici-sonnot",
     ".tasiyici-note__body", ".helix-scene__note-body",
+    // Daphne bölümü (compare.html, 2026-10-09).
+    ".daphne-okuma__ozet", ".daphne-bag__neden", ".daphne-soru__metin",
     ".futuhat-hero__summary", ".fusus-hero__summary",
   ].join(", ");
 
@@ -949,7 +951,10 @@
         e.preventDefault();
         var b = bs[Number(a.dataset.i)];
         siteKapat();
-        window.__dostNav.goTo(a.dataset.view, a.dataset.id || undefined);
+        // Daphne sayfasında (compare.html) uygulamanın yönlendiricisi yok:
+        // bulguya tam sayfa geçişle gidilir.
+        if (window.__dostNav) window.__dostNav.goTo(a.dataset.view, a.dataset.id || undefined);
+        else { location.href = "/" + a.dataset.view + (a.dataset.id ? "/" + a.dataset.id : ""); return; }
         if (b) setTimeout(function() { vurgula(b); }, 350);
       });
     });

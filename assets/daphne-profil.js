@@ -455,9 +455,9 @@
       const p = (data.core_parameters || []).find((x) => x.id === id);
       return p ? tt(p.label) : id;
     };
-    const rows = a.eksenler.map((e) => `<li class="daphne-bag">
+    const rows = a.eksenler.map((e, i) => `<li class="daphne-bag">
       <span class="daphne-bag__ad">${adi(e.id)}</span>
-      <span class="daphne-bag__neden">${tt(e.neden)}</span></li>`).join("");
+      <span class="daphne-bag__neden" data-dost-alan="eksenler[${i}].neden">${tt(e.neden)}</span></li>`).join("");
     return `<div class="daphne-baglar">
       <p class="daphne-baglar__baslik">${tt({
         tr: "Bu yazı hangi ekseni besliyor", en: "Which axes this essay feeds",
@@ -473,7 +473,7 @@
     if (!a.sorular || !a.sorular.length) return "";
     const rows = a.sorular.map((s, i) => `<li class="daphne-soru">
       <span class="daphne-soru__no">${i + 1}</span>
-      <span class="daphne-soru__metin">${tt(s)}</span></li>`).join("");
+      <span class="daphne-soru__metin" data-dost-alan="sorular[${i}]">${tt(s)}</span></li>`).join("");
     return `<div class="daphne-baglar daphne-baglar--sorular">
       <p class="daphne-baglar__baslik">${tt({
         tr: "Okurken açılan sorular",
@@ -630,7 +630,7 @@
     okumaAcanOge = acanOge || null;
     const islendi = !!(a.ozet || (a.eksenler || []).length || (a.dost || []).length);
     const note = a.note_tr ? `<p class="daphne-profile-card__note">${tt({ tr: a.note_tr, en: a.note_en, pt: a.note_pt })}</p>` : "";
-    const ozet = a.ozet ? `<p class="daphne-okuma__ozet">${tt(a.ozet)}</p>` : "";
+    const ozet = a.ozet ? `<p class="daphne-okuma__ozet" data-dost-alan="ozet">${tt(a.ozet)}</p>` : "";
     const bos = islendi ? "" : `<p class="daphne-okuma__bos">${tt({
       tr: "Bu yazı korpüste var ama henüz profile işlenmedi. Kaynağı açıp okuyabilirsin.",
       en: "This piece is in the corpus but has not yet been worked into the profile. You can open the source and read it.",
@@ -641,7 +641,7 @@
           <button class="daphne-okuma__kapat" type="button">← ${tt({ tr: "Geri", en: "Back", pt: "Voltar" })}</button>
           <a class="daphne-okuma__kaynak" href="${a.url}" target="_blank" rel="noopener">${tt({ tr: "kaynağı aç", en: "open source", pt: "abrir a fonte" })} ↗</a>
         </div>
-        <article class="daphne-okuma__govde">
+        <article class="daphne-okuma__govde" data-dost-dosya="data/daphne-profile.json" data-dost-kaynak="${a.url}">
           <h2 class="daphne-okuma__baslik" id="daphne-okuma-baslik">${a.title}</h2>
           ${a.date ? `<p class="daphne-okuma__tarih">${a.date}</p>` : ""}
           ${note}${ozet}${bos}
