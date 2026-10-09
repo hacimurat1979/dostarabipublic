@@ -27,6 +27,20 @@
   let seen = false;
   try { seen = !!localStorage.getItem(SEEN_KEY); } catch (e) {}
   if (seen) return;
+  // 2026-10-09: karşılama ekranı bu yüklemede açıksa (kök adres) iki uçtan
+  // seçim zaten halkanın üzerinde yapılıyor (welcome.js) -- aynı soruyu
+  // ritüelden sonra bir kart olarak ikinci kez sormuyoruz. Kart, karşılama
+  // olmadan doğrudan bir ontoloji adresine gelenler için kalıyor.
+  const karsilama = document.getElementById("welcome-screen");
+  if (karsilama && !karsilama.hidden) {
+    document.addEventListener("dost:welcome-left", (e) => {
+      // Bir uç seçildiyse ipucu görevini yapmıştır: bir daha gösterme.
+      if (e.detail && e.detail.secim) {
+        try { localStorage.setItem(SEEN_KEY, "1"); } catch (err) {}
+      }
+    }, { once: true });
+    return;
+  }
 
   setTimeout(() => {
     if (!hint.hidden) return;

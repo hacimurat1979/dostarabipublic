@@ -1151,14 +1151,17 @@ window.DostGraphUtils = (function () {
       }).join("");
     }
 
+    let omurga = null;
     function doldur(nodes) {
       sonNodes = nodes;
+      if (omurga) { omurga.destroy(); omurga = null; }
       listEl.innerHTML = `
         <h2 class="mobil-liste__baslik">${tt(opts.title)}</h2>
         <p class="mobil-liste__not">${tt(opts.note)}</p>
         <button class="mobil-liste__grafik-btn" type="button">${tt(opts.graphButtonLabel)}</button>
-        ${groupsHtml(nodes)}
+        <div class="mobil-liste__sarmal">${groupsHtml(nodes)}</div>
       `;
+      omurga = mobilOmurga(listEl.querySelector(".mobil-liste__sarmal"), wrapEl);
       // "Haritayı aç" listenin TEPESİNDE (2026-10-09): eskiden listenin
       // sonundaydı -- Esmâ'da 7540 px, Sırlar'da 8779 px aşağıda.
       listEl.querySelectorAll(".mobil-liste__satir").forEach((btn) => {
@@ -1192,6 +1195,176 @@ window.DostGraphUtils = (function () {
     }
 
     return { onLangChange: () => { if (sonNodes) doldur(sonNodes); } };
+  }
+
+  // Mobil listenin dikey sarmal omurgası (2026-10-09, görsel taraması
+  // madde 13). Listenin solunda 40 px'lik yapışkan bir sütunda tek bir
+  // sarmal iplik durur; her satır o ipliğin üstünde bir düğümdür, rengi
+  // satırın kendi işaretinin rengi (görünümün renk eşlemesi korunur).
+  // Kaydırınca iplik yerinde kalır, satırlar onun boyunca akar: her düğüm
+  // sarmalda dolanarak ekranın ortasına gelince öne çıkar. Ortadaki satır
+  // ışıkla belirir (ışık = zuhûr); uzaklaştıkça üsttekiler ve alttakiler
+  // puslanır (matlık + derinlik -- uzaklık = kesret). Görünür bir sonuç
+  // üreten tek hareket kullanıcının kendi kaydırmasıdır; kendiliğinden
+  // dönen bir şey yok. prefers-reduced-motion açıkken iplik sayfaya
+  // yapışık kalır (satırlarla birlikte düz kayar, dolanma yok) ve geçişler
+  // anlıktır; ortadaki satırın ışığı yine güncellenir.
+  function mobilOmurga(alan, wrapEl) {
+    if (!alan) return null;
+    const satirlar = Array.from(alan.querySelectorAll(".mobil-liste__satir"));
+    if (!satirlar.length) return null;
+    const SVGNS = "http://www.w3.org/2000/svg";
+    const azHareket = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const kolon = document.createElement("div");
+    kolon.className = "mobil-liste__omurga";
+    kolon.setAttribute("aria-hidden", "true");
+    const gid = "omurga-hale-" + Math.random().toString(36).slice(2, 8);
+    kolon.innerHTML = `<svg class="mobil-liste__omurga-svg" xmlns="${SVGNS}">
+      <defs><radialGradient id="${gid}">
+        <stop offset="0%" style="stop-color:var(--helix-gold, #e8b33a);stop-opacity:0.75"/>
+        <stop offset="45%" style="stop-color:var(--helix-gold, #e8b33a);stop-opacity:0.25"/>
+        <stop offset="100%" style="stop-color:var(--helix-gold, #e8b33a);stop-opacity:0"/>
+      </radialGradient></defs>
+      <path class="mobil-liste__omurga-yol mobil-liste__omurga-yol--arka"/>
+      <g class="mobil-liste__omurga-arka"></g>
+      <circle class="mobil-liste__omurga-hale" r="16" fill="url(#${gid})" visibility="hidden"/>
+      <path class="mobil-liste__omurga-yol"/>
+      <g class="mobil-liste__omurga-on"></g>
+    </svg>`;
+    alan.insertBefore(kolon, alan.firstChild);
+    alan.classList.add("mobil-liste__sarmal--omurgali");
+    const svg = kolon.querySelector("svg");
+    const yolArka = svg.querySelector(".mobil-liste__omurga-yol--arka");
+    const yolOn = svg.querySelector(".mobil-liste__omurga-yol:not(.mobil-liste__omurga-yol--arka)");
+    const gArka = svg.querySelector(".mobil-liste__omurga-arka");
+    const gOn = svg.querySelector(".mobil-liste__omurga-on");
+    const hale = svg.querySelector(".mobil-liste__omurga-hale");
+
+    // Her satırın düğümü; renk işaretin kendisinden okunur (pipColor ya da
+    // pip sınıfı), Zât istisnası (bembeyaz gövde + altın kenar) korunur.
+    const dugumler = satirlar.map((s) => {
+      const c = document.createElementNS(SVGNS, "circle");
+      const pip = s.querySelector(".mobil-liste__pip");
+      const cs = pip ? getComputedStyle(pip) : null;
+      if (pip && pip.classList.contains("mobil-liste__pip--zat")) {
+        c.setAttribute("class", "mobil-liste__omurga-dugum mobil-liste__omurga-dugum--zat");
+      } else {
+        c.setAttribute("class", "mobil-liste__omurga-dugum");
+        // Satır içi renk bir CSS değişkeni olabilir (var(--series-celal));
+        // olduğu gibi taşınırsa tema değişince düğüm de değişir.
+        if (pip && pip.style.background) c.style.fill = pip.style.background;
+        else if (cs) c.style.fill = cs.backgroundColor;
+      }
+      return c;
+    });
+
+    const TUR = 230;   // bir tam dolanımın piksel boyu
+    let raf = null, merkezOnceki = null;
+    function gorunur() {
+      if (!alan.isConnected || !alan.getClientRects().length) return false;
+      if (wrapEl && (wrapEl.hidden || wrapEl.classList.contains("grafik-acik"))) return false;
+      return true;
+    }
+    function ciz() {
+      raf = null;
+      if (!gorunur()) return;
+      const r = svg.getBoundingClientRect();
+      if (!r.height || !r.width) return;
+      const W = r.width, H = r.height, cx = W / 2, A = W * 0.3;
+      const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 0;
+      const merkezY = (ust + window.innerHeight) / 2;     // görünür alanın ortası (ekran koordinatı)
+      // θ: ekranın ortasında 0 (önde). Az hareket kipinde iplik sayfaya
+      // yapışık: θ belge konumuna bağlı, kaydırma onu olduğu gibi taşır.
+      const kay = azHareket ? window.scrollY : 0;
+      const teta = (yEkran) => 2 * Math.PI * (yEkran - merkezY + kay) / TUR;
+      let on = "", arka = "", onceki = null;
+      for (let y = -6; y <= H + 6; y += 4) {
+        const th = teta(r.top + y);
+        const x = cx + A * Math.sin(th);
+        const onde = Math.cos(th) >= 0;
+        const p = x.toFixed(1) + "," + y;
+        if (onde) on += (onceki === true ? "L" : "M") + p;
+        else arka += (onceki === false ? "L" : "M") + p;
+        onceki = onde;
+      }
+      yolOn.setAttribute("d", on);
+      yolArka.setAttribute("d", arka);
+
+      // Önce bütün ölçümler, sonra bütün yazımlar (zorunlu yeniden yerleşim yok).
+      const olcu = satirlar.map((s) => { const b = s.getBoundingClientRect(); return b.top + b.height / 2; });
+      let merkez = -1, enYakin = Infinity;
+      olcu.forEach((y, i) => { const d = Math.abs(y - merkezY); if (d < enYakin) { enYakin = d; merkez = i; } });
+      const yari = Math.max(120, (window.innerHeight - ust) / 2);
+      olcu.forEach((yEkran, i) => {
+        const s = satirlar[i], c = dugumler[i];
+        const uz = Math.min(1, Math.abs(yEkran - merkezY) / yari);
+        s.style.opacity = i === merkez ? "" : (1 - 0.5 * uz).toFixed(3);
+        const y = yEkran - r.top;
+        if (y < -20 || y > H + 20) { if (c.parentNode) c.parentNode.removeChild(c); return; }
+        const th = teta(yEkran);
+        const derin = (1 + Math.cos(th)) / 2;
+        const x = cx + A * Math.sin(th);
+        c.setAttribute("cx", x.toFixed(1));
+        c.setAttribute("cy", y.toFixed(1));
+        c.setAttribute("r", (i === merkez ? 5.5 : 2.2 + 2.6 * derin).toFixed(2));
+        c.style.opacity = i === merkez ? "1" : ((0.3 + 0.7 * derin) * (1 - 0.55 * uz)).toFixed(3);
+        const hedef = Math.cos(th) >= 0 ? gOn : gArka;
+        if (c.parentNode !== hedef) hedef.appendChild(c);
+        if (i === merkez) {
+          hale.setAttribute("cx", x.toFixed(1));
+          hale.setAttribute("cy", y.toFixed(1));
+          hale.setAttribute("visibility", "visible");
+        }
+      });
+      if (merkez < 0) hale.setAttribute("visibility", "hidden");
+      if (merkez !== merkezOnceki) {
+        if (merkezOnceki != null && satirlar[merkezOnceki]) satirlar[merkezOnceki].classList.remove("is-merkez");
+        if (merkez >= 0) satirlar[merkez].classList.add("is-merkez");
+        merkezOnceki = merkez;
+      }
+    }
+    function iste() { if (raf == null) raf = requestAnimationFrame(ciz); }
+    window.addEventListener("scroll", iste, { passive: true });
+    window.addEventListener("resize", iste);
+    const ro = window.ResizeObserver ? new ResizeObserver(iste) : null;
+    if (ro) ro.observe(alan);
+    iste();
+    return {
+      yenile: iste,
+      destroy() {
+        window.removeEventListener("scroll", iste);
+        window.removeEventListener("resize", iste);
+        if (ro) ro.disconnect();
+        if (raf != null) cancelAnimationFrame(raf);
+      },
+    };
+  }
+
+  // Okumanın vardığı yerden açılan Fütûhât/Füsûs/Mişkât için "baştan başla"
+  // çipi (2026-10-09, görsel taraması madde 14). Eskiden mobilde ~170 px
+  // tutan bir banttı; şimdi tek satırlık bir halka çipi. Uzun açıklama
+  // ekran okuyucuya ve ipucuna (title) kalıyor. attr: düğmenin hedef kaydı
+  // taşıyan data- özniteliği (görünüm onu kendi dinleyicisiyle bağlar).
+  function baslangicCipiHtml(attr, id, aciklama, ekSinif) {
+    const I18n = window.DostI18n;
+    const ac = escapeHtml(I18n.pick3(aciklama));
+    return `<div class="futuhat-start-hint${ekSinif ? " " + ekSinif : ""}" role="note" title="${ac}">`
+      + `<span class="futuhat-start-hint__halka" aria-hidden="true"></span>`
+      + `<span class="futuhat-start-hint__yer">${escapeHtml(I18n.pick3({ tr: "okumanın vardığı yer", en: "where the reading stands", pt: "onde a leitura está" }))}</span>`
+      + `<span class="futuhat-start-hint__ayrac" aria-hidden="true">·</span>`
+      + `<button type="button" class="futuhat-start-hint__btn" ${attr}="${escapeHtml(id)}">${escapeHtml(I18n.pick3({ tr: "baştan başla", en: "start from the beginning", pt: "começar do início" }))}</button>`
+      + `<span class="sr-only">${ac}</span>`
+      + `</div>`;
+  }
+
+  // Yatay kaydırılan çip şeridinde (mobil Füsûs/Mişkât listesi) seçili
+  // çipi görünür alanın ortasına getirir. Yalnız şerit gerçekten yatay
+  // kayıyorsa; sayfayı dikeyde oynatmaz (scrollIntoView kullanmıyoruz).
+  function cipOrtala(listEl) {
+    if (!listEl || listEl.scrollWidth <= listEl.clientWidth + 1) return;
+    const aktif = listEl.querySelector(".is-active");
+    if (!aktif) return;
+    listEl.scrollLeft = Math.max(0, aktif.offsetLeft - listEl.offsetLeft - (listEl.clientWidth - aktif.offsetWidth) / 2);
   }
 
   // Kenar erişilebilirliği (K-01/K-03, uzman paneli denetimi 2026-08-17):
@@ -1341,7 +1514,97 @@ window.DostGraphUtils = (function () {
     return n;
   }
 
-  return { getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  // Üç ses, üç doku (2026-10-09): okuma metinlerinde (Fütûhât/Füsûs/Mişkât)
+  // metni tırnakla başlayan <em> Dost'un doğrudan sözüdür; kavram vurgusu
+  // olan öteki <em>'lerle aynı italikle diziliyordu. Veri değişmeden,
+  // çizimden sonra `dost-soz` sınıfı alır: başlıkların serifi, dik, solda
+  // ince bir kenar işareti (style.css). Bir dost-soz'a değinmek (hover ya
+  // da klavye odağı) o kaydın künyesini küçük bir ipucunda gösterir: eser +
+  // kısım, ve sözün hemen ardındaki "(s. 220-221)" atfı varsa o sayfa,
+  // yoksa kaydın sayfa aralığı. Şârih sütunları (.fusus-serh) dışarıda --
+  // orada konuşan şârihtir, ayrı eyebrow'la zaten işaretli. Sınıf ve
+  // tabindex @revise kaydına girmez (edit-mode.js temizKlon atıyor).
+  const DOST_SOZ_ACILIS = /^\s*["“]/;
+  const DOST_SOZ_SAYFA = /^\s*\(((?:s|pp?)\.\s*\d+(?:\s*[-–]\s*\d+)?)\)/;
+  let dostSozTip = null;
+  let dostSozHedef = null;
+  function dostSozTipEl() {
+    if (dostSozTip && dostSozTip.isConnected) return dostSozTip;
+    dostSozTip = document.createElement("div");
+    dostSozTip.className = "dost-soz-ipucu";
+    dostSozTip.id = "dost-soz-ipucu";
+    dostSozTip.setAttribute("role", "tooltip");
+    dostSozTip.hidden = true;
+    document.body.appendChild(dostSozTip);
+    return dostSozTip;
+  }
+  function dostSozSayfa(em) {
+    let n = em.nextSibling;
+    while (n && n.nodeType === 3 && !n.nodeValue.trim()) n = n.nextSibling;
+    const m = n && n.nodeType === 3 ? DOST_SOZ_SAYFA.exec(n.nodeValue) : null;
+    return m ? m[1] : "";
+  }
+  function dostSozYerlestir() {
+    if (!dostSozHedef || !dostSozTip) return;
+    const r = (dostSozHedef.getClientRects()[0]) || dostSozHedef.getBoundingClientRect();
+    const genis = Math.min(window.innerWidth - 16, 300);
+    const x = Math.max(8 + genis / 2, Math.min(window.innerWidth - 8 - genis / 2, r.left + Math.min(r.width, 160) / 2));
+    const ustte = r.top > 70;
+    dostSozTip.style.left = x + "px";
+    dostSozTip.style.top = (ustte ? r.top - 8 : r.bottom + 8) + "px";
+    dostSozTip.classList.toggle("dost-soz-ipucu--alt", !ustte);
+  }
+  function dostSozGoster(em, root) {
+    const k = root.__dostSozKunye || {};
+    const tip = dostSozTipEl();
+    if (dostSozHedef && dostSozHedef !== em) dostSozHedef.removeAttribute("aria-describedby");
+    dostSozHedef = em;
+    const sayfa = dostSozSayfa(em) || k.sayfa || "";
+    tip.innerHTML = `<span class="dost-soz-ipucu__kunye">${escapeHtml(k.baslik || "")}</span>`
+      + (sayfa ? `<span class="dost-soz-ipucu__sayfa">${escapeHtml(sayfa)}</span>` : "");
+    em.setAttribute("aria-describedby", tip.id);
+    tip.hidden = false;
+    dostSozYerlestir();
+  }
+  function dostSozGizle() {
+    if (dostSozHedef) dostSozHedef.removeAttribute("aria-describedby");
+    dostSozHedef = null;
+    if (dostSozTip) dostSozTip.hidden = true;
+  }
+  // root: makale kabı; kunye: {baslik, sayfa} (görünüm her çizimde verir).
+  function dostSozIsaretle(root, kunye) {
+    if (!root) return;
+    root.__dostSozKunye = kunye || {};
+    if (dostSozHedef && !dostSozHedef.isConnected) dostSozGizle();
+    root.querySelectorAll("[data-dost-alan] em").forEach((em) => {
+      if (em.closest(".fusus-serh") || !DOST_SOZ_ACILIS.test(em.textContent)) return;
+      em.classList.add("dost-soz");
+      em.setAttribute("tabindex", "0");
+    });
+    if (root.dataset.dostSozBagli) return;
+    root.dataset.dostSozBagli = "1";
+    const bul = (t) => (t && t.closest ? t.closest("em.dost-soz") : null);
+    root.addEventListener("mouseover", (e) => {
+      const em = bul(e.target);
+      if (em && em !== dostSozHedef) dostSozGoster(em, root);
+    });
+    root.addEventListener("mouseout", (e) => {
+      const em = bul(e.target);
+      if (em && em === dostSozHedef && !em.contains(e.relatedTarget) && document.activeElement !== em) dostSozGizle();
+    });
+    root.addEventListener("focusin", (e) => { const em = bul(e.target); if (em) dostSozGoster(em, root); });
+    root.addEventListener("focusout", (e) => { if (bul(e.target) === dostSozHedef) dostSozGizle(); });
+  }
+  window.addEventListener("scroll", dostSozYerlestir, { passive: true, capture: true });
+  window.addEventListener("resize", dostSozYerlestir);
+  // Açık ipucu en üstteki geçici katman: Esc önce onu kapatır (bir adım).
+  registerStepBack(null, () => {
+    if (!dostSozHedef) return false;
+    dostSozGizle();
+    return true;
+  }, { oncelikli: true });
+
+  return { dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

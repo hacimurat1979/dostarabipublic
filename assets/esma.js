@@ -1169,9 +1169,9 @@
         tr: "Birlikte geçtiği bölüm sayısı", en: "Chapters where they occur together",
         pt: "Capítulos em que ocorrem juntos" })}: <strong>${r.birlikte_belge}</strong></p>
       <p class="detail-meta">${tt({
-        tr: "Yöntem: aynı bölümde birlikte geçme sayımı, ardından PPMI ve disparity filter (Serrano ve ark. 2009). Elle yazılmış bağlar kesiksiz çizilir; bu kesikli.",
-        en: "Method: counting co-occurrence within the same chapter, then PPMI and the disparity filter (Serrano et al. 2009). Hand-written links are drawn solid; this one is dashed.",
-        pt: "Método: contagem de coocorrência no mesmo capítulo, depois PPMI e o filtro de disparidade (Serrano et al. 2009). Vínculos escritos à mão são sólidos; este é tracejado." })}</p>`;
+        tr: "Yöntem: aynı bölümde birlikte geçme sayımı, ardından PPMI ve disparity filter (Serrano ve ark. 2009). Elle yazılmış bağlar net çizilir; bu bulanık çizilir.",
+        en: "Method: counting co-occurrence within the same chapter, then PPMI and the disparity filter (Serrano et al. 2009). Hand-written links are drawn sharp; this one is drawn blurred.",
+        pt: "Método: contagem de coocorrência no mesmo capítulo, depois PPMI e o filtro de disparidade (Serrano et al. 2009). Vínculos escritos à mão são nítidos; este é desfocado." })}</p>`;
     detailPanel.hidden = false;
   }
 
@@ -1184,9 +1184,9 @@
       wrapEl.appendChild(derivedFeedbackEl);
     }
     derivedFeedbackEl.textContent = tt(on
-      ? { tr: `${count} sayılan bağ gösteriliyor (kesikli çizgiler) — bazıları henüz açılmamış katmanlarda olabilir.`,
-          en: `Showing ${count} counted links (dashed lines) — some may be in layers not yet opened.`,
-          pt: `Mostrando ${count} vínculos contados (linhas tracejadas) — alguns podem estar em camadas ainda não abertas.` }
+      ? { tr: `${count} sayılan bağ gösteriliyor (bulanık çizgiler) — bazıları henüz açılmamış katmanlarda olabilir.`,
+          en: `Showing ${count} counted links (blurred lines) — some may be in layers not yet opened.`,
+          pt: `Mostrando ${count} vínculos contados (linhas desfocadas) — alguns podem estar em camadas ainda não abertas.` }
       : { tr: "Sayılan bağlar gizlendi.", en: "Counted links hidden.", pt: "Vínculos contados ocultados." });
     derivedFeedbackEl.classList.add("is-visible");
     if (derivedFeedbackTimer) clearTimeout(derivedFeedbackTimer);

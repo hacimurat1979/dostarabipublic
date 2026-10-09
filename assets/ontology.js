@@ -399,91 +399,56 @@
   window.DostGraphUtils.setupLegendToggles();
   window.DostGraphUtils.setupDetailPanelFocus();
 
-  // Düzen: merkezde Zât, ondan açılıp ona kapanan tek bir sarmal.
+  // Düzen: tek bir çember (2026-10-09, görsel değerlendirme raporu madde 1).
   //
-  // Düzenin geçmişi, çünkü bu tablo iki kez değişti ve ikisi de bir okumayı
-  // geri aldı:
+  // Düzenin geçmişi, çünkü bu tablo üç kez değişti:
+  //  * En eski hâl yukarıdan aşağıya düz bir merdivendi (2026-07-25'e kadar).
+  //  * Sonra sekiz mertebe bir çemberin üstündeydi, merkezde Kalp.
+  //  * 2026-08-28: merkezde Zât, ondan dışa açılıp ona kapanan bir sarmal;
+  //    açılış 3B eğimli. Ölçüldü (2026-10-09 görsel değerlendirme): ilk
+  //    ziyaret ipucu "bu harita iki uçlu bir çember" diyordu ama ekranda
+  //    kesişen uzun çizgilerden bir yumak vardı, hiçbir çember görünmüyordu;
+  //    yerleşim de kuvvet simülasyonu yüzünden her yüklemede biraz
+  //    kayıyordu.
   //
-  //  * En eski hâl yukarıdan aşağıya düz bir merdivendi (Zât y=0.09, kalp
-  //    y=0.90). 2026-07-25'te bırakıldı: veri bunun bir DAİRE olduğunu
-  //    söylüyordu (insan-i-kamil -> dhat kenarının notu "döngü buradan
-  //    başladığı yere geri kapanır") ama şekil bir sütundu; ayrıca kalp
-  //    Zât'tan en UZAĞA düşüyordu, oysa kendi kenarının notu onu "ağın en
-  //    YAKIN noktası" diye tarif ediyor.
-  //  * Onun yerine gelen hâlde sekiz mertebe bir çemberin üstündeydi ve
-  //    MERKEZDE KALP duruyordu. Gerekçesi Cilt XIII'ten bir cümleydi: "Hak
-  //    kulunun kalbinde kendisine nazar eder ve dairenin noktası olduğunu
-  //    görür."
+  // Şimdiki hâl: omurga (ontoloji-mobil-liste.js'teki iniş sırasının
+  // aynısı -- bkz. window.DostOntolojiOmurga) bir çemberin çevresine
+  // dizilir. Zât tepede (-90°). İniş sağ yarıda saat yönünde aşağı iner;
+  // en çok kesret olan Âlem-i Ecsâm en altta, Zât'tan en uzakta (90°).
+  // Dönüş sol yarıdan yukarı çıkar: İnsan-ı Kâmil, Kalp ve Kalp'ten Zât'a
+  // kapanan yay. Ardışık iki omurga düğümünü bağlayan kenarlar (iniş,
+  // cem', rücû) çemberin kendi yayı olarak çizilir -- yani çember ayrı bir
+  // süs değil, verideki kenarların ta kendisi.
   //
-  // 2026-08-28, kullanıcının kararı: merkez Zât. Cümleyi bir daha okuduk ve
-  // kendi eski okumamızın onu kaydırdığını görüyoruz -- orada dairenin
-  // noktası olduğunu gören de, görülen de HAK; kalp, bunun görüldüğü yer.
-  // Cilt I'de aynı imge doğrudan söyleniyor: "Noktadan -dairenin merkezinde
-  // bulunur- çevreye doğru uzayan çizgiler çevrenin her bir parçası için
-  // eşit şekilde ortaya çıktığı gibi, Hakkın bütün yaratılmışlara nispeti de
-  // aynı nispettir." (c1k11) Merkezdeki nokta Hak; biz onun yerine kalbi
-  // koymuşuz. Kalp merkezin kendisi değil, ona en yakın duran şey -- yeni
-  // tabloda k=0.30 ile, yani diyagramın en kısa yarıçapıyla.
+  // Konumlar sabit (kuvvet simülasyonu yalnız sürüklenen düğümü yerine
+  // geri çekmek için var): her yüklemede aynı resim.
   //
-  // Merkez Zât olunca YARIÇAP bir anlam kazanıyor: Zât'tan uzaklık. Böylece
-  // iniş artık bir yay değil, dışa açılan bir sarmal (Sıfat/Esmâ -> A'yân ->
-  // Tecellî -> üç âlem; en dışta Âlem-i Ecsâm, yani en çok kesret) ve dönüş
-  // içe kapanan bir sarmal (İnsan-ı Kâmil -> Kalp -> Zât). Sarmal 360°'yi
-  // tamamlayıp başladığı yöne dönüyor: "O'ndan geldik, O'na gidiyoruz"
-  // (CLAUDE.md) tek bir kapalı çizgi olarak. Bir halka ile bir sarmal
-  // arasında sarmalı tercih ediyoruz diye zaten yazılı (CLAUDE.md, "Sarmal
-  // -- üçüncü boyut"); 2B görünüm de artık onu söylüyor.
+  // Yan kavramlar (Perde, Kazâ, Teceddüd, Velî, Halîfe, ...) çemberin
+  // DIŞINDA, veride bağlı oldukları omurga düğümünün yanında küçük uydular.
+  // Bu bir YERLEŞİM kararı, yeni bir bağ değil: hiçbir kenar eklenmedi.
+  // Ebeveyn şöyle bulunur (uyduEbeveyni): omurgadan o düğüme inen kenar;
+  // yoksa en çok kenarı olduğu omurga düğümü; o da yoksa omurgaya bağlı
+  // başka bir uydu (o zaman onun bir adım dışında durur).
   //
-  // Görsel gramer uyarısı: merkezdeki Zât PARLAK BİR CİSİM değil -- dolgusu
-  // beyaz ama kendi rengi yok, yalnız hâlesiyle biliniyor (bkz.
-  // graph-utils.js ZAT_FILL'in üstündeki not; bu kullanıcının 2026-08-06
-  // kararı).
+  // Görsel gramer uyarısı: Zât PARLAK BİR CİSİM değil -- dolgusu beyaz
+  // (graph-utils.js ZAT_FILL, kullanıcının 2026-08-27 istisnası) ama
+  // 2026-10-09'dan beri bu sahnede ışıması/hâlesi yok.
   //
-  // Ayrıca korunan iki ölçülmüş düzeltme (2026-08-28, aynı gün):
-  //  1) Tablo DOKUZ düğüm için yazılmıştı, veride ON BEŞ düğüm var; eksik
-  //     altısı sessizce merkeze yığılıyor, çarpışma kuvveti de bütün düzeni
-  //     dağıtıyordu (düğümler tuvalin %33'ünü kaplıyordu). Aşağıdaki uyarı
-  //     bunun bir daha sessiz olmaması için.
-  //  2) Kesirler width/height ile AYRI AYRI çarpılıyor, daire ezik bir
-  //     elipse dönüşüyordu. Yarıçap tek: gerçekten daire.
-  //
-  // Biçim: [açı°, k] -- k = Zât'tan uzaklık (0 = merkez). -90° tepe, açı
-  // saat yönünde artar.
-  const RING = {
-    // İNİŞ: merkezden dışa, saat yönünde. k her adımda büyüyor.
-    "dhat":               [ -90, 0    ],  // MERKEZ
-    "sifat-asma":         [ -60, 0.44 ],
-    "ayan-sabite":        [  -5, 0.66 ],
-    "tecelli":            [  45, 0.86 ],
-    "alem-ervah":         [  88, 1.00 ],
-    "alem-misal":         [ 120, 1.06 ],
-    "alem-ecsam":         [ 152, 1.12 ],  // en dışta: en çok kesret
-    // DÖNÜŞ: aynı yönde dönmeye devam ederken içeri kapanıyor.
-    "insan-i-kamil":      [ 205, 0.80 ],
-    "kalp":               [ 250, 0.30 ],  // merkeze en yakın (sabit, aşağıya bkz.)
-    // Dallar bir mertebe DEĞİL, bir mertebenin açılımıdır: anasının
-    // ışınına yakın, ondan bir adım DAHA UZAKTA. Yarıçap artık Zât'tan
-    // uzaklık olduğu için bu doğrudan görsel gramerin karşılığı
-    // ("uzaklık = kesret", "derinlik = hakikate yaklaşma").
-    "kaza-kader":         [ -25, 1.05 ],  // A'yân'ın dışa dönük yüzü
-    "perde":              [  55, 1.30 ],  // Tecellî'den
-    "teceddud":           [  70, 1.50 ],  // Perde'den, bir adım daha dışarı
-    "halife":             [ 190, 1.22 ],  // İnsan-ı Kâmil'den yelpaze
-    "veli":               [ 216, 1.28 ],
-    "bilinen-bilinmeyen": [ 228, 1.55 ],  // Velî'den
+  // Biçim: omurga düğümü -> açı° (-90 tepe, saat yönünde artar).
+  const OMURGA = ["dhat", "sifat-asma", "ayan-sabite", "tecelli",
+    "alem-ervah", "alem-misal", "alem-ecsam", "insan-i-kamil", "kalp"];
+  window.DostOntolojiOmurga = OMURGA.slice();
+  const CEMBER_ACI = {
+    // İNİŞ: sağ yarı, tepeden dibe, 30°'lik eşit adımlarla.
+    "dhat": -90, "sifat-asma": -60, "ayan-sabite": -30, "tecelli": 0,
+    "alem-ervah": 30, "alem-misal": 60, "alem-ecsam": 90,
+    // DÖNÜŞ: sol yarı, dipten tepeye; Kalp'ten Zât'a kalan yay rücûdur.
+    "insan-i-kamil": 150, "kalp": 210,
   };
-
-  // Sarmalın 2B'de çizilen ipliği: yukarıdaki tablonun ta kendisi, yalnız
-  // düğüm başına değil sürekli olarak. Merkezden çıkar (r=0), bir tur döner,
-  // merkeze döner (r=0). Ayrı bir formül yazmıyoruz ki iplik ile düğümler
-  // zamanla birbirinden ayrı düşmesin.
-  const SARMAL_YOL = [
-    [ -90, 0    ],  // Zât'tan
-    [ -60, 0.44 ], [  -5, 0.66 ], [  45, 0.86 ],
-    [  88, 1.00 ], [ 120, 1.06 ], [ 152, 1.12 ],
-    [ 205, 0.80 ], [ 250, 0.30 ],
-    [ 270, 0    ],  // Zât'a (-90° + 360°: aynı yön, tamamlanmış tur)
-  ];
+  // Uydular: halkanın dışında, ebeveynin ışınında. k = yarıçap çarpanı.
+  const UYDU_K = [1.34, 1.64];      // bir adım dışarı, iki adım dışarı
+  const UYDU_YELPAZE = 22;          // aynı ebeveyndeki uydular arası açı (°)
+  const UYDU_KAYMA = 12;            // ikinci adımdaki uydunun açısal kayması (°)
 
   // /hakkinda'daki statik şemalar (şu an "Üç Sefer") de sitenin geri
   // kalanındaki çizimler gibi tıklanıp büyütülebilsin: aynı paylaşılan
@@ -571,18 +536,33 @@
         if (window.DostViewStatus) window.DostViewStatus.hide("ontology-wrap");
         // Doğuş (FAZ 1): yalnız gerçekten ana ekrandaysak — bir deep-link
         // başka görünüme ya da bir düğüme götürdüyse araya girmeyiz.
-        // Karşılama ekranı hâlâ görünüyorsa onun sönüşünü bekler (welcome.js
-        // sönüş başlarken "dost:welcome-left" yayar); daha önce görülmüşse
-        // (aynı oturumda ikinci sayfa yüklemesi) kısa bir nefesle başlar.
+        // Karşılama ekranı hâlâ görünüyorsa onun açılışını bekler (welcome.js
+        // halka açılırken "dost:welcome-left" yayar); daha önce görülmüşse
+        // kısa bir nefesle başlar.
+        //
+        // Karşılamada iki uçtan biri (Zât / Kalp) seçildiyse (2026-10-09)
+        // seçim doğuş BİTİNCE açılır: önce çember kurulur, sonra o ucun
+        // paneli ve kendi davranışı (Zât'tan yayılan ışık, Kalp'ten rücû).
+        // Seçim kullanıcının kendi tıklaması -- adres yeni bir adım açar
+        // (pushState), geri tuşu seçimsiz çembere döner.
+        function karsilamaSecimi() {
+          const s = window.__dostKarsilamaSecimi || null;
+          window.__dostKarsilamaSecimi = null;
+          return s;
+        }
+        function secimiAc(secim) {
+          if (secim && window.__dostNav) window.__dostNav.goTo("ontoloji", secim);
+        }
         function maybeBirth() {
-          if (!birthFn) return;
-          if (currentMainView !== "ontology" || currentDetailNode || currentDetailEdge) { birthFn = null; return; }
+          const secim = karsilamaSecimi();
+          if (!birthFn) { secimiAc(secim); return; }
+          if (currentMainView !== "ontology" || currentDetailNode || currentDetailEdge) { birthFn = null; secimiAc(secim); return; }
           const f = birthFn;
           birthFn = null;
-          f();
+          if (!f(() => secimiAc(secim))) secimiAc(secim);
         }
         const welcomeEl = document.getElementById("welcome-screen");
-        if (welcomeEl && !welcomeEl.hidden) {
+        if (welcomeEl && !welcomeEl.hidden && !window.__dostKarsilamaGitti) {
           document.addEventListener("dost:welcome-left", maybeBirth, { once: true });
         } else {
           setTimeout(maybeBirth, 150);
@@ -1270,6 +1250,9 @@
     if (!ontolojiKuruldu) { bekleyenOntolojiId = id || null; return; }
     const d = id && nodeById && nodeById.get(id);
     if (d) onNodeClick(d);
+    // Kayıtsız giriş hâli (geri tuşuyla köke dönmek gibi): seçim katmanı
+    // eski düğümde asılı kalmasın.
+    else if (nodeSel) nodeSel.classed("node--active", false);
   }
 
   function goToEsma(id) {
@@ -1573,6 +1556,8 @@
   navHrefleriniGuncelle();
 
   let simulation, nodeSel, pathSel, hitSel, labelSel, nodeById;
+  // buildGraph çember/sarmal geometrisini bilen kenar yolunu buraya koyar.
+  let kenarYoluFn = null;
   // FAZ 1 (grafik-önce, 2026-08-03): buildGraph doğuş animasyonunu bu
   // değişkene bırakır; loadOntologyData rota çözüldükten sonra (yalnız
   // gerçekten ontoloji ana ekranındaysak) çağırır. Bkz. runBirth.
@@ -1599,9 +1584,9 @@
     // birbirine bindiriyordu.
     const FOCAL3D = 2600;
     const TILT_DUR_3D = 1050;
-    // Halkanın merkezi ve yarıçapı tek yerde: hem 2B düzen (RING tablosu),
-    // hem çizilen çember, hem 3B sahnenin dönme/salınım merkezi buradan
-    // okur. Yarıçap dikeyle sınırlanır (manzara oranındaki tuvalde yükseklik
+    // Halkanın merkezi ve yarıçapı tek yerde: hem 2B düzen (CEMBER_ACI),
+    // hem çizilen çember ve yaylar, hem 3B sahnenin dönme/salınım merkezi
+    // buradan okur. Yarıçap dikeyle sınırlanır (manzara oranındaki tuvalde yükseklik
     // dar kenardır); yanlarda kalan boşluk dalların ve uzun etiketlerin yeri.
     const ringCx = width / 2, ringCy = height / 2;
     const ringR = Math.max(90, Math.min(height * 0.40, width * 0.27));
@@ -1693,80 +1678,147 @@
       });
     });
 
-    // Tabloda karşılığı olmayan düğümler eskiden hep aynı yedek konuma --
-    // merkeze, yani Kalp'in üstüne -- düşüyordu ve bu sessizce oluyordu.
-    // Artık merkezden UZAĞA, dalların dışındaki boş halkaya, sırayla
-    // açılıyorlar: yerleri "doğru" değil ama görünür ve birbirinden ayrı,
-    // yani veri büyüdüğünde şekil bunu bir kez daha saklamıyor.
+    // Çember yerleşimi (bkz. OMURGA/CEMBER_ACI'nin üstündeki not). Her
+    // düğüm: __aci (radyan), __k (yarıçap çarpanı; omurga 1), __sira (doğuş
+    // sırası: çemberin çevresinde Zât'tan saat yönünde), __pus (atmosferik
+    // puslanma 0..1 -- çemberde aşağı indikçe artar: uzaklık = kesret).
+    const omurgaSet = new Set(OMURGA);
+    const komsuSayisi = new Map();
+    links.forEach((l) => {
+      [[l.source, l.target], [l.target, l.source]].forEach(([a, b]) => {
+        if (!komsuSayisi.has(a)) komsuSayisi.set(a, new Map());
+        const m = komsuSayisi.get(a);
+        m.set(b, (m.get(b) || 0) + 1);
+      });
+    });
+    // Ebeveyn: (1) omurgadan bu düğüme İNEN kenarın kaynağı; (2) yoksa en
+    // çok kenarı olduğu omurga düğümü; (3) o da yoksa omurgaya bağlı bir
+    // komşu uydu (zincir). Kenar EKLENMİYOR -- yalnız nereye konacağı.
+    function uyduEbeveyni(id, ugrak) {
+      const inen = links.find((l) => l.target === id && omurgaSet.has(l.source) && l.kind === "descent");
+      if (inen) return { ebeveyn: inen.source, adim: 0 };
+      const m = komsuSayisi.get(id) || new Map();
+      let enIyi = null, enCok = 0;
+      m.forEach((sayi, kom) => {
+        if (omurgaSet.has(kom) && sayi > enCok) { enIyi = kom; enCok = sayi; }
+      });
+      if (enIyi) return { ebeveyn: enIyi, adim: 0 };
+      ugrak = ugrak || new Set([id]);
+      for (const kom of m.keys()) {
+        if (ugrak.has(kom)) continue;
+        ugrak.add(kom);
+        const ust = uyduEbeveyni(kom, ugrak);
+        if (ust) return { ebeveyn: kom, adim: ust.adim + 1 };
+      }
+      return null;
+    }
+    const uyduBilgi = new Map();
+    nodes.forEach((n) => { if (!omurgaSet.has(n.id)) uyduBilgi.set(n.id, uyduEbeveyni(n.id)); });
+    // Aynı omurga düğümündeki ilk adım uyduları ebeveynin ışını etrafında
+    // yelpaze gibi açılır (veri sırasıyla, saat yönünde).
+    const ilkAdim = new Map();
+    nodes.forEach((n) => {
+      const b = uyduBilgi.get(n.id);
+      if (!b || b.adim !== 0) return;
+      if (!ilkAdim.has(b.ebeveyn)) ilkAdim.set(b.ebeveyn, []);
+      ilkAdim.get(b.ebeveyn).push(n.id);
+    });
+    const derece = (d) => (d * Math.PI) / 180;
+    const yer = new Map();   // id -> {aci (°), k, sira}
+    OMURGA.forEach((id, i) => {
+      if (CEMBER_ACI[id] != null) yer.set(id, { aci: CEMBER_ACI[id], k: 1, sira: i });
+    });
+    // Kendi uydusu olan (zincirin devam ettiği) uydu yelpazenin saat
+    // yönündeki ucuna konur: zincirin ikinci halkası komşusunun üstüne
+    // değil, boş kalan yana açılsın (Velî -> Bilinen-Bilinmeyen).
+    const cocukSayisi = (id) => nodes.filter((m) => {
+      const b = uyduBilgi.get(m.id);
+      return b && b.adim > 0 && b.ebeveyn === id;
+    }).length;
+    ilkAdim.forEach((ids, ebeveyn) => {
+      const e = yer.get(ebeveyn);
+      if (!e) return;
+      ids = ids.slice().sort((a, b) => cocukSayisi(a) - cocukSayisi(b));
+      ids.forEach((id, i) => {
+        yer.set(id, { aci: e.aci + (i - (ids.length - 1) / 2) * UYDU_YELPAZE, k: UYDU_K[0], sira: e.sira + 0.5 });
+      });
+    });
+    // Sonraki adımlar (uydunun uydusu): ebeveyn uydunun ışınında bir adım
+    // daha dışarıda, saat yönünde hafif kaymış.
+    for (let tur = 0; tur < 3; tur += 1) {
+      nodes.forEach((n) => {
+        if (yer.has(n.id)) return;
+        const b = uyduBilgi.get(n.id);
+        const e = b && yer.get(b.ebeveyn);
+        if (!e) return;
+        yer.set(n.id, { aci: e.aci + UYDU_KAYMA, k: UYDU_K[1], sira: e.sira + 0.5 });
+      });
+    }
     let bilinmeyen = 0;
     nodes.forEach((n) => {
-      let t = RING[n.id];
-      if (!t) {
-        t = [(bilinmeyen * 47) % 360, 2.05];
+      let y = yer.get(n.id);
+      if (!y) {
+        // Hiçbir yere bağlanamayan düğüm: sessizce bir yere yığılmasın,
+        // görünür ama ayrı bir yere (en dışa) açılsın.
+        y = { aci: (bilinmeyen * 47) % 360, k: 1.9, sira: OMURGA.length + bilinmeyen };
         bilinmeyen += 1;
         if (window.console && console.warn) {
-          console.warn("[ontoloji] düzen tablosunda yok, geçici konum: " + n.id);
+          console.warn("[ontoloji] çember yerleşiminde yeri yok, geçici konum: " + n.id);
         }
       }
-      const a = (t[0] * Math.PI) / 180;
+      const a = derece(y.aci);
+      n.__aci = a;
+      n.__k = y.k;
+      n.__sira = y.sira;
+      n.__pus = (1 + Math.sin(a)) / 2;
       // x ve y AYNI yarıçapla çarpılır -- ezilmiş elips değil, daire.
-      n.tx = ringCx + ringR * t[1] * Math.cos(a);
-      n.ty = ringCy + ringR * t[1] * Math.sin(a);
+      n.tx = ringCx + ringR * y.k * Math.cos(a);
+      n.ty = ringCy + ringR * y.k * Math.sin(a);
       n.x = n.tx;
       n.y = n.ty;
-      // Zât dairenin NOKTASI: kuvvet simülasyonunun onu birkaç piksel
-      // kaydırması bile iddiayı yaklaşık hâle getiriyordu. Tam merkeze
-      // sabitliyoruz ki "çevrenin her parçasına aynı nispet" doğru olsun.
-      // (Sabit olan düğüm 2026-08-28'e kadar Kalp'ti; gerekçe RING'in
-      // üstündeki notta.)
-      // Kalp de sabit, ama başka bir sebeple: "merkeze en yakın olan"
-      // bir iddia ve serbest bırakıldığında doğru çıkmıyordu. Ölçüldü
-      // (1342x820, 2B, recenter sonrası): Kalp Zât'tan 107 px, Sıfat/Esmâ
-      // 106 px -- yani merkezdeki büyük düğümün itmesi Kalp'i dışarı
-      // atıyor, iddia tam tersine dönüyordu. Sabitlenince tabloda yazan
-      // sıra ekranda da geçerli.
-      if (n.id === "dhat" || n.id === "kalp") { n.fx = n.tx; n.fy = n.ty; }
+    });
+
+    // Çemberin kendi yayları: ardışık iki omurga düğümünü bağlayan kenar
+    // (Kalp -> Zât dahil: turu kapatan rücû yayı). Uydunun ebeveynine
+    // giden kenar ise kısa, düz bir ışın; geri kalanlar çemberin içinden
+    // geçen kirişler.
+    links.forEach((l) => {
+      const i = OMURGA.indexOf(l.source), j = OMURGA.indexOf(l.target);
+      const sn = nodeById.get(l.source), tn = nodeById.get(l.target);
+      if (!sn || !tn) return;
+      if (i >= 0 && j >= 0 && (j === i + 1 || (i === OMURGA.length - 1 && j === 0))) {
+        let a1 = tn.__aci;
+        while (a1 <= sn.__aci) a1 += Math.PI * 2;
+        l.__yay = { a0: sn.__aci, a1: a1 };
+      } else {
+        const bt = uyduBilgi.get(l.target), bs = uyduBilgi.get(l.source);
+        l.__isin = !!((bt && bt.ebeveyn === l.source) || (bs && bs.ebeveyn === l.target));
+      }
+    });
+    // Kenar uçları kimlikten düğüm nesnesine (eskiden d3.forceLink bunu
+    // yapıyordu; artık bağ kuvveti yok). Kodun geri kalanı l.source.id okur.
+    links.forEach((l) => {
+      l.source = nodeById.get(l.source) || l.source;
+      l.target = nodeById.get(l.target) || l.target;
     });
 
     // ------------------------------------------------------------------
-    // Mertebe ekseni (3B). Bu görünümün 2B hâli zaten "daire ve merkez"i
-    // söylüyor: Zât tam ortada, mertebeler ondan açılıp ona kapanan bir
-    // sarmalın üstünde -- Cilt I'de okuduğumuz "Noktadan -dairenin
-    // merkezinde bulunur- çevreye doğru uzayan çizgiler..." cümlesinin
-    // şekle dökülmüş hâli (bkz. RING'in üstündeki not).
-    //
-    // Ama veride ikinci bir iddia daha var ve 2B onu göstermiyor: her
-    // düğümün bir `layer`ı (0-6) var, yani Zât'tan Kalp'e bir İNİŞ. 3B
-    // eğim tam olarak bunu açıyor -- katmanlar dikeyde ayrışıyor, halka
-    // her katmanda biraz dönerek alçalıyor, İnsan-ı Kâmil ve Kalp'ten
-    // Zât'a giden dönüş kenarları da dipten tepeye yükselen kirişler
-    // hâline geliyor. Yani 2B ve 3B aynı verinin iki okuması; ikisi de
-    // metinde var, ikisi de kaybolmasın diye eğim bir düğmeye bağlı ve
-    // varsayılan 2B (bu görünümün imzası daire-ve-merkez).
-    //
-    // Motor Hâller/Menziller ile birebir aynı (bkz. research/
-    // GRAFIK-FELSEFESI.md): elle yazılmış yaw/pitch/perspektif, Three.js
-    // yok. tilt=0'da konumlar force düzeninin BİREBİR aynısı kalır.
+    // Mertebe ekseni (3B): "Mertebe eksenine eğ" düğmesi çemberi sarmala
+    // açar. Açı aynı kalır (çemberdeki yer), yükseklik düğümün `layer`ından
+    // gelir (0 Zât .. 6 Kalp): sarmal, çemberin mertebe ekseni boyunca
+    // gerilmiş hâli. İniş yayları sarmalın ipliği olur; Kalp'ten Zât'a
+    // kapanan rücû yayı dipten tepeye yükselir. Motor Hâller/Menziller ile
+    // aynı (hal.js helixPoint/project deseni: elle yazılmış yaw/pitch/
+    // perspektif, Three.js yok). tilt=0'da konumlar çemberin BİREBİR aynısı.
     const layers = Array.from(new Set(nodes.map((n) => n.layer))).sort((a, b) => a - b);
     const maxLayer = layers[layers.length - 1] || 1;
-    const perLayer = new Map();
-    layers.forEach((L) => perLayer.set(L, nodes.filter((n) => n.layer === L)));
-    nodes.forEach((n) => {
-      const peers = perLayer.get(n.layer);
-      n.__li = peers.indexOf(n);
-      n.__ln = peers.length;
-    });
-
-    // Bir katmandaki birden çok düğüm (4. katmanda üç âlem var) o katmanın
-    // açı diliminde yan yana açılır -- üst üste binmesinler diye.
-    const SPREAD = 0.62;
+    const R3D_OLCU = 0.82;
+    function sarmalKonum(aci, k, f) {
+      const r = ringR3d * R3D_OLCU * k;
+      return { x: r * Math.cos(aci), y: r * Math.sin(aci), z: 0, drop: -dropH / 2 + dropH * f };
+    }
     function helixPoint(n) {
-      const f = n.layer / maxLayer;                       // 0 (Zât) .. 1 (Kalp)
-      const off = n.__ln > 1 ? (n.__li - (n.__ln - 1) / 2) * SPREAD : 0;
-      const a = -Math.PI / 2 + f * Math.PI * 2 + off;
-      const r = ringR3d * (0.72 + 0.28 * f);
-      const flatY = r * Math.sin(a);
-      return { x: r * Math.cos(a), y: flatY, z: 0, drop: -dropH / 2 + dropH * f };
+      return sarmalKonum(n.__aci, n.__k, n.layer / maxLayer);
     }
     // Hâller'deki projeksiyonun aynısı: yaw (Y ekseni) → pitch (X ekseni) →
     // perspektif bölme. Her ikisi de yalnız tilt ile devreye girer.
@@ -1782,33 +1834,94 @@
       const depth = FOCAL3D / (FOCAL3D + zc);
       return { x: x1 * depth, y: y2 * depth, depth: depth, z: z2 };
     }
+    // Bir noktanın ekran (spinGroup yerel) konumu, tilt ile harmanlı:
+    // tilt=0'da çemberin noktası, tilt=1'de sarmalın izdüşümü.
+    function harmanla(x2, y2, h) {
+      const p = project3d({ x: h.x, y: h.y * (1 - tilt) + h.drop * tilt, z: h.y * tilt });
+      return {
+        x: x2 * (1 - tilt) + (cx3d + p.x) * tilt,
+        y: y2 * (1 - tilt) + (cy3d + p.y) * tilt,
+        depth: 1 + (p.depth - 1) * tilt,
+        z: p.z * tilt,
+      };
+    }
 
-    // Her karede ekran konumlarını tazeler. tilt=0 iken px/py force
-    // simülasyonunun verdiği x/y'nin ta kendisidir -- 2B hiç bozulmaz.
+    // Her karede ekran konumlarını tazeler. tilt=0 iken px/py simülasyonun
+    // x/y'sinin ta kendisidir (sürüklenen düğüm dahil) -- 2B hiç bozulmaz.
     function positionNodes() {
       nodes.forEach((n) => {
         if (tilt < 0.001) {
           n.px = n.x; n.py = n.y; n.__depth = 1; n.__z = 0;
           return;
         }
-        const h = helixPoint(n);
-        // Katman yüksekliği dikeyde, halkanın kendi salınımı z'de: eğildikçe
-        // düzlem yatar ve yükseklik görünür olur (Hâller'deki harman).
-        const p = project3d({ x: h.x, y: h.y * (1 - tilt) + h.drop * tilt, z: h.y * tilt });
-        n.px = n.x * (1 - tilt) + (cx3d + p.x) * tilt;
-        n.py = n.y * (1 - tilt) + (cy3d + p.y) * tilt;
-        n.__depth = 1 + (p.depth - 1) * tilt;
-        n.__z = p.z * tilt;
+        const q = harmanla(n.x, n.y, helixPoint(n));
+        n.px = q.x; n.py = q.y; n.__depth = q.depth; n.__z = q.z;
       });
     }
 
+    // Kenar yolu (modül düzeyindeki edgePath buna devreder: yaylar çemberin
+    // ve sarmalın geometrisini bilmek zorunda).
+    kenarYoluFn = function (d) {
+      const s = d.source, t = d.target;
+      const sx = s.px != null ? s.px : s.x, sy = s.py != null ? s.py : s.y;
+      const txp = t.px != null ? t.px : t.x, typ = t.py != null ? t.py : t.y;
+      const pad = radiusFor(t) + 2;
+      if (d.__yay) {
+        // Bitiş, hedef düğümün kenarında: açı olarak geri çekilir.
+        const del = pad / ringR;
+        if (tilt < 0.02) {
+          // 2B: gerçek çember yayı, düğümlerin GÜNCEL konumları arasında
+          // (sürüklenen düğümü de izler). Hedef, merkez etrafında del kadar
+          // geri döndürülür.
+          const dx = txp - ringCx, dy = typ - ringCy;
+          const c = Math.cos(-del), sn = Math.sin(-del);
+          const ex = ringCx + dx * c - dy * sn, ey = ringCy + dx * sn + dy * c;
+          return "M" + sx + "," + sy + "A" + ringR + "," + ringR + " 0 0,1 " + ex + "," + ey;
+        }
+        // Eğimde: sarmalın ipliğini izleyen örneklenmiş yol. Yükseklik iki
+        // ucun mertebesi arasında doğrusal -- rücû yayı dipten tepeye çıkar.
+        const f0 = s.layer / maxLayer, f1 = t.layer / maxLayer;
+        const a0 = d.__yay.a0, a1 = d.__yay.a1 - del;
+        const ADIM = 22;
+        let yol = "";
+        for (let i = 0; i <= ADIM; i += 1) {
+          const u = i / ADIM;
+          const aci = a0 + (a1 - a0) * u;
+          const q = harmanla(ringCx + ringR * Math.cos(aci), ringCy + ringR * Math.sin(aci),
+            sarmalKonum(aci, 1, f0 + (f1 - f0) * u));
+          yol += (i ? "L" : "M") + q.x.toFixed(1) + "," + q.y.toFixed(1);
+        }
+        return yol;
+      }
+      if (d.__isin) {
+        const e = pullBack(sx, sy, txp, typ, pad);
+        return "M" + sx + "," + sy + "L" + e.x + "," + e.y;
+      }
+      // Kiriş: çemberin içinden geçen bağ. 2B'de denetim noktası merkeze
+      // doğru çekilir (kiriş çemberin İÇİNDE kalır, boşlukta bitmez);
+      // eğimde eski yay (rücû sağa, tenzîh-teşbîh sola bükülür).
+      const mx0 = (sx + txp) / 2, my0 = (sy + typ) / 2;
+      const c2x = mx0 + (ringCx - mx0) * 0.4, c2y = my0 + (ringCy - my0) * 0.4;
+      const dx = txp - sx, dy = typ - sy;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const bow = d.kind === "return" ? 90 : d.kind === "paradox" ? -70 : 0;
+      const c3x = mx0 + (-dy / dist) * bow, c3y = my0 + (dx / dist) * bow;
+      const mx = c2x * (1 - tilt) + c3x * tilt, my = c2y * (1 - tilt) + c3y * tilt;
+      const e = pullBack(mx, my, txp, typ, pad);
+      return "M" + sx + "," + sy + "Q" + mx + "," + my + " " + e.x + "," + e.y;
+    };
+
+    // Konumlar sabit. Simülasyonda yalnız "yerine dön" kuvveti var: hiçbir
+    // düğüm kendiliğinden kıpırdamaz (başlangıç konumu = hedef); yalnız
+    // sürüklenip bırakılan düğüm yerine geri çekilir. Eskiden çekim/itme/
+    // çarpışma kuvvetleri de vardı ve yerleşim her yüklemede biraz farklı
+    // çıkıyordu (2026-10-09 görsel değerlendirme).
     simulation = d3
       .forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id((d) => d.id).distance(120).strength(0.15))
-      .force("charge", d3.forceManyBody().strength(-120))
-      .force("x", d3.forceX((d) => d.tx).strength(0.85))
-      .force("y", d3.forceY((d) => d.ty).strength(0.85))
-      .force("collide", d3.forceCollide().radius((d) => radiusFor(d) + 44));
+      .force("x", d3.forceX((d) => d.tx).strength(0.3))
+      .force("y", d3.forceY((d) => d.ty).strength(0.3))
+      .stop()
+      .alpha(0);
 
     const zoomLayer = svg.append("g").attr("class", "zoom-layer");
 
@@ -1820,6 +1933,9 @@
     window.__ontologyZoom = {
       svg, zoom,
       fit(animate) {
+        // Mobil liste kipinde SVG gizli (0 genişlik): d3-zoom'un geçişi
+        // DOM'dan 0 okuyup NaN üretiyor (bkz. runBirth'teki not).
+        if (!svg.node().clientWidth) return;
         const sel = (animate && !reduceMotion) ? svg.transition().duration(520) : svg;
         sel.call(zoom.transform, computeFitTransform());
       },
@@ -1844,11 +1960,30 @@
     // pencere boyutu + 2B/3B kipi başına saklanır; Ortala ona döner (kip
     // korunur), boyut değiştiyse yeniden hesaplanır.
     const ilkBakis = new Map();
-    function bakisAnahtari() { return width + "x" + height + ":" + (tiltTarget > 0.5 ? 3 : 2); }
+    // Görünür tuvalin GÜNCEL boyu. Sahnenin kendi koordinatları kurulduğu
+    // andaki boya göre (width/height) kalır; sığdırma ise ekrandaki gerçek
+    // tuvale yapılır. Mobilde grafik "Haritayı aç"a kadar gizli (0x0) kurulup
+    // 800x600 yedeğine göre sığdırılıyordu; açılınca dar tuvalde çemberin
+    // yalnız bir parçası görünüyordu (2026-10-09, 390 px'te ölçüldü).
+    function tuval() {
+      const el = svg.node();
+      return { w: el.clientWidth || width, h: el.clientHeight || height };
+    }
+    function bakisAnahtari() { const t = tuval(); return t.w + "x" + t.h + ":" + (tiltTarget > 0.5 ? 3 : 2); }
     function ilkBakisKaydet(t) {
       if (width > 0 && height > 0 && t && isFinite(t.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), t);
       return t;
     }
+    // Tuval boyu değişince (pencere, mobilde "Haritayı aç") o boyun ilk
+    // bakışına otur. Boy aynıysa dokunulmaz: kullanıcının kaydırması kalır.
+    let sonTuval = tuval().w + "x" + tuval().h;
+    window.addEventListener("resize", window.DostGraphUtils.debounceResize(() => {
+      const t = tuval();
+      if (ontologyWrap.hidden || !svg.node().clientWidth || t.w + "x" + t.h === sonTuval) return;
+      sonTuval = t.w + "x" + t.h;
+      paintPositions();
+      svg.call(zoom.transform, ilkBakis.get(bakisAnahtari()) || ilkBakisKaydet(computeFitTransform()));
+    }));
     window.DostGraphUtils.wireRecenter("ontology-recenter", () => {
       // Seçim burada kamerayı taşımıyor (düğüme tıklamak yalnız paneli
       // açıyor), o yüzden yalnız çerçeve sıfırlanıyor -- seçili düğüm kalır.
@@ -1896,12 +2031,13 @@
       // düzeltildi) ve cömert bir pay sahneyi pul büyüklüğüne indiriyordu.
       // Kart ne kadar büyürse büyüsün grafik yüksekliğinin en çok beşte
       // birini verir; gerisini çakışma çözücüsü zaten engel olarak biliyor.
-      return Math.max(0, Math.min(height * 0.2, sr.bottom - hr.top + 12));
+      return Math.max(0, Math.min(tuval().h * 0.2, sr.bottom - hr.top + 12));
     }
     function computeFitTransform() {
       const pad = 48;
       const alt = altPay();
-      const useH = Math.max(height * 0.5, height - alt);
+      const { w: tw, h: th } = tuval();
+      const useH = Math.max(th * 0.5, th - alt);
       let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
       nodes.forEach((n) => {
         const r = radiusFor(n);
@@ -1935,12 +2071,12 @@
       const bboxH = Math.max(maxY - minY, 1);
       const scale = Math.min(
         4,
-        Math.max(0.22, Math.min((width - pad * 2) / bboxW, (useH - pad * 2) / bboxH))
+        Math.max(0.22, Math.min((tw - pad * 2) / bboxW, (useH - pad * 2) / bboxH))
       );
       const cx = (minX + maxX) / 2;
       const cy = (minY + maxY) / 2;
       return d3.zoomIdentity
-        .translate(width / 2 - scale * cx, useH / 2 - scale * cy)
+        .translate(tw / 2 - scale * cx, useH / 2 - scale * cy)
         .scale(scale);
     }
 
@@ -1948,54 +2084,29 @@
     // yavaşça döner; etiketler ayrıca ters çevrilip dik ve yerinde tutulur.
     const spinGroup = zoomLayer.append("g").attr("class", "onto-spin");
 
-    // 2B'nin zemin çizgisi. Düğümlerin üstünde durduğu şey artık bir çember
-    // değil, merkezden (Zât) açılıp merkeze kapanan bir SARMAL -- o yüzden
-    // çizilen de o. Önceki hâli bir elipsti; RING sarmala dönünce çember
-    // düğümlerin geçmediği bir yerden geçiyor, yani olmayan bir şeyi iddia
-    // ediyor olacaktı. Yalnız 2B'de görünür: 3B'de düzlem yattığı için
-    // anlamını yitiriyor (yerini helixLayer alıyor, aşağıda).
+    // 2B'nin zemin çizgisi: düğümlerin üstünde durduğu çember. Çok soluk,
+    // tek bir halka (iç içe değil) -- çemberi asıl çizen, üstündeki
+    // kenarların yaylarıdır; bu yalnız aralarındaki boşluğu tutar. Yalnız
+    // 2B'de görünür: eğimde yerini sarmalın ipliği (helixLayer) alır.
     const ringLayer = spinGroup.append("g").attr("class", "onto-ring-layer");
-    // Doğuş animasyonu (runBirth) sarmalı da kademeli belirtir; animasyon
+    // Doğuş animasyonu (runBirth) çemberi de kademeli belirtir; animasyon
     // dışında hep 1 (paintPositions her karede kullanıyor).
     let birthRing = 1;
-    // SARMAL_YOL'un ardışık iki noktası arasında kutupsal olarak
-    // aradeğerleme: açı ve yarıçap birlikte ilerlediği için parça parça
-    // Arşimet sarmalı çıkıyor ve eğri her düğümün TAM üstünden geçiyor.
-    function sarmalYolu() {
-      const ADIM = 24;
-      const pts = [];
-      for (let i = 0; i < SARMAL_YOL.length - 1; i += 1) {
-        const [a0, k0] = SARMAL_YOL[i];
-        const [a1, k1] = SARMAL_YOL[i + 1];
-        const son = i === SARMAL_YOL.length - 2 ? ADIM : ADIM - 1;
-        for (let j = 0; j <= son; j += 1) {
-          const t = j / ADIM;
-          const a = ((a0 + (a1 - a0) * t) * Math.PI) / 180;
-          const r = ringR * (k0 + (k1 - k0) * t);
-          pts.push([ringCx + r * Math.cos(a), ringCy + r * Math.sin(a)]);
-        }
-      }
-      return d3.line().curve(d3.curveCatmullRom.alpha(0.5))(pts);
-    }
     const ringEl = ringLayer
       .append("path")
       .attr("class", "onto-ring")
-      .attr("d", sarmalYolu());
+      .attr("d", "M" + ringCx + "," + (ringCy - ringR) +
+        "A" + ringR + "," + ringR + " 0 1,1 " + ringCx + "," + (ringCy + ringR) +
+        "A" + ringR + "," + ringR + " 0 1,1 " + ringCx + "," + (ringCy - ringR));
 
-    // Sarmalın kendi ipliği (2026-08-28). 2B'nin dairesi çiziliyordu ama
-    // varsayılan olan 3B'nin sarmalı çizilmiyordu: düğümler bir sarmalın
-    // üstünde duruyor, göz ise dağınık bir saçılma görüyordu -- iddia
-    // yalnız veride vardı, şekilde değil. Bir daire (2B) ile bir sarmal
-    // (3B) arasında sarmalı tercih ediyoruz diye yazılı (CLAUDE.md,
-    // "Sarmal -- üçüncü boyut"); tercih edilen şeyin görünür olması gerek.
-    //
-    // İplik yeni bir iddia DEĞİL: helixPoint'in sürekli hâli, yani
-    // düğümlerin zaten üstünde durduğu eğrinin ta kendisi.
+    // Sarmalın ipliği: eğimde düğümlerin üstünde durduğu eğri. Yeni bir
+    // iddia DEĞİL: helixPoint'in sürekli hâli (omurga boyunca, Zât'tan
+    // Kalp'e; açı ve mertebe düğümler arasında doğrusal).
     //
     // Kısa parçalara bölünüyor çünkü derinlik eğri boyunca değişiyor:
-    // arkaya geçen yarı puslanıp siliniyor, öne gelen yarı beliriyor.
-    // GORSEL_DIL'in kuralı bu -- "sahte 3B yapma; derinlik atmosferik
-    // puslanmayla kurulur". Tek ölçü: uzaktaki soluktur.
+    // arkaya geçen yarı puslanıp siliniyor, öne gelen yarı beliriyor
+    // (GORSEL_DIL: "sahte 3B yapma; derinlik atmosferik puslanmayla
+    // kurulur").
     const IPLIK_PARCA = 96;
     const helixLayer = spinGroup.append("g").attr("class", "onto-helix-layer");
     const helixSegs = helixLayer
@@ -2003,27 +2114,25 @@
       .data(d3.range(IPLIK_PARCA))
       .join("line")
       .attr("class", "onto-helix");
-
-    // helixPoint ile AYNI eğri, yalnız düğüm başına değil sürekli t için.
-    // (Ayrı bir formül yazsaydık ikisi zamanla birbirinden ayrı düşerdi.)
+    const iplikDugumleri = OMURGA.map((id) => nodeById.get(id)).filter(Boolean);
     function helixCurvePoint(t) {
-      const a = -Math.PI / 2 + t * Math.PI * 2;
-      const r = ringR3d * (0.72 + 0.28 * t);
-      const hy = r * Math.sin(a);
+      const son = iplikDugumleri.length - 1;
+      const yerT = Math.max(0, Math.min(son, t * son));
+      const i = Math.min(son - 1, Math.floor(yerT)), u = yerT - i;
+      const A = iplikDugumleri[i], B = iplikDugumleri[i + 1];
+      let a1 = B.__aci;
+      while (a1 < A.__aci) a1 += Math.PI * 2;
+      const aci = A.__aci + (a1 - A.__aci) * u;
+      const f = (A.layer + (B.layer - A.layer) * u) / maxLayer;
       // Salınım UYGULANMIYOR: iplik spinGroup'un içinde, sahnenin dönüşünü
       // zaten o grup taşıyor (düğümlerde de öyle).
-      const p = project3d({
-        x: r * Math.cos(a),
-        y: hy * (1 - tilt) + (-dropH / 2 + dropH * t) * tilt,
-        z: hy * tilt,
-      });
-      return { x: cx3d + p.x, y: cy3d + p.y, depth: 1 + (p.depth - 1) * tilt };
+      return harmanla(ringCx + ringR * Math.cos(aci), ringCy + ringR * Math.sin(aci), sarmalKonum(aci, 1, f));
     }
     function paintHelix() {
       if (tilt < 0.02) { helixLayer.style("opacity", 0); return; }
-      // 2B'nin sarmalı eğim arttıkça sönüyor (ringEl), iplik ise beliriyor:
-      // her görünümün kendi şekli var, ikisi aynı anda değil.
-      helixLayer.style("opacity", tilt * birthRing * 0.85);
+      // Çember eğim arttıkça sönüyor (ringEl), iplik beliriyor: ikisi aynı
+      // anda değil.
+      helixLayer.style("opacity", tilt * birthRing * 0.6);
       let onceki = helixCurvePoint(0);
       helixSegs.each(function (i) {
         const simdi = helixCurvePoint((i + 1) / IPLIK_PARCA);
@@ -2031,9 +2140,8 @@
         d3.select(this)
           .attr("x1", onceki.x).attr("y1", onceki.y)
           .attr("x2", simdi.x).attr("y2", simdi.y)
-          // Eşikler FOCAL3D=2600 ve bu yarıçapta ölçülen derinlik
-          // aralığına (yaklaşık 0.84-1.24) göre: arkadaki neredeyse
-          // görünmez, öndeki tam.
+          // Derinlik aralığı (yaklaşık 0.84-1.24, FOCAL3D=2600): arkadaki
+          // neredeyse görünmez, öndeki tam.
           .style("opacity", Math.max(0.07, Math.min(1, (d - 0.84) / 0.36)));
         onceki = simdi;
       });
@@ -2135,13 +2243,22 @@
       .on("focus", (event, d) => { highlight(d); showTooltip(d, event); })
       .on("blur", () => { highlight(null); hideTooltip(); });
 
+    // Seçim/değinme katmanı: düğümün arkasında TEK, kenarsız, merkezden
+    // dışa sönen bir ışık lekesi (bkz. style.css "Ontoloji çemberi").
+    // Opaklığı CSS yönetir (hover/odak/seçim); burada yalnız biçimi.
+    const secimGrad = defs.append("radialGradient").attr("id", "onto-secim-katmani");
+    [["0%", "0.55"], ["55%", "0.32"], ["100%", "0"]].forEach(([off, op]) => {
+      secimGrad.append("stop").attr("offset", off)
+        .attr("style", "stop-color:var(--series-hal-hayret);stop-opacity:" + op);
+    });
     nodeSel
       .append("circle")
       .attr("class", "node-halo")
-      .attr("r", (d) => radiusFor(d) * 1.4);
+      .attr("r", (d) => radiusFor(d) * 2.1);
 
     nodeSel
       .append("circle")
+      .attr("class", "node-govde")
       .attr("r", (d) => radiusFor(d))
       .attr("fill", (d) => colorFor(d));
 
@@ -2204,7 +2321,12 @@
         .style("opacity", (d) => {
           const base = tilt > 0.02 ? Math.max(0.62, Math.min(1, d.__depth * 1.02)) : 1;
           return d.__birth == null ? base : base * d.__birth;
-        });
+        })
+        // Atmosferik puslanma (2B): çemberde aşağı indikçe düğüm solar ve
+        // doygunluğunu yitirir -- uzaklık = kesret (GORSEL_DIL). Dönüş
+        // yayında yukarı çıktıkça açılır. CSS --pus'u okur (style.css,
+        // .ontology-node); eğimde derinlik atmosferi devralır.
+        .style("--pus", (d) => ((d.__pus || 0) * (1 - tilt)).toFixed(3));
       ringEl.style("opacity", (1 - tilt) * birthRing);
       paintHelix();
       // Etiket çakışması: kuvvet düzeni düğümleri yaklaştırdığında yazılar
@@ -2225,15 +2347,21 @@
       // yön ancak düğüm merkezden bu kadar ayrıldığında değişiyor, aradaki
       // bantta en son verilen karar korunuyor.
       const HISTEREZIS_PAY = 26;
+      // "Dışarısı" çemberin merkezine göre: üst yarıdaki düğümün adı üstte,
+      // alt yarıdakinin altta -- yazılar çemberin içine, kirişlerin arasına
+      // düşmez. Eğimde (sarmal) merkez Zât'ın kendisi: sarmal ondan aşağı
+      // iner, adlar düğümlerin altında kalır (eski 3B davranışı).
       const zatDugum = nodes.find((n) => n.id === "dhat");
-      const merkez = zatDugum ? swayRotate(zatDugum.px, zatDugum.py) : { x: 0, y: 0 };
+      const merkez = tilt > 0.5
+        ? (zatDugum ? swayRotate(zatDugum.px, zatDugum.py) : { x: 0, y: 0 })
+        : { x: ringCx, y: ringCy };
       labelSel.each(function (d) {
         const anc0 = swayRotate(d.px, d.py);
         const fark = anc0.y - merkez.y;
         if (fark < -HISTEREZIS_PAY) d.__labelUst = true;
         else if (fark > HISTEREZIS_PAY) d.__labelUst = false;
-        // Zât'ın kendisi merkez olduğu için "dışarısı" yok: hep altında.
-        if (d.id === "dhat") d.__labelUst = false;
+        // Zât tepede: adı hep üstünde, çemberin dışında.
+        if (d.id === "dhat") d.__labelUst = true;
         const baseY = d.__labelUst ? -(radiusFor(d) + 8) : radiusFor(d) + 14;
         const s = nodeScale(d);
         // Etiket kendi grubu içinde ters döndürülüp dik tutuluyor (bkz.
@@ -2313,58 +2441,37 @@
     simulation.on("tick", paintPositions);
 
     // ------------------------------------------------------------------
-    // Doğuş (FAZ 1, 2026-08-03). "O'ndan geldik"in grafiğe çevrilmiş hâli:
-    // sahne Zât'ın noktasına kapalı başlar, oradan bütün haritaya açılır;
-    // düğümler katman sırasına göre (tenezzül sırası: önce Zât, sonra
-    // isimler, sonra âlemler...) belirir; halka ve kenarlar en sonda
-    // bağlanır. Karşılama ekranının halkası sönerken tetiklenir (bkz.
-    // welcome.js "dost:welcome-left"), reduced-motion'da hiç çalışmaz.
-    birthFn = function runBirth() {
-      if (reduceMotion) return;
+    // Doğuş (FAZ 1, 2026-08-03; çember, 2026-10-09). Karşılama ekranının
+    // halkası açılıp bu çemberin yerine oturur (welcome.js, halkaEkrani'yi
+    // okuyup oraya büyür); halka varınca çember belirir, düğümler onun
+    // üstünde Zât'tan saat yönünde sırayla doğar, kenarlar en sonda
+    // bağlanır. Kamera hiç kıpırdamaz: halkanın vardığı yer, çemberin
+    // ilk bakıştaki yeridir. reduced-motion'da hiç çalışmaz.
+    // Dönüş: doğuş gerçekten başladıysa true; bitince bitti() çağrılır.
+    birthFn = function runBirth(bitti) {
+      if (reduceMotion) return false;
       // Dar ekranda (mobil-liste kipi) SVG "haritayı aç"a kadar CSS ile
-      // gizli -- clientWidth 0. d3-zoom'un TRANSITION'lı .transform()'u
-      // (aşağıdaki svg.transition()...call) kendi interpolateZoom
-      // kurulumunda bu değeri DOĞRUDAN DOM'dan okuyor (ontology.js'in
-      // kendi width/height değişkenlerinden değil), 0 olduğunda iç
-      // hesabında sıfıra bölme NaN üretiyor -- her karede konsola
-      // "translate(NaN,NaN) scale(NaN)" olarak taşan asıl kaynak burasıydı
-      // (kod taraması, 2026-08-27; buildGraph'ın kendi || 800/600 yedeği
-      // bunu KAPSAMIYOR, çünkü bu değer hiç JS değişkenine uğramıyor).
-      // Gizliyken doğuş animasyonu zaten görünmez -- 2035. satırdaki
-      // animasyonsuz computeFitTransform() çağrısı grafiği görünür
-      // olmayan ama tutarlı bir dinlenme hâlinde bırakıyor, o yeterli.
-      if (svg.node().clientWidth === 0) return;
-      const dhat = nodeById.get("dhat");
-      if (!dhat) return;
-      // Görünüm açılışta 3B eğimli başlıyor (aşağıdaki "Açılışta doğrudan
-      // mertebe eksenine eğ" bloğu) — Zât'ın gerçek EKRAN konumu bu yüzden
-      // tx/ty değil, projeksiyondan gelen px/py. Bitişte de zoomIdentity
-      // değil, sarmalı çerçeveye sığdıran dönüşüme oturuyoruz (2B/3B her
-      // iki durumda da doğru olan tek hedef bu).
-      const bx = dhat.px != null ? dhat.px : dhat.tx;
-      const by = dhat.py != null ? dhat.py : dhat.ty;
-      const startScale = 2.6;
-      svg.call(zoom.transform, d3.zoomIdentity
-        .translate(width / 2 - startScale * bx, height / 2 - startScale * by)
-        .scale(startScale));
-      svg.transition().duration(2600).ease(d3.easeCubicInOut).call(zoom.transform, ilkBakisKaydet(computeFitTransform()));
+      // gizli -- clientWidth 0. Gizliyken doğuş zaten görünmez; d3-zoom'un
+      // geçişi de 0 genişlikte NaN üretiyordu (kod taraması, 2026-08-27).
+      if (svg.node().clientWidth === 0) return false;
+      svg.call(zoom.transform, ilkBakis.get(bakisAnahtari()) || ilkBakisKaydet(computeFitTransform()));
 
       nodes.forEach((n) => { n.__birth = 0; });
       birthRing = 0;
       const linksG = svg.select("g.links").attr("opacity", 0);
-      linksG.transition().delay(1400).duration(900).attr("opacity", 1);
+      linksG.transition().delay(1150).duration(700).attr("opacity", 1);
 
-      const STAG = 300, DUR = 700, start = performance.now();
+      const HALKA = 520, STAG = 105, DUR = 460, start = performance.now();
       function step(now) {
         const t = now - start;
         let done = true;
+        birthRing = Math.max(0, Math.min(1, t / HALKA));
+        if (birthRing < 1) done = false;
         nodes.forEach((n) => {
-          const v = Math.max(0, Math.min(1, (t - n.layer * STAG) / DUR));
+          const v = Math.max(0, Math.min(1, (t - HALKA * 0.6 - n.__sira * STAG) / DUR));
           n.__birth = v * v * (3 - 2 * v);
           if (v < 1) done = false;
         });
-        birthRing = Math.max(0, Math.min(1, (t - 900) / 900));
-        if (birthRing < 1) done = false;
         paintPositions();
         if (!done) {
           requestAnimationFrame(step);
@@ -2372,11 +2479,22 @@
           nodes.forEach((n) => { delete n.__birth; });
           birthRing = 1;
           paintPositions();
+          if (bitti) setTimeout(bitti, 380);
         }
       }
       requestAnimationFrame(step);
+      return true;
     };
 
+    // Karşılama halkasının açılıp oturacağı yer: çemberin ilk bakıştaki
+    // ekran konumu ve yarıçapı (istemci koordinatları). Görünmüyorsa null.
+    window.__ontolojiHalkaEkrani = function () {
+      const el = svg.node();
+      if (!el.clientWidth || ontologyWrap.hidden || tiltTarget > 0.5) return null;
+      const t = ilkBakis.get(bakisAnahtari()) || ilkBakisKaydet(computeFitTransform());
+      const r = el.getBoundingClientRect();
+      return { x: r.left + t.applyX(ringCx), y: r.top + t.applyY(ringCy), r: t.k * ringR };
+    };
     // ---- Sakin, huzurlu salınım ----
     // Burada bilerek TAM DÖNÜŞ yapmıyoruz. Hâller ve Sırlar'da dönüş
     // zararsız: Sırlar merkezden ışıyan bir demet (yukarısı-aşağısı yok),
@@ -2480,6 +2598,18 @@
       }, reduceMotion ? 30 : TILT_DUR_3D + 60);
       ensureSpin();
     }
+    // "Bir adım geri" (ETKILESIM_DILI): açık panel → seçili düğüm → giriş
+    // hâli. Paneli ortak zincir kapatır (panel açıkken burası karışmaz);
+    // panel kapandıktan sonraki Esc seçim katmanını söndürür. Eskiden seçim
+    // panel kapansa da düğümde asılı kalıyordu.
+    window.DostGraphUtils.registerStepBack("ontology-wrap", () => {
+      if (!detailPanel.hidden || !nodeSel) return false;
+      if (nodeSel.filter(".node--active").empty()) return false;
+      nodeSel.classed("node--active", false);
+      currentDetailNode = null;
+      return true;
+    });
+
     const tiltBtn = document.getElementById("ontology-3d-toggle");
     if (tiltBtn && !tiltBtn.dataset.wiredOnto3d) {
       tiltBtn.dataset.wiredOnto3d = "1";
@@ -2550,24 +2680,13 @@
     })();
 
     paintPositions();
-    svg.call(zoom.transform, computeFitTransform());
-
-    // Açılışta doğrudan mertebe eksenine eğ (2026-07-26, kullanıcı isteği).
-    // Not: bu görünümün 2B hâli daire-ve-merkez okumasını taşıyor ve
-    // varsayılan 3B onu ilk bakışta gizliyor -- ama iniş de en az onun
-    // kadar veride yazılı, ve tek tıkla 2B'ye dönülüyor.
-    // Animasyonsuz (bkz. hal.js/esma.js/menziller.js'teki aynı not): eğim
-    // morfu açılıştaki kuvvet yerleşmesiyle yarışıp ilk saniyeyi takıyor.
-    if (tiltBtn) {
-      tilt = 1; tiltFrom = 1; tiltTarget = 1;
-      paintPositions();
-      tiltBtn.classList.add("is-on");
-      tiltBtn.setAttribute("aria-pressed", "true");
-      setTimeout(() => {
-        if (!ontologyWrap.hidden) svg.call(zoom.transform, ilkBakisKaydet(computeFitTransform()));
-      }, 80);
-      ensureSpin();
-    }
+    // Açılış 2B çember (2026-10-09). 2026-07-26'dan beri görünüm 3B eğimli
+    // açılıyordu (kullanıcı isteği); görsel değerlendirme bu açılışın
+    // ilk ziyaret ipucunun ("iki uçlu bir çember") söylediğini göstermediğini
+    // ölçtü. Sarmal kaybolmadı: "Mertebe eksenine eğ" düğmesi çemberi
+    // sarmala açar.
+    svg.call(zoom.transform, ilkBakisKaydet(computeFitTransform()));
+    ensureSpin();
 
     window.__ontologyApp = { nodes, links, nodeById, is3d: () => tiltTarget > 0.5 };
 
@@ -2597,20 +2716,9 @@
     const s = d.source, t = d.target;
     const sx = s.px != null ? s.px : s.x, sy = s.py != null ? s.py : s.y;
     const txp = t.px != null ? t.px : t.x, typ = t.py != null ? t.py : t.y;
-    const pad = radiusFor(t) + 2;
-    if (d.kind === "descent" || d.kind === "gather") {
-      const e = pullBack(sx, sy, txp, typ, pad);
-      return `M${sx},${sy}L${e.x},${e.y}`;
-    }
-    // curved bow for "return" (bow right) and "paradox" (bow left)
-    const dx = txp - sx, dy = typ - sy;
-    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-    const nx = -dy / dist, ny = dx / dist;
-    const bow = d.kind === "return" ? 90 : -70;
-    const mx = (sx + txp) / 2 + nx * bow;
-    const my = (sy + typ) / 2 + ny * bow;
-    const e = pullBack(mx, my, txp, typ, pad);
-    return `M${sx},${sy}Q${mx},${my} ${e.x},${e.y}`;
+    if (kenarYoluFn) return kenarYoluFn(d);
+    const e = pullBack(sx, sy, txp, typ, radiusFor(t) + 2);
+    return "M" + sx + "," + sy + "L" + e.x + "," + e.y;
   }
 
   function render() {
@@ -3484,6 +3592,9 @@
     const oz = window.__ontologyZoom;
     if (!oz || typeof d.tx !== "number" || typeof d.ty !== "number") return;
     const svgEl = oz.svg.node();
+    // Gizli (mobil liste kipi) SVG'de kamera taşınmaz: 0 genişlikte
+    // d3-zoom geçişi NaN üretiyordu (karşılamadan bir uç seçilince ölçüldü).
+    if (!svgEl.clientWidth) return;
     const width = svgEl.clientWidth || 800;
     const height = svgEl.clientHeight || 600;
     const currentScale = d3.zoomTransform(svgEl).k;

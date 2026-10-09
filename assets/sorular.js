@@ -412,14 +412,10 @@
     // yumuşak parıltı filtresi
     const glow = defs.append("filter").attr("id", "sorular-glow").attr("x", "-70%").attr("y", "-70%").attr("width", "240%").attr("height", "240%");
     glow.append("feGaussianBlur").attr("stdDeviation", "3.2");
-    // kategori başına ışıyan küre gradyanı (#2)
-    Object.keys(CATEGORY_COLOR_VAR).forEach((catId) => {
-      const c = d3.color(muteColor(getVar(CATEGORY_COLOR_VAR[catId]))) || d3.color("#888");
-      const rg = defs.append("radialGradient").attr("id", "sorular-sphere-" + catId).attr("cx", "38%").attr("cy", "32%").attr("r", "72%");
-      rg.append("stop").attr("offset", "0%").attr("stop-color", c.brighter(1.1).formatHex());
-      rg.append("stop").attr("offset", "46%").attr("stop-color", c.formatHex());
-      rg.append("stop").attr("offset", "100%").attr("stop-color", c.darker(0.85).formatHex());
-    });
+    // Düğümler düz dolgu (2026-10-09, gorsel-gramer): eskiden kategori
+    // başına sol üstten parlayan bir radyal gradyan + parıltı + düşen
+    // gölgeyle "küre" çiziliyordu -- sahte 3B ve süs ışık (GORSEL_DIL).
+    // Derinlik yalnız atmosferik puslanmayla (render döngüsü).
 
     zoomLayer = svg.append("g").attr("class", "sorular-canvas");
     bgLayer = zoomLayer.append("g").attr("class", "sorular-bg");
@@ -434,8 +430,10 @@
     // kategorilerin üzerinde durduğu sessiz halka
     ringLayer.append("path").attr("class", "sorular-ring-path").attr("fill", "none");
 
-    // merkezde nefes alan sessiz işaret (daire/merkez ilkesi)
-    centerLayer.append("circle").attr("class", "node-halo").attr("r", 34);
+    // Merkez: sessiz bir boşluk (2026-10-09). Eskiden burada etiketsiz,
+    // "nefes alan" altın bir disk vardı -- hiçbir şeyi göstermeyen bir ışık,
+    // yani süs olarak kullanılan zuhûr (GORSEL_DIL: ışık = zuhûr). Katman
+    // kalıyor (Nehir kipi onu gizleyip gösteriyor) ama içi boş.
 
     // plainWheelZooms (2026-08-09, kullanıcı isteği): bu görünümün altında
     // kaydıracak bir "sayfa" yok -- tam ekran bir harita, o yüzden ctrl/cmd
@@ -831,8 +829,7 @@
       .on("blur", () => { setHover(null); hideTooltip(); });
     enter.append("circle").attr("class", "sorular-glow");
     enter.append("circle").attr("class", "sorular-halo");
-    enter.append("circle").attr("class", "sorular-sphere").attr("fill", (d) => `url(#sorular-sphere-${d.category.id})`);
-    enter.append("circle").attr("class", "sorular-sheen");
+    enter.append("circle").attr("class", "sorular-sphere");
     enter.append("text").attr("class", "sorular-label node-label").attr("text-anchor", "middle");
     const merged = enter.merge(gsel);
     gsel.exit().remove();
@@ -863,10 +860,17 @@
       if (act) { if (!act.set.has(d.id)) op *= 0.28; }  // focus/hover (#19)
       // Atmosfer: 3B'de uzaktaki düğüm soluklaşır (Hâller'deki aynı ölçü).
       const t3 = tilt3d ? tilt3d.value : 0;
-      if (t3 > 0.02) op *= Math.max(0.58, Math.min(1, (d.__depth == null ? 1 : d.__depth) * 1.02));
+      // 2026-10-09: soluklaşmanın yanında hafif bulanıklık da (atmosferik
+      // puslanma -- sahte 3B kürenin yerine derinliğin tek kodlaması).
+      let pus = 0;
+      if (t3 > 0.02) {
+        const dp = d.__depth == null ? 1 : d.__depth;
+        op *= Math.max(0.58, Math.min(1, dp * 1.02));
+        pus = Math.round(Math.max(0, Math.min(1.6, (1 - dp) * 4 * t3)) * 5) / 5;
+      }
       const backgrounded = expandedCatId && d.category.id !== expandedCatId;
       g.style("opacity", op).style("display", op < 0.02 ? "none" : null)
-        .style("filter", backgrounded ? "blur(2.2px)" : null)
+        .style("filter", backgrounded ? "blur(2.2px)" : (pus > 0 ? `blur(${pus}px)` : null))
         .attr("transform", `translate(${(nx_(d) + dx).toFixed(1)},${(ny_(d) + dy).toFixed(1)})`);
       g.classed("sorular-node--active", currentDetailQuestion && d.id === currentDetailQuestion.id);
       const col = catColor(d);
@@ -877,7 +881,9 @@
       // kullanıcı isteğiyle kaldırıldı ("arka taraftaki daha büyük daire
       // gölgeleri"): sahneyi lekeliyordu. Etkileşim geri bildirimi kalsın
       // diye üzerine gelince ve arama parlamasında hâlâ beliriyor.
-      const ambientGlow = d.isCat ? 0 : 0.12;
+      // 2026-10-09: sorulardaki sürekli ışıma da kalktı (süs ışık); ışık
+      // yalnız değinme ve arama parlamasında -- yani bir şey zuhûr edince.
+      const ambientGlow = 0;
       g.select(".sorular-glow").attr("r", r * 1.8).style("fill", col)
         .style("opacity", (ambientGlow + 0.5 * flash + (isHover ? 0.16 : 0)) * (d.degree >= 3 ? 1.3 : 1));
       const halo = g.select(".sorular-halo");
@@ -886,8 +892,7 @@
         const puls = reduceMotion ? 1 : (1 + 0.1 * Math.sin(ts / 900));
         halo.attr("r", (r + 6) * puls).style("stroke", col).style("opacity", 0.5);
       } else halo.style("opacity", 0);
-      g.select(".sorular-sphere").attr("r", r);
-      g.select(".sorular-sheen").attr("r", r);
+      g.select(".sorular-sphere").attr("r", r).attr("fill", col);
       const lbl = g.select(".sorular-label");
       // Kategori etiketi hep açık (haritanın okunur kalması için); soru
       // etiketi eskisi gibi üstüne gelince / yakınlaşınca / seçiliyken.

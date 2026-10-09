@@ -132,10 +132,19 @@
     return { tr: f.no + ". " + f.prophet.tr, en: f.no + ". " + f.prophet.en, pt: f.no + ". " + f.prophet.pt };
   }
 
+  function fassIndex(id) {
+    for (var i = 0; i < data.fasses.length; i++) if (data.fasses[i].id === id) return i;
+    return 0;
+  }
+
   // --- açılış haritası: yirmi yedi fassın sarmalı --------------------------
+  // "Buradasın" (2026-10-09, görsel taraması madde 5): bkz. miskat.js'teki
+  // aynı adlı fonksiyon -- sarmal bir kez kurulur, okunan fass ışıkla
+  // belirir, başka fass seçilince sahne dönerek onu öne getirir.
   function renderMap() {
     if (!mapEl || !window.DostHelix) return;
-    if (mapScene) { mapScene.destroy(); mapScene = null; }
+    var cur = fassIndex(activeId);
+    if (mapScene) { mapScene.setCurrent(cur); renderSerit(cur); return; }
     var nodes = data.fasses.map(function (f) {
       return {
         id: f.id,
@@ -157,12 +166,36 @@
       // odaktakinin adı yazılıyor, gerisi ipucunda (2026-07-29).
       labelMode: "sparse",
       title: { tr: "Yirmi yedi fassın sarmalı", en: "The spiral of the twenty-seven bezels", pt: "A espiral dos vinte e sete engastes" },
+      current: cur,
       onActivate: function (node) {
         var f = fassById(node.id);
         if (!f) return;
         if (f.status !== "active") return;   // henüz okunmamış fass açılmaz
         activate(f.id);
       },
+    });
+    renderSerit(cur);
+  }
+
+  // Mobil şerit (2026-10-09, görsel taraması madde 14): bkz. miskat.js.
+  var seritScene = null;
+  function renderSerit(cur) {
+    if (!window.DostHelix.mountStrip) return;
+    if (seritScene) { seritScene.setCurrent(cur); return; }
+    var shell = wrap.querySelector(".fusus-shell");
+    if (!shell || !articleEl) return;
+    var seritEl = document.createElement("div");
+    seritEl.className = "fusus-serit";
+    shell.insertBefore(seritEl, articleEl);
+    seritScene = window.DostHelix.mountStrip(seritEl, {
+      nodes: data.fasses.map(function (f) {
+        return { id: f.id, label: fassLabel(f), disabled: f.status !== "active" };
+      }),
+      current: cur,
+      perTurn: 8,
+      gap: 20,
+      title: { tr: "Yirmi yedi fassın sarmalı", en: "The spiral of the twenty-seven bezels", pt: "A espiral dos vinte e sete engastes" },
+      onActivate: function (node) { activate(node.id); },
     });
   }
 
@@ -183,6 +216,7 @@
     listEl.querySelectorAll("button[data-id]").forEach(function (b) {
       b.addEventListener("click", function () { activate(b.dataset.id); });
     });
+    window.DostGraphUtils.cipOrtala(listEl);
   }
 
   // --- bir fassın yazısı ---------------------------------------------------
@@ -273,16 +307,12 @@
 
     var html = "";
     if (isDefaultLanding && data.fasses[0] && data.fasses[0].id !== f.id) {
-      html += '<div class="futuhat-start-hint fusus-start-hint">'
-        + "<p>" + esc(t({
-          tr: "Bu, okumanın en son ulaştığı yer. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
-          en: "This is where the reading currently stands. If you're new here, you may want to start from the beginning.",
-          pt: "É aqui que a leitura chegou. Se você é novo aqui, talvez queira começar do início.",
-        })) + "</p>"
-        + '<button type="button" class="futuhat-start-hint__btn" data-start-fass="' + esc(data.fasses[0].id) + '">'
-        + esc(t({ tr: "Baştan başla", en: "Start from the beginning", pt: "Começar do início" })) + "</button>"
-        + '<button type="button" class="futuhat-start-hint__close" aria-label="' + esc(t({ tr: "Kapat", en: "Close", pt: "Fechar" })) + '">×</button>'
-        + "</div>";
+      // Bant yerine küçük bir halka çipi (2026-10-09, görsel taraması madde 14).
+      html += window.DostGraphUtils.baslangicCipiHtml("data-start-fass", data.fasses[0].id, {
+        tr: "Bu, okumanın en son ulaştığı yer. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
+        en: "This is where the reading currently stands. If you're new here, you may want to start from the beginning.",
+        pt: "É aqui que a leitura chegou. Se você é novo aqui, talvez queira começar do início.",
+      }, "fusus-start-hint");
     }
     html += '<header class="fusus-article__head">'
       + '<button type="button" class="fusus-print-btn" title="Yazdır / Print / Imprimir" aria-label="Yazdır / Print / Imprimir">'
@@ -358,6 +388,13 @@
     articleEl.innerHTML = html;
     window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
     mountHelixBlocks(articleEl, helixes, captions);
+    // Üç ses: Dost'un doğrudan sözü ayrı dokuda; değinince künye
+    // (graph-utils dostSozIsaretle; şerh sütunları dışarıda).
+    window.DostGraphUtils.dostSozIsaretle(articleEl, {
+      baslik: t({ tr: "Füsûsu'l-Hikem", en: "Fusus al-Hikam", pt: "Fusus al-Hikam" }) + " · "
+        + t({ tr: "Fass " + f.no, en: "Bezel " + f.no, pt: "Engaste " + f.no }) + " · " + t(f.prophet),
+      sayfa: t(f.pageRange),
+    });
     renderAnlamsalBaglantilar(f);
     renderYakinPasajlar(f);
     var printBtn = articleEl.querySelector(".fusus-print-btn");
@@ -372,17 +409,10 @@
       else kartBtn.addEventListener("click", function () { window.__dostShare.open({ view: "fusus", id: f.id }); });
     }
     var startBtn = articleEl.querySelector("[data-start-fass]");
-    var startClose = articleEl.querySelector(".fusus-start-hint .futuhat-start-hint__close");
     if (startBtn) {
       startBtn.addEventListener("click", function () {
         isDefaultLanding = false;
         activate(startBtn.getAttribute("data-start-fass"));
-      });
-    }
-    if (startClose) {
-      startClose.addEventListener("click", function () {
-        var hint = articleEl.querySelector(".fusus-start-hint");
-        if (hint) hint.remove();
       });
     }
   }
@@ -522,6 +552,7 @@
       if (!data || !activeId) return;
       renderList();
       if (mapScene) mapScene.setLang();
+      if (seritScene) seritScene.setLang();
       renderArticle(fassById(activeId));
     },
   };

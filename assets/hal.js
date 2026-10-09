@@ -323,13 +323,12 @@
     nodeLayer = zoomLayer.append("g").attr("class", "hal-nodes");
     walkLayer = zoomLayer.append("g").attr("class", "hal-walk-layer");
 
-    orderedNodes.forEach((d) => {
-      const c = d3.color(nodeColor(d)) || d3.color("#888");
-      const rg = defs.append("radialGradient").attr("id", "hal-sphere-" + d.id).attr("cx", "38%").attr("cy", "32%").attr("r", "72%");
-      rg.append("stop").attr("offset", "0%").attr("stop-color", c.brighter(1.15).formatHex());
-      rg.append("stop").attr("offset", "45%").attr("stop-color", c.formatHex());
-      rg.append("stop").attr("offset", "100%").attr("stop-color", c.darker(0.9).formatHex());
-    });
+    // Düğümler düz dolgu (2026-10-09, gorsel-gramer). Eskiden her düğüm sol
+    // üstten parlayan bir radyal gradyan + parıltı katmanı + gölgeyle
+    // "küre" gibi çiziliyordu: bütün düğümler aynı lambadan aydınlanan
+    // sahte 3B toplar (GORSEL_DIL: sahte 3B yasağı; ışık = zuhûr, süs
+    // değil). Derinlik artık yalnız atmosferik puslanmayla: 3B'de uzaktaki
+    // düğüm hem soluklaşır hem hafifçe bulanıklaşır (render döngüsü).
 
     // 3B'de düz sürükleme sahneyi DÖNDÜRÜR (pan etmez); 2B'de eski davranış
     // aynen sürer. Ctrl/⌘+tekerlek yakınlaştırma her iki durumda da çalışır.
@@ -660,16 +659,19 @@
       if (currentRelation === r) op = 1;
       op *= reveal >= 0.99 ? 1 : Math.max(0, reveal * 2 - 1);
       // Düşük güvenli kirişler (ontology.js'teki .link--conf-* deseninin
-      // aynısı): düğmeye gerek kalmadan, varsayılan olarak farklı renk +
-      // kesik çizgiyle ayrılıyorlar -- ayrım isteğe bağlı bir katman değil.
+      // aynısı): düğmeye gerek kalmadan, varsayılan olarak ayrılıyorlar --
+      // ayrım isteğe bağlı bir katman değil. 2026-10-09: ayrımın dili
+      // bulanıklık + soluklaşma (bulanıklık = bilgisizlik); eskiden Celâl
+      // rengi + kesik çizgiydi (renk tek anlam; kesik yalnız "yaklaşık").
       const dusukGuven = r.confidence && r.confidence !== "Yüksek";
+      const net = hoveredRel === r || currentRelation === r;
       g.select(".hal-chord-hit").attr("d", dpath);
       g.select(".hal-chord")
         .attr("d", dpath)
-        .style("stroke", getVar(dusukGuven ? "--series-celal" : (KIND_VAR[r.kind] || "--series-hal-cemfark")))
-        .style("stroke-dasharray", dusukGuven ? "5 4" : null)
-        .style("stroke-width", lit || hoveredRel === r || currentRelation === r ? 2.4 : 1.15)
-        .style("opacity", op);
+        .style("stroke", getVar(KIND_VAR[r.kind] || "--series-hal-cemfark"))
+        .style("filter", dusukGuven && !net ? "blur(0.7px)" : null)
+        .style("stroke-width", lit || net ? 2.4 : 1.15)
+        .style("opacity", dusukGuven && !net ? op * 0.6 : op);
     });
 
     // --- düğümler ---
@@ -687,8 +689,7 @@
     enter.append("circle").attr("class", "hal-glow");
     enter.append("circle").attr("class", "hal-halo");
     enter.append("circle").attr("class", "hal-terk-ring");
-    enter.append("circle").attr("class", "hal-sphere").attr("fill", (d) => `url(#hal-sphere-${d.id})`);
-    enter.append("circle").attr("class", "hal-sheen");
+    enter.append("circle").attr("class", "hal-sphere");
     enter.append("text").attr("class", "hal-label").attr("text-anchor", "middle");
     const merged = enter.merge(gsel);
     gsel.exit().remove();
@@ -715,26 +716,35 @@
       if (clusterFocus) op *= clusterFocus.members.has(d.id) ? 1 : 0.15;
       const isAnchor = foc && d.id === foc.anchor;
       if (foc && !foc.set.has(d.id)) op *= 0.22;
-      if (tilt > 0.02) op *= Math.max(0.62, Math.min(1, d.__depth * 1.02)); // atmosfer
+      // Atmosfer (derinliğin TEK kodlaması, sahte 3B yerine): 3B'de uzaktaki
+      // düğüm soluklaşır ve hafifçe bulanıklaşır (uzaklık = kesret).
+      let pus = 0;
+      if (tilt > 0.02) {
+        op *= Math.max(0.62, Math.min(1, d.__depth * 1.02));
+        pus = Math.round(Math.max(0, Math.min(1.6, (1 - d.__depth) * 4 * tilt)) * 5) / 5;
+      }
       g.style("opacity", op).style("display", op < 0.02 ? "none" : null)
+        .style("filter", pus > 0 ? `blur(${pus}px)` : null)
         .attr("transform", `translate(${(d.x + b.dx).toFixed(1)},${(d.y + b.dy).toFixed(1)})`);
       g.classed("hal-node--active", currentDetailNode && d.id === currentDetailNode.id);
       const col = nodeColor(d);
-      const gstr = d.stage === "hayret" ? 1 : LANDMARK.has(d.stage) ? 0.62 : 0.4;
-      const flick = reduceMotion ? 1 : (0.85 + 0.15 * Math.sin(ts / 2200 + d.__phase));
+      // Işık yalnız odakta (zuhûr): eskiden her düğümün sürekli titreyen
+      // bir ışıması vardı -- süs ışık. Artık yalnız odaklanan düğüm ışır.
       g.select(".hal-glow").attr("r", r * 1.85).style("fill", col)
-        .style("opacity", (d.stage === "hayret" ? 0.32 : 0.16) * gstr * flick * (isAnchor ? 1.5 : 1));
+        .style("opacity", isAnchor ? 0.3 : 0);
       const halo = g.select(".hal-halo");
       if (isAnchor) {
         const puls = reduceMotion ? 1 : (1 + 0.12 * Math.sin(ts / 900));
         halo.attr("r", (r + 7) * puls).style("stroke", col).style("opacity", 0.5);
       } else halo.style("opacity", 0);
-      // "Makamı ve Terki" olan düğümlerin ikinci, kesik halkası.
+      // "Makamı ve Terki" olan düğümlerin ikinci kuşağı: eskiden kesik bir
+      // halkaydı; kesik çizgi artık yalnız "yaklaşık / henüz" demek
+      // (GORSEL_DIL). Kategori farkı tonla: geniş, yarı saydam, kontursuz
+      // bir kuşak (keskin bir sınır değil).
       const tr = g.select(".hal-terk-ring");
-      if (d.terk) tr.attr("r", r + 5.5).style("stroke", col).style("stroke-width", 1.1).style("opacity", 0.75);
+      if (d.terk) tr.attr("r", r + 4).style("stroke", col).style("opacity", null);
       else tr.style("opacity", 0);
-      g.select(".hal-sphere").attr("r", r);
-      g.select(".hal-sheen").attr("r", r);
+      g.select(".hal-sphere").attr("r", r).attr("fill", col);
       if (op >= 0.35) kureler.push({ x: d.x + b.dx, y: d.y + b.dy, half: r, h: r * 2 });
       const lbl = g.select(".hal-label");
       const baseY = r + (d.stage === "hayret" ? 20 : LANDMARK.has(d.stage) ? 16 : 13);

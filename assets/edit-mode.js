@@ -183,6 +183,14 @@
     c.querySelectorAll("a.cross-link, span.glossary-hint, mark.durus-vurgu-es, font, span[style]").forEach(unwrap);
     c.querySelectorAll("[style]").forEach((n) => n.removeAttribute("style"));
     c.querySelectorAll("[contenteditable]").forEach((n) => n.removeAttribute("contenteditable"));
+    // "Üç ses" işareti (graph-utils dostSozIsaretle) çizimde eklenir, veride
+    // yok: kayda <em> çıplak hâliyle girsin.
+    c.querySelectorAll("em.dost-soz").forEach((n) => {
+      n.classList.remove("dost-soz");
+      if (!n.classList.length) n.removeAttribute("class");
+      n.removeAttribute("tabindex");
+      n.removeAttribute("aria-describedby");
+    });
     // contenteditable'ın bıraktığı sondaki <br>
     let son = c.lastChild;
     while (son && son.nodeType === 3 && !son.nodeValue.trim()) son = son.previousSibling;

@@ -39,18 +39,20 @@ window.__elestiriArkeolojisiApp = (function () {
 
   const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
 
+  // Rollerin kendi renkleri (2026-10-09, gorsel-gramer). Eskiden eleştirmen
+  // Celâl, savunmacı Cemâl, benimseyen eleştirmen Kemâl rengini taşıyordu
+  // (lejantta da "Eleştirmen (Celâl)" yazıyordu): hem bir renk iki şey
+  // söylüyordu (GORSEL_DIL: renk tek anlam) hem de rolleri Esmâ
+  // kutuplarına bağlamak bizim kurduğumuz bir benzetmeydi. Artık
+  // --el-* ailesi; kurban şekliyle (elmas) ayrılıyor, rengi nötr.
   const ROL_VAR = {
-    elestirmen: "--series-celal",
-    savunmaci: "--series-cemal",
+    elestirmen: "--el-elestirmen",
+    savunmaci: "--el-savunmaci",
     hakem: "--text-muted",
     "kaynak-tarihci": "--series-ibnarabi",
-    kurban: "--series-celal",
+    kurban: "--text-secondary",
     hukumdar: "--series-theme",
-    // Celâl (eleştirmen) ve cemâl (savunmacı) rengini bilerek karıştırmıyoruz --
-    // --series-kemal zaten "ikisini birleştiren isimler" için ayrılmış bir
-    // renk (bkz. style.css tanımı); "benimseyen eleştirmen" tam o karışımın
-    // kişi karşılığı.
-    "benimseyen-elestirmen": "--series-kemal",
+    "benimseyen-elestirmen": "--el-benimseyen",
   };
   const BOLGE_SIRA = ["sam-kahire", "horasan-maveraunnehir", "endulus-magrib", "yemen"];
   const MIN_YEAR_GAP_PX = 46;

@@ -1152,170 +1152,59 @@
     </span>`;
   }
 
-  // Sifr × Cilt × Kısım iç içe halka haritası: üç bölümleme düzlemini
-  // (bkz. TERM_EVOLUTION "sifr/bölüm/kısım") tek bir dairesel görselde
-  // üst üste bindirip okuyucunun "neredeyim" sorusunu tek bakışta
-  // cevaplamasını sağlıyor. Sifr V-X sınırları kaynak metindeki doğrudan
-  // "bitmesiyle" ifadeleriyle (V-VII) ya da bir sonraki cildin
-  // içindekiler listesinden dolaylı ama kesin biçimde (VIII-X, bkz.
-  // OPEN_QUESTIONS #24) doğrulandı; Kısım 1-28 içindeki Sifr I-IV
-  // alt-sınırları doğrulanamadığı için (OPEN_QUESTIONS #10) kendi
-  // aritmetiğimizle icat edilmedi -- o aralık tek, ayrıştırılmamış bir
-  // halka dilimi olarak dürüstçe gösteriliyor.
-  const SIFR_SEGMENTS = [
-    { label: { tr: "Sifr I–IV", en: "Sifr I–IV", pt: "Sifr I–IV" }, k0: 1, k1: 28 },
-    { label: { tr: "Sifr V", en: "Sifr V", pt: "Sifr V" }, k0: 29, k1: 34 },
-    { label: { tr: "Sifr VI", en: "Sifr VI", pt: "Sifr VI" }, k0: 35, k1: 40 },
-    { label: { tr: "Sifr VII", en: "Sifr VII", pt: "Sifr VII" }, k0: 41, k1: 47 },
-    { label: { tr: "Sifr VIII", en: "Sifr VIII", pt: "Sifr VIII" }, k0: 48, k1: 53 },
-    { label: { tr: "Sifr IX", en: "Sifr IX", pt: "Sifr IX" }, k0: 54, k1: 60 },
-    { label: { tr: "Sifr X", en: "Sifr X", pt: "Sifr X" }, k0: 61, k1: 69 },
-  ];
-
-  function arcWedgePath(cx, cy, r1, r2, a0, a1) {
-    const large = a1 - a0 > Math.PI ? 1 : 0;
-    const x1 = cx + r1 * Math.cos(a0), y1 = cy + r1 * Math.sin(a0);
-    const x2 = cx + r2 * Math.cos(a0), y2 = cy + r2 * Math.sin(a0);
-    const x3 = cx + r2 * Math.cos(a1), y3 = cy + r2 * Math.sin(a1);
-    const x4 = cx + r1 * Math.cos(a1), y4 = cy + r1 * Math.sin(a1);
-    return `M ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} A ${r2} ${r2} 0 ${large} 1 ${x3.toFixed(1)} ${y3.toFixed(1)} L ${x4.toFixed(1)} ${y4.toFixed(1)} A ${r1} ${r1} 0 ${large} 0 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
-  }
+  // "Neredeyim" -- kısımların dikey sarmalı (2026-10-09). Eskiden burada
+  // sifr/cilt/kısım için üç eşmerkezli halka vardı: görsel gramerin "iç içe
+  // çember çizme" yasağı, ve 120 px'te dilimleri okunmuyordu. Artık her
+  // cilt sarmalın bir turu (helix.js DostHelix.kisimSarmali): o anki kısım
+  // ışıkla belirir, henüz okunmamış kısımlar bulanık, sifr sınırları
+  // sarmalın üstünde ince kuşaklar. Sifr aralıkları okuma-yogunlugu.json'dan
+  // (futuhat-sifir-eslesme.json'un yalnız kesin sınırları, kısım 1-28'deki
+  // belirsiz bölge kuşaksız). Kısım listesi veriden (book.cilts + parts) --
+  // sabit sayı yok: atlasa yeni kısım eklendikçe sarmal kendiliğinden uzar.
+  let sarmal = null;
+  let sarmalAnahtar = "";
 
   function renderMap() {
-    if (!mapEl || !futuhatData) return;
+    if (!mapEl || !futuhatData || !window.DostHelix || !window.DostHelix.kisimSarmali) return;
     const cilts = futuhatData.book.cilts || [];
     if (!cilts.length) return;
     mapEl.hidden = false;
-    const maxKisim = Math.max(...cilts.map((c) => c.kisimEnd));
-    const size = 200;
-    const cx = size / 2;
-    const cy = size / 2;
-    const rCiltOuter = 96, rCiltInner = 80;
-    const rSifrOuter = 78, rSifrInner = 62;
-    const rKisimOuter = 60, rKisimInner = 40;
-
-    function angleRange(k0, k1) {
-      const a0 = ((k0 - 1) / maxKisim) * Math.PI * 2 - Math.PI / 2;
-      const a1 = (k1 / maxKisim) * Math.PI * 2 - Math.PI / 2;
-      return [a0, a1];
+    const sifirHazir = !!(yogunlukData && yogunlukData.sifirAraliklari);
+    // Aynı veriyle ikinci kez kurma: yalnız ışığı taşı (dönüşüyle).
+    const anahtar = I18n.getLang() + "|" + futuhatData.parts.length + "|" + (sifirHazir ? 1 : 0);
+    if (sarmal && anahtar === sarmalAnahtar && mapEl.querySelector(".kisim-sarmali")) {
+      sarmal.setAktif(activePartId);
+      return;
     }
-
-    const ciltWedges = cilts
-      .map((c, i) => {
-        const [a0, a1] = angleRange(c.kisimStart, Math.min(c.kisimEnd, maxKisim));
-        return `<path class="futuhat-map__cilt" style="--ring-hue:${(i * 90 + 40) % 360}" d="${arcWedgePath(cx, cy, rCiltInner, rCiltOuter, a0, a1)}"></path>`;
-      })
-      .join("");
-
-    const sifrWedges = SIFR_SEGMENTS.filter((s) => s.k0 <= maxKisim)
-      .map((s) => {
-        const [a0, a1] = angleRange(s.k0, Math.min(s.k1, maxKisim));
-        return `<path class="futuhat-map__sifr" d="${arcWedgePath(cx, cy, rSifrInner, rSifrOuter, a0, a1)}"><title>${tt(s.label)}</title></path>`;
-      })
-      .join("");
-
-    // Kısım dilimleri KISIM SAYISINA değil GERÇEK SAYFA SAYISINA orantılı --
-    // önceki hâlde her kısım 1/maxKisim'lik eşit dilim alıyordu, yani 5
-    // sayfalık bir kısımla 313 sayfalık bir kısım haritada aynı yer
-    // kaplıyordu (bkz. okuma-yogunlugu.json: enSeyrek 5, enYogun 313 sayfa).
-    // Cilt/sifr halkalarının sınırları BURADA değişmiyor -- hâlâ kısım
-    // SAYISına göre (angleRange, yukarıda); yalnız her cildin kendi
-    // diliminin İÇİ, o cildin kısımları arasında sayfa ağırlığına göre
-    // yeniden bölüşülüyor. Böylece kısım kamalarının toplamı her zaman tam
-    // olarak kendi cilt diliminin genişliğine eşit kalıyor, iç içe halkalar
-    // hizasını kaybetmiyor.
-    const TAM_DAIRE = Math.PI * 2;
-    // Toplam dairenin binde birbuçuğu kadar taban pay: 1-2 sayfalık bir
-    // kısım bile tıklanabilir kalsın diye (CLAUDE.md görsel gramerinde
-    // "bağlanmamış düğme" yasağının tersi -- burada risk "görünmeyen ama
-    // aslında bağlı" düğme). ciltGenislik/ks.length'in %60'ıyla ayrıca
-    // sınırlı: çok kısımlı bir ciltte taban paylar toplamı asla cildin
-    // kendi diliminden taşmasın.
-    const MIN_KISIM_ACI_ORANI = 0.0015;
-
-    function ortalamaSayfa(ciltNo) {
-      if (!yogunlukData || !yogunlukData.kisimlar) return null;
-      const vals = Object.values(yogunlukData.kisimlar)
-        .filter((v) => ciltNo === null || v.cilt === ciltNo)
-        .map((v) => v.sayfa);
-      if (!vals.length) return null;
-      return vals.reduce((a, b) => a + b, 0) / vals.length;
-    }
-
-    const veriHazir = !!(yogunlukData && yogunlukData.kisimlar);
-    const kisimWedges = [];
-    cilts.forEach((cilt) => {
-      const kEnd = Math.min(cilt.kisimEnd, maxKisim);
-      const ks = [];
-      for (let k = cilt.kisimStart; k <= kEnd; k++) ks.push(k);
-      if (!ks.length) return;
-
-      const [ciltA0, ciltA1] = angleRange(cilt.kisimStart, kEnd);
-      const ciltGenislik = ciltA1 - ciltA0;
-
-      // Ölçülmemiş (henüz yayımlanmamış) kısımlar için taban ağırlık:
-      // önce aynı cildin ortalaması, o da yoksa (cilt tümden ölçülmemişse)
-      // kitabın geneli -- ikisi de yoksa (veri hiç yüklenmediyse) 1, ama o
-      // durumda zaten aşağıda eşit dağıtıma düşülüyor.
-      const dolgu = ortalamaSayfa(cilt.cilt) || ortalamaSayfa(null) || 1;
-      const agirliklar = ks.map((k) => {
-        const part = futuhatData.parts.find((p) => p.cilt === cilt.cilt && p.kisim === k);
-        if (part && veriHazir && yogunlukData.kisimlar[part.id]) {
-          return yogunlukData.kisimlar[part.id].sayfa;
-        }
-        return dolgu;
-      });
-      const toplamAgirlik = agirliklar.reduce((a, b) => a + b, 0) || ks.length;
-
-      // Yoğunluk verisi henüz gelmediyse (render() ilk çağrısı, bkz.
-      // render() -- harita bekletilmeden hemen çiziliyor) eşit dağıt; veri
-      // gelince renderMap() yeniden çağrılıp gerçek oranlarla çiziliyor.
-      const tabanAci = veriHazir ? Math.min(TAM_DAIRE * MIN_KISIM_ACI_ORANI, (ciltGenislik / ks.length) * 0.6) : 0;
-      const kalanGenislik = ciltGenislik - tabanAci * ks.length;
-
-      let a = ciltA0;
-      ks.forEach((k, i) => {
-        const pay = veriHazir
-          ? tabanAci + kalanGenislik * (agirliklar[i] / toplamAgirlik)
-          : ciltGenislik / ks.length;
-        const a0 = a, a1 = a + pay;
-        a = a1;
-
-        const part = futuhatData.parts.find((p) => p.cilt === cilt.cilt && p.kisim === k);
-        const published = !!part;
-        const isCurrent = part && part.id === activePartId;
-        const kisimBaslik = tt({ tr: "Kısım " + roman(k), en: "Part " + roman(k), pt: "Parte " + roman(k) });
-        // Yalnız yayımlanmış (tıklanabilir) dilimler klavyeyle de erişilebilir
-        // olmalı -- "Yakında" dilimleri zaten tıklanamıyor, onlara odak
-        // durağı eklemek klavye kullanıcısını boşa dolaştırırdı. aria-label
-        // sadece "Kısım XVII" değil kısmın gerçek başlığını da taşır ki
-        // ekran okuyucu haritada dolaşırken hangi kısma gideceğini bilsin.
-        const ariaEtiket = published ? kisimBaslik + " — " + stripTags(tt(part.title)) : "";
-        kisimWedges.push(
-          `<path class="futuhat-map__kisim${published ? " futuhat-map__kisim--published" : ""}${isCurrent ? " futuhat-map__kisim--current" : ""}" data-id="${part ? part.id : ""}" style="--ring-hue:${(cilts.indexOf(cilt) * 90 + 40) % 360}"${published ? ` tabindex="0" role="button" aria-label="${escapeHtml(ariaEtiket)}"` : ""} d="${arcWedgePath(cx, cy, rKisimInner, rKisimOuter, a0, a1)}"><title>${kisimBaslik}</title></path>`
-        );
-      });
-    });
-
+    if (sarmal) sarmal.destroy();
+    sarmalAnahtar = anahtar;
+    const byKisim = new Map(futuhatData.parts.map((p) => [p.kisim, p]));
     mapEl.innerHTML = `
       <p class="futuhat-map__label">${tt({ tr: "Neredeyim", en: "Where am I", pt: "Onde estou" })}</p>
-      <svg viewBox="0 0 ${size} ${size}" role="group" aria-label="${tt({ tr: "Fütûhât'ın sifr, cilt ve kısım bölümlemesini gösteren iç içe halka haritası", en: "Nested-ring map of Futuhat's sifr, volume, and part divisions", pt: "Mapa de anéis aninhados das divisões de sifr, volume e parte do Futuhat" })}">
-        ${ciltWedges}
-        ${sifrWedges}
-        ${kisimWedges.join("")}
-      </svg>
+      <div class="futuhat-map__sarmal"></div>
+      <p class="futuhat-map__lejant">${tt({
+        tr: "Her tur bir cilt. Işık: açık kısım · bulanık: henüz okunmadı · kuşak: sifr",
+        en: "Each turn is a volume. Light: open part · blurred: not yet read · band: sifr",
+        pt: "Cada volta é um volume. Luz: parte aberta · desfocado: ainda não lido · faixa: sifr",
+      })}</p>
     `;
-    mapEl.querySelectorAll(".futuhat-map__kisim--published[data-id]").forEach((wedge) => {
-      wedge.addEventListener("click", () => activatePart(wedge.dataset.id));
-      // CSS zaten :focus-visible tanımlıyordu ama tabindex/role atanmadığı
-      // için dilimler hiç odak alamıyor, dolayısıyla Enter/Space da hiç
-      // tetiklenmiyordu -- klavye kullanıcısı haritayı hiç kullanamıyordu.
-      wedge.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
-          event.preventDefault();
-          activatePart(wedge.dataset.id);
-        }
-      });
+    sarmal = window.DostHelix.kisimSarmali(mapEl.querySelector(".futuhat-map__sarmal"), {
+      ciltler: cilts.map((c) => ({ cilt: c.cilt, k0: c.kisimStart, k1: c.kisimEnd })),
+      parca: (k) => {
+        const p = byKisim.get(k);
+        return p ? { id: p.id, baslik: p.title } : null;
+      },
+      sifir: sifirHazir ? yogunlukData.sifirAraliklari : [],
+      aktifId: activePartId,
+      baslik: {
+        tr: "Fütûhât'ın kısımları: her cilt bir tur. Ok tuşlarıyla dolaş, Enter ile aç.",
+        en: "The parts of the Futuhat: each volume one turn. Move with the arrow keys, open with Enter.",
+        pt: "As partes do Futuhat: cada volume uma volta. Navegue com as setas, abra com Enter.",
+      },
+      onSec: (id) => {
+        window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: id, kaynak: "sarmal" });
+        activatePart(id);
+      },
     });
   }
 
@@ -1485,18 +1374,13 @@
   function startHintHtml(part) {
     const first = firstPart();
     if (!isDefaultLanding || !first || first.id === part.id) return "";
-    return `
-      <div class="futuhat-start-hint">
-        <p>${tt({
-          tr: "Bu, okumanın en son ulaştığı yer — 18 ciltlik bir okumanın neredeyse sonu. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
-          en: "This is where the reading currently stands — near the end of an 18-volume reading. If you're new here, you may want to start from the beginning.",
-          pt: "É aqui que a leitura chegou — perto do fim de uma leitura de 18 volumes. Se você é novo aqui, talvez queira começar do início.",
-        })}</p>
-        <button type="button" class="futuhat-start-hint__btn" data-start-id="${first.id}">${tt({
-          tr: "Baştan başla", en: "Start from the beginning", pt: "Começar do início",
-        })}</button>
-        <button type="button" class="futuhat-start-hint__close" aria-label="${tt({ tr: "Kapat", en: "Close", pt: "Fechar" })}">×</button>
-      </div>`;
+    // Bant yerine küçük bir halka çipi (2026-10-09, görsel taraması madde
+    // 14): mobilde ~170 px tutan bant okumayı ilk ekranın altına itiyordu.
+    return window.DostGraphUtils.baslangicCipiHtml("data-start-id", first.id, {
+      tr: "Bu, okumanın en son ulaştığı yer — 18 ciltlik bir okumanın neredeyse sonu. Yeni geliyorsan, baştan başlamak isteyebilirsin.",
+      en: "This is where the reading currently stands — near the end of an 18-volume reading. If you're new here, you may want to start from the beginning.",
+      pt: "É aqui que a leitura chegou — perto do fim de uma leitura de 18 volumes. Se você é novo aqui, talvez queira começar do início.",
+    });
   }
 
   // Metnin sonunda önceki/sonraki kısım (2026-10-07; bkz. graph-utils
@@ -1649,6 +1533,15 @@
         }
       });
       sectionsEl.appendChild(secEl);
+    });
+
+    // Üç ses: Dost'un doğrudan sözü (tırnakla başlayan <em>) ayrı dokuda;
+    // değinince künye (bkz. graph-utils dostSozIsaretle).
+    window.DostGraphUtils.dostSozIsaretle(articleEl, {
+      baslik: tt({ tr: "Fütûhât-ı Mekkiyye", en: "al-Futuhat al-Makkiyya", pt: "al-Futuhat al-Makkiyya" })
+        + " · " + tt({ tr: "Cilt ", en: "Volume ", pt: "Volume " }) + CILT_ROMAN[part.cilt]
+        + " · " + tt({ tr: "Kısım ", en: "Part ", pt: "Parte " }) + roman(part.kisim),
+      sayfa: pageRangeLabel(part.pageRange),
     });
 
     renderStats(part);
@@ -1852,7 +1745,6 @@
     const hint = articleEl && articleEl.querySelector(".futuhat-start-hint");
     if (!hint) return;
     const startBtn = hint.querySelector("[data-start-id]");
-    const closeBtn = hint.querySelector(".futuhat-start-hint__close");
     if (startBtn) {
       startBtn.addEventListener("click", () => {
         window.dostTrack && window.dostTrack("futuhat_bastan_basla");
@@ -1860,7 +1752,6 @@
         activatePart(startBtn.dataset.startId);
       });
     }
-    if (closeBtn) closeBtn.addEventListener("click", () => hint.remove());
   }
 
   // --- Toolbar: font size, print, share ---
@@ -1932,11 +1823,7 @@
       const containingGroup = currentChip && currentChip.closest("details.futuhat-cilt-group");
       if (containingGroup) containingGroup.open = true;
     }
-    if (mapEl) {
-      mapEl.querySelectorAll(".futuhat-map__kisim").forEach((wedge) => {
-        wedge.classList.toggle("futuhat-map__kisim--current", wedge.dataset.id === id);
-      });
-    }
+    if (sarmal) sarmal.setAktif(id);
     if (kisimAdreste) {
       if (window.__dostNav) window.__dostNav.setHash("futuhat", id);
       // setHash az önce genel "futuhat" başlık/canonical/description'ını
