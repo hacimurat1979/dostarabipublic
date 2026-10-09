@@ -1014,13 +1014,33 @@ a.btn-ghost { text-decoration: none; }
   display: block;
   width: 100%;
   padding: 10px;
-  margin-top: 8px;
+  margin: 0 0 16px;
+  min-height: 44px;
   background: transparent;
   border: 1px dashed var(--border);
   border-radius: 8px;
   color: var(--text-muted);
   font-size: 0.82rem;
   cursor: pointer;
+}
+/* Daphne Bağlar Haritası boş durumu (2026-10-09; bkz. daphne-baglar.js
+   bosDurumuUygula) -- tuval yerine tek bir olgusal cümle. */
+.graph-wrap.baglar-wrap--bos:not([hidden]) {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+.baglar-bos {
+  margin: 0;
+  max-width: 52ch;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 .mobil-liste__grafik-btn:hover,
 .mobil-liste__grafik-btn:focus-visible {
@@ -4320,12 +4340,10 @@ html:has(.detail-panel:not([hidden])) {
   fill: currentColor;
 }
 
-/* Yalnız masaüstü (bkz. index.html'deki P0-3 notu) -- min-width, mobildeki
-   .detail-panel__X kurallarının aksine burada AÇILIŞ görünürlüğünü de
-   kapsıyor: display:flex'i #detail-panel açıkken bu sorguya bağlıyoruz. */
-@media (min-width: 641px) {
-  #detail-panel:not([hidden]) ~ .detail-panel__share-visual { display: flex; }
-}
+/* "Bu kaydı paylaş" (2026-10-09): eskiden yalnız masaüstündeydi (≤640px
+   gizli) -- telefonda paylaşım kipine hiç girilemiyordu. Artık her
+   genişlikte; dar ekranda z-index ve tipografi boşluğu aşağıda. */
+#detail-panel:not([hidden]) ~ .detail-panel__share-visual { display: flex; }
 
 .detail-title {
   margin: 0 0 4px;
@@ -5628,11 +5646,12 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
      kullanıyor -- burada yalnız z-index'i yükseltmek yeterli. */
   .detail-panel__close { z-index: 61; }
   .detail-panel__print { right: 64px; z-index: 61; }
-  .typography-controls { padding-right: 228px; }
+  .typography-controls { padding-right: 280px; }
   /* Paylaş ve Defter de panelin (z-index:60) üstünde kalmalı -- yalnız
      kapat/yazdır yükseltilmişti, ikisi panelin altında kalıyordu. */
   .detail-panel__share,
-  .detail-panel__notebook { z-index: 61; }
+  .detail-panel__notebook,
+  .detail-panel__share-visual { z-index: 61; }
   .btn-ghost { padding: 8px 11px; font-size: 0.8rem; }
   .lang-btn { padding: 8px 12px; }
   .welcome-screen__stage { width: min(78vw, 300px); }
@@ -7675,6 +7694,7 @@ body.cizim-lightbox-open {
   .fusus-sidebar,
   .fusus-print-btn,
   .fusus-share-btn,
+  .fusus-kart-btn,
   .sessiz-mod-toggle,
   .defter-toggle,
   .defter-panel,
@@ -8330,6 +8350,20 @@ body[data-theme="dark"] .menziller-moon__leke { fill: #00000030; }
   user-select: none;
 }
 .menzil-node__label--active { fill: var(--text-primary); font-weight: 600; }
+/* Ay'ın arkasında kalan ya da sarmalın dönüm yerinde kendi düğümünden
+   kopacak kadar itilen etiket puslanır (2026-10-09; bkz. menziller.js
+   render()). GORSEL_DIL: matlık = perdelenme -- ani kaybolmaz, söner. */
+.menzil-node__label { transition: opacity var(--dur-uzun) var(--ease-sahne); }
+.menzil-node__label--gizli { opacity: 0; }
+.menzil-node__leader {
+  stroke: var(--text-muted);
+  stroke-width: 0.8;
+  opacity: 0.5;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menzil-node__label { transition: none; }
+}
 
 /* Okunmuş/işlenmiş menziller (2026-09-13): "okuma" alanı olan düğümler --
    Fütûhât okuma turumuzun bu fasla ulaştığını gösterir (bkz. menziller.json
@@ -8637,6 +8671,52 @@ body.share-stage-open { overflow: hidden; }
   /* share-stage__helix'in kapalı yığılma bağlamının ÜSTÜNDE kalmak için
      (bkz. oradaki not) -- metin hep sarmalın önünde okunur. */
   z-index: 1;
+  /* Okunurluk (2026-10-09): sarmal noktaları metnin üstüne biniyordu.
+     Yarı saydam, düz bir zemin -- bulanıklık (backdrop blur) DEĞİL:
+     GORSEL_DIL'de bulanıklık "bilgisizlik" demek. */
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--sahne-perde) 74%, transparent);
+}
+/* Zorunlu künye: ses etiketi (Alıntı/Özet/Hadis...), kaynak, kaydın
+   adresi. Döngüde sönmez -- kartın hangi anı görülürse görülsün kaynak
+   görünür. */
+.share-stage__kunye {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: clamp(0.66rem, 1.5vh, 0.8rem);
+  line-height: 1.38;
+  color: color-mix(in srgb, var(--sahne-metin) 82%, transparent);
+}
+.share-kunye__ses {
+  color: var(--sahne-vurgu);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.share-kunye__adres { font-weight: 600; color: var(--sahne-metin); }
+.share-stage__kunye--yok { color: #e0574f; font-weight: 600; }
+/* Zât ucu: ışımasız bir boşluk (GORSEL_DIL: "Zât'ı parlak bir cisim olarak
+   çizme"). Zeminin kendi rengiyle dolu, yalnız ince bir sınırla seçiliyor. */
+.share-dot.share-dot--zat {
+  fill: var(--sahne-perde);
+  stroke: var(--sahne-murekkep);
+  stroke-opacity: 0.35;
+  stroke-width: 1;
+}
+.share-stage__chrome button:disabled { opacity: 0.4; cursor: not-allowed; }
+.share-stage__text--uzun .share-line { font-size: clamp(0.92rem, 2.7vh, 1.3rem); }
+.share-stage__text--cokuzun .share-line { font-size: clamp(0.82rem, 2.2vh, 1.1rem); }
+/* Krom altı düğmeye çıktı (kopyala/kart/paket/video/güvenli alan/kapat):
+   dar ekranda satır kırıp sağa yaslanıyor, düğme metni bölünmüyor. */
+.share-stage__chrome { flex-wrap: wrap; justify-content: flex-end; max-width: calc(100% - 28px); }
+.share-stage__chrome button { white-space: nowrap; }
+@media (max-width: 520px) {
+  .share-stage__chrome { gap: 6px; }
+  .share-stage__chrome button { padding: 5px 9px; font-size: 0.7rem; }
 }
 /* İki dilli kart (2026-08-03): bir mantıksal satır artık (primary +
    isteğe bağlı çeviri) bu grup içinde duruyor -- gruplar arasında
@@ -9308,6 +9388,64 @@ body.share-stage-open { overflow: hidden; }
 }
 .durus-cip__k { color: var(--text-primary); font-weight: 600; }
 .durus-cip__temiz { color: var(--text-muted); }
+/* 2026-10-09 (değerlendirme hata 12): çip sol altta Kavram Defteri'nin
+   yuvarlak düğmesinin (.defter-toggle, 18px/44px) ve paylaşım panelinin
+   (z 90) üstüne biniyordu. Düğmenin üstüne alındı; katmanı detay
+   panelinin (55) ve defterin (60) üstünde, paylaşım panelinin ve
+   @revise modallarının altında. */
+.durus-cip { bottom: 72px; z-index: 70; }
+@media (max-width: 640px) {
+  .durus-cip { left: 10px; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); max-width: calc(100vw - 80px); }
+  .durus-cip button { padding: 0.42rem 0.6rem; }
+  body:has(.share-panel:not([hidden])) .durus-cip { display: none; }
+}
+
+/* --- @revise: uyarı, adres, fark, öneri (2026-10-09) --- */
+.dost-edit-panel__toggle { touch-action: none; }
+.dost-revise-uyari {
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+  z-index: 1400; display: flex; flex-direction: column; gap: 6px;
+  width: min(520px, calc(100vw - 24px)); pointer-events: none;
+}
+.dost-revise-uyari__satir {
+  pointer-events: auto; display: flex; gap: 8px; align-items: flex-start;
+  margin: 0; padding: 8px 10px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18); font-size: 0.84rem; line-height: 1.45;
+}
+.dost-revise-uyari__satir--hata { border-color: #a5382f; }
+.dost-revise-uyari__satir--uyari { border-color: var(--helix-gold); }
+.dost-revise-uyari__satir span { flex: 1; }
+.dost-revise-uyari__satir button {
+  border: 0; background: none; color: var(--text-secondary); font: inherit; font-size: 1rem; cursor: pointer; padding: 0 4px;
+}
+.dost-notes__adres { margin: 2px 0 6px; font-size: 0.74rem; color: var(--text-muted); }
+.dost-notes__adres code { font-size: 0.95em; word-break: break-all; }
+.dost-notes__adres-uyari { color: #a5382f; }
+.dost-notes__fark { margin: 4px 0 8px; font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); }
+.dost-notes__fark del, .review-fark del { background: color-mix(in srgb, #a5382f 16%, transparent); color: inherit; text-decoration: line-through; }
+.dost-notes__fark ins, .review-fark ins { background: color-mix(in srgb, #2f7a3d 18%, transparent); color: inherit; text-decoration: none; }
+.durus-site__adres { margin: .2rem 0 .3rem; font-size: .72rem; color: var(--text-muted); }
+.durus-site__adres code { word-break: break-all; }
+.durus-site__eylem { display: flex; flex-wrap: wrap; gap: .4rem; }
+.durus-site__oner {
+  min-height: 30px; padding: .25rem .6rem; border: 1px solid var(--gridline); border-radius: 6px;
+  background: var(--page-plane); color: var(--text-secondary); font: inherit; font-size: .78rem; cursor: pointer;
+}
+.durus-site__oner:hover, .durus-site__oner:focus-visible { border-color: var(--accent-interactive); color: var(--text-primary); }
+.durus-oneri { margin-top: .5rem; display: flex; flex-direction: column; gap: .4rem; }
+.durus-oneri__metin {
+  width: 100%; box-sizing: border-box; font: inherit; font-size: .84rem; line-height: 1.5;
+  padding: .5rem .6rem; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--page-plane); color: var(--text-primary); resize: vertical;
+}
+.durus-oneri__alt { display: flex; gap: .4rem; }
+.durus-oneri__alt button {
+  min-height: 30px; padding: .25rem .7rem; border: 1px solid var(--gridline); border-radius: 6px;
+  background: var(--surface-1); color: var(--text-primary); font: inherit; font-size: .8rem; cursor: pointer;
+}
+.durus-site__kapsam { align-items: center; }
+.durus-site__sayac { font-size: .74rem; color: var(--text-muted); }
 
 /* --- site geneli tarama paneli --- */
 .durus-site { position: fixed; inset: 0; z-index: 1300; }
@@ -9472,6 +9610,14 @@ mark.durus-vurgu-es {
    grafiğin kendi köşesi yerine tüm bölümün altına (kapanış metninin üstüne)
    sabitleniyordu (2026-08-16 düzeltme). */
 .tasiyici-scene-wrap { position: relative; max-width: 560px; margin: 0 auto; }
+/* 2026-10-09 görsel taraması: köşeye bindirilen lejant sarmalın alt ucunu
+   (Âdem, Hayat, İsrâfîl) örtüyordu -- bu sahne bir tam ekran harita değil,
+   sayfanın içinde duran bir çizim; lejant çizimin ALTINA, akışa alınır. */
+#tasiyicilar-legend {
+  position: static;
+  max-width: none;
+  margin: 6px 0 0;
+}
 .tasiyici-scene { display: block; width: 100%; max-width: 560px; margin: 0 auto; }
 .tasiyici-svg {
   display: block;
@@ -9702,6 +9848,32 @@ mark.durus-vurgu-es {
   color: var(--accent-interactive);
   border-color: var(--accent-interactive);
 }
+/* "Bu kaydı paylaş" -- görsel kart (2026-10-09). Üç düğme artık başlık
+   satırının sağında; üst satır (eyebrow) onların altına girmesin diye
+   sağda yer bırakıyor. */
+.fusus-kart-btn {
+  position: absolute;
+  top: 0;
+  right: 92px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color var(--dur-orta) ease, border-color var(--dur-orta) ease;
+}
+.fusus-kart-btn[hidden] { display: none; }
+.fusus-kart-btn:hover,
+.fusus-kart-btn:focus-visible {
+  color: var(--accent-interactive);
+  border-color: var(--accent-interactive);
+}
+.fusus-article__head .fusus-article__eyebrow { padding-right: 140px; min-height: 38px; }
 .fusus-article__eyebrow {
   margin: 0 0 0.3rem;
   font-size: 0.78rem;
@@ -9906,7 +10078,8 @@ mark.durus-vurgu-es {
 .share-zemin-preview .share-spiral { stroke: #eda100; stroke-width: 1.5; opacity: 0.26; fill: none; }
 .share-zemin-preview .share-dot { fill: #eda100; }
 .share-zemin-preview .share-halo { fill: #ffc44d; filter: blur(18px); }
-.share-zemin-preview .share-zat-halo { fill: #ffc44d; filter: blur(4px); }
+.share-zemin-preview .share-zat-halo { display: none; }
+.share-zemin-preview .share-dot.share-dot--zat { fill: #05060a; stroke: #eda100; stroke-opacity: 0.45; stroke-width: 1; }
 .share-panel__switch {
   display: flex;
   align-items: center;
@@ -9920,36 +10093,6 @@ mark.durus-vurgu-es {
 }
 .share-panel__switch input { width: 16px; height: 16px; accent-color: var(--accent-interactive); }
 
-/* "Karşılaştır" şablonu: kullanıcının kendi seçtiği iki kavramı (rastgele
-   eşleştirmenin yanında) seçen iki <select> + tek bir "aç" düğmesi. */
-.share-panel__karsilastir {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 4px 0 10px;
-}
-.share-panel__karsilastir select {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface-1);
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-}
-.share-panel__karsilastir .share-panel__go {
-  align-self: flex-end;
-  padding: 6px 14px;
-  font-size: 0.78rem;
-  border-radius: 999px;
-  cursor: pointer;
-}
-.share-panel__karsilastir-warn {
-  margin: 0;
-  font-size: 0.74rem;
-  color: var(--accent-interactive);
-}
-
 /* Çoklu önizleme kartları */
 .share-panel__candidates { margin: 10px 0 4px; display: flex; flex-direction: column; gap: 6px; }
 .share-panel__cand {
@@ -9960,7 +10103,16 @@ mark.durus-vurgu-es {
 .share-panel__cand-text {
   flex: 1; font-size: 0.76rem; line-height: 1.4; color: var(--text-secondary);
   word-break: break-word;
+  display: flex; flex-direction: column; gap: 3px;
+  text-align: left;
 }
+button.share-panel__cand-text {
+  background: none; border: 0; padding: 0; margin: 0; font: inherit; cursor: pointer;
+  font-size: 0.76rem;
+}
+button.share-panel__cand-text:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; border-radius: 3px; }
+.share-panel__cand.is-secili { border-color: var(--accent-interactive); }
+.share-panel__cand-kunye { font-size: 0.68rem; color: var(--text-muted); }
 .share-panel__cand-btns { display: flex; gap: 5px; flex-shrink: 0; }
 .share-panel__cand-fav {
   border: 1px solid var(--border); background: none; border-radius: 4px;
@@ -9987,14 +10139,9 @@ mark.durus-vurgu-es {
   padding: 4px 8px 8px; display: flex; flex-direction: column; gap: 5px;
 }
 
-/* Sahne içi QR kodu */
-.share-stage__qr {
-  position: absolute; bottom: 14px; right: 14px;
-  width: 52px; height: 52px; border-radius: 4px; overflow: hidden;
-  opacity: 0.75;
-  z-index: 1;
-}
-.share-qr { display: block; width: 100%; height: 100%; }
+/* Sahne içi QR kodu 2026-10-09'da kalktı: önceden hesaplanmış matris
+   yalnız ana sayfaya gidiyordu, sitede bir QR kodlayıcı yok (yeni
+   kütüphane eklenmedi). Kaydın kendi adresi künyede metin olarak duruyor. */
 /* Hale açık zeminde parlama değil leke gibi okunuyor (koyu zeminde ışık
    saçıyor, açıkta metnin üstüne oturuyor); orada yumuşatılıyor. Satır içi
    opaklığı JS yazdığı için filtre ile çarpılıyor. */
@@ -11454,39 +11601,67 @@ mark.durus-vurgu-es {
 .yolculuk-eser { cursor: pointer; }
 .yolculuk-eser:focus { outline: none; }
 .yolculuk-eser:focus-visible .yolculuk-eser__isaret { stroke: var(--text-primary); stroke-width: 1.6; }
-.yolculuk-eser__isaret { fill: var(--accent); stroke: var(--surface-1); stroke-width: 0.8; transition: transform var(--dur-kisa) var(--ease-sahne); transform-box: fill-box; transform-origin: center; }
-.yolculuk-eser--yaklasik .yolculuk-eser__isaret { fill: transparent; stroke: var(--accent); stroke-dasharray: 2 2; }
-.yolculuk-eser--katalog .yolculuk-eser__isaret { fill: color-mix(in oklab, var(--accent) 60%, var(--surface-2)); }
+/* 2026-10-09 görsel taraması: bu blok tanımsız --accent / --surface-2 /
+   --fg / --muted-fg değişkenlerine bakıyordu (style.css'te hiç yoklar) --
+   eser işaretleri varsayılan SİYAHA düşüyor (koyu temada görünmüyordu),
+   izdüşüm düğmesinin seçili yarısı boş kalıyordu. Sitenin kendi
+   belirteçlerine bağlandı. */
+.yolculuk-eser__isaret { fill: var(--text-secondary); stroke: var(--surface-1); stroke-width: 0.8; transition: transform var(--dur-kisa) var(--ease-sahne); transform-box: fill-box; transform-origin: center; }
+.yolculuk-eser--yaklasik .yolculuk-eser__isaret { fill: transparent; stroke: var(--text-secondary); stroke-width: 1.1; stroke-dasharray: 2 2; }
+.yolculuk-eser--katalog .yolculuk-eser__isaret { fill: var(--series-theme-text); }
 .yolculuk-eser--deginiliyor .yolculuk-eser__isaret { transform: scale(1.4); }
 
-.yolculuk-panel__meta { font-size: 0.85rem; color: var(--muted-fg); }
+.yolculuk-panel__meta { font-size: 0.85rem; color: var(--text-muted); }
 .yolculuk-panel__eser-listesi { list-style: none; margin: 6px 0 12px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .yolculuk-panel__eser-listesi li { font-size: 0.9rem; }
-.yolculuk-panel__eser-btn { background: none; border: none; color: var(--accent); cursor: pointer; padding: 2px 0; text-align: left; text-decoration: underline; }
+.yolculuk-panel__eser-btn { background: none; border: none; color: var(--series-ibnarabi-text); cursor: pointer; padding: 2px 0; text-align: left; text-decoration: underline; }
 .yolculuk-panel__eser-btn:hover { color: var(--accent-interactive); }
-.yolculuk-belirsiz { font-size: 0.9rem; color: var(--muted-fg); border-left: 3px solid var(--border); padding: 8px 12px; margin: 12px 0 0; }
-.yolculuk-belirsiz__btn { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0 2px; text-decoration: underline; font-size: inherit; }
+.yolculuk-belirsiz { font-size: 0.9rem; color: var(--text-muted); border-left: 3px solid var(--border); padding: 8px 12px; margin: 12px 0 0; }
+.yolculuk-belirsiz__btn { background: none; border: none; color: var(--series-ibnarabi-text); cursor: pointer; padding: 0 2px; text-decoration: underline; font-size: inherit; }
 
 /* Yolculuk toggle: atlas ⇄ zaman izdüşümü. Recenter butonuyla aynı köşede
    (sağ üstte) durur ama ondan biraz daha soldadır. iki düğüm segmented
    control gibi. */
 .yolculuk-toggle { position: absolute; top: 12px; right: 60px; display: inline-flex; background: var(--surface-1); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; z-index: 4; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-.yolculuk-toggle__btn { background: none; border: none; padding: 6px 12px; font-size: 0.8rem; color: var(--muted-fg); cursor: pointer; transition: background var(--dur-kisa) ease, color var(--dur-kisa) ease; }
-.yolculuk-toggle__btn:hover { color: var(--fg); background: var(--surface-2); }
-.yolculuk-toggle__btn[aria-pressed="true"] { background: var(--accent); color: var(--surface-1); }
+.yolculuk-toggle__btn { background: none; border: none; padding: 6px 14px; min-height: 32px; font: inherit; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: background var(--dur-kisa) ease, color var(--dur-kisa) ease; }
+.yolculuk-toggle__btn + .yolculuk-toggle__btn { border-left: 1px solid var(--border); }
+.yolculuk-toggle__btn:hover { color: var(--text-primary); background: color-mix(in srgb, var(--text-primary) 6%, transparent); }
+/* Seçili yarı: dil seçicinin (.lang-btn--active) aynı dili. */
+.yolculuk-toggle__btn[aria-pressed="true"],
+.yolculuk-toggle__btn[aria-pressed="true"]:hover { background: var(--text-primary); color: var(--surface-1); }
 .yolculuk-toggle__btn:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; }
 
 /* Zaman izdüşümü ekseni: hafif gri grid çizgileri, küçük yıl etiketleri */
 .yolculuk-eksen-yil__grid { stroke: var(--border); stroke-width: 0.5; stroke-dasharray: 2 3; opacity: 0.4; }
-.yolculuk-eksen-yil__etiket, .yolculuk-eksen-lon__etiket { font-size: 0.65rem; fill: var(--muted-fg); pointer-events: none; }
-.yolculuk-eksen__baslik { font-size: 0.72rem; fill: var(--muted-fg); pointer-events: none; }
+.yolculuk-eksen-yil__etiket, .yolculuk-eksen-lon__etiket { font-size: 0.65rem; fill: var(--text-muted); pointer-events: none; }
+.yolculuk-eksen__baslik { font-size: 0.72rem; fill: var(--text-muted); pointer-events: none; }
+/* Yolculuk lejantı (2026-10-09): durak / eser / tarihi yaklaşık eser /
+   katalog -- işaretler sahnedeki sınıflarla AYNI, renk iki yerde ayrı
+   tanımlanmıyor. Masaüstünde izdüşüm düğmesinin altında, dar ekranda
+   sol altta. Açılıp kapanan bir başlığı yok: dört satır, sabit. */
+.yolculuk-lejant {
+  top: 52px; right: 60px; bottom: auto; left: auto;
+  max-width: 240px;
+  padding: 8px 12px;
+  gap: 4px;
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+.yolculuk-lejant__isaret { width: 14px; height: 14px; flex: 0 0 14px; overflow: visible; }
+.yolculuk-lejant .yolculuk-durak__nokta,
+.yolculuk-lejant .yolculuk-eser__isaret { transition: none; }
+@media (max-width: 640px) {
+  .yolculuk-lejant { top: auto; right: auto; bottom: 12px; left: 12px; }
+  /* Zaman kipinde sol alt yıl ekseni dolu; sağ orta boş. */
+  .yolculuk-lejant--zaman { top: 300px; right: 12px; bottom: auto; left: auto; }
+}
 /* Zaman izdüşümünde kara lekeleri yok, rota kavisi de farklı */
 .yolculuk-scene--zaman .yolculuk-rota-parca { stroke-dasharray: none; opacity: 0.4; }
-.hocalar-diger__rozet { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 0.75rem; border-radius: 999px; background: var(--surface-2); color: var(--muted-fg); border: 1px solid var(--border); }
-.hocalar-diger__rozet--hirka-veren { background: color-mix(in oklab, var(--accent) 12%, var(--surface-2)); color: var(--fg); }
-.hocalar-diger__rozet--hirka-alan { background: color-mix(in oklab, var(--accent-interactive) 12%, var(--surface-2)); color: var(--fg); }
-.hocalar-diger__meta { color: var(--muted-fg); font-size: 0.85rem; }
-.hocalar-diger__not { font-size: 0.9rem; color: var(--muted-fg); margin: 6px 0 12px; }
+.hocalar-diger__rozet { display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 0.75rem; border-radius: 999px; background: var(--surface-1); color: var(--text-muted); border: 1px solid var(--border); }
+.hocalar-diger__rozet--hirka-veren { background: color-mix(in oklab, var(--accent-interactive) 12%, var(--surface-1)); color: var(--text-primary); }
+.hocalar-diger__rozet--hirka-alan { background: color-mix(in oklab, var(--text-secondary) 12%, var(--surface-1)); color: var(--text-primary); }
+.hocalar-diger__meta { color: var(--text-muted); font-size: 0.85rem; }
+.hocalar-diger__not { font-size: 0.9rem; color: var(--text-muted); margin: 6px 0 12px; }
 
 /* --- Eser Ağı (docs/icerik-yol-haritasi.md D7, 2026-08-04) ----------------
    2026-08-06'da sarmaldan dikey zaman çizelgesine, 2026-08-09'da dikey
@@ -12261,4 +12436,81 @@ body.daphne-okuma-acik { overflow: hidden; }
 @media (max-width: 640px) {
   .futuhat-wrap, .fusus-wrap, #kavram-wrap, #ayethadis-wrap,
   [class$="-mobil-liste"] { padding-bottom: 76px; }
+}
+
+/* --- Paylaşım paneli düzeni (2026-10-09) ---------------------------------
+   Mobilde önce sonuç: adaylar + canlı mini önizleme en üstte, şablonlar
+   kayan tek bir şerit, görsel ayarlar katlanır "Görünüm" bölümünde.
+   Masaüstünde kurulum solda, sonuç sağda (order). */
+body.share-panel-open .durus-cip,
+body.share-stage-open .durus-cip { display: none; }
+@media (min-width: 760px) {
+  .share-panel__col--setup { order: -1; }
+}
+.share-panel__baglam {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  max-width: 1100px; margin: -6px auto 16px;
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.8rem; color: var(--text-secondary);
+}
+.share-panel__baglam-etiket { font-weight: 600; color: var(--text-primary); }
+.share-panel__baglam-ad { flex: 1; min-width: 8em; }
+.share-panel__baglam-not { flex: 1; }
+.share-panel__baglam button,
+.share-panel__gunluk-btns button {
+  border: 1px solid var(--border); background: none; color: var(--text-secondary);
+  border-radius: 999px; padding: 4px 12px; font-size: 0.74rem; cursor: pointer;
+}
+.share-panel__gunluk-btns button:disabled { opacity: 0.45; cursor: default; }
+.share-panel__sonuc { display: flex; gap: 12px; align-items: flex-start; }
+.share-panel__sonuc .share-panel__candidates { flex: 1; min-width: 0; margin-top: 0; }
+.share-panel__onizleme { margin: 0; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.share-panel__onizleme[hidden] { display: none; }
+.share-panel__onizleme canvas {
+  width: 150px; height: 266px; border-radius: 8px; border: 1px solid var(--border);
+  display: block; background: #05060a;
+}
+.share-panel__onizleme canvas.is-kare { height: 150px; }
+.share-panel__onizleme figcaption { font-size: 0.66rem; color: var(--text-muted); }
+@media (max-width: 520px) {
+  .share-panel__onizleme canvas { width: 108px; height: 192px; }
+  .share-panel__onizleme canvas.is-kare { height: 108px; }
+  .share-panel__hint { margin-bottom: 10px; }
+  .share-panel__chips--tpl {
+    flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px;
+    scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+  }
+  .share-panel__chips--tpl .share-panel__chip { flex-shrink: 0; scroll-snap-align: start; }
+}
+.share-panel__gorunum {
+  margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; padding: 0 12px 10px;
+}
+.share-panel__gorunum > summary {
+  padding: 9px 0 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+  color: var(--text-primary); list-style: none; min-height: 24px;
+}
+.share-panel__gorunum > summary::-webkit-details-marker { display: none; }
+.share-panel__gorunum > summary::before { content: "▸ "; font-size: 0.7rem; }
+.share-panel__gorunum[open] > summary::before { content: "▾ "; }
+.share-panel__gunluk { padding: 4px 10px 10px; }
+.share-panel__gunluk-liste { margin: 0 0 8px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; }
+.share-panel__gunluk-tarih { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.share-panel__gunluk-ad { color: var(--text-primary); }
+.share-panel__gunluk-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Detay panelinin sabit düğmeleri artık beş (görsel kart telefonda da
+   görünür, 2026-10-09). 400px'in altında A−/A+ ile çakışmasınlar diye
+   biraz küçülüp sıklaşıyorlar (dokunma hedefi yine 40px). */
+@media (max-width: 400px) {
+  .detail-panel__close,
+  .detail-panel__print,
+  .detail-panel__notebook,
+  .detail-panel__share,
+  .detail-panel__share-visual { width: 40px; height: 40px; }
+  .detail-panel__close { right: 8px; }
+  .detail-panel__print { right: 52px; }
+  .detail-panel__notebook { right: 96px; }
+  .detail-panel__share { right: 140px; }
+  .detail-panel__share-visual { right: 184px; }
+  .typography-controls { padding-right: 232px; }
 }

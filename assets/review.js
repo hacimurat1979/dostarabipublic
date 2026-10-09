@@ -21,6 +21,15 @@
   var LEDGER_KEY = "dost-review-kararlar";
   var LEDGER_URL = "research/karar-defteri.json";
 
+  // 2026-10-09: genel karar defteri. Kaynaklardan biri artık @revise'ın
+  // dışa aktardığı düzenleme paketi (dost-duzenlemeler-*.json): içe alınır,
+  // her kayıt kelime düzeyinde farkıyla gösterilir, onay/ret verilir,
+  // "Onaylandı paketi" yalnız onaylananları scripts/duzenleme-uygula.py'nin
+  // okuduğu biçimde verir (CLAUDE.md: "onaylandı" = o kapsam için tam
+  // yürütme yetkisi).
+  var DUZENLEME_KAYNAK = { id: "duzenleme", dosya: null, tip: "duzenleme", baslik: "Düzenleme paketi (@revise)" };
+  var duzenlemePaketi = null;
+
   var KAYNAKLAR = [
     { id: "anlamsal-tr", dosya: "research/anlamsal-komsuluk-tr.json", tip: "pasaj", baslik: "Anlamsal komşuluk — TR" },
     { id: "anlamsal-en", dosya: "research/anlamsal-komsuluk-en.json", tip: "pasaj", baslik: "Anlamsal komşuluk — EN" },
@@ -131,6 +140,18 @@
   }
 
   function kaynakYukle(id) {
+    if (id === "duzenleme") {
+      mevcutKaynak = DUZENLEME_KAYNAK;
+      kuyrukIndex = 0;
+      mevcutAday = duzenlemePaketi ? normalizeDuzenleme(duzenlemePaketi) : [];
+      if (!duzenlemePaketi) {
+        listEl.innerHTML = '<p class="review-empty">Önce “Düzenleme paketi yükle” ile @revise\'ın dışa aktardığı JSON\'u seç.</p>';
+        progressEl.textContent = "";
+        return;
+      }
+      render();
+      return;
+    }
     mevcutKaynak = KAYNAKLAR.filter(function (k) { return k.id === id; })[0];
     kuyrukIndex = 0;
     listEl.innerHTML = '<p class="review-empty">Yükleniyor…</p>';
@@ -157,7 +178,126 @@
   // burada zararsızdı ama tek fonksiyona taşırken en güvenli seçildi).
   var escapeHtml = window.DostGraphUtils.escapeHtml;
 
+  // --- düzenleme paketi ----------------------------------------------------
+  function duzMetin(s) {
+    return String(s == null ? "" : s).replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+  }
+  // Kelime düzeyi fark (edit-mode.js'tekiyle aynı küçük LCS).
+  function kelimeFarki(a, b) {
+    var A = String(a || "").split(/(\s+)/), B = String(b || "").split(/(\s+)/);
+    if (A.length * B.length > 250000) return escapeHtml(b);
+    var n = A.length, m = B.length, i, j;
+    var L = [];
+    for (i = 0; i <= n; i++) L.push(new Uint16Array(m + 1));
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--)
+      L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    var out = "";
+    i = 0; j = 0;
+    while (i < n && j < m) {
+      if (A[i] === B[j]) { out += escapeHtml(A[i]); i++; j++; }
+      else if (L[i + 1][j] >= L[i][j + 1]) { out += "<del>" + escapeHtml(A[i]) + "</del>"; i++; }
+      else { out += "<ins>" + escapeHtml(B[j]) + "</ins>"; j++; }
+    }
+    while (i < n) out += "<del>" + escapeHtml(A[i++]) + "</del>";
+    while (j < m) out += "<ins>" + escapeHtml(B[j++]) + "</ins>";
+    return out;
+  }
+  function normalizeDuzenleme(paket) {
+    var liste = Array.isArray(paket) ? paket : (paket.duzenlemeler || []);
+    return liste.map(function (e, i) {
+      return { kaynakId: "duzenleme", tip: "duzenleme", anahtar: e.id || ("sira-" + i + "-" + (e.timestamp || "")), kayit: e };
+    });
+  }
+  function duzenlemeCardHtml(aday, karar_, salt) {
+    var e = aday.kayit;
+    var badge = karar_ ? '<span class="review-done-badge" data-onay="' + karar_.onay + '">' + (karar_.onay ? "onaylandı" : "reddedildi") + "</span>" : "";
+    var adres = [e.dosya, e.kayit, e.alan, e.lang].filter(Boolean).join(" · ");
+    var gorsel = e.type === "visual-note";
+    var govde = gorsel
+      ? "<p>" + escapeHtml(e.note || "(metinsiz not)") + "</p>" + (e.image ? '<img class="review-gorsel" alt="" src="' + escapeHtml(e.image) + '">' : "")
+      : '<p class="review-fark">' + kelimeFarki(e.before_metin || duzMetin(e.before), e.after_metin || duzMetin(e.after)) + "</p>";
+    var diller = "";
+    if (e.diger_diller && Object.keys(e.diger_diller).length) {
+      diller = '<div class="review-diller"><p class="review-diller__baslik">Öteki diller — aynı turda yeniden yazılmalı:</p>'
+        + Object.keys(e.diger_diller).map(function (l) {
+            return '<p><strong>' + escapeHtml(l.toUpperCase()) + ":</strong> " + escapeHtml(duzMetin(e.diger_diller[l])) + "</p>";
+          }).join("") + "</div>";
+    }
+    var uyari = "";
+    if (!gorsel && !e.alan) uyari = '<p class="review-uyari">Adres yok — Claude kaydı elle bulacak (' + escapeHtml(e.url || "") + ").</p>";
+    else if (e.adres_dogrulandi === false) uyari = '<p class="review-uyari">Kayıttaki “önce” metni veri dosyasındakiyle aynı değil — kaynak dışa aktarımdan sonra değişmiş olabilir.</p>';
+    var actions = salt
+      ? '<div class="review-actions"><button type="button" data-act="geri-al">Geri Al (bekleyene döndür)</button></div>'
+      : ('<div class="review-actions">' +
+          '<button type="button" data-act="onayla">Onayla <kbd>A</kbd></button>' +
+          '<button type="button" data-act="reddet">Reddet <kbd>R</kbd></button>' +
+          '<button type="button" data-act="atla">Atla <kbd>S</kbd></button>' +
+          "</div>" +
+          '<input type="text" class="review-note" placeholder="Not (opsiyonel)">');
+    return '<div class="review-card" data-kaynak="duzenleme" data-anahtar="' + encodeURIComponent(aday.anahtar) + '">' +
+      '<div class="meta-row"><span>' + (gorsel ? "görsel not" : "metin düzenlemesi") + " · " + escapeHtml(e.heading || e.url || "") + "</span>" + badge + "</div>" +
+      (adres ? '<p class="review-adres"><code>' + escapeHtml(adres) + "</code></p>" : "") +
+      govde + uyari + diller + actions + "</div>";
+  }
+  function onaylandiPaketi() {
+    var onaylanan = [], reddedilen = [];
+    mevcutAdayDuzenleme().forEach(function (a) {
+      var k = kararOf(a);
+      if (!k) return;
+      var e = Object.assign({}, a.kayit);
+      if (k.not) e.karar_notu = k.not;
+      if (k.onay) onaylanan.push(e); else reddedilen.push(e.id || a.anahtar);
+    });
+    return {
+      tur: "dost-duzenlemeler",
+      bicim: (duzenlemePaketi && duzenlemePaketi.bicim) || "e2",
+      onay: "onaylandı",
+      not: "review.html'de tek tek onaylanan kayıtlar. CLAUDE.md: \"onaylandı\" = bu kapsam için tam yürütme yetkisi. "
+        + "Uygulama: python3 scripts/duzenleme-uygula.py --check/--apply <bu dosya>.",
+      tarih: new Date().toISOString(),
+      duzenlemeler: onaylanan,
+      reddedilen: reddedilen,
+      susturulan: (duzenlemePaketi && duzenlemePaketi.susturulan) || [],
+    };
+  }
+  function mevcutAdayDuzenleme() { return duzenlemePaketi ? normalizeDuzenleme(duzenlemePaketi) : []; }
+
+  // Eski vektör uyarısı: pasaj vektörleri 2026-10-05 yorum ayıklamasından
+  // ÖNCE hesaplandı (CLAUDE.md "Bekleyen iş"). Aday pasajın metni kısmın
+  // bugünkü metninde yoksa kart bunu söyler.
+  var parcaSoz = {};
+  function parcaMetni(kisim) {
+    if (!parcaSoz[kisim]) {
+      parcaSoz[kisim] = fetchJson("data/ibn-arabi/futuhat-parts/" + kisim + ".json").then(function (p) {
+        return duzMetin(JSON.stringify(p)).replace(/\\"/g, '"');
+      }).catch(function () { return null; });
+    }
+    return parcaSoz[kisim];
+  }
+  function eskiVektorDenetle(card, aday) {
+    if (aday.tip !== "pasaj") return;
+    ["a", "b"].forEach(function (yan, i) {
+      var taraf = aday[yan];
+      var kisim = taraf && taraf.route && (taraf.route.match(/\/futuhat\/([^/]+)/) || [])[1];
+      if (!kisim) return;
+      parcaMetni(kisim).then(function (t) {
+        if (t == null) return;
+        var parca = duzMetin(taraf.metin).replace(/["“”]/g, "").slice(0, 60);
+        var bulundu = t.replace(/["“”]/g, "").indexOf(parca) >= 0;
+        if (bulundu) return;
+        var side = card.querySelectorAll(".review-side")[i];
+        if (!side || side.querySelector(".review-eski")) return;
+        var p = document.createElement("p");
+        p.className = "review-eski";
+        p.textContent = "⚠ Bu pasaj kısmın bugünkü metninde yok — vektörler 2026-10-05 ayıklamasından önce hesaplandı.";
+        side.insertBefore(p, side.firstChild);
+      });
+    });
+  }
+
   function cardHtml(aday, karar_, salt) {
+    if (aday.tip === "duzenleme") return duzenlemeCardHtml(aday, karar_, salt);
     var skorTxt = aday.skorEtiket + ": " + (typeof aday.skor === "number" ? aday.skor.toFixed(3) : aday.skor);
     if (aday.ortakBelge != null) skorTxt += " · ortak belge: " + aday.ortakBelge;
     var badge = karar_ ? '<span class="review-done-badge" data-onay="' + karar_.onay + '">' + (karar_.onay ? "onaylandı" : "reddedildi") + "</span>" : "";
@@ -180,6 +320,7 @@
         ? "Neden önerildi: iki pasajın anlamsal gömme (embedding) vektörleri arasında yüksek kosinüs benzerliği ölçüldü — bu Dost'un aynı fikri iki yerde söylediği anlamına GELMEZ, yalnız bir adaydır."
         : "Neden önerildi: bu iki kavram, okuduğumuz bölümlerin beklenenden fazlasında birlikte geçiyor (PPMI) — Dost'un bunları ilişkilendirdiği anlamına GELMEZ, yalnız bir ölçümdür.") +
       "</p>" +
+      '<p class="review-eski review-eski--genel">⚠ Eski vektör: bu aday 2026-10-05 yorum ayıklamasından önceki metinden hesaplandı; pasajlardan biri artık sitede olmayan bir cümleye dayanıyor olabilir.</p>' +
       actions +
       "</div>"
     );
@@ -208,6 +349,7 @@
       var aday = kalan[0];
       listEl.innerHTML = cardHtml(aday, null, false);
       wireActiveCard(aday);
+      eskiVektorDenetle(listEl.querySelector(".review-card"), aday);
       return;
     }
 
@@ -266,6 +408,51 @@
   });
 
   kaynakSec.addEventListener("change", function () { kaynakYukle(kaynakSec.value); });
+
+  // Düzenleme paketi: içe al / onaylandı paketi.
+  (function () {
+    var opt = document.createElement("option");
+    opt.value = "duzenleme";
+    opt.textContent = DUZENLEME_KAYNAK.baslik;
+    kaynakSec.appendChild(opt);
+    var yukleBtn = document.getElementById("review-duzenleme-btn");
+    var dosyaIn = document.getElementById("review-duzenleme-file");
+    var paketBtn = document.getElementById("review-onay-paketi-btn");
+    if (yukleBtn && dosyaIn) {
+      yukleBtn.addEventListener("click", function () { dosyaIn.click(); });
+      dosyaIn.addEventListener("change", function (e) {
+        var f = e.target.files[0];
+        if (!f) return;
+        var r = new FileReader();
+        r.onload = function () {
+          try {
+            duzenlemePaketi = JSON.parse(r.result);
+            kaynakSec.value = "duzenleme";
+            opt.textContent = DUZENLEME_KAYNAK.baslik + " (" + normalizeDuzenleme(duzenlemePaketi).length + ")";
+            kaynakYukle("duzenleme");
+          } catch (err) { alert("Paket okunamadı: " + err.message); }
+        };
+        r.readAsText(f);
+        e.target.value = "";
+      });
+    }
+    if (paketBtn) {
+      paketBtn.addEventListener("click", function () {
+        if (!duzenlemePaketi) { alert("Önce bir düzenleme paketi yükle."); return; }
+        var p = onaylandiPaketi();
+        var blob = new Blob([JSON.stringify(p, null, 2)], { type: "application/json" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "dost-onaylandi-" + new Date().toISOString().slice(0, 10) + ".json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    }
+    window.__dostReview = { onaylandiPaketi: onaylandiPaketi, paketYukle: function (p) {
+      duzenlemePaketi = p; kaynakSec.value = "duzenleme"; kaynakYukle("duzenleme");
+    } };
+  })();
   filtreSec.addEventListener("change", render);
 
   document.getElementById("review-export-btn").addEventListener("click", function () {

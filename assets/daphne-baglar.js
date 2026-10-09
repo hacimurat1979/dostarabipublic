@@ -123,6 +123,7 @@
         adlar = adlariTopla(ontoloji, terimler);
         if (window.DostViewStatus) window.DostViewStatus.hide("baglar-wrap");
         olcuyuYaz();
+        if (bosDurumuUygula()) return;
         grafiKur();
       })
       .catch((err) => {
@@ -135,6 +136,36 @@
   // kendiliğinden güncellensin, statik metinde eskimesin (CLAUDE.md,
   // "yaptığımız işi olduğundan farklı göstermemek" -- eskimiş bir sayı da
   // yanlış bir sayıdır).
+  // Boş durum (2026-10-09 görsel taraması): yorum ayıklamasından sonra
+  // yazılarda tek bir bağ kalmadı (0 bağ) -- tuval boş duruyor ama ortala
+  // düğmesi ve lejant bir şey varmış gibi görünüyordu (bağlanmamış düğme).
+  // Bağ yokken tuval, ortala ve lejant gizlenir; yerine olgusal tek cümle.
+  // (Sekmenin yeniden tasarımı sonraki dalgada.)
+  function bagSayisi() {
+    let n = 0;
+    ((pageData && pageData.articles) || []).forEach((a) => { n += (a.dost || []).length; });
+    return n;
+  }
+  function bosDurumuUygula() {
+    const bos = !!pageData && bagSayisi() === 0;
+    const wrap = document.getElementById("baglar-wrap");
+    const not = document.getElementById("baglar-bos");
+    if (wrap) wrap.classList.toggle("baglar-wrap--bos", bos);
+    ["baglar-graph", "baglar-recenter", "baglar-legend"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = bos ? "none" : "";
+    });
+    if (not) {
+      not.hidden = !bos;
+      not.textContent = bos ? tt({
+        tr: "Taranan yazılarda şu an Dost'un bir kavramına işaretlenmiş bağ yok; harita bu yüzden boş.",
+        en: "The surveyed pieces currently carry no link marked to any of Dost's concepts, so the map is empty.",
+        pt: "Os textos analisados não têm, por ora, nenhum vínculo marcado a um conceito de Dost; por isso o mapa está vazio.",
+      }) : "";
+    }
+    return bos;
+  }
+
   function olcuyuYaz() {
     if (!olcuEl || !pageData) return;
     const yazi = (pageData.articles || []).length;
@@ -157,7 +188,7 @@
     return !!(s && s.clientWidth > 0 && s.clientHeight > 0);
   }
   function grafiKur() {
-    if (grafKuruldu || !pageData || !kurulabilirMi()) return;
+    if (grafKuruldu || !pageData || !kurulabilirMi() || bagSayisi() === 0) return;
     grafKuruldu = true;
     sonGenislik = svg.node().clientWidth;
     buildGraph();
@@ -185,6 +216,7 @@
     },
     render: function () {
       olcuyuYaz();
+      if (bosDurumuUygula()) return;
       if (!grafKuruldu) return;
       // Dil değişince adlar değişiyor, sıra da (ada göre eşitlik bozucu):
       // en temizi baştan kurmak.

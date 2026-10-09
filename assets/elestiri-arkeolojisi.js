@@ -118,9 +118,13 @@ window.__elestiriArkeolojisiApp = (function () {
         .attr("class", "elestiri-bant-cizgi")
         .attr("x1", 20).attr("x2", w - 20)
         .attr("y1", yTop + LANE_H / 2).attr("y2", yTop + LANE_H / 2);
+      // Bant adı SAĞ kenarda (2026-10-09 görsel taraması): sol üst köşede
+      // ortala/ipucu düğmeleri "Şam – Kahire"yi, sol alttaki lejant
+      // "Yemen"i örtüyordu; sağ kenarda bindirilmiş bir denetim yok.
       bantlar.append("text")
         .attr("class", "elestiri-bant-etiket")
-        .attr("x", 22).attr("y", yTop + 14)
+        .attr("x", w - 22).attr("y", yTop + 14)
+        .attr("text-anchor", "end")
         .text(tt(data.bolgeler[bolge]));
     });
 
@@ -529,6 +533,8 @@ window.__elestiriArkeolojisiApp = (function () {
     },
     groupBy: (n) => n.__rol || "diger",
     groupTitle: (rol) => mobilRolBaslik.get(rol) || null,
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => "var(" + (ROL_VAR[Array.isArray(n.__rol) ? n.__rol[0] : n.__rol] || "--text-muted") + ")",
     title: { tr: "Eleştiri Arkeolojisi", en: "Archaeology of Criticism", pt: "Arqueologia da Crítica" },
     note: {
       tr: "Zaman çizgisini okumak için ekran dar geldi — kişiler burada rollerine göre listede. Bir kişiye dokun, paneli oku.",

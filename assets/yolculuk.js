@@ -472,6 +472,7 @@ window.__yolculukApp = (function () {
     currentProjection = next;
     try { sessionStorage.setItem("yolculuk-projection", next); } catch (_) {}
     updateToggleUI();
+    lejantCiz();
     if (yuklendi) ciz();
     // Kimlik korunur: aynı düğüm seçiliyse yeniden çizimden sonra panel
     // aynı seçili kayda dönsün.
@@ -479,6 +480,34 @@ window.__yolculukApp = (function () {
       if (focusKind === "durak") { const d = durakById.get(focusId); if (d) vurgula(d.id, "durak"); }
       else if (focusKind === "eser") { const e = eserById.get(focusId); if (e) vurgula(e.id, "eser"); }
     }
+  }
+
+  // Lejant (2026-10-09 görsel taraması): siyah noktaların ve elmasların
+  // ne olduğu yalnız ipucu düğmesinin metnindeydi. İşaretler sahnedeki
+  // sınıfların aynısı; metin dil değişince yeniden yazılır.
+  function lejantCiz() {
+    let el = document.getElementById("yolculuk-lejant");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "yolculuk-lejant";
+      el.className = "legend yolculuk-lejant";
+      wrapEl.appendChild(el);
+    }
+    const isaret = (ic) => `<svg class="yolculuk-lejant__isaret" viewBox="-7 -7 14 14" aria-hidden="true">${ic}</svg>`;
+    const satirlar = [
+      [isaret('<circle class="yolculuk-durak__nokta" r="5"></circle>'),
+        { tr: "Durak (şehir)", en: "Stop (city)", pt: "Paragem (cidade)" }],
+      [isaret('<g class="yolculuk-eser"><circle class="yolculuk-eser__isaret" r="3.5"></circle></g>'),
+        { tr: "Eser — o durakta yazıldı", en: "Work — written at that stop", pt: "Obra — escrita nessa paragem" }],
+      [isaret('<g class="yolculuk-eser yolculuk-eser--yaklasik"><circle class="yolculuk-eser__isaret" r="3.5"></circle></g>'),
+        { tr: "Eser — tarihi yaklaşık", en: "Work — date approximate", pt: "Obra — data aproximada" }],
+      [isaret('<g class="yolculuk-eser yolculuk-eser--katalog"><path class="yolculuk-eser__isaret" d="M0,-5 L5,0 L0,5 L-5,0 Z"></path></g>'),
+        { tr: "Eserlerinin kataloğu", en: "Catalogue of his works", pt: "Catálogo das suas obras" }],
+    ];
+    el.setAttribute("aria-label", tt({ tr: "Lejant", en: "Legend", pt: "Legenda" }));
+    el.setAttribute("role", "note");
+    el.classList.toggle("yolculuk-lejant--zaman", currentProjection === "zaman");
+    el.innerHTML = satirlar.map(([ik, metin]) => `<div class="legend__item">${ik}<span>${tt(metin)}</span></div>`).join("");
   }
 
   function updateToggleUI() {
@@ -508,6 +537,7 @@ window.__yolculukApp = (function () {
     if (atlasBtn) atlasBtn.addEventListener("click", () => setProjection("atlas"));
     if (zamanBtn) zamanBtn.addEventListener("click", () => setProjection("zaman"));
     updateToggleUI();
+    lejantCiz();
   }
 
   return {
@@ -518,6 +548,7 @@ window.__yolculukApp = (function () {
       });
     },
     onLangChange() {
+      if (document.getElementById("yolculuk-lejant")) lejantCiz();
       if (!yuklendi) return;
       ciz();
       if (focusId) {

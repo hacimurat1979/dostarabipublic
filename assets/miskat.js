@@ -250,8 +250,8 @@
     return "";
   }
 
-  function hadisBlockHtml(b) {
-    var html = '<blockquote class="miskat-hadis-metin">';
+  function hadisBlockHtml(b, i) {
+    var html = '<blockquote class="miskat-hadis-metin" data-dost-alan="blocks[' + i + '].metin">';
     html += "<p>" + esc(t(b.metin)).replace(/\n\n/g, "</p><p>") + "</p>";
     if (b.ravi || b.senet) {
       html += '<footer class="miskat-hadis-metin__footer">';
@@ -294,6 +294,9 @@
       + '<button type="button" class="fusus-share-btn" title="Paylaş / Share / Compartilhar" aria-label="Paylaş / Share / Compartilhar">'
       + '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="18.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="10.8" x2="15.7" y2="6.7" stroke="currentColor" stroke-width="1.6"/><line x1="8.3" y1="13.2" x2="15.7" y2="17.3" stroke="currentColor" stroke-width="1.6"/></svg>'
       + "</button>"
+      + '<button type="button" class="fusus-kart-btn" title="Görsel kart oluştur / Create visual card / Criar cartão visual" aria-label="Görsel kart oluştur / Create visual card / Criar cartão visual">'
+      + '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16.5l4.8-4.8a1.4 1.4 0 0 1 2 0l2.9 2.9 2-2a1.4 1.4 0 0 1 2 0l2.3 2.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      + "</button>"
       + '<p class="fusus-article__eyebrow">'
       + esc(bolumEtiket + " " + h.bolum + " · " + h.no + ". " + birimEtiket) + "</p>"
       + '<h2 class="fusus-article__title">' + esc(t(h.title)) + "</h2>"
@@ -303,11 +306,11 @@
     // 2026-10-05: hadisin kendi metni başlığın hemen altında, her şeyden
     // önce -- sayfa okuduğumuz metnin kendisiyle açılır. Özet (varsa) onu
     // izler.
-    (h.blocks || []).forEach(function (b) {
-      if (b.type === "hadis") html += hadisBlockHtml(b);
+    (h.blocks || []).forEach(function (b, i) {
+      if (b.type === "hadis") html += hadisBlockHtml(b, i);
     });
     var ozet = t(h.hero && h.hero.summary);
-    if (ozet) html += '<div class="fusus-article__summary">' + linkify(ozet) + "</div>";
+    if (ozet) html += '<div class="fusus-article__summary" data-dost-alan="hero.summary">' + linkify(ozet) + "</div>";
 
     if (h.mainHelix) {
       var mk = "m" + (idx++);
@@ -316,9 +319,9 @@
       html += helixBlockHtml(h.mainHelix, mk);
     }
 
-    (h.blocks || []).forEach(function (b) {
+    (h.blocks || []).forEach(function (b, i) {
       if (b.type === "p") {
-        html += "<p>" + linkify(t(b.text)) + "</p>";
+        html += '<p data-dost-alan="blocks[' + i + '].text">' + linkify(t(b.text)) + "</p>";
       } else if (b.type === "helix") {
         var k = "s" + (idx++);
         helixes[k] = Object.assign({}, b.helix, { title: h.title });
@@ -340,6 +343,9 @@
         return { id: x.id, label: t(x.etiket === "haber" ? { tr: x.no + ". Haber", en: "Report " + x.no, pt: "Relato " + x.no } : { tr: x.no + ". Hadis", en: "Hadith " + x.no, pt: "Hadith " + x.no }), title: t(x.title) };
       }), h.id);
 
+    // @revise adresi (2026-10-09).
+    articleEl.dataset.dostDosya = "data/ibn-arabi/miskat-atlas.json";
+    articleEl.dataset.dostKaynak = h.id;
     articleEl.innerHTML = html;
     window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
     mountHelixBlocks(articleEl, helixes, captions);
@@ -347,6 +353,13 @@
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
     var shareBtn = articleEl.querySelector(".fusus-share-btn");
     if (shareBtn) shareBtn.addEventListener("click", function () { shareHadis(h); });
+    // "Bu kaydı paylaş" (2026-10-09): künyeli görsel kart (share-mode.js).
+    // Paylaşım kipi yoksa düğme görünmez -- bağlanmamış düğme olmasın.
+    var kartBtn = articleEl.querySelector(".fusus-kart-btn");
+    if (kartBtn) {
+      if (!(window.__dostShare && window.__dostShare.open)) kartBtn.hidden = true;
+      else kartBtn.addEventListener("click", function () { window.__dostShare.open({ view: "miskat", id: h.id }); });
+    }
     var startBtn = articleEl.querySelector("[data-start-hadis]");
     var startClose = articleEl.querySelector(".fusus-start-hint .futuhat-start-hint__close");
     if (startBtn) {

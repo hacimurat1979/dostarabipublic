@@ -785,6 +785,8 @@
     groupBy: (n) => n.theme,
     groupOrder: THEME_ORDER,
     groupTitle: (theme) => THEME_LABELS[theme],
+    // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
+    pipColor: (n) => "var(" + (THEME_COLOR_VAR[n.theme] || "--series-theme") + ")",
     title: { tr: "Sırlar", en: "Mysteries", pt: "Mistérios" },
     note: {
       tr: "Grafiği okumak için ekran dar geldi — kayıtlar burada tema başlıklarıyla listede. Bir başlığa dokun, paneli oku.",

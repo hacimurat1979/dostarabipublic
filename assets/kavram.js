@@ -49,7 +49,21 @@ window.__kavramApp = (function () {
   // GORSEL_DIL.md'nin davranışı-resmet ilkesi bozulmuyor: hangi ismin ne
   // kadar sık birlikte geçtiği hâlâ SADECE boyut/opaklıkla taşınıyor, renk
   // yalnız düğümleri birbirinden ayırt etmeye yarıyor.
-  const MINIGRAF_PALET = [350, 28, 52, 150, 195, 268]; // pembe/şeftali/sarı/nane/gökyüzü/leylak
+  // 2026-10-09 (görsel taraması): döngüsel pastel palet keyfi tonlar
+  // veriyordu (Allah pembe, Zât yeşil) -- aynı isim Esmâ haritasında başka,
+  // burada başka renkteydi. Uydu düğümler artık Esmâ görünümünün renk
+  // eşlemesini kullanıyor (esma.js colorForNode: Zât beyaz/altın halka,
+  // Allah --series-theme, kutuplar Celâl/Cemâl/Kemâl, grup başlığı nötr);
+  // kutup kavram-hayati.json'daki birlikteEsma[].pole alanından.
+  const ESMA_RENK = {
+    celal: "var(--series-celal)",
+    cemal: "var(--series-cemal)",
+    kemal: "var(--series-kemal)",
+    neutral: "var(--series-esma-neutral)",
+    allah: "var(--series-theme)",
+    zat: GU.ZAT_FILL,
+  };
+  function esmaRenk(pole) { return ESMA_RENK[pole] || ESMA_RENK.neutral; }
   function birlikteEsmaSvg(k) {
     const items = k.birlikteEsma;
     if (!items.length) return "";
@@ -70,9 +84,9 @@ window.__kavramApp = (function () {
       parts.push(
         `<line class="kavram-minigraf__edge" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke-width="${w.toFixed(2)}" style="opacity:${op.toFixed(2)}"></line>`
       );
-      nodes.push({ x, y, r, e, strength, nodeHue: MINIGRAF_PALET[i % MINIGRAF_PALET.length] });
+      nodes.push({ x, y, r, e, strength });
     });
-    nodes.forEach(({ x, y, r, e, strength, nodeHue }) => {
+    nodes.forEach(({ x, y, r, e, strength }) => {
       // Etiket ortalanmış (text-anchor:middle) kalırsa kenara yakın
       // düğümlerde (sol/sağ) metnin yarısı viewBox dışına taşıp
       // kırpılıyordu (UI denetimi bulgusu, 206 kavram sayfasının %61'i).
@@ -95,7 +109,7 @@ window.__kavramApp = (function () {
       const maxChars = Math.max(6, Math.floor(room / 6.4));
       const etiket = isim.length > maxChars ? isim.slice(0, maxChars - 1) + "…" : isim;
       parts.push(
-        `<circle class="kavram-minigraf__node" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" style="fill:hsl(${nodeHue} 75% 68% / ${(0.75 + strength * 0.25).toFixed(2)})"></circle>` +
+        `<circle class="kavram-minigraf__node" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" style="fill:${esmaRenk(e.pole)};fill-opacity:${(0.75 + strength * 0.25).toFixed(2)}${e.pole === "zat" ? ";stroke:var(--helix-gold-rim);stroke-width:2" : ""}"></circle>` +
           `<text class="kavram-minigraf__label" x="${x.toFixed(1)}" y="${(y + r + 13).toFixed(1)}" text-anchor="${anchor}"><title>${escapeHtmlKavram(isim)}</title>${escapeHtmlKavram(etiket)}</text>`
       );
     });

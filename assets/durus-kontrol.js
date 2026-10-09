@@ -37,8 +37,21 @@
   // çünkü olumlu ve olumsuz kutup aynı kalıbı kaldırmıyor. bag-kimin
   // 54'ten 20'ye indi, öteki kuralların sayısı değişmedi. Ölçüm G7'nin
   // yanında.
-  var SURUM = "s10";
+  // s11 (2026-10-09): 2026-10-05'in "site yalnız okumaların özetidir"
+  // kuralına göre yedi yeni kural (değerlendirme, çekince, birinci çoğul
+  // çıkarım, okuma yolculuğu, benzetme, modern bilim, kendi bağımız;
+  // ölçüt scripts/ayiklama/KILAVUZ.md). Eski "Yerine:" önerilerinin
+  // bir kısmı artık YASAK kalıpları öneriyordu ("şöyle okuyoruz", "bize
+  // göre", "olabilir") -- hepsi "Dost … diyor" kalıbına çevrildi. Eski
+  // kapalı-ses / rekabet / gösterme kuralları "Dost … diyor" diye
+  // aktaran cümlelerde susuyor (AKTARIM): oradaki kesinlik ya da yarış
+  // kaynağın sözü, bizim değil.
+  var SURUM = "s11";
   var DISMISS_KEY = "dost-durus-susturulan";
+  // Repoda paylaşılan susturmalar (karar defteri deseni): bir cihazda
+  // verilen "Bu doğru — kaldır" kararları dışa aktarılır, Claude bu
+  // dosyaya işler, öteki cihazlar açılışta okur.
+  var PAYLASILAN = "data/durus-susturulan.json";
 
   // YALNIZ TÜRKÇE (s3, kullanıcı kararı). Gerekçe: kalıplar Türkçe için
   // yazıldı ve Türkçede ölçüldü; üç dile birden nişan almak hem kuralları
@@ -122,7 +135,12 @@
   // zamanda kesme işareti olduğu için ("Hakk'ın") onları körlemesine
   // silemiyoruz. Onun yerine nakli, kendinden önce gelen atıf ifadesinden
   // tanıyoruz. Ölçüldü: kapali-ses isabetlerinin çoğu bu türdendi.
-  var NAKIL = /(İbn Arabî|İbn Arabi|Dost|Konuk|İzutsu|Affifi|Daphne|şöyle diyor|şöyle der|şöyle yazıyor|buyurur|diyor ki|anlatıyor|aktarıyor|nakleder|yazıyor)\s*[-–—:'"“‘]/i;
+  // s11: kesme işareti ardından harf geliyorsa iyelik ekidir ("Dost'un",
+  // "İbn Arabî'nin"), nakil değil. Önceki kalıp bunu ayırmıyordu: "Dost'un"
+  // geçen her cümlenin ardındaki 170 karakter "alıntı" sayılıp hiç
+  // taranmıyordu -- değerlendirmede "Bize göre … Dost'un en çarpıcı …"
+  // deneme cümlesinin yalnız ilk kelimesi yakalanıyordu.
+  var NAKIL = /(İbn Arabî|İbn Arabi|Dost|Konuk|İzutsu|Affifi|Daphne|şöyle diyor|şöyle der|şöyle yazıyor|buyurur|diyor ki|anlatıyor|aktarıyor|nakleder|yazıyor)\s*(?:[-–—:"“‘]|['’](?![\p{L}]))/iu;
   function NAKIL_DISI(metin, index) {
     return !NAKIL.test(metin.slice(Math.max(0, index - 170), index));
   }
@@ -147,6 +165,43 @@
   function BIZ_SESI(metin, index) {
     var c = cumleyiAl(metin, index);
     return SAHIPLIK.test(c) || BIRINCI_COGUL.test(c);
+  }
+
+  // s11: AKTARIM -- isabetin cümlesi bir kaynağın ne dediğini mi
+  // aktarıyor? Sitenin özet sesi "Dost … diyor / anlatıyor / ayırıyor";
+  // bu çerçevede geçen bir kesinlik, yarış ya da değerlendirme kaynağın
+  // sözüdür. Ölçüt iki parçalı: cümlede üçüncü tekil bir aktarım fiili
+  // (ya da "Konuk'a göre" gibi bir kaynak atfı) VAR ve bizim sesimiz
+  // (bize/bizce, birinci çoğul çekim) YOK. Özne çoğu cümlede düşük ("…
+  // diye anlatıyor"); sitede üçüncü tekil aktarım fiilinin öznesi
+  // geleneksel olarak kaynaktır.
+  var AKTARIM_FIIL = new RegExp("(?<![\\p{L}\\p{N}])(?:diyor|der|söylüyor|söyler|anlatıyor|anlatır|aktarıyor|aktarır|ayırıyor|ayırır" +
+    "|sayıyor|sayar|belirtiyor|açıklıyor|açıklar|yazıyor|yazar|naklediyor|nakleder|soruyor|ekliyor|bildiriyor" +
+    "|uyarıyor|tarif ediyor|tanımlıyor|vurguluyor|hatırlatıyor|kaydediyor|ifade ediyor|dile getiriyor|zikrediyor" +
+    "|buyuruyor|buyurur|yorumluyor|cevap veriyor|karşılık veriyor|bağlıyor|benzetiyor|kıyaslıyor|örnekliyor" +
+    "|kuruyor|sunuyor|getiriyor|gösteriyor|ele alıyor|tartışıyor|işliyor|bulunuyor|bulunur|uyarır|yorumlanıyor" +
+    "|açılıyor|kapanıyor|geçiyor|başlıyor|devam ediyor" +
+    "|diye|der ki|dediği|dediğine|söylediği|anlattığı|aktardığı|diyerek)(?![\\p{L}\\p{N}])", "iu");
+  var KAYNAGA_GORE = /(?:Dost|İbn Arabî|İbn Arabi|Konuk|Konevî|Kâşânî|Kayserî|Cendî|İzutsu|Izutsu|Affifi|Chittick|Corbin|Knysh|Daphne|şârih|metn)[’']?(?:[ae]|y[ae]|n[ae]|ın[ae]|in[ae]|un[ae]|ün[ae]) göre/i;
+  // Kaynak adı + herhangi bir üçüncü tekil "-yor" fiili de aktarımdır
+  // ("Dost bu fikri bir benzetmeyle somutlaştırıyor") -- fiil listesi ne
+  // kadar uzasa da her fiili sayamaz.
+  var KAYNAK_ADI = /(?:Dost|İbn Arabî|İbn Arabi|İbnü'l-Arabî|Konuk|Konevî|Kâşânî|Kayserî|Cendî|İzutsu|Izutsu|Affifi|Chittick|Corbin|Knysh|Daphne)(?![\p{L}])/u;
+  var UCUNCU_TEKIL = /[\p{L}]{2,}(?:yor|yorlar)(?![\p{L}])/u;
+  function AKTARIM(metin, index) {
+    var c = cumleyiAl(metin, index);
+    if (SAHIPLIK_GENIS.test(c) || BIRINCI_COGUL.test(c)) return false;
+    return AKTARIM_FIIL.test(c) || KAYNAGA_GORE.test(c) || (KAYNAK_ADI.test(c) && UCUNCU_TEKIL.test(c));
+  }
+  function AKTARIM_DISI(metin, index) {
+    return NAKIL_DISI(metin, index) && !AKTARIM(metin, index);
+  }
+  // Künye/şeffaflık cümleleri ("bu şemayı biz çizdik", "İngilizce çeviri
+  // bizim aktarımımız") yorum değil, dürüstlük -- birinci çoğul taşısalar
+  // da okuma-yolculuğu kuralından muaf (KILAVUZ.md, KORU).
+  var KUNYE = /(?:çizdik|çizildi|çiziyoruz|aktarımımız|çevirimiz|çevirdik|aktardık|derledik|işaretledik|kısalttık|sadeleştirdik|ekledik|dizdik|sıraladık|numaraladık|dokunarak|tıklayarak|çevirisini|şerhini|tercümesini|çalışmasını|sırasını izl|bize ait)/i;
+  function KUNYE_DISI(metin, index) {
+    return NAKIL_DISI(metin, index) && !KUNYE.test(cumleyiAl(metin, index));
   }
 
   // JS'in \b'si ASCII: "şüphesiz" sözcüğünün başındaki ş bir "word
@@ -213,23 +268,27 @@
       re: new RegExp(ONEK + "(?:önceden görmüş|önceden bilmiş|öngörmüş|bilim bunu kanıtl|bilim doğrul|modern bilim göster|bilimsel olarak doğrulan)"
         + "(?![^.!?]{0,70}(?:değil|değildir|olmuyor)" + SONEK + ")", "giu"),
       neden: "CLAUDE.md: “asla ‘İbn Arabî bunu önceden görmüştü’ ya da ‘bilim bunu kanıtlıyor’ gibi bir iddiaya dönüştürülmemeli.”",
-      yerine: "“Bize … hatırlatıyor”, “bir çağrışım olarak”.",
+      // s11: eski öneri ("Bize … hatırlatıyor", "bir çağrışım olarak")
+      // 2026-10-05'ten beri kendisi yasak -- benzetme yazmıyoruz.
+      yerine: "Sil. Metin bir bilimsel iddia kurmuyorsa site de kurmaz; yalnız ne dediğini aktar: “Dost … diyor”.",
     },
     {
       id: "kanit-dili", seviye: "kural", ad: "Kanıt dili",
       re: new RegExp(ONEK + "(?:kanıtlıyor|kanıtlar ki|kanıtıdır|ispatlıyor|ispat ediyor|ispatıdır|kesin olarak göster|tartışmasız biçimde|şüpheye yer bırakmayacak)"
         + "(?![^.!?]{0,70}(?:değil|değildir)" + SONEK + ")", "giu"),
       neden: "CLAUDE.md: kapanmış, otoriter bir ses değil; arayan bir ses.",
-      yerine: "“Şöyle okuyoruz”, “bu satırlar şuna işaret ediyor olabilir”.",
-      esKosul: NAKIL_DISI,
+      yerine: "Kanıt hükmü bizim değil: aktarım fiiliyle yaz — “Dost … diyor / anlatıyor / ayırıyor”.",
+      esKosul: AKTARIM_DISI,
     },
 
     {
       id: "kapali-ses", seviye: "gozden-gecir", ad: "Kapalı ses",
       re: tamKelime("şüphesiz|kuşkusuz|elbette|besbelli|apaçık|hiç kuşku yok|açıkça görülüyor"),
       neden: "Kesinlik bildiren bir bağlaç. Kendi sesimizdeyse duruşumuza aykırı.",
-      yerine: "Kesinliği kaldır ya da kimin kesinliği olduğunu söyle.",
-      esKosul: NAKIL_DISI,
+      yerine: "Kesinliği kaldır; kesinlik kaynağınsa onun sözü olarak aktar: “Dost … diyor”.",
+      // s11: "Dost … diyor" çerçevesindeki kesinlik kaynağın kesinliği
+      // (değerlendirmede 14 isabetin çoğu buydu).
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "gosterme-dili", seviye: "gozden-gecir", ad: "Gösterme dili",
@@ -237,16 +296,16 @@
       // temkinli kullanımları da yakalar ve kuralı kullanılamaz yapardı.
       // Yalnız kapanış bildiren biçimleri arıyoruz.
       re: basKelime("açıkça gösteriyor|net (?:bir )?biçimde gösteriyor|gösterir ki|ortaya koyuyor ki|ortaya koymaktadır|görüldüğü üzere|anlaşılacağı üzere"),
-      neden: "Bir okumayı sonuç gibi kapatan biçim. Duruşumuz: “bize göre”, “olabilir”.",
-      yerine: "“Bu satırları şöyle okuyoruz”, “bize şunu düşündürüyor”.",
-      esKosul: NAKIL_DISI,
+      neden: "Bir okumayı sonuç gibi kapatan biçim; hüküm bizim sesimizde.",
+      yerine: "Metnin söylediğini aktar: “Dost … diyor”, “bölüm … ile açılıyor”.",
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "tamamlanmis-anlama", seviye: "gozden-gecir", ad: "Tamamlanmış anlama",
       re: basKelime("artık (?:biliyoruz|anlıyoruz|biliriz)|anlaşılmıştır|netleşmiştir|kesinleşmiştir|böylece anlaşıl|sonuç olarak diyebiliriz|meselenin özü şudur|artık açıktır"),
       neden: "Kökensel duruş: “anlamaya çalışıyoruz, anlatmaya değil.” Anlama kapanmış gibi yazılmamalı.",
-      yerine: "“Şimdilik şöyle okuyoruz”, “bu tur bize şunu düşündürdü”.",
-      esKosul: NAKIL_DISI,
+      yerine: "Hükmü sil; metnin söylediğini aktar: “Dost … diyor / anlatıyor”.",
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "mutlak-genelleme", seviye: "gozden-gecir", ad: "Külliyat ölçeğinde genelleme",
@@ -256,22 +315,22 @@
       // -- okuduğumuz kısım sınırlı. Kalıplar ona indirildi.
       re: basKelime("hiçbir yerde|hiçbir eserinde|hiçbir kitabında|bütün külliyat|tüm külliyat|bütün eserlerinde|tüm eserlerinde|her zaman ve her yerde|istisnasız|hiçbir yerinde"),
       neden: "Külliyatın tamamı hakkında bir hüküm. Okuduğumuz kısım sınırlı; bunu doğrulayamayız.",
-      yerine: "Kapsamı söyle: “okuduğumuz bölümlerde”, “bu ciltte karşımıza çıkmadı”.",
-      esKosul: NAKIL_DISI,
+      yerine: "Külliyat hükmünü sil; olgu olarak kapsam ver: “bu kısımda”, “bu ciltte”.",
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "sarih-hakemligi", seviye: "gozden-gecir", ad: "Şârihi hakem yapmak",
       re: new RegExp("(?:Konuk|İzutsu|Izutsu|Affifi|Chittick|Corbin)[^.!?]{0,70}?" + ONEK
         + "(?:haklı olarak|doğru olarak|doğrusu|isabetle|doğru biçimde|yanılıyor|hatalı olarak|yanlış anlamış)" + SONEK, "giu"),
       neden: "CLAUDE.md: şârihler “hakem değil” — onların yorumu da bir okuma.",
-      yerine: "“… şöyle okuyor”, “bir yaklaşım olarak”.",
+      yerine: "Şârihin görüşünü onun görüşü olarak, hükümsüz aktar: “Konuk … diye açıklıyor”, “Izutsu'ya göre …”.",
     },
     {
       id: "okuru-yonlendirme", seviye: "gozden-gecir", ad: "Okuru yönlendirme",
       re: tamKelime("unutmayın|unutmayalım|dikkat edin ki|bilmelisiniz|anlamalısınız|şunu bilin|görmelisiniz|kabul etmeliyiz"),
-      neden: "Öğretici/buyurucu ses. Duruşumuz okuru ortak bir arayışa davet ediyor, yönlendirmiyor.",
-      yerine: "“Bize öyle geliyor ki”, “burada şunu sorabiliriz”.",
-      esKosul: NAKIL_DISI,
+      neden: "Öğretici/buyurucu ses. Site okuduğunu özetler; okura hitap etmez.",
+      yerine: "Okura hitabı sil; metnin söylediğini aktar: “Dost … diyor”.",
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "bag-kimin", seviye: "gozden-gecir", ad: "Bağ kimin?",
@@ -279,9 +338,13 @@
       // sözcükleri ("tıpkı evren gibi") ve kuralı kullanılamaz hâle
       // getiriyorlardı -- ölçtük, 297 isabetin çoğu onlardan geliyordu.
       re: tamKelime("aynı hareketi|aynı deseni|aynı örüntü|aynı formülü|örtüşüyor|örtüşmesi|paralellik|birebir aynı"),
-      neden: "İki kaynağı birbirine bağlayan bir cümle, ama bağın bize ait olduğu söylenmemiş.",
-      yerine: "“Bağı biz kuruyoruz”, “iki metin birbirine atıf yapmıyor” gibi bir cümle ekle.",
-      kosul: BAGSIZ,
+      neden: "İki kaynağı birbirine bağlayan bir cümle. 2026-10-05'ten beri kendi kurduğumuz bağlantılar yazılmıyor.",
+      // s11: eskiden "bağın bizim olduğunu SÖYLE" diyordu (BAGSIZ koşulu);
+      // artık bizim bağımız yazılmıyor, yani "bizim" demek aklamıyor.
+      // Susan yalnız kaynağın KENDİ kurduğu bağ ("Dost burada … paralellik
+      // kuruyor") -- AKTARIM.
+      yerine: "Bağı Dost kurmuyorsa sil. Kuruyorsa onun sözü olarak aktar: “Dost bunu … bâbında anlattığını söylüyor”.",
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "niyeti-bilmek", seviye: "gozden-gecir", ad: "Dost'un niyetini bilmek",
@@ -290,14 +353,14 @@
       // bildiren "kastını anlamaya çalışıyoruz" yakalanmıyor.
       re: new RegExp(ONEK + "(?:(?:Dost'un|İbn Arabî'nin|onun)\\s+(?:kastı|muradı)|(?:kastı|muradı)\\s+şu(?:dur)?)" + SONEK, "giu"),
       neden: "Bir müellifin niyetini ya da kastını doğrudan bilmek iddialı. Kökensel duruş: anlama çabasındayız, hakem değiliz.",
-      yerine: "“Bu satırları şöyle okuyoruz”, “bize kastı şunu çağrıştırıyor”, “şöyle yorumlanabilir”.",
+      yerine: "Niyet hükmünü sil; Dost kastını kendisi söylüyorsa onu aktar: “Dost … kastettiğini söylüyor”.",
       esKosul: NAKIL_DISI,
     },
     {
       id: "dogmatik-ozet", seviye: "gozden-gecir", ad: "Dogmatik özet",
       re: basKelime("buradaki (?:temel )?mesaj|öğretinin özü|bir cümleyle özetl|kısacası şunu söyl|özetle şunu söyl|özetle diyebilir"),
       neden: "Bir pasajı veya öğretiyi tek bir mesaja/öze indirgemek, okumayı kapanmış bir sonuç gibi sunar.",
-      yerine: "“Bu satırlar bize şunu düşündürüyor”, “bu bölümden çıkardığımız bir şey şu”.",
+      yerine: "Tek mesaja indirgeme; metnin sırasını aktar: “Dost önce …, sonra … anlatıyor”.",
       esKosul: NAKIL_DISI,
     },
 
@@ -332,7 +395,7 @@
       re: basKelime("kilometre taşı|derin (?:bir )?iz bırak|paha biçilmez|çığır aç|müstesna bir yer|abidevi|şaheser|başyapıt"),
       neden: "Konunun önemini nitelemeyle yükseltmek. Bir şey önemliyse bunu olgular gösterir; övgü bizim sesimiz değil.",
       yerine: "Niteleme yerine olgu: ne zaman yazıldı, kaç cilt, nerede tamamlandı.",
-      esKosul: NAKIL_DISI,
+      esKosul: AKTARIM_DISI,
     },
     {
       id: "zarif-degisim", seviye: "gozden-gecir", ad: "Adı yerine sıfat koymak",
@@ -364,7 +427,7 @@
       // olduğu için bakılmayı hak ediyor.
       re: new RegExp(ONEK + "(?:sadece|yalnız|yalnızca)[^.!?]{0,60}?\\s+değil,\\s*(?:aynı zamanda|bir o kadar da|ayrıca|hem de)", "giu"),
       neden: "Kapsamlılık hissi veren bir kalıp. Çoğu yerde iki yarı da düz cümleyle söylenebilir.",
-      yerine: "İki şeyi ayrı ayrı söyle: “şu da var”, “bir de şu tarafı”.",
+      yerine: "İki şeyi ayrı cümlelerle aktar: “Dost … diyor. … da ekliyor.”",
       esKosul: NAKIL_DISI,
     },
     {
@@ -438,14 +501,99 @@
       // davranışını değiştirmemek için.
       re: tamKelime("rakip|rakibi|rakibiydi|rakipler|rakipleri|rekabet|rekabeti|rekabetçi|yarışıyor|yarıştı|yarışır|yarışında|boy ölçüş\\w*"),
       neden: "Rekabet çerçevesi. Allah dostları arasında rekabet olmaz; velîler, yollar ve mertebeler birbirine karşı yarışmaz. Çerçeveyi olumsuzlayarak kurmak da (“rakibi değil”) aynı kapıya çıkar.",
-      yerine: "Kaynağın kendi sözüyse ya da künyeli tarihsel bir polemikse KALSIN -- yeter ki kimin sözü olduğu görünsün. Bizim yorumumuzsa çerçeveyi değiştir: “birbirini dışlamıyor”, “yan yana duruyor”, “ayrı yollar”, “itiraz etti”, “mektup yazdı”.",
+      yerine: "Kaynağın kendi sözüyse ya da künyeli tarihsel bir polemikse KALSIN -- yeter ki kimin sözü olduğu görünsün. Bizim yorumumuzsa sil; olgu kalacaksa yarışsız aktar: “itiraz etti”, “mektup yazdı”.",
       esKosul: function (metin, index) {
-        if (!NAKIL_DISI(metin, index)) return false;
+        if (!AKTARIM_DISI(metin, index)) return false;
         // İleriye bakış: isabetten sonraki kısa pencerede bir atıf varsa
         // (ör. "-- İbnü Atâullah'ın bu cümlesi") bu bir nakildir.
         return !/(--|—|–)?\s*(İbn Arabî|İbn Arabi|Dost|Konuk|İzutsu|Affifi|Daphne|İbnü [A-ZÇĞİÖŞÜ]|[A-ZÇĞİÖŞÜ][\wçğıöşü'’-]+(?:'in|'ın|'nin|'nın|'un|'ün|'nun|'nün))\s+(?:bu )?(?:cümlesi|sözü|ifadesi|deyişi|kıyası|benzetmesi)/u
           .test(metin.slice(index, index + 120));
       },
+    },
+
+    /* --- s11: "site yalnız okumaların özetidir" (2026-10-05) ----------
+       Ölçüt scripts/ayiklama/KILAVUZ.md'nin SİL listesi. Hepsi alıntı
+       (<em>) ve nakil sonrası metni taramıyor; değerlendirme ve kendi
+       bağımız ayrıca "Dost … diyor" çerçevesinde (AKTARIM) susuyor.
+       Çekince ve birinci çoğul kuralları AKTARIM'da SUSMUYOR: "Belki de
+       Dost burada … anlatıyor" bizim hipotezimiz, aktarım fiili onu
+       aklamıyor. Ölçüm DURUS_KONTROL.md'de. */
+    {
+      id: "degerlendirme", seviye: "kural", ad: "Değerlendirme",
+      // "dikkat çekiyor" yok: "Dost … dikkat çekiyor" bir aktarım fiili.
+      // "olağanüstü", "harikulade" yok: Fütûhât'ta terim (mucize/keramet).
+      // "en güzel", "en derin" yok: tırnaksız Dost sözlerinde ve konu
+      // tariflerinde ("sırların en derini") geçiyor -- ölçümde 33 isabetin
+      // çoğu bunlardı.
+      re: basKelime("çarpıcı|dikkat çekici|dikkati çeken|ilginç|ilgi çekici|ilgi çekiyor|ayrı bir ilgi"
+        + "|etkileyici|büyüleyici|büyüleyen|şaşırtıcı|muhteşem|en net örne"
+        + "|en açık örne|özellikle önemli|son derece önemli|çok önemli|büyük önem taşı|ustalıkla|ustaca|incelikle kur"),
+      neden: "Bizim değerlendirmemiz. 2026-10-05: site yalnız okumaların özetidir; “çarpıcı”, “dikkat çekici”, “en güzel” yazılmaz.",
+      yerine: "Sıfatı at, içeriği aktar: “Bize göre en çarpıcı olanı Dost'un X demesi” → “Dost X diyor.”",
+      esKosul: AKTARIM_DISI,
+    },
+    {
+      id: "cekince-dili", seviye: "kural", ad: "Çekince / hipotez",
+      // Ölçüm (2026-10-09): yalın "olabilir/belki/sanki" 119 isabet verdi,
+      // çoğu kaynağın KENDİ kipliği ("doğru da olabilir yanlış da",
+      // "belki kâbiliyetin şartı O'nun atâsıdır") ya da tırnak içi söz.
+      // Kalıp hipotez biçimlerine indirildi: "-yor/-mış/-dır olabilir",
+      // "belki de", "gibi görünüyor".
+      re: basKelime("belki de|belki bu|belki burada|gibi görünüyor|gibi duruyor|gibi geliyor|muhtemelen|galiba"
+        + "|[\\p{L}]+(?:yor|mış|miş|muş|müş|dır|dir|dur|dür|tır|tir|tur|tür) olabilir|anlamına gelebilir|demek olabilir|akla getiriyor"),
+      neden: "Bizim ürettiğimiz bir anlam önerisi (hipotez). KILAVUZ.md: metinde olmayan bir anlam üretiyorsa SİL.",
+      yerine: "Metin söylüyorsa çekincesiz aktar: “Dost … diyor”. Söylemiyorsa cümleyi sil.",
+      esKosul: NAKIL_DISI,
+    },
+    {
+      id: "biz-cikarimi", seviye: "kural", ad: "Birinci çoğul çıkarım",
+      re: basKelime("bize göre|bizce|bize öyle geliyor|kanaatimizce|kanımızca|okumamıza göre|(?:şöyle |böyle |bunu |bu satırları )?okuyoruz"
+        + "|düşünüyoruz|sanıyoruz|tahmin ediyoruz|yorumluyoruz|çıkarıyoruz|çıkardığımız|anlıyoruz"
+        + "|bize (?:şunu )?(?:hatırlatıyor|düşündürüyor|çağrıştırıyor|gösteriyor)"),
+      // Künye cümlesi ("Konuk'un şerhini okuyoruz") okuduğumuz kaynağı
+      // söyler -- şeffaflık, çıkarım değil.
+      esKosul: KUNYE_DISI,
+      neden: "Bizim çıkarımımız. 2026-10-05: kendi çıkarımlarımız ancak kullanıcıyla birlikte karar verildikten sonra yazılır.",
+      yerine: "Çerçeveyi at, metnin söylediğini bırak: “Bu ifadeyi Dost'un X'i Y'ye bağladığı şeklinde okuyoruz” → “Dost X'i Y'ye bağlıyor.” (metin açıkça söylüyorsa; değilse sil)",
+    },
+    {
+      id: "okuma-yolculugu", seviye: "gozden-gecir", ad: "Okuma yolculuğumuz",
+      // Birinci çoğul anlatı ("iniyoruz", "bakıyoruz", "karşımıza çıkıyor")
+      // ve kendi sorularımız. Künye cümleleri (KUNYE) muaf.
+      re: basKelime("anlamaya çalışıyoruz|henüz bilmiyoruz|karşımıza çık|önümüze (?:şu )?soru|soruyu koyuyor|izlediğimiz|okuduğumuz bölümler boyunca"
+        + "|iniyoruz|yolculuğa çık|bakıyoruz|merak ediyoruz|soruyoruz|soralım|hatırlayalım|görelim|bakalım|dönelim"
+        + "|izliyoruz|takip ediyoruz|fark ediyoruz|keşfediyoruz|buluyoruz|görüyoruz"),
+      neden: "Okuma yolculuğumuz ve sorularımız (KILAVUZ.md, SİL). Site okumamızı değil, okuduğumuzu anlatır.",
+      yerine: "Anlatıyı at, içeriği aktar: “Bu bölümde … iniyoruz” → “Dost bu bölümde … anlatıyor.” Künye cümlesiyse (“bu şemayı biz çizdik”) kalsın.",
+      esKosul: KUNYE_DISI,
+    },
+    {
+      id: "benzetme", seviye: "gozden-gecir", ad: "Benzetme",
+      // "tıpkı" bilerek yok: ölçümde 63 isabetin hepsi Dost'un kendi
+      // kıyaslarının özeti ("tıpkı havanın suya inkılâbı gibi").
+      re: basKelime("bir benzetmeyle|benzetmek gerekirse|şöyle düşünün|düşünün ki|bir düşünün|günlük hayat|gündelik hayat"
+        + "|hepimizin|tıpkı bizim|bugünkü dille|modern dille"),
+      neden: "Benzetme bizim eklememiz olabilir. KILAVUZ.md: benzetmeyi Dost/şârih yapmıyorsa SİL (`analogy` alanı artık yok).",
+      yerine: "Benzetme Dost'unsa onun sözü olarak aktar: “Dost bunu … benzetiyor”. Değilse sil.",
+      esKosul: AKTARIM_DISI,
+    },
+    {
+      id: "modern-bilim", seviye: "kural", ad: "Modern bilimle benzetme",
+      re: basKelime("modern (?:fizik|bilim|kozmoloji|psikoloji)|kuantum|izafiyet|görelilik kuram|evrim kuram|nörobilim|beyin bilim"
+        + "|hologram|fraktal|büyük patlama|big bang|termodinamik|entropi|kara delik|algoritma|bilgisayar|yazılım|yapay zek|dalga-parçacık"),
+      neden: "Modern bilimden örnek bizim benzetmemiz. 2026-10-05: benzetme (günlük hayat ya da modern bilim) yazılmaz.",
+      yerine: "Sil. Metin bunu kurmuyor; yalnız Dost'un ne dediğini aktar.",
+      esKosul: NAKIL_DISI,
+    },
+    {
+      id: "kendi-bag", seviye: "kural", ad: "Kendi kurduğumuz bağ",
+      re: basKelime("aynı motif|motif burada|burada da beliri|yeniden karşımıza|daha önce gördüğümüz|daha önce okuduğumuz|önceki kısımda gördü"
+        // "N. kısımdaki … tartışmasının devamı" yapı bilgisidir (KORU) -- yok.
+        + "|iki kısım arasında|biriken parçalar|bir dikiş|haritamız|grafımız|serimiz"
+        + "|ilk hadis şunu söylüyordu|bu ikincisi ise"),
+      neden: "Kısımlar/kitaplar arasında bizim kurduğumuz bağlantı (KILAVUZ.md, SİL). Dost'un kendi çapraz atfı (“bunu … bâbında anlattık”) korunur.",
+      yerine: "Bağı sil; Dost'un kendi atfıysa onu aktar: “Dost bunu … bâbında anlattığını söylüyor”.",
+      esKosul: AKTARIM_DISI,
     },
   ];
 
@@ -491,14 +639,44 @@
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
-  function susturulanlar() {
+  function yerelSusturulan() {
     try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); }
     catch (e) { return {}; }
   }
-  function sustur(anahtar) {
-    var d = susturulanlar();
-    d[anahtar] = new Date().toISOString();
-    try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch (e) {}
+  // Yerel kararlar + repodaki paylaşılan dosya (açılışta bir kez okunur).
+  var paylasilan = {};
+  var paylasilanYuklendi = false;
+  function paylasilaniYukle() {
+    if (paylasilanYuklendi) return Promise.resolve();
+    paylasilanYuklendi = true;
+    return fetch(PAYLASILAN, { cache: "no-cache" }).then(function (r) {
+      return r.ok ? r.json() : [];
+    }).then(function (liste) {
+      (Array.isArray(liste) ? liste : []).forEach(function (k) {
+        if (k && k.anahtar && (!k.tarama || k.tarama === "durus")) paylasilan[k.anahtar] = k.zaman || "repo";
+      });
+    }).catch(function () { /* dosya yayında yoksa (canlıda research/ yok) yalnız yerel kararlar */ });
+  }
+  function susturulanlar() {
+    var d = yerelSusturulan();
+    for (var k in paylasilan) if (!d[k]) d[k] = paylasilan[k];
+    return d;
+  }
+  // s11: karar artık kimin neyi neden susturduğunu da taşıyor -- dışa
+  // aktarıma giriyor ve data/durus-susturulan.json'a işleniyor.
+  function sustur(anahtar, bilgi) {
+    var d = yerelSusturulan();
+    var kayit = { zaman: new Date().toISOString() };
+    if (bilgi) for (var k in bilgi) if (bilgi[k] != null) kayit[k] = bilgi[k];
+    d[anahtar] = kayit;
+    try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); }
+    catch (e) {
+      if (window.__dostRevise) window.__dostRevise.uyari("Susturma kaydedilemedi (depolama dolu ya da kapalı).");
+    }
+  }
+  function katman(kapat) {
+    if (window.DostReviseKatman) return window.DostReviseKatman.ac(kapat);
+    return function () {};
   }
   function anahtarla(kuralId, metin) {
     return kuralId + ":" + hash(metin.replace(/\s+/g, " ").trim());
@@ -513,6 +691,7 @@
         var c = node.childNodes[i];
         if (c.nodeType === 3) { out += c.nodeValue; continue; }
         if (c.nodeType !== 1) continue;
+        if (c.classList && c.classList.contains("durus-rozet-grup")) continue;
         if (c.tagName === "EM" || c.tagName === "Q") {
           out += new Array((c.textContent || "").length + 1).join(" ");
           continue;
@@ -520,20 +699,35 @@
         yuru(c);
       }
     })(el);
-    return out;
+    return tirnaksiz(out);
+  }
+  // s11: tırnak içi de taranmıyor. Sitede alıntıların bir kısmı <em>
+  // yerine düz ya da kıvrık tırnakla veriliyor ('…', "…", “…”); onların
+  // içindeki "sanki", "en güzel", "olabilir" kaynağın sözü. Açılış
+  // tırnağı boşluk/noktalama sonrası gelmeli (Hakk'ın gibi kesmeler
+  // dışarıda kalsın); içerideki kesme+harf (Allah'ın) tırnağı kapatmaz.
+  // Uzunluk korunur (isabet konumları kaymasın).
+  var TIRNAK = /(^|[\s(:—–-])(?:'(?:[^'\n]|'(?=\p{L}))+?'(?![\p{L}])|"[^"\n]+?"|“[^”]*?”)/gu;
+  function tirnaksiz(s) {
+    return String(s).replace(TIRNAK, function (m, on) {
+      return on + new Array(m.length - on.length + 1).join(" ");
+    });
   }
   function alintisizMetin(s) {
-    return String(s).replace(/<em>[\s\S]*?<\/em>/g, function (m) {
+    return tirnaksiz(String(s).replace(/<em>[\s\S]*?<\/em>/g, function (m) {
       return new Array(m.length + 1).join(" ");
-    }).replace(/<[^>]+>/g, " ");
+    }).replace(/<[^>]+>/g, " "));
   }
 
   // Ortak çekirdek: bir metinde hangi kurallar tetikleniyor?
-  function kurallariUygula(taranan, tamMetin) {
+  // `muafKural`: o bağlamda çalışmayan kural kimlikleri (Daphne'nin kendi
+  // konusu sistem kuramı/fizik -- tarama-kapsami.json durusMuafKural).
+  function kurallariUygula(taranan, tamMetin, muafKural) {
     if (taranan.replace(/\s+/g, "").length < 40) return [];
     var d = susturulanlar();
     var out = [];
     KURALLAR.forEach(function (k) {
+      if (muafKural && muafKural.indexOf(k.id) >= 0) return;
       if (k.kosul && !k.kosul(taranan)) return;
       k.re.lastIndex = 0;
       var m, esler = [];
@@ -558,9 +752,16 @@
   // yanlış susması, yanlış bağırmasından iyidir.
   function muafMi(el) { return !!el.closest(".detail-analogy"); }
 
+  var DAPHNE_MUAF = ["modern-bilim", "benzetme"];
   function bulgular(el) {
     if (!turkceMi() || muafMi(el)) return [];
-    return kurallariUygula(alintisizDom(el), el.textContent || "");
+    var daphne = /compare\.html$/.test(location.pathname)
+      || !!el.closest('[data-dost-dosya="data/daphne-profile.json"]');
+    // Rozet grubu metne dahil edilmez (önceden "🔸" anahtara giriyordu).
+    var tam = (el.textContent || "");
+    var g = el.querySelector(":scope > .durus-rozet-grup");
+    if (g) tam = tam.slice(0, tam.length - (g.textContent || "").length);
+    return kurallariUygula(alintisizDom(el), tam, daphne ? DAPHNE_MUAF : null);
   }
 
   // --- sayfa içi işaretleme ---------------------------------------------
@@ -576,9 +777,10 @@
       window.scrollX + r.left - 140,
       window.scrollX + document.documentElement.clientWidth - kutu.offsetWidth - 8)) + "px";
     acikKutu = kutu;
+    kutuBirak = katman(kutuKapat);
     kutu.querySelector('[data-act="kapat"]').addEventListener("click", kutuKapat);
     kutu.querySelector('[data-act="sustur"]').addEventListener("click", function () {
-      sustur(bulgu.anahtar);
+      sustur(bulgu.anahtar, { kural: bulgu.kural.id, ozet: (el.textContent || "").slice(0, 120), url: location.pathname });
       kutuKapat();
       isaretle(el);
       sayaciGuncelle();
@@ -599,7 +801,11 @@
       + '<button type="button" data-act="kapat">Kapat</button>'
       + "</div>";
   }
-  function kutuKapat() { if (acikKutu) { acikKutu.remove(); acikKutu = null; } }
+  var kutuBirak = null;
+  function kutuKapat() {
+    if (kutuBirak) { kutuBirak(); kutuBirak = null; }
+    if (acikKutu) { acikKutu.remove(); acikKutu = null; }
+  }
 
   function isaretle(el) {
     var eski = el.querySelector(":scope > .durus-rozet-grup");
@@ -721,37 +927,71 @@
   // açılacak sayfa), yakın kayıt `c14k158-s1` (bölüm). Önce yalnız
   // yakını taşıyorduk ve `goTo("futuhat","c14k158-s1")` diye gidiyorduk;
   // kısım açılıyordu ama doğru kısım olduğu tesadüftü.
-  function gez(o, alan, kok, kayit, dilTr, cb) {
+  // s11: kaydın kimliği. id yoksa url (Daphne yazıları) ya da kenarın
+  // iki ucu ("kaynak→hedef") -- scripts/duzenleme-uygula.py aynı çözücüyle
+  // kaydı buluyor.
+  function kimlik(o) {
+    if (typeof o.id === "string") return o.id;
+    if (typeof o.url === "string" && o.ozet) return o.url;
+    if (typeof o.source === "string" && typeof o.target === "string") return o.source + "→" + o.target;
+    if (typeof o.from === "string" && typeof o.to === "string") return o.from + "→" + o.to;
+    return null;
+  }
+  // `yol`: kökten bu değere giden anahtar/sıra dizisi; `kokSira`: kök
+  // kaydın yoldaki konumu. Alan adresi = kök kayıttan sonraki parçalar,
+  // dil anahtarı hariç ("sections[2].blocks[3].text").
+  function adresYaz(parcalar) {
+    var s = "";
+    parcalar.forEach(function (p) { s += typeof p === "number" ? "[" + p + "]" : (s ? "." : "") + p; });
+    return s;
+  }
+  function gez(o, alan, kok, kayit, dilTr, cb, yol, kokSira) {
+    yol = yol || [];
     if (o && typeof o === "object" && !Array.isArray(o)) {
-      var yakin = (typeof o.id === "string") ? o : kayit;
-      var yeniKok = kok || ((typeof o.id === "string") ? o : null);
+      var kim = kimlik(o);
+      var yakin = kim ? o : kayit;
+      var yeniKok = kok, yeniSira = kokSira;
+      if (!kok && kim) { yeniKok = o; yeniSira = yol.length; }
       Object.keys(o).forEach(function (anahtar) {
         gez(o[anahtar], DIL[anahtar] ? alan : anahtar, yeniKok, yakin,
-            DIL[anahtar] ? (anahtar === "tr") : dilTr, cb);
+            DIL[anahtar] ? (anahtar === "tr") : dilTr, cb,
+            yol.concat([anahtar]), yeniSira);
       });
     } else if (Array.isArray(o)) {
-      o.forEach(function (v) { gez(v, alan, kok, kayit, dilTr, cb); });
+      o.forEach(function (v, i) { gez(v, alan, kok, kayit, dilTr, cb, yol.concat([i]), kokSira); });
     } else if (typeof o === "string") {
-      if (dilTr) cb(alan, o, kok, kayit);
+      if (dilTr) {
+        var rel = kok ? yol.slice(kokSira) : yol.slice();
+        if (rel.length && rel[rel.length - 1] === "tr") rel.pop();
+        cb(alan, o, kok, kayit, adresYaz(rel));
+      }
     }
   }
 
-  function dosyaTara(yol, view, etiket, bulgular) {
-    return json(yol).then(function (d) {
-      gez(d, null, null, null, false, function (alan, s, kok, kayit) {
-        if (MUAF_ALAN[alan] || s.length < 40) return;
-        kurallariUygula(alintisizMetin(s), s).forEach(function (b) {
+  // d: kapsam dosya kaydı {yol, gorunum, gorunumId, etiket, muafAlan,
+  // durusMuafKural, dosya (yazım kaynağı; Fütûhât'ta atlas)}.
+  function dosyaTara(d, bulgular, veri) {
+    var muaf = {};
+    (d.muafAlan || []).forEach(function (a) { muaf[a] = 1; });
+    var isle = function (veri) {
+      gez(veri, null, null, null, false, function (alan, s, kok, kayit, alanYolu) {
+        if (MUAF_ALAN[alan] || muaf[alan] || s.length < 40) return;
+        kurallariUygula(alintisizMetin(s), s, d.durusMuafKural).forEach(function (b) {
+          var kokId = kok && kimlik(kok);
           bulgular.push({
             kural: b.kural, esler: b.esler, anahtar: b.anahtar,
-            etiket: etiket, view: view,
-            id: (kok && kok.id) || (kayit && kayit.id),
+            etiket: d.etiket, view: d.gorunum,
+            id: d.gorunumId != null ? (d.gorunumId || null) : (kokId && kokId.indexOf("→") < 0 ? kokId : null),
+            dosya: d.dosya || d.yol, kayit: kokId, alan: kok ? alanYolu : null,
             baslik: kayit && (kayit.title || kayit.name || kayit.topic || kayit.question || kayit.label),
             metin: s,
           });
         });
       });
-    }).catch(function (e) {
-      console.warn("Duruş taraması: " + yol + " okunamadı", e);
+    };
+    if (veri) { isle(veri); return Promise.resolve(); }
+    return json(d.yol).then(isle).catch(function (e) {
+      console.warn("Duruş taraması: " + d.yol + " okunamadı", e);
     });
   }
 
@@ -846,21 +1086,92 @@
     })();
   }
 
-  function siteTara() {
-    var bulgular = [];
-    return json(KAPSAM).then(function (kapsam) {
-      var isler = kapsam.dosyalar.map(function (d) {
-        return dosyaTara(d.yol, d.gorunum, d.etiket, bulgular);
+  // --- hafif tarama (s11) ------------------------------------------------
+  // Site taraması her seferinde ~10 MB indiriyordu (telefon verisinde
+  // ağır). İki önlem: (1) telefonda varsayılan "yalnız bu bölüm" --
+  // açık görünümün dosyaları; (2) dosya bazında önbellek: HEAD isteğinin
+  // ETag/Last-Modified'ı ve kural sürümü değişmemişse dosya yeniden
+  // indirilmez, önceki bulgular kullanılır.
+  var ONBELLEK_KEY = "dost-durus-onbellek";
+  function telefonMu() {
+    return !!(window.matchMedia && window.matchMedia("(max-width: 700px), (pointer: coarse)").matches);
+  }
+  var kapsamSecimi = null;   // "bolum" | "site"
+  function gecerliGorunum() {
+    if (/compare\.html$/.test(location.pathname)) return { view: "compare.html" };
+    var m = /^\/(?:en\/|pt\/)?([a-z-]+)(?:\/([A-Za-z0-9_-]+))?/.exec(location.pathname);
+    return m ? { view: m[1], id: m[2] } : { view: "ontoloji" };
+  }
+  function onbellekOku() {
+    try { return JSON.parse(localStorage.getItem(ONBELLEK_KEY) || "{}"); } catch (e) { return {}; }
+  }
+  function onbellekYaz(o) {
+    try { localStorage.setItem(ONBELLEK_KEY, JSON.stringify(o)); }
+    catch (e) { try { localStorage.removeItem(ONBELLEK_KEY); } catch (e2) {} }
+  }
+  var KURAL_BY_ID = {};
+  KURALLAR.forEach(function (k) { KURAL_BY_ID[k.id] = k; });
+  function etiketiAl(yol) {
+    return fetch(yol, { method: "HEAD", cache: "no-cache" }).then(function (r) {
+      return r.ok ? (r.headers.get("ETag") || r.headers.get("Last-Modified") || "") : "";
+    }).catch(function () { return ""; });
+  }
+  function onbellekliTara(d, bulgular, ob, sayac) {
+    return etiketiAl(d.yol).then(function (etiket) {
+      var k = ob[d.yol];
+      if (etiket && k && k.e === etiket && k.s === SURUM) {
+        sayac.atlanan++;
+        k.b.forEach(function (x) {
+          var kural = KURAL_BY_ID[x.k];
+          if (!kural) return;
+          bulgular.push(Object.assign({}, x.v, { kural: kural }));
+        });
+        return;
+      }
+      var yerel = [];
+      return dosyaTara(d, yerel).then(function () {
+        sayac.indirilen++;
+        yerel.forEach(function (x) { bulgular.push(x); });
+        if (etiket) {
+          ob[d.yol] = { e: etiket, s: SURUM, b: yerel.map(function (x) {
+            var v = Object.assign({}, x); delete v.kural;
+            return { k: x.kural.id, v: v };
+          }) };
+        }
       });
-      isler.push(json(kapsam.futuhat.indeks).then(function (idx) {
-        var parcalar = (idx.parts || []).map(function (p) { return p.id; });
-        return Promise.all(parcalar.map(function (pid) {
-          return dosyaTara(kapsam.futuhat.parcaKlasoru + pid + ".json",
-                           "futuhat", "Fütûhât " + pid, bulgular);
-        }));
-      }).catch(function (e) { console.warn("Duruş taraması: kısım listesi okunamadı", e); }));
-      return Promise.all(isler);
+    });
+  }
+  var sonSayac = null;
+  function siteTara(secim) {
+    var bulgular = [];
+    var ob = onbellekOku();
+    var sayac = { indirilen: 0, atlanan: 0, dosya: 0 };
+    var g = gecerliGorunum();
+    return paylasilaniYukle().then(function () { return json(KAPSAM); }).then(function (kapsam) {
+      var dosyalar = kapsam.dosyalar.slice();
+      var atlas = "data/ibn-arabi/futuhat-atlas.json";
+      var kisimlar = json(kapsam.futuhat.indeks).then(function (idx) {
+        return (idx.parts || []).map(function (p) {
+          return { yol: kapsam.futuhat.parcaKlasoru + p.id + ".json", gorunum: "futuhat",
+                   etiket: "Fütûhât " + p.id, dosya: atlas, kisim: p.id };
+        });
+      }).catch(function (e) { console.warn("Duruş taraması: kısım listesi okunamadı", e); return []; });
+      return kisimlar.then(function (kl) {
+        var hepsi = dosyalar.concat(kl);
+        if (secim === "bolum") {
+          hepsi = hepsi.filter(function (d) {
+            if (d.gorunum !== g.view) return false;
+            // Fütûhât'ta "bu bölüm" = açık kısım (yoksa hepsi).
+            if (d.kisim && g.id) return d.kisim === g.id;
+            return true;
+          });
+        }
+        sayac.dosya = hepsi.length;
+        return Promise.all(hepsi.map(function (d) { return onbellekliTara(d, bulgular, ob, sayac); }));
+      });
     }).then(function () {
+      onbellekYaz(ob);
+      sonSayac = sayac;
       // Aynı metin birden çok dosyada geçebiliyor (atlas + parça kopyası);
       // aynı kural+metin çiftini bir kez gösteriyoruz.
       var gorulen = {};
@@ -874,11 +1185,19 @@
   }
 
   var sitePanel = null;
-  function siteKapat() { if (sitePanel) { sitePanel.remove(); sitePanel = null; } }
+  var siteBirak = null;
+  function siteKapat() {
+    if (siteBirak) { siteBirak(); siteBirak = null; }
+    if (sitePanel) { sitePanel.remove(); sitePanel = null; }
+  }
 
-  function siteAc() {
+  function siteAc(secim) {
     siteKapat();
+    if (secim !== "bolum" && secim !== "site") secim = kapsamSecimi || (telefonMu() ? "bolum" : "site");
+    if (secim !== kapsamSecimi) siteBulgulari = null;
+    kapsamSecimi = secim;
     sitePanel = document.createElement("div");
+    siteBirak = katman(siteKapat);
     sitePanel.className = "durus-site";
     sitePanel.innerHTML =
       '<div class="durus-site__backdrop"></div>'
@@ -891,7 +1210,7 @@
     sitePanel.querySelector(".durus-site__backdrop").addEventListener("click", siteKapat);
     sitePanel.querySelector(".durus-site__close").addEventListener("click", siteKapat);
 
-    var yukle = siteBulgulari ? Promise.resolve(siteBulgulari) : siteTara();
+    var yukle = siteBulgulari ? Promise.resolve(siteBulgulari) : siteTara(secim);
     yukle.then(function (bs) {
       siteBulgulari = bs;
       siteCiz();
@@ -912,10 +1231,25 @@
     var d = susturulanlar();
     var bs = siteBulgulari.filter(function (b) { return !d[b.anahtar]; });
     var body = sitePanel.querySelector(".durus-site__body");
+    var kapsamHtml = '<p class="durus-site__suzgec durus-site__kapsam">'
+      + '<button type="button" data-kapsam="bolum" aria-pressed="' + (kapsamSecimi === "bolum") + '">'
+      + esc(ui({ tr: "Yalnız bu bölüm", en: "This section only", pt: "Só esta secção" })) + "</button>"
+      + '<button type="button" data-kapsam="site" aria-pressed="' + (kapsamSecimi === "site") + '">'
+      + esc(ui({ tr: "Bütün site", en: "Whole site", pt: "Todo o site" })) + "</button>"
+      + (sonSayac ? ' <span class="durus-site__sayac">' + sonSayac.dosya + " dosya · "
+        + sonSayac.atlanan + " " + esc(ui({ tr: "değişmemiş (önbellek)", en: "unchanged (cached)", pt: "inalterados (cache)" }))
+        + "</span>" : "")
+      + "</p>";
+    var kapsamBagla = function () {
+      body.querySelectorAll("[data-kapsam]").forEach(function (btn) {
+        btn.addEventListener("click", function () { siteAc(btn.dataset.kapsam); });
+      });
+    };
     if (!bs.length) {
-      body.innerHTML = '<p class="durus-site__temiz">✓ Kuralların hiçbiri tetiklenmedi. '
+      body.innerHTML = kapsamHtml + '<p class="durus-site__temiz">✓ Kuralların hiçbiri tetiklenmedi. '
         + "Bu, metinlerin doğru olduğunu değil, bu " + KURALLAR.length
         + " kalıbın bulunmadığını söyler.</p>";
+      kapsamBagla();
       return;
     }
     // Kurala göre grupla; kural seviyesi önce.
@@ -925,7 +1259,7 @@
 
     bs.forEach(function (b, i) { b.__i = i; });
     var kSay = bs.filter(function (b) { return b.kural.seviye === "kural"; }).length;
-    body.innerHTML =
+    body.innerHTML = kapsamHtml +
       '<p class="durus-site__ozet">🔸 ' + kSay + " kural · 🔹 " + (bs.length - kSay)
       + " gözden geçir · " + siteBulgulari.length + " bulgunun "
       + (siteBulgulari.length - bs.length) + " tanesi susturulmuş</p>"
@@ -939,11 +1273,19 @@
           + "</section>";
       }).join("");
 
+    kapsamBagla();
     body.querySelectorAll("[data-sustur]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        sustur(btn.dataset.sustur);
+        var b = bs[Number(btn.dataset.i)];
+        sustur(btn.dataset.sustur, b ? { kural: b.kural.id, dosya: b.dosya, kayit: b.kayit, alan: b.alan,
+                                         ozet: sadelestir(b.metin).slice(0, 120) } : null);
         siteCiz();
         tara();
+      });
+    });
+    body.querySelectorAll("[data-oner]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        oneriAc(btn.closest(".durus-site__satir"), bs[Number(btn.dataset.oner)], "durus");
       });
     });
     body.querySelectorAll("a.durus-site__git").forEach(function (a) {
@@ -951,12 +1293,52 @@
         e.preventDefault();
         var b = bs[Number(a.dataset.i)];
         siteKapat();
-        // Daphne sayfasında (compare.html) uygulamanın yönlendiricisi yok:
-        // bulguya tam sayfa geçişle gidilir.
-        if (window.__dostNav) window.__dostNav.goTo(a.dataset.view, a.dataset.id || undefined);
-        else { location.href = "/" + a.dataset.view + (a.dataset.id ? "/" + a.dataset.id : ""); return; }
-        if (b) setTimeout(function() { vurgula(b); }, 350);
+        gitVeVurgula(a.dataset.view, a.dataset.id, b);
       });
+    });
+  }
+
+  // Bulgunun görünümüne git ve paragrafı vurgula. Sonu .html olan görünüm
+  // (Daphne: compare.html) ya da yönlendiricisi olmayan sayfa: tam sayfa.
+  function gitVeVurgula(view, id, b) {
+    if (/\.html$/.test(view)) {
+      if (location.pathname.slice(-view.length) === view) { if (b) vurgula(b); return; }
+      location.href = "/" + view;
+      return;
+    }
+    if (window.__dostNav) window.__dostNav.goTo(view, id || undefined);
+    else { location.href = "/" + view + (id ? "/" + id : ""); return; }
+    if (b) setTimeout(function () { vurgula(b); }, 350);
+  }
+
+  // "Düzeltme öner" (s11): bulgunun alanını, tam Türkçe metniyle bir
+  // düzenleme kutusunda açar; "Kuyruğa ekle" adresli bir kayıt bırakır
+  // (edit-mode.js kuyrugaEkle). Adres yoksa düğme görünmez.
+  function oneriAc(satir, b, kaynakArac) {
+    if (!satir || !b || satir.querySelector(".durus-oneri")) return;
+    var kutu = document.createElement("div");
+    kutu.className = "durus-oneri";
+    kutu.innerHTML = '<textarea class="durus-oneri__metin" rows="5"></textarea>'
+      + '<div class="durus-oneri__alt">'
+      + '<button type="button" data-oneri="ekle">' + esc(ui({ tr: "Kuyruğa ekle", en: "Add to queue", pt: "Adicionar à fila" })) + "</button>"
+      + '<button type="button" data-oneri="vazgec">' + esc(ui({ tr: "Vazgeç", en: "Cancel", pt: "Cancelar" })) + "</button>"
+      + "</div>";
+    satir.appendChild(kutu);
+    var ta = kutu.querySelector("textarea");
+    ta.value = b.metin;
+    ta.focus();
+    kutu.querySelector('[data-oneri="vazgec"]').addEventListener("click", function () { kutu.remove(); });
+    kutu.querySelector('[data-oneri="ekle"]').addEventListener("click", function () {
+      var yeni = ta.value.trim();
+      if (!yeni || yeni === b.metin || !window.__dostRevise) { kutu.remove(); return; }
+      var ok = window.__dostRevise.kuyrugaEkle({
+        dosya: b.dosya, kayit: b.kayit, alan: b.alan, lang: "tr",
+        heading: (b.etiket || "") + (b.kayit ? " · " + b.kayit : ""),
+        before: b.metin, after: yeni,
+        before_metin: sadelestir(b.metin), after_metin: sadelestir(yeni),
+        kaynak_arac: kaynakArac, kural: b.kural ? b.kural.id : (b.tur || null),
+      });
+      if (ok) kutu.remove();
     });
   }
 
@@ -970,14 +1352,24 @@
     var nere = esc(b.etiket) + (b.baslik ? " · " + esc(t3(b.baslik)) : (b.id ? " · " + esc(b.id) : ""));
     return '<div class="durus-site__satir">'
       + '<p class="durus-site__nere">' + nere
-      + (b.view && b.id
+      + (b.view
           ? ' <a class="durus-site__git" href="#" data-i="' + b.__i + '" data-view="' + esc(b.view)
-            + '" data-id="' + esc(b.id) + '">aç →</a>'
+            + '" data-id="' + esc(b.id || "") + '">aç →</a>'
           : "")
       + "</p>"
       + '<p class="durus-site__parca">' + parca + "</p>"
-      + '<button type="button" class="durus-site__sustur" data-sustur="' + esc(b.anahtar) + '">Bu doğru — kaldır</button>'
-      + "</div>";
+      + (b.kayit ? '<p class="durus-site__adres"><code>' + esc([b.dosya, b.kayit, b.alan].filter(Boolean).join(" · ")) + "</code></p>" : "")
+      + '<div class="durus-site__eylem">'
+      + '<button type="button" class="durus-site__sustur" data-i="' + b.__i + '" data-sustur="' + esc(b.anahtar) + '">Bu doğru — kaldır</button>'
+      + (b.kayit && b.alan && window.__dostRevise
+          ? '<button type="button" class="durus-site__oner" data-oner="' + b.__i + '">'
+            + esc(ui({ tr: "Düzeltme öner", en: "Suggest a fix", pt: "Sugerir correção" })) + "</button>"
+          : "")
+      + "</div></div>";
+  }
+  function ui(d) {
+    var l = (window.DostI18n && window.DostI18n.getLang && window.DostI18n.getLang()) || "tr";
+    return d[l] || d.tr;
   }
   function t3(x) {
     if (typeof x === "string") return x;
@@ -1022,6 +1414,7 @@
     if (simdi === acik) return;
     acik = simdi;
     if (acik) {
+      paylasilaniYukle().then(function () { if (acik) tara(); });
       tara();
       // Detay paneli / kısım metni sonradan çiziliyor, o yüzden DOM'u
       // izliyoruz. Ama bu iki koruma olmadan sayfa KİLİTLENİYOR:
@@ -1074,13 +1467,15 @@
   window.__dostDurus = {
     tara: tara, bulgular: bulgular, kurallar: KURALLAR, surum: SURUM,
     siteTara: siteTara, siteAc: siteAc,
+    oneriAc: oneriAc, gitVeVurgula: gitVeVurgula, sustur: sustur,
+    susturulanlar: susturulanlar,
     metinTara: function (s) { return kurallariUygula(alintisizMetin(s), s); },
     vurgula: vurgula, vurguTemizle: vurguTemizle,
     // Tek dosya taraması: testler 209 dosyayı indirmeden hedef id'lerini
     // doğrulayabilsin diye açık.
     dosyaTara: function (yol, view, etiket) {
       var bs = [];
-      return dosyaTara(yol, view, etiket, bs).then(function () { return bs; });
+      return dosyaTara({ yol: yol, gorunum: view, etiket: etiket }, bs).then(function () { return bs; });
     },
   };
 })();

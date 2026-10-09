@@ -911,8 +911,13 @@ window.DostGraphUtils = (function () {
   // hepsini birden kapatıyordu -- ETKILESIM_DILI'nin yasakladığı "hepsini
   // kapat" kalıbı. Artık hepsi bu tek merkezi sıraya kayıtlı, sırada kim
   // önce "ben kapattım" (true) derse zincir orada duruyor.
-  function registerStepBack(wrapId, fn) {
-    stepBacks.push({ wrapId: wrapId, fn: fn });
+  // opts.oncelikli: sayfanın ÜSTÜNE açılan bir katman (ör. paylaşım paneli,
+  // aria-modal) zincirin başına yazılır -- yoksa altındaki görünümün kendi
+  // adımı önce çalışıp aynı Esc'te iki katman birden kapanırdı.
+  function registerStepBack(wrapId, fn, opts) {
+    const kayit = { wrapId: wrapId, fn: fn };
+    if (opts && opts.oncelikli) stepBacks.unshift(kayit);
+    else stepBacks.push(kayit);
   }
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
@@ -1016,7 +1021,9 @@ window.DostGraphUtils = (function () {
   }
 
   function analogyHtml(analogy) {
-    if (!analogy || !(window.DostAnalogy && window.DostAnalogy.visible())) return "";
+    // `analogy` alanı 2026-10-05'te kaldırıldı; @revise'a bağlı görünürlük
+    // bayrağı (DostAnalogy) 2026-10-09'da gitti.
+    if (!analogy) return "";
     const I18n = window.DostI18n;
     // Alan var ama metni boşsa (2026-10-05 yorum ayıklaması) başlık tek
     // başına çizilmesin.
@@ -1069,6 +1076,10 @@ window.DostGraphUtils = (function () {
   //   groups/groupBy hiçbiri verilmezse: tek, başlıksız grup (düğümler
   //     extractNodes sırasıyla).
   //   pipClass(node) (ops.): satır işaretine ek sınıf.
+  //   pipColor(node) (ops.): satır işaretinin rengi (CSS değeri, ör.
+  //     "var(--series-celal)") -- görünümün KENDİ renk eşlemesi; verilmezse
+  //     varsayılan mavi (2026-10-09 görsel taraması: bütün listelerde tek
+  //     renkti, grafikteki Celâl/Cemâl/Kemâl vb. ayrımı listede kayboluyordu).
   //   title:{tr,en,pt}, note:{tr,en,pt}, graphButtonLabel:{tr,en,pt},
   //   goTo(id): düğüme git,
   //   onGraphOpen(): "Haritayı aç" tıklanınca (resize dispatch çağırana kalır).
@@ -1087,8 +1098,10 @@ window.DostGraphUtils = (function () {
       const ad = tt(node.name);
       const ozet = tt(node.short);
       const pip = (opts.pipClass && opts.pipClass(node)) || "";
+      const renk = (opts.pipColor && opts.pipColor(node)) || "";
+      const stil = /^[\w\s(),.#%-]+$/.test(renk) ? ` style="background:${renk}"` : "";
       return `<li><button class="mobil-liste__satir" type="button" data-id="${node.id}">
-        <span class="mobil-liste__pip ${pip}"></span>
+        <span class="mobil-liste__pip ${pip}"${stil}></span>
         <span class="mobil-liste__govde">
           <span class="mobil-liste__ad">${ad}</span>
           ${ozet ? `<span class="mobil-liste__ozet">${ozet}</span>` : ""}
@@ -1137,9 +1150,11 @@ window.DostGraphUtils = (function () {
       listEl.innerHTML = `
         <h2 class="mobil-liste__baslik">${tt(opts.title)}</h2>
         <p class="mobil-liste__not">${tt(opts.note)}</p>
-        ${groupsHtml(nodes)}
         <button class="mobil-liste__grafik-btn" type="button">${tt(opts.graphButtonLabel)}</button>
+        ${groupsHtml(nodes)}
       `;
+      // "Haritayı aç" listenin TEPESİNDE (2026-10-09): eskiden listenin
+      // sonundaydı -- Esmâ'da 7540 px, Sırlar'da 8779 px aşağıda.
       listEl.querySelectorAll(".mobil-liste__satir").forEach((btn) => {
         btn.addEventListener("click", () => opts.goTo(btn.dataset.id));
       });
