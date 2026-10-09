@@ -1548,7 +1548,12 @@
   }
   function goBackInHistory() {
     const prev = detailHistory.pop();
-    if (!prev) { deselect(); detailPanel.hidden = true; return; }
+    if (!prev) {
+      deselect(); detailPanel.hidden = true;
+      // Panel kapanınca adres de köke döner (2026-10-08 taraması).
+      if (!wrapEl.hidden && window.__dostNav) window.__dostNav.setHash("esma");
+      return;
+    }
     suppressHistoryPush = true;
     try {
       if (prev.type === "zat") selectNode("zat", { flow: false });
@@ -1604,6 +1609,9 @@
   function showRelationDetail(r) {
     if (!currentDetailRelation || currentDetailRelation.from !== r.from || currentDetailRelation.to !== r.to) pushCurrentToHistory();
     currentDetailNode = null; currentDetailIsZat = false; currentDetailRelation = r;
+    // İlişki de adrese yazılır (/esma/edge/a-b): Paylaş görünümün kökünü
+    // veriyordu (2026-10-08 taraması).
+    window.__dostNav && window.__dostNav.setHash("esma", "edge/" + r.from + "-" + r.to);
     const from = rawById.get(r.from), to = rawById.get(r.to);
     openPanel(`
       <p class="detail-eyebrow">${tt({ tr: "İlişki", en: "Relation", pt: "Relação" })}</p>
@@ -2008,6 +2016,11 @@
       const target = byId.get(id);
       if (target) { if (target.level > revealLevel) setRevealLevel(target.level); selectNode(id, { flow: true }); }
       else if (id === "zat") selectNode("zat", { flow: false });
+      else {
+        const r = GU.edgeKimligiCoz(id, (a, b) => relations.find((x) => (x.from === a && x.to === b) || (x.from === b && x.to === a)) || null);
+        if (r) showRelationDetail(r);
+        else if (id && window.__dostNav) window.__dostNav.setHash("esma");
+      }
     });
   }
 
