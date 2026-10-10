@@ -1387,6 +1387,9 @@
   GU.registerStepBack("sorular-wrap", () => {
     if (!currentDetailQuestion && !expandedCatId) return false;
     showAllQuestionsList();
+    // Panel bütün sorulara döndü: adres de soru kaydından bölüm sayfasına
+    // (bir adım geri -- yeni tarih girdisi açmaz, bkz. ontology.js updateHash).
+    window.__dostNav && window.__dostNav.setHash("sorular");
     return true;
   });
 

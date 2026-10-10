@@ -1514,6 +1514,53 @@ window.DostGraphUtils = (function () {
     return n;
   }
 
+  // Tarih kaydı (2026-10-10, uygulama kabuğu + Esc/adres kararı): her
+  // pushState girdisi iki şey taşır -- uygulama içinde kaçıncı adım olduğu
+  // (dostAdim; doğrudan girilen sayfa 0) ve hangi yoldan açıldığı
+  // (dostOnceki). replaceState aynı girdiyi düzelttiği için ikisini korur.
+  // Adresi yazan altı ayrı modül (ontology/kavram/cizimler/futuhat/sirlar/
+  // ontoloji-mobil-liste) var; her çağrı noktasını değiştirmek yerine kayıt
+  // burada, bir kez tutulur. Kullananlar: kayıt panelinin kapanışı
+  // (ontology.js kaydiKapat -- önceki girdi bölüm sayfasıysa history.back(),
+  // değilse replaceState) ve telefon kabuğunun geri dairesi
+  // (uygulama-kabugu.js -- geri gidilecek adım yoksa daire görünmez).
+  function tarihDurumu() {
+    const s = history.state;
+    return s && typeof s === "object" ? s : {};
+  }
+  if (!history.__dostKayit) {
+    const push = history.pushState, replace = history.replaceState;
+    const nesne = (st) => (st && typeof st === "object" ? st : {});
+    // Geçici katman girdisi (dostKatman: telefon kabuğunun Daha/Okuma
+    // sayfası -- adres aynı, yalnız "bir adım geri"si olsun diye açılır):
+    // o katman açıkken başka bir yere gidilirse yeni girdi katmanın ÜSTÜNE
+    // değil YERİNE yazılır; yoksa geri tuşu aynı adresi gösteren ölü bir
+    // adıma (kapanmış katmana) takılırdı. Katmanın adım/önceki değerleri
+    // zaten altındaki sayfanınkinin bir fazlası -- yeni girdiye aynen geçer.
+    history.pushState = function (st, ti, url) {
+      const eski = tarihDurumu();
+      if (eski.dostKatman) {
+        return replace.call(history, Object.assign({}, nesne(st), { dostAdim: eski.dostAdim || 1, dostOnceki: eski.dostOnceki }), ti, url);
+      }
+      const ek = { dostAdim: (eski.dostAdim || 0) + 1, dostOnceki: location.pathname };
+      return push.call(history, Object.assign({}, nesne(st), ek), ti, url);
+    };
+    history.replaceState = function (st, ti, url) {
+      const eski = tarihDurumu();
+      const ek = { dostAdim: eski.dostAdim || 0 };
+      if (eski.dostOnceki != null) ek.dostOnceki = eski.dostOnceki;
+      // Aynı adreste kalan düzeltme (dil öneki dışında) katmanı silmez.
+      let ayniYol = url == null;
+      if (!ayniYol) { try { ayniYol = new URL(url, location.href).pathname === location.pathname; } catch (e) { /* geçersiz */ } }
+      if (eski.dostKatman && ayniYol && !(st && st.dostKatman === null)) ek.dostKatman = (st && st.dostKatman) || eski.dostKatman;
+      return replace.call(history, Object.assign({}, nesne(st), ek), ti, url);
+    };
+    history.__dostKayit = true;
+  }
+  function tarihAdimi() { return tarihDurumu().dostAdim || 0; }
+  function tarihOncekiYol() { return tarihDurumu().dostOnceki || null; }
+  function tarihKatmani() { return tarihDurumu().dostKatman || null; }
+
   // Üç ses, üç doku (2026-10-09): okuma metinlerinde (Fütûhât/Füsûs/Mişkât)
   // metni tırnakla başlayan <em> Dost'un doğrudan sözüdür; kavram vurgusu
   // olan öteki <em>'lerle aynı italikle diziliyordu. Veri değişmeden,
@@ -1604,7 +1651,7 @@ window.DostGraphUtils = (function () {
     return true;
   }, { oncelikli: true });
 
-  return { dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

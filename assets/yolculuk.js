@@ -754,7 +754,12 @@ window.__yolculukApp = (function () {
     // kayıt giriş paneline döner.
     GU.registerStepBack("yolculuk-wrap", () => {
       if (oynatDurdur()) return true;
-      if (focusId) { girisPaneli(); return true; }
+      if (focusId) {
+        girisPaneli();
+        // Kayıttan giriş paneline: adres de bölüm sayfasına (bir adım geri).
+        if (window.__dostNav) window.__dostNav.setHash("yolculuk");
+        return true;
+      }
       return false;
     });
     window.addEventListener("resize", GU.debounceResize(() => {

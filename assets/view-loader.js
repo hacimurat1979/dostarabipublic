@@ -63,12 +63,12 @@
     __hocalarApp: { src: "assets/hocalar.js", integrity: "sha384-ZUg09P+CQfGKPQFH6sLcYbo8cMe41Kh3XqhNu1etnLJpM3LWSB5IMPg4DchLhQ+T", wrap: "hocalar-wrap" },
     __eserAgiApp: { src: "assets/eser-agi.js", integrity: "sha384-ziHcfuhv8Ezavd6RX2l3nt6AvnUanw+InQdnGxA82OOmgilcTWW3AwomYa6psmZ4", wrap: "eser-agi-wrap" },
     __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-r3AN66Afehf3Q4HDyRj+segIh2g9+XzCTOWnGhbK/greuc10ATqTz7Fe8E91S+D+", wrap: "seyahat-atlasi-wrap" },
-    __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-yFB7RTRY3jvjZupDHRGPE+5LcEEAEKIfR3twSnRPQlSUtZl3SM3qUHbTDKHmYe/0", wrap: "yolculuk-wrap" },
+    __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-ZJ+W1ohrpGr6oRBiWuYNvtug8ma1vSqcm8S/s7UZ83Ua8u4in5a261v1PgA3SJrc", wrap: "yolculuk-wrap" },
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-Dzv+H9iFpIbPMgFhI4keFI7OcgDaotjrk2EDwPxVxql6P6BWWOo+dAUeHoF2lWUs", wrap: "kuran-dokusu-wrap" },
     __esmaApp: { src: "assets/esma.js", integrity: "sha384-aUTNAFBAJpWkkNj2O56QrQZamBrucpXp+JNEnDpUQVx//lPlRXsa1x+QaooWHeUp", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-JNwSpEfgW8YxH0rkWtMvcs0I5aDF6n/47mZRFQ2VQ2Xt2QXYvSaJj+5ci36+7PCC", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
-    __sorularApp: { src: "assets/sorular.js", integrity: "sha384-CDbna35WA4X8qv3hwTqhvnfV2/ebCf5NBjcPiELP0ULRymZLDET3TYh1eOH0VwA0", wrap: "sorular-wrap" },
+    __sorularApp: { src: "assets/sorular.js", integrity: "sha384-4bMjpoJv6OUE1dCpDZ1adWkNAJrfpvAkJIdc9L78MNxaAbgOaE04cXcrxzqeMNNO", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-FZIkTZ2Y8qu9s1PfHX0MkFhCMmIQTTE/RbnZg+Vut/ThKitVIHKcZ5EGM16VTFMy", wrap: "menziller-wrap" },
     __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-KgEYRkkhhQKwLfXBmqofbnQxALk1sz8a5exxpixhxvPVI6H0HY+bgvAYXrftYOtW", wrap: "futuhat-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-nRtAoGfzRdxcsKff/qRHL7sMuBO7WR/cQEbcYc+XEOtITTl6798LcNqPGkvGpDKW", wrap: "cizimler-wrap" },
@@ -83,6 +83,14 @@
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-PMEFUuv3fYxExMg7EG6Dyk6MsFQVExnZ1RvhcHNyIxxmWZhfogt+TX/sBjnPrphS" },
+  };
+
+  // Üçüncü taraf kitaplıklar (2026-10-10): yalnız gerektiği yerde iner.
+  // use-gesture: telefon kabuğunun sürükleme hareketleri (uygulama-kabugu.js;
+  // yalnız telefonda / Android uygulamasında istenir). Dosya repoda,
+  // scripts/use-gesture-vendor-uret.py üretir (MIT, başlığında lisans).
+  var VENDOR = {
+    "use-gesture": { src: "assets/vendor/use-gesture.min.js", integrity: "sha384-LhyW3KlzpheznKnMTXB++7tcg1mRN6Ww91GrC18V+sDN0KXSdRGPHXYU79pV6G2j" },
   };
 
   var loadingPromises = {};
@@ -106,6 +114,9 @@
 
   function loadScript(globalName) { return scriptYukle(globalName, VIEWS[globalName]); }
   function kipYukle(ad) { return scriptYukle("kip:" + ad, KIPLER[ad]); }
+  window.__dostVendorYukle = function (ad) {
+    return VENDOR[ad] ? scriptYukle("vendor:" + ad, VENDOR[ad]) : Promise.reject(new Error("view-loader: bilinmeyen kitaplık " + ad));
+  };
 
   // --- Gizli kipler ---------------------------------------------------
   window.__dostKipYukleyici = true;
