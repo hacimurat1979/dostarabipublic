@@ -1580,6 +1580,11 @@
 
   function pushCurrentToHistory() {
     if (suppressHistoryPush) return;
+    // Panel kapalıysa (geri tuşu, kapat düğmesi, görünüm değişimi) önceki
+    // kayıt artık bir "geri adım" değil: yeni açılan kaydın Esc'i paneli
+    // kapatmalı, kapanmış eski kaydı yeniden açmamalı (2026-10-10, mobil
+    // senaryo: geri tuşundan sonra seçilen isimde Esc bir önceki ismi açıyordu).
+    if (detailPanel.hidden) { detailHistory = []; return; }
     if (currentDetailNode) detailHistory.push({ type: "node", id: currentDetailNode });
     else if (currentDetailIsZat) detailHistory.push({ type: "zat" });
     else if (currentDetailRelation) detailHistory.push({ type: "relation", from: currentDetailRelation.from, to: currentDetailRelation.to });
@@ -1908,6 +1913,7 @@
   // için tutulan referans -- #f1 düzeltmesi: önceden dil değişince kutucuk
   // ilk açıldığı dilde donuk kalıyordu (sayfa dili ile popup dili uyuşmuyordu).
   let onboardRedraw = null;
+  let aktifOnboarding = null, onboardingEscKayitli = false;
   function maybeShowOnboarding() {
     // localStorage (2026-10-09): sessionStorage her yeni sekmede sıfırlandığı
     // için tanıtım kutusu her sekmede yeniden çıkıyordu. Görüldüğü bir kez
@@ -1946,7 +1952,22 @@
       ov.classList.add("esmaX-onb--out");
       setTimeout(() => ov.remove(), reduceMotion ? 0 : 320);
     }
-    ov.addEventListener("keydown", (e) => { if (e.key === "Escape") done(); });
+    // Esc ortak "bir adım geri" zincirinde, en önde (2026-10-10, mobil kaşif):
+    // eskiden yalnız odak kutunun içindeyken çalışıyordu (dokunmatikte odak
+    // çoğu zaman dışarıda) ve çalıştığında aynı Esc zincirde bir adım daha
+    // atıyordu -- tek Esc iki katman kapatıyordu.
+    aktifOnboarding = ov;
+    if (!onboardingEscKayitli) {
+      onboardingEscKayitli = true;
+      GU.registerStepBack(null, () => {
+        // Görünmüyorsa (telefonda harita kapalıyken liste kipinde kutu
+        // gizli) bir adım sayılmaz: Esc açık paneli kapatsın.
+        if (!aktifOnboarding || !aktifOnboarding.isConnected || aktifOnboarding.classList.contains("esmaX-onb--out")
+          || !aktifOnboarding.getClientRects().length) return false;
+        aktifOnboarding.querySelector(".esmaX-onb__skip").click();
+        return true;
+      }, { oncelikli: true });
+    }
     if (reduceMotion) ov.classList.add("esmaX-onb--nomo");
     wrapEl.appendChild(ov);
     onboardRedraw = draw;

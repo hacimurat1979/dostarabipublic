@@ -737,7 +737,11 @@
     });
   }
 
-  function showIntro(openPanel) {
+  // adresYaz=false: görünüm ilk kez kurulurken (activate) adres zaten
+  // doğru -- yazılırsa /menziller/1/'e giden bir kapıda araya fazladan bir
+  // /menziller/ adımı giriyor, geri tuşu aynı menzile ikinci kez dönüyordu
+  // (2026-10-10, mobil kaşif: Şaşırt → Menziller → geri).
+  function showIntro(openPanel, adresYaz) {
     const notlar = (data.notlar || []).map((x) => `<li>${tt(x)}</li>`).join("");
     const kaynaklar = (data.sources || []).map((s) => `<li>${tt(s)}</li>`).join("");
     detailContent.innerHTML = `
@@ -751,7 +755,7 @@
       <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Kaynak", en: "Sources", pt: "Fontes" })}</p>
       <ul class="menzil-notlar">${kaynaklar}</ul>`;
     if (openPanel !== false) detailPanel.hidden = false;
-    window.__dostNav && window.__dostNav.setHash("menziller");
+    if (adresYaz !== false) window.__dostNav && window.__dostNav.setHash("menziller");
   }
 
   // Okunmuş/işlenmiş menzil: "okuma" alanı zaten bu bilgiyi taşıyor (bkz.
@@ -837,7 +841,7 @@
     activate() {
       fetchData().then((d) => {
         if (!d) return;
-        if (!nodes.length) { build(); showIntro(false); fitView(false); openIn3D(); }
+        if (!nodes.length) { build(); showIntro(false, false); fitView(false); openIn3D(); }
         else ensureFrame();
       });
     },

@@ -328,6 +328,18 @@
     renderNote();
   }
 
+  // Telefonda seçimin sonucu (not) sahnenin altında, çoğu zaman ekranın
+  // dışında kalıyordu (2026-10-10, mobil senaryo). Kullanıcı bir düğüm
+  // seçince notun başı ve ilk satırları ekrana gelecek kadar kaydırılır;
+  // zaten görünüyorsa sayfa yerinden oynamaz. Geniş ekranda not yanda.
+  function notuGoster() {
+    if (!window.matchMedia("(max-width: 640px)").matches) return;
+    var r = noteEl.getBoundingClientRect();
+    if (r.top >= 0 && r.top < window.innerHeight - 200) return;
+    var hedef = r.top + window.scrollY - window.innerHeight + Math.min(r.height + 24, window.innerHeight * 0.6);
+    window.scrollTo({ top: Math.max(0, hedef), behavior: reducedMotion() ? "auto" : "smooth" });
+  }
+
   function mountScene() {
     sc = {
       el: sceneEl,
@@ -365,12 +377,13 @@
       var i = hit ? +hit.dataset.i : nearest(e);
       if (i < 0) return;
       select(i);
+      notuGoster();
       try { sc.gs[i].g.focus({ preventScroll: true }); } catch (err) { /* eski tarayıcı */ }
     });
     sc.svg.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") {
         var g = e.target.closest && e.target.closest(".tasiyici-node");
-        if (g) { e.preventDefault(); select(+g.dataset.i); }
+        if (g) { e.preventDefault(); select(+g.dataset.i); notuGoster(); }
         return;
       }
       var d = (e.key === "ArrowRight" || e.key === "ArrowDown") ? 1

@@ -256,8 +256,70 @@
     </div></div>`;
   }
 
+  // Dil değişince okurun yeri korunur (2026-10-10, mobil senaryo). Görünümler
+  // dil değişiminde kendilerini yeniden çiziyor; Fütûhât'ta makale yeniden
+  // yazılınca tarayıcının kaydırma çapası sayfayı ~6.700 px aşağı, metnin
+  // dışına atıyordu. Tıklamadan ÖNCE (yakalama evresi, çeviri henüz
+  // uygulanmamışken) görünümde ekranın üstündeki blok ve ekrandaki yeri
+  // kaydedilir; çizimden sonra aynı sıradaki blok aynı yere getirilir --
+  // üç dilde de metnin bölümlenmesi aynı. Okur bu arada kendisi
+  // kaydırırsa (dokunma, tekerlek, tuş) dokunulmaz.
+  const OKUMA_BLOK = "p, h1, h2, h3, h4, li, blockquote, figure";
+  let dilYeri = null;
+  function okumaYeriniAl() {
+    const wrap = document.querySelector("main > section:not([hidden]):not(.detail-panel)");
+    if (!wrap || window.scrollY < 40) return null;
+    const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 0;
+    // Ekranda en üstte görünen blok: DOM sırası görsel sırayla aynı değil
+    // (mobilde Fütûhât makalesi CSS order ile listenin üstüne çıkıyor).
+    let secili = null, secTop = Infinity;
+    wrap.querySelectorAll(OKUMA_BLOK).forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.height && r.bottom > ust + 4 && r.top < secTop) { secili = el; secTop = r.top; }
+    });
+    if (!secili) return null;
+    // Sıra, bloğu taşıyan en yakın kimlikli kaba göre tutulur (ör.
+    // #futuhat-article): kabın dışındaki listeler dil değişiminde başka
+    // sayıda öğeyle çizilse de sıra kaymaz.
+    let kok = secili.parentElement;
+    while (kok && kok !== wrap && !kok.id) kok = kok.parentElement;
+    if (!kok || !wrap.contains(kok)) kok = wrap;
+    const icinde = [...kok.querySelectorAll(OKUMA_BLOK)];
+    return { wrap, kokId: kok.id, i: icinde.indexOf(secili), sayi: icinde.length, ofs: secTop - ust };
+  }
+  function okumaYerineDon(yer) {
+    if (!yer) return;
+    let birakildi = false;
+    const birak = () => { birakildi = true; };
+    ["touchstart", "wheel", "keydown"].forEach((t) => window.addEventListener(t, birak, { once: true, passive: true }));
+    const uygula = () => {
+      if (birakildi || yer.wrap.hidden) return;
+      const kok = (yer.kokId && document.getElementById(yer.kokId)) || yer.wrap;
+      const bloklar = kok.querySelectorAll(OKUMA_BLOK);
+      if (Math.abs(bloklar.length - yer.sayi) > 2) return; // yapı değişti: tahmin etme
+      const el = bloklar[yer.i];
+      if (!el) return;
+      const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 0;
+      const hedef = Math.max(0, el.getBoundingClientRect().top + window.scrollY - ust - yer.ofs);
+      if (Math.abs(hedef - window.scrollY) > 2) window.scrollTo({ top: hedef, behavior: "instant" });
+    };
+    // İlk karede (boyamadan önce) ve bir sonrakinde: çapa sıçraması hiç görünmesin.
+    requestAnimationFrame(() => { uygula(); requestAnimationFrame(uygula); });
+    // Ağdan gelen yeniden çizimler (Füsûs/Mişkât dil dosyası) için iki kez daha.
+    setTimeout(uygula, 350);
+    setTimeout(uygula, 1000);
+  }
+  const langSwitchEl = document.getElementById("lang-switch");
+  if (langSwitchEl) langSwitchEl.addEventListener("click", (e) => {
+    const b = e.target.closest(".lang-btn");
+    dilYeri = b && !b.classList.contains("lang-btn--active") ? okumaYeriniAl() : null;
+  }, true);
+
   I18n.applyStatic();
-  I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
+  I18n.renderLangSwitcher(langSwitchEl, () => {
+    const yer = dilYeri;
+    dilYeri = null;
+    okumaYerineDon(yer);
     render();
     // Sekme başlığı ve açıklama dil değişince eski dilde kalıyordu
     // (2026-10-08 taraması); geçerli rotayla yeniden yazılır. Adres
@@ -733,6 +795,12 @@
     if (currentMainView === view) return;
     if (view === "kavram" || view === "ayethadis" || view === "miskat") markNavYeniSeen(view);
     currentMainView = view;
+    // Yeni görünüm başından açılır (2026-10-10, mobil senaryo): önceki
+    // görünümde aşağı kaydırılmışken çekmeceden girilen görünüm aynı
+    // kaydırma konumunda, başlığı ekranın üstünde kalmış açılıyordu
+    // (Fütûhât'ta 12.000 px aşağıda). Görünüm kendi kaydını açıyorsa
+    // (kısım, makale başı) kendi kaydırmasını bundan sonra yapar.
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "instant" });
     markActiveNavButton(ontologyBtn, view === "ontology");
     markActiveNavButton(esmaBtn, view === "esma");
     markActiveNavButton(halBtn, view === "hal");
@@ -1394,6 +1462,10 @@
     // ikinci argümanı köprü bağlantılarının (2026-08-06, vahdet-elestiri
     // köprüsü) hangi alt-sekmeye açılacağını taşıması için kullanılıyor.
     if (sub) window.__siirlerApp && window.__siirlerApp.switchTo(sub);
+    // Alt sekme de başından açılır: görünüm aynı (hakkinda) kaldığı için
+    // setMainView'in kaydırması burada çalışmıyordu (2026-10-10, mobil
+    // senaryo: çekmeceden Eleştiriler'e geçince sayfa 188 px aşağıda açılıyordu).
+    if (sub && window.scrollY > 0) window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   function goToKavram(id) {
