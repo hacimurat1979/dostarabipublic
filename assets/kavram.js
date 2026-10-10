@@ -417,11 +417,103 @@ window.__kavramApp = (function () {
     }
   }
 
+  // --- Kısım süzgeci (2026-10-10, kapılar; görsel taraması madde 11) ---
+  // Fütûhât kısım sayfasındaki "Kavram" rozeti bir kapı: /kavram/?kisim=<id>.
+  // Liste o kısımda adı geçen kavramlara süzülür -- kavram-dagilim.json'un
+  // (aynı tarama: kavramın adının geçtiği kısımlar) kaydı. Süzgeç adresin
+  // kendisidir; geri/ileri tuşu aynı hâli getirir, Esc kaldırır.
+  const KISIM_RE = /^c(\d+)k(\d+)$/;
+  function adrestekiKisim() {
+    try {
+      const k = new URLSearchParams(location.search).get("kisim");
+      return k && KISIM_RE.test(k) ? k : null;
+    } catch (_) { return null; }
+  }
+  let dagilimPromise = null;
+  function dagilimVerisi() {
+    if (!dagilimPromise) {
+      dagilimPromise = GU.fetchJson("data/ibn-arabi/kavram-dagilim.json")
+        .then((d) => (d && d.kavramlar) || {})
+        .catch(() => { dagilimPromise = null; return null; });
+    }
+    return dagilimPromise;
+  }
+  function romenKavram(n) {
+    const tablo = [[100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+    let out = "", kalan = n;
+    for (const [v, r] of tablo) while (kalan >= v) { out += r; kalan -= v; }
+    return out;
+  }
+  function kisimAdiKavram(id) {
+    const m = KISIM_RE.exec(id);
+    if (!m) return id;
+    const c = romenKavram(+m[1]), k = romenKavram(+m[2]);
+    return tt({ tr: `Cilt ${c}, Kısım ${k}`, en: `Volume ${c}, Part ${k}`, pt: `Volume ${c}, Parte ${k}` });
+  }
+  let listeKisimi = null;   // son çizilen listenin süzgeci
+  // Esc ile geri tuşunu ayırmak için: ortak zincir (stepBackView) geri
+  // tuşunda da çalışıyor ve görünümü giriş hâline kadar çözüyor -- ama
+  // süzgeçli liste, o adresin KENDİ giriş hâli. Süzgeci yalnız Esc kaldırır.
+  let escZamani = -1;
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape") escZamani = performance.now(); }, true);
+  function suzgeciKaldir(adimAc) {
+    try {
+      if (adimAc) history.pushState(null, "", location.pathname);
+      else history.replaceState(null, "", location.pathname);
+    } catch (_) { /* eski tarayıcı */ }
+    renderList();
+  }
+  // Detaydan listeye dönüş: liste süzgeçliyse adres de süzgeçli kalır.
+  function listeyeDon() {
+    const k = listeKisimi;
+    window.__dostNav && window.__dostNav.setHash("kavram");
+    if (k && !adrestekiKisim()) {
+      try { history.replaceState(null, "", location.pathname + "?kisim=" + k); } catch (_) { /* eski tarayıcı */ }
+    }
+    showId(undefined);
+  }
+  function suzgecHtml(kisim, sayi) {
+    const kisimHref = window.__dostNav ? window.__dostNav.href("futuhat", kisim) : "/futuhat/" + kisim + "/";
+    const tumHref = window.__dostNav ? window.__dostNav.href("kavram") : "/kavram/";
+    return `<div class="kavram-suzgec" role="status">
+      <p class="kavram-suzgec__metin">${tt({
+        tr: `Fütûhât · ${kisimAdiKavram(kisim)} — bu kısımda adı geçen ${sayi} kavram.`,
+        en: `Futuhat · ${kisimAdiKavram(kisim)} — ${sayi} concept${sayi === 1 ? "" : "s"} named in this part.`,
+        pt: `Futuhat · ${kisimAdiKavram(kisim)} — ${sayi} conceito${sayi === 1 ? "" : "s"} nomeado${sayi === 1 ? "" : "s"} nesta parte.`,
+      })}</p>
+      <div class="kavram-suzgec__baglar">
+        <a class="kavram-suzgec__bag" href="${kisimHref}" data-view="futuhat" data-id="${kisim}">${tt({ tr: "Kısma dön", en: "Back to the part", pt: "Voltar à parte" })}</a>
+        <a class="kavram-suzgec__bag kavram-suzgec__bag--kaldir" href="${tumHref}" data-suzgec-kaldir="1">${tt({ tr: "Tüm kavramlar", en: "All concepts", pt: "Todos os conceitos" })}</a>
+      </div>
+    </div>`;
+  }
+
   function renderList() {
+    const kisim = adrestekiKisim();
+    listeKisimi = kisim;
+    if (kisim) {
+      dagilimVerisi().then((dag) => {
+        if (listeKisimi !== kisim || adrestekiKisim() !== kisim || !detailEl.hidden && currentId) return;
+        listeCiz(kisim, dag);
+      });
+      return;
+    }
+    listeCiz(null, null);
+  }
+
+  function listeCiz(kisim, dag) {
     detailEl.hidden = true;
     listEl.hidden = false;
     const groups = { ontoloji: [], esma: [], terimler: [] };
-    kavramlar.forEach((k) => groups[k.view].push(k));
+    const kisimda = (k) => {
+      if (!kisim || !dag) return true;
+      const v = dag[k.view + "/" + k.id];
+      return !!v && v[kisim] != null;
+    };
+    kavramlar.filter(kisimda).forEach((k) => groups[k.view].push(k));
+    const suzgecli = !!(kisim && dag);
+    if (!suzgecli) listeKisimi = null;
+    const toplam = groups.ontoloji.length + groups.esma.length + groups.terimler.length;
     // "tr" karşılaştırma yalnız TR görünümde doğru sırayı verir (ör. Türkçe
     // harf sırası); EN/PT'de kendi dillerinin varsayılan sıralamasını
     // kullanmaları için locale argümanı verilmiyor (2026-09-13).
@@ -438,10 +530,12 @@ window.__kavramApp = (function () {
       pt: "O anel ao lado de cada nome mostra quanto material se acumulou para aquele conceito — número de partes/capítulos, Nomes coocorrentes, e mistérios/diagramas/versículos/hadiths relacionados somados (escalado dentro do próprio grupo). As fatias coloridas do anel mostram de qual tipo vem cada parte — passar o mouse ou usar Tab numa linha da legenda abaixo destaca um tipo, e clicar fixa o destaque (clique de novo ou Esc para soltar).",
     });
     listEl.innerHTML =
+      (suzgecli ? suzgecHtml(kisim, toplam) : "") +
       `<p class="kavram-list__intro">${intro}</p>` +
       `<p class="kavram-list__intro kavram-list__intro--gauge">${gaugeNote}</p>` +
       kzrLegendHtml() +
       Object.keys(groups)
+        .filter((v) => groups[v].length)
         .map((v) => {
           const items = groups[v];
           const scores = items.map(zenginlikSkoru);
@@ -465,6 +559,12 @@ window.__kavramApp = (function () {
         .join("");
     listEl.querySelectorAll(".kavram-tile").forEach((btn) => {
       btn.addEventListener("click", () => nav("kavram", btn.dataset.view + "/" + btn.dataset.id));
+    });
+    const kaldir = listEl.querySelector("[data-suzgec-kaldir]");
+    if (kaldir) kaldir.addEventListener("click", (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      suzgeciKaldir(true);
     });
     bindKzrLegend();
   }
@@ -723,10 +823,7 @@ window.__kavramApp = (function () {
     // için modülün kendi showId()'sini doğrudan çağırıp URL'i ayrıca
     // güncelliyoruz (elle test edilip yakalandı: "Tüm kavramlar" linki
     // tıklamaya tepki vermiyordu).
-    detailEl.querySelector(".kavram-back-link").addEventListener("click", () => {
-      showId(undefined);
-      window.__dostNav && window.__dostNav.setHash("kavram");
-    });
+    detailEl.querySelector(".kavram-back-link").addEventListener("click", () => listeyeDon());
     detailEl.querySelectorAll("[data-view]").forEach((btn) => {
       btn.addEventListener("click", () => nav(btn.dataset.view, btn.dataset.id || undefined));
     });
@@ -757,8 +854,11 @@ window.__kavramApp = (function () {
   // kadar kavram görünümü bu zincire hiç katılmıyordu.
   GU.registerStepBack("kavram-wrap", () => {
     if (!detailEl.hidden) {
-      showId(undefined);
-      window.__dostNav && window.__dostNav.setHash("kavram");
+      listeyeDon();
+      return true;
+    }
+    if (listeKisimi && adrestekiKisim() && performance.now() - escZamani < 300) {
+      suzgeciKaldir(false);
       return true;
     }
     return false;

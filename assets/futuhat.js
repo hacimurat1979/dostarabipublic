@@ -1279,15 +1279,115 @@
     return out || String(n);
   }
 
+  // --- Kapılar (2026-10-10, görsel taraması madde 11) ---
+  // "Bu kısımda" kutusunun "Çizim" ve "Kavram" halka rozetleri, veride o
+  // kısma gerçekten bağlı bir şey varsa adı konmuş birer kapıdır
+  // (ETKILESIM_DILI.md "Kapılar"): halka büyüyerek (GU.gateTransition)
+  //  - Çizim → Çizimler görünümüne, o kısma bağlı çizimler ışıkta
+  //    (/cizimler/?kisim=<id>; bağ: futuhat-cizimleri.json `kisimlar`),
+  //  - Kavram → kavram listesine, o kısımda adı geçen kavramlara süzülmüş
+  //    (/kavram/?kisim=<id>; bağ: kavram-dagilim.json)
+  // açılır. Bağ yoksa rozet yalnız sayaçtır, kapı olmaz. Satırın adı hâlâ
+  // kısmın kendi listesini (açılır pencere) açar; kapı yalnız halkadır.
+  let kapiVeri = null;
+  let kapiVeriPromise = null;
+  function kapiVerisi() {
+    if (!kapiVeriPromise) {
+      const GU = window.DostGraphUtils;
+      kapiVeriPromise = Promise.all([
+        GU.fetchJson("data/ibn-arabi/futuhat-cizimleri.json").catch(() => null),
+        GU.fetchJson("data/ibn-arabi/kavram-dagilim.json").catch(() => null),
+      ]).then(([c, k]) => {
+        kapiVeri = { cizim: c, dag: (k && k.kavramlar) || null };
+        return kapiVeri;
+      });
+    }
+    return kapiVeriPromise;
+  }
+  function kapilarFor(partId) {
+    const out = {};
+    if (!kapiVeri) return out;
+    if (kapiVeri.cizim) {
+      const n = (kapiVeri.cizim.diagrams || []).filter((x) => Array.isArray(x.kisimlar) && x.kisimlar.includes(partId)).length
+        + (kapiVeri.cizim.dokuzHarita && (kapiVeri.cizim.dokuzHarita.kisimlar || []).includes(partId) ? 1 : 0);
+      if (n) out.diagrams = {
+        view: "cizimler", renkVar: "--kzr-cizim",
+        ad: {
+          tr: `Kapı · Çizimler: bu kısma bağlı ${n} şekil (Dost'un çizdiği şekillerin yeniden çizimi)`,
+          en: `Gate · Diagrams: ${n} figure${n === 1 ? "" : "s"} tied to this part (redrawings of Dost's own figures)`,
+          pt: `Porta · Diagramas: ${n} figura${n === 1 ? "" : "s"} ligada${n === 1 ? "" : "s"} a esta parte (redesenhos das figuras do próprio Dost)`,
+        },
+        kisa: { tr: "Çizimler'e kapı", en: "Gate to Diagrams", pt: "Porta para Diagramas" },
+      };
+    }
+    if (kapiVeri.dag) {
+      let n = 0;
+      for (const key in kapiVeri.dag) if (kapiVeri.dag[key] && kapiVeri.dag[key][partId] != null) n++;
+      if (n) out.concepts = {
+        view: "kavram", renkVar: "--series-theme",
+        ad: {
+          tr: `Kapı · Kavramlar: bu kısımda adı geçen ${n} kavram`,
+          en: `Gate · Concepts: ${n} concept${n === 1 ? "" : "s"} named in this part`,
+          pt: `Porta · Conceitos: ${n} conceito${n === 1 ? "" : "s"} nomeado${n === 1 ? "" : "s"} nesta parte`,
+        },
+        kisa: { tr: "Kavramlar'a kapı", en: "Gate to Concepts", pt: "Porta para Conceitos" },
+      };
+    }
+    return out;
+  }
+  function kapiHref(view, partId) {
+    const yol = window.__dostNav ? window.__dostNav.href(view) : "/" + view + "/";
+    return yol + "?kisim=" + encodeURIComponent(partId);
+  }
+  function kapiBagla(a, kapi, part) {
+    a.addEventListener("click", (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      const GU = window.DostGraphUtils;
+      const renk = getComputedStyle(a).borderTopColor;
+      GU.gateTransition(
+        {
+          fromRect: a.getBoundingClientRect(),
+          color: renk,
+          targetColor: GU.getVar(kapi.renkVar),
+          targetEl: document.getElementById(kapi.view + "-wrap"),
+        },
+        () => {
+          // Önce görünüm adresi (pushState: geri tuşu kısma döner), sonra
+          // aynı adımın süzgeci (replaceState). Hedef modül süzgeci
+          // adresten, kendi ilk çiziminde okur.
+          if (window.__dostNav) window.__dostNav.goTo(kapi.view);
+          try { history.replaceState(null, "", location.pathname + "?kisim=" + encodeURIComponent(part.id)); } catch (_) { /* eski tarayıcı */ }
+        }
+      );
+    });
+  }
+
   function renderStats(part) {
     if (!statsEl) return;
     const stats = computeStats(part);
-    const row = (key, labelDict, value) => `
+    const kapilar = kapilarFor(part.id);
+    const row = (key, labelDict, value) => {
+      const kapi = kapilar[key];
+      if (!kapi) return `
       <button class="futuhat-stats__item" type="button" data-stat="${key}">
         <span class="futuhat-stats__label">${tt(labelDict)}</span>
         <span class="futuhat-stats__badge">${value}</span>
       </button>
     `;
+      const adId = "futuhat-kapi-ad-" + key;
+      return `
+      <div class="futuhat-stats__item futuhat-stats__item--kapili">
+        <button class="futuhat-stats__ac" type="button" data-stat="${key}">
+          <span class="futuhat-stats__label">${tt(labelDict)}</span>
+          <span class="futuhat-stats__kapi-ipucu" aria-hidden="true">${tt(kapi.kisa)}</span>
+        </button>
+        <a class="futuhat-stats__badge futuhat-stats__kapi" href="${kapiHref(kapi.view, part.id)}" data-kapi="${kapi.view}"
+           aria-label="${tt(labelDict)} ${value} — ${tt(kapi.ad)}" >${value}<span class="futuhat-stats__kapi-ad" id="${adId}" aria-hidden="true">${tt(kapi.ad)}</span></a>
+      </div>
+    `;
+    };
+    statsEl.dataset.part = part.id;
     statsEl.innerHTML = `
       <p class="futuhat-stats__heading">${tt({ tr: "Bu kısımda", en: "In this part", pt: "Nesta parte" })}</p>
       ${row("concepts", { tr: "Kavram", en: "Concepts", pt: "Conceitos" }, stats.concepts)}
@@ -1300,6 +1400,20 @@
       const btn = statsEl.querySelector(`[data-stat="${key}"]`);
       if (btn) btn.addEventListener("click", handler);
     };
+    statsEl.querySelectorAll(".futuhat-stats__kapi").forEach((a) => {
+      const key = a.dataset.kapi === "cizimler" ? "diagrams" : "concepts";
+      if (kapilar[key]) kapiBagla(a, kapilar[key], part);
+    });
+    // Kapı verisi ilk kez geliyorsa kutu bir kez yeniden çizilir (sayaçlar
+    // aynı; yalnız bağlı rozetler kapıya döner).
+    if (!kapiVeri) {
+      kapiVerisi().then(() => {
+        if (statsEl.dataset.part !== part.id) return;
+        const odakta = statsEl.contains(document.activeElement) ? document.activeElement.getAttribute("data-stat") : null;
+        renderStats(part);
+        if (odakta) { const b = statsEl.querySelector(`[data-stat="${odakta}"]`); if (b) b.focus(); }
+      });
+    }
 
     bind("concepts", () => {
       const items = collectConcepts(part);

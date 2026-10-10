@@ -273,11 +273,12 @@
       .replace(/TİEM\/Evkaf Müzesi/g, muze).replace(/vr\. /g, "fol. ");
   }
 
-  function cardHtml(item) {
+  function cardHtml(item, kisim) {
     const renderer = cizimRenderers[item.diagram.type];
     const svg = renderer ? renderer(item.diagram) : "";
+    const durum = kisim ? (kisimdaMi(item, kisim) ? " cizim-card--kisimda" : " cizim-card--perdeli") : "";
     return `
-      <article class="cizim-card">
+      <article class="cizim-card${durum}" data-cizim-kart="${item.id}">
         <p class="cizim-card__ref">${refMetni(item.source_ref)}</p>
         <h2 class="cizim-card__name">${tt(item.name)}</h2>
         <div class="cizim-card__svg-wrap" data-cizim-id="${item.id}" role="button" tabindex="0"
@@ -440,13 +441,32 @@
     g.appendChild(el);
   }
 
+  // --- Yaklaşmak (2026-10-10, görsel taraması madde 8) ---
+  // Dokuz harita eskiden yalnız bir sürgüyle birleşiyordu. Artık sitenin
+  // "yaklaşmak" fiili de aynı durumu sürüyor: Ctrl/⌘ + tekerlek ya da iki
+  // parmak. Uzakta dokuz ayrı harita (uzaklık = kesret); yaklaştıkça hem
+  // bakış (viewBox) daralır hem haritalar merkezde üst üste binip tek
+  // kompozisyon olur (derinlik = yaklaşma). Sürgü klavye karşılığı olarak
+  // kalıyor; iki kontrol tek bir değeri (birlesikMergeVal, 0..100) sürer.
+  // Etiketler haritaların içinden çıkıp ayrı bir katmanda duruyor: uzakta
+  // her haritanın üstünde, yaklaştıkça kompozisyonun çevresindeki bir
+  // dairede ve OKUNUR boyutta (piksel boyu ekrandan ölçülür). Çizimlerin
+  // kendisi (drawShared/drawUnique) değişmedi.
   const BIRLESIK_GRID_CX = [300, 800, 1300, 300, 800, 1300, 300, 800, 1300];
   const BIRLESIK_GRID_CY = [250, 250, 250, 500, 500, 500, 750, 750, 750];
   const BIRLESIK_GRID_SCALE = 0.65;
   const BIRLESIK_MERGE_SCALE_MAX = 2.0;
+  const BIRLESIK_MERKEZ = [800, 500];
+  const BIRLESIK_HALKA_R = 232;          // etiket dairesinin yarıçapı (kompozisyon 180, çizgiler 220)
+  // Etiket dairesindeki yer: her etiket ızgaradaki yönüne en yakın dilime
+  // gider (sol üstteki harita sol üste, alttaki alta...), yollar kesişmesin.
+  // Ortadaki haritanın (5) yönü yok; alttaki boşluğa yerleşir.
+  const BIRLESIK_HALKA_SIRA = [8, 0, 1, 7, 4, 2, 6, 5, 3];
+  const birlesikAci = (i) => -Math.PI / 2 + (BIRLESIK_HALKA_SIRA[i] / BIRLESIK_STEPS.length) * Math.PI * 2;
   const birlesikEase = (p) => p * p * (3 - 2 * p);
   let birlesikMergeVal = 0;
   let birlesikMapEls = null;
+  let birlesikKamera = null;              // { uzakW, yakinW, oran, pxUzak, pxYakin, genislikler }
 
   function birlesikOpenPopup(idx) {
     const s = BIRLESIK_STEPS[idx];
@@ -463,27 +483,146 @@
     });
   }
 
+  function birlesikSvg() { return document.querySelector(".cizim-birlesik__svg"); }
+
+  // Etiket yazı boyunu ekranda okunur tutmak için: viewBox birimi başına
+  // kaç piksel düştüğü bakışın genişliğine bağlı.
+  function birlesikKameraKur() {
+    const svg = birlesikSvg();
+    if (!svg || !birlesikMapEls) return;
+    const r = svg.getBoundingClientRect();
+    const cw = Math.max(240, r.width || 680), ch = Math.max(180, r.height || 425);
+    const oran = cw / ch;
+    const dar = cw < 520;
+    const pxUzak = dar ? 9 : 10.5, pxYakin = dar ? 12.5 : 14.5;
+    // Etiket genişliği: 100 birimlik yazıyla bir kez ölçülür, boyla orantılı.
+    const genislikler = birlesikMapEls.map((m) => {
+      const eski = m.etiket.style.fontSize;
+      m.etiket.style.fontSize = "100px";
+      let gw = 0;
+      try { gw = m.etiket.getComputedTextLength(); } catch (_) { gw = 0; }
+      m.etiket.style.fontSize = eski;
+      return gw || 60 * (m.etiket.textContent || "").length;
+    });
+    // Uzak bakış: 3×3 ızgara (ve üstlerindeki etiketler) sığsın.
+    let uzakW = Math.max(1320, 800 * oran);
+    for (let n = 0; n < 100; n++) {
+      const f = pxUzak * uzakW / cw;
+      const tas = birlesikMapEls.some((m, i) => Math.abs(BIRLESIK_GRID_CX[i] - BIRLESIK_MERKEZ[0]) + genislikler[i] * f / 200 + 16 > uzakW / 2);
+      if (!tas) break;
+      uzakW += 20;
+    }
+    // Yakın bakış: kompozisyon + çevresindeki etiket dairesi sığsın.
+    let yakinW = 560;
+    for (let n = 0; n < 200; n++) {
+      const f = pxYakin * yakinW / cw;                 // birim cinsinden yazı boyu
+      const H = yakinW / oran;
+      let sigar = true;
+      for (let i = 0; i < birlesikMapEls.length && sigar; i++) {
+        const a = birlesikAci(i);
+        const tw = genislikler[i] * f / 100;
+        const rr = BIRLESIK_HALKA_R + 0.5 * tw * Math.abs(Math.cos(a)) + 0.6 * f * Math.abs(Math.sin(a));
+        const x = Math.abs(rr * Math.cos(a)) + tw / 2 + 16;
+        const y = Math.abs(rr * Math.sin(a)) + f + 12;
+        if (x > yakinW / 2 || y > H / 2) sigar = false;
+      }
+      if (sigar) break;
+      yakinW += 20;
+    }
+    birlesikKamera = { uzakW, yakinW: Math.min(yakinW, uzakW), oran, cw, pxUzak, pxYakin, genislikler };
+  }
+
   function birlesikUpdateStage(mergeVal) {
     if (!birlesikMapEls) return;
+    if (!birlesikKamera) birlesikKameraKur();
+    const k = birlesikKamera;
     const t = birlesikEase(mergeVal / 100);
-    for (let i = 0; i < BIRLESIK_STEPS.length; i++) {
+    const svg = birlesikSvg();
+    // Bakış: uzaktan yakına geometrik (oransal) geçiş -- yakınlaşma hissi
+    // her adımda aynı.
+    const W = k ? k.uzakW * Math.pow(k.yakinW / k.uzakW, t) : 1600;
+    const H = k ? W / k.oran : 1000;
+    if (svg) svg.setAttribute("viewBox", `${(BIRLESIK_MERKEZ[0] - W / 2).toFixed(1)} ${(BIRLESIK_MERKEZ[1] - H / 2).toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}`);
+    const px = k ? k.pxUzak + (k.pxYakin - k.pxUzak) * t : 12;
+    const f = k ? px * W / k.cw : 20;
+    const n = BIRLESIK_STEPS.length;
+    for (let i = 0; i < n; i++) {
       const gx = BIRLESIK_GRID_CX[i], gy = BIRLESIK_GRID_CY[i];
-      const cx = gx + (800 - gx) * t;
-      const cy = gy + (500 - gy) * t;
+      const cx = gx + (BIRLESIK_MERKEZ[0] - gx) * t;
+      const cy = gy + (BIRLESIK_MERKEZ[1] - gy) * t;
       const sc = BIRLESIK_GRID_SCALE + (BIRLESIK_MERGE_SCALE_MAX - BIRLESIK_GRID_SCALE) * t;
       const op = 1 - t * 0.30;
-      birlesikMapEls[i].g.setAttribute('transform', `translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${sc.toFixed(3)})`);
-      birlesikMapEls[i].g.setAttribute('opacity', op.toFixed(3));
-      birlesikMapEls[i].num.style.opacity = (1 - t).toFixed(3);
-      birlesikMapEls[i].labelEl.style.opacity = (0.85 * (1 - t)).toFixed(3);
+      const m = birlesikMapEls[i];
+      m.g.setAttribute('transform', `translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${sc.toFixed(3)})`);
+      m.g.setAttribute('opacity', op.toFixed(3));
+      // Etiket: uzakta haritanın üstünde ortalı; yakında dairede.
+      const tw = k ? k.genislikler[i] * f / 100 : 0;
+      const ux = gx, uy = gy - 112 * BIRLESIK_GRID_SCALE - f * 0.45;
+      const a = birlesikAci(i);
+      const rr = BIRLESIK_HALKA_R + 0.5 * tw * Math.abs(Math.cos(a)) + 0.6 * f * Math.abs(Math.sin(a));
+      const yx = BIRLESIK_MERKEZ[0] + rr * Math.cos(a), yy = BIRLESIK_MERKEZ[1] + rr * Math.sin(a) + f * 0.35;
+      m.etiket.setAttribute('x', (ux + (yx - ux) * t).toFixed(1));
+      m.etiket.setAttribute('y', (uy + (yy - uy) * t).toFixed(1));
+      m.etiket.style.fontSize = f.toFixed(1) + 'px';
+      // Yolda (ne ızgarada ne dairede) etiketler çizimlerin üstünden geçiyor:
+      // o arada biraz sönükleşir, iki uçta tam okunur.
+      m.etiket.style.opacity = (0.5 + 0.5 * Math.abs(2 * t - 1)).toFixed(3);
     }
+    const slider = document.getElementById('birlesikSlider');
+    if (slider && Number(slider.value) !== Math.round(mergeVal)) slider.value = String(Math.round(mergeVal));
+    if (slider) slider.setAttribute('aria-valuetext', mergeVal <= 0
+      ? tt({ tr: 'Ayrık: dokuz harita', en: 'Apart: nine maps', pt: 'Separados: nove mapas' })
+      : mergeVal >= 100
+        ? tt({ tr: 'Birleşik: tek kompozisyon', en: 'Together: one composition', pt: 'Reunidos: uma composição' })
+        : tt({ tr: 'Yaklaşılıyor: %', en: 'Approaching: %', pt: 'A aproximar: %' }).replace('%', '%' + Math.round(mergeVal)));
+  }
+
+  function birlesikAyarla(v) {
+    birlesikMergeVal = Math.max(0, Math.min(100, v));
+    birlesikUpdateStage(birlesikMergeVal);
+  }
+
+  // Ctrl/⌘ + tekerlek, iki parmak (dokunmatik), Safari'de izleme yüzeyi
+  // kıstırması. Yalın tekerlek dokunulmaz: sayfa kaydırması kullanıcınındır.
+  function birlesikYaklasmaBagla(svg) {
+    svg.addEventListener('wheel', (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      const birim = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+      birlesikAyarla(birlesikMergeVal - e.deltaY * birim * 0.22);
+    }, { passive: false });
+    let kistirma = null;
+    const mesafe = (tl) => Math.hypot(tl[0].clientX - tl[1].clientX, tl[0].clientY - tl[1].clientY);
+    svg.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) kistirma = { d0: mesafe(e.touches) || 1, v0: birlesikMergeVal };
+    }, { passive: true });
+    svg.addEventListener('touchmove', (e) => {
+      if (!kistirma || e.touches.length !== 2) return;
+      e.preventDefault();
+      // 2,5 kat açmak = uzaktan tam yakına.
+      birlesikAyarla(kistirma.v0 + (Math.log(mesafe(e.touches) / kistirma.d0) / Math.log(2.5)) * 100);
+    }, { passive: false });
+    const bitir = (e) => { if (!e.touches || e.touches.length < 2) kistirma = null; };
+    svg.addEventListener('touchend', bitir);
+    svg.addEventListener('touchcancel', bitir);
+    let jest = null;
+    svg.addEventListener('gesturestart', (e) => { e.preventDefault(); jest = birlesikMergeVal; });
+    svg.addEventListener('gesturechange', (e) => {
+      if (jest == null) return;
+      e.preventDefault();
+      birlesikAyarla(jest + (Math.log(e.scale || 1) / Math.log(2.5)) * 100);
+    });
+    svg.addEventListener('gestureend', () => { jest = null; });
   }
 
   function renderBirlesikStage() {
     const mapsG = document.getElementById('birlesikMapsG');
-    if (!mapsG) return;
+    const etiketG = document.getElementById('birlesikEtiketG');
+    if (!mapsG || !etiketG) return;
     mapsG.innerHTML = '';
+    etiketG.innerHTML = '';
     birlesikMapEls = [];
+    birlesikKamera = null;
     const enlargeLabel = tt({ tr: 'Büyüt: ', en: 'Enlarge: ', pt: 'Ampliar: ' });
     BIRLESIK_STEPS.forEach((s, i) => {
       const g = document.createElementNS(NS, 'g');
@@ -492,18 +631,6 @@
       hit.setAttribute('class', 'birlesik-map__hit');
       hit.setAttribute('pointer-events', 'fill');
       g.appendChild(hit);
-
-      const num = document.createElementNS(NS, 'text');
-      num.setAttribute('x', -110); num.setAttribute('y', -100);
-      num.setAttribute('class', 'birlesik-map__no');
-      num.textContent = String(i + 1);
-      g.appendChild(num);
-
-      const labelEl = document.createElementNS(NS, 'text');
-      labelEl.setAttribute('x', -110); labelEl.setAttribute('y', -78);
-      labelEl.setAttribute('class', 'birlesik-map__label');
-      labelEl.textContent = tt(s.shortLabel);
-      g.appendChild(labelEl);
 
       drawSharedBirlesik(g);
       drawUniqueBirlesik(g, i);
@@ -516,37 +643,60 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); birlesikOpenPopup(i); }
       });
       mapsG.appendChild(g);
-      birlesikMapEls.push({ g, num, labelEl });
+
+      // Etiket: numara + kısa ad. Fareyle tıklanınca da o haritayı büyütür
+      // (klavyede aynı iş haritanın kendisinde); ekran okuyucu için
+      // haritanın adı zaten aria-label'da, etiket tekrar okunmasın.
+      const etiket = document.createElementNS(NS, 'text');
+      etiket.setAttribute('class', 'birlesik-map__label');
+      etiket.setAttribute('text-anchor', 'middle');
+      etiket.setAttribute('aria-hidden', 'true');
+      const no = document.createElementNS(NS, 'tspan');
+      no.setAttribute('class', 'birlesik-map__no');
+      no.textContent = String(i + 1) + ' ';
+      etiket.appendChild(no);
+      etiket.appendChild(document.createTextNode(tt(s.shortLabel)));
+      etiket.addEventListener('click', () => birlesikOpenPopup(i));
+      etiket.addEventListener('mouseenter', () => g.classList.add('birlesik-map--deginiliyor'));
+      etiket.addEventListener('mouseleave', () => g.classList.remove('birlesik-map--deginiliyor'));
+      g.addEventListener('mouseenter', () => etiket.classList.add('birlesik-map__label--deginiliyor'));
+      g.addEventListener('mouseleave', () => etiket.classList.remove('birlesik-map__label--deginiliyor'));
+      g.addEventListener('focus', () => etiket.classList.add('birlesik-map__label--deginiliyor'));
+      g.addEventListener('blur', () => etiket.classList.remove('birlesik-map__label--deginiliyor'));
+      etiketG.appendChild(etiket);
+      birlesikMapEls.push({ g, etiket });
     });
     birlesikUpdateStage(birlesikMergeVal);
 
     const slider = document.getElementById('birlesikSlider');
-    slider.addEventListener('input', (e) => {
-      birlesikMergeVal = +e.target.value;
-      birlesikUpdateStage(birlesikMergeVal);
-    });
-    document.getElementById('birlesikMergeBtn').addEventListener('click', () => {
-      birlesikMergeVal = 100; slider.value = 100; birlesikUpdateStage(100);
-    });
-    document.getElementById('birlesikResetBtn').addEventListener('click', () => {
-      birlesikMergeVal = 0; slider.value = 0; birlesikUpdateStage(0);
-    });
+    slider.addEventListener('input', (e) => birlesikAyarla(+e.target.value));
+    document.getElementById('birlesikMergeBtn').addEventListener('click', () => birlesikAyarla(100));
+    document.getElementById('birlesikResetBtn').addEventListener('click', () => birlesikAyarla(0));
+    const svg = birlesikSvg();
+    if (svg) birlesikYaklasmaBagla(svg);
   }
 
-  function birlesikHaritaHtml() {
-    return `<article class="cizim-card cizim-card--birlesik">
+  function birlesikHaritaHtml(kisimda) {
+    const durum = kisimda === true ? " cizim-card--kisimda" : kisimda === false ? " cizim-card--perdeli" : "";
+    return `<article class="cizim-card cizim-card--birlesik${durum}" data-cizim-kart="dokuz-harita">
       <p class="cizim-card__ref">${tt({ tr: 'Fütûhât, 9.316–9.461 — 371. Bab', en: 'Futuhat, 9.316–9.461 — Chapter 371', pt: 'Futuhat, 9.316–9.461 — Capítulo 371' })}</p>
       <h2 class="cizim-card__name">${tt({ tr: '371. Bab: Dokuz Harita', en: 'Chapter 371: Nine Maps', pt: 'Capítulo 371: Nove Mapas' })}</h2>
       <p class="cizim-card__desc">${tt({
-        tr: 'İbn Arabî\'nin, Fütûhât\'ın ikinci telifine kendi eliyle çizdiği dokuz harita — kendi ifadesiyle "tek bir kompozisyon" olarak görülmesini istediği bir dizi. Ayrıyken dokuz çizim, sürgüyü kaydırınca tek bir kompozisyon. Her haritaya ayrı ayrı tıklayıp büyütebilirsin.',
-        en: 'Nine maps Ibn al-ʿArabī drew with his own hand into the second recension of the Futuhat — meant, in his own words, to be seen as a single composition. Nine drawings when apart; one composition when the slider merges them. Click any map on its own to enlarge it.',
-        pt: 'Nove mapas que Ibn al-ʿArabī desenhou com a própria mão na segunda recensão das Futuhat — pensados, nas suas palavras, para serem vistos como uma única composição. Nove desenhos quando separados; uma só composição quando o controle os reúne. Clique em qualquer mapa para o ampliar.',
+        tr: 'İbn Arabî\'nin, Fütûhât\'ın ikinci telifine kendi eliyle çizdiği dokuz harita — kendi ifadesiyle "tek bir kompozisyon" olarak görülmesini istediği bir dizi. Uzaktan dokuz çizim; yaklaştıkça tek bir kompozisyon. Her haritaya ayrı ayrı tıklayıp büyütebilirsin.',
+        en: 'Nine maps Ibn al-ʿArabī drew with his own hand into the second recension of the Futuhat — meant, in his own words, to be seen as a single composition. From afar, nine drawings; as you come closer, one composition. Click any map on its own to enlarge it.',
+        pt: 'Nove mapas que Ibn al-ʿArabī desenhou com a própria mão na segunda recensão das Futuhat — pensados, nas suas palavras, para serem vistos como uma única composição. De longe, nove desenhos; ao aproximar-se, uma só composição. Clique em qualquer mapa para o ampliar.',
       })}</p>
       <div class="cizim-birlesik">
         <svg class="cizim-birlesik__svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet"
              aria-label="${tt({ tr: 'Dokuz harita: ayrı çizimler ve merkezde birleşen tek bir kompozisyon', en: 'Nine maps: separate drawings and a single composition merging at the center', pt: 'Nove mapas: desenhos separados e uma única composição a fundir-se no centro' })}">
           <g id="birlesikMapsG"></g>
+          <g id="birlesikEtiketG"></g>
         </svg>
+        <p class="cizim-birlesik__ipucu">${tt({
+          tr: 'Yaklaşmak için: Ctrl (⌘) + tekerlek, iki parmak ya da sürgü.',
+          en: 'To come closer: Ctrl (⌘) + scroll, two fingers, or the slider.',
+          pt: 'Para se aproximar: Ctrl (⌘) + roda, dois dedos ou o controlo deslizante.',
+        })}</p>
         <div class="cizim-birlesik__controls">
           <div class="cizim-birlesik__quick">
             <button type="button" class="cizim-birlesik__btn" id="birlesikMergeBtn">${tt({ tr: 'Tek Haritada Birleştir', en: 'Merge into One Map', pt: 'Fundir num Só Mapa' })}</button>
@@ -554,7 +704,7 @@
           </div>
           <div class="cizim-birlesik__slider-row">
             <span>${tt({ tr: 'Ayrık', en: 'Apart', pt: 'Separados' })}</span>
-            <input type="range" id="birlesikSlider" min="0" max="100" value="${birlesikMergeVal}" aria-label="${tt({ tr: 'Ayrık / Birleşik', en: 'Apart / Together', pt: 'Separados / Reunidos' })}">
+            <input type="range" id="birlesikSlider" min="0" max="100" value="${Math.round(birlesikMergeVal)}" aria-label="${tt({ tr: 'Ayrık / Birleşik', en: 'Apart / Together', pt: 'Separados / Reunidos' })}">
             <span>${tt({ tr: 'Birleşik', en: 'Together', pt: 'Reunidos' })}</span>
           </div>
         </div>
@@ -562,14 +712,77 @@
     </article>`;
   }
 
+  // --- Kısım süzgeci (2026-10-10, kapılar; görsel taraması madde 11) ---
+  // Fütûhât kısım sayfasındaki "Çizim" rozeti bir kapı: /cizimler/?kisim=<id>
+  // adresine açılır. Burada o kısma veride gerçekten bağlı çizimler
+  // (futuhat-cizimleri.json `kisimlar`, dokuz harita için `dokuzHarita`)
+  // ışıkta kalır, ötekiler perdelenir (matlık); ilk bağlı çizime inilir.
+  // Süzgeç adresin kendisidir -- geri/ileri tuşu aynı hâli geri getirir.
+  const KISIM_RE = /^c(\d+)k(\d+)$/;
+  function adrestekiKisim() {
+    try {
+      const k = new URLSearchParams(location.search).get("kisim");
+      return k && KISIM_RE.test(k) ? k : null;
+    } catch (_) { return null; }
+  }
+  function romen(n) {
+    const tablo = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+    let out = "", kalan = n;
+    for (const [v, s] of tablo) while (kalan >= v) { out += s; kalan -= v; }
+    return out;
+  }
+  function kisimAdi(id) {
+    const m = KISIM_RE.exec(id);
+    if (!m) return id;
+    const c = romen(+m[1]), k = romen(+m[2]);
+    return tt({ tr: `Cilt ${c}, Kısım ${k}`, en: `Volume ${c}, Part ${k}`, pt: `Volume ${c}, Parte ${k}` });
+  }
+  function kisimdaMi(item, kisim) {
+    return !!kisim && Array.isArray(item.kisimlar) && item.kisimlar.includes(kisim);
+  }
+  function dokuzHaritaKisimda(kisim) {
+    return !!kisim && !!data && !!data.dokuzHarita && Array.isArray(data.dokuzHarita.kisimlar) && data.dokuzHarita.kisimlar.includes(kisim);
+  }
+  function suzgecHtml(kisim) {
+    if (!kisim) return "";
+    const sayi = data.diagrams.filter((x) => kisimdaMi(x, kisim)).length + (dokuzHaritaKisimda(kisim) ? 1 : 0);
+    const kisimHref = window.__dostNav ? window.__dostNav.href("futuhat", kisim) : "/futuhat/" + kisim + "/";
+    const tumHref = window.__dostNav ? window.__dostNav.href("cizimler") : "/cizimler/";
+    return `<div class="cizim-suzgec" role="status">
+      <p class="cizim-suzgec__metin">${tt({
+        tr: `Fütûhât · ${kisimAdi(kisim)} — bu kısma bağlı ${sayi} çizim ışıkta; ötekiler perdeli.`,
+        en: `Futuhat · ${kisimAdi(kisim)} — the ${sayi} diagram${sayi === 1 ? "" : "s"} tied to this part stay in the light; the others are veiled.`,
+        pt: `Futuhat · ${kisimAdi(kisim)} — ${sayi === 1 ? "o diagrama ligado" : `os ${sayi} diagramas ligados`} a esta parte ${sayi === 1 ? "fica" : "ficam"} na luz; os outros ficam velados.`,
+      })}</p>
+      <div class="cizim-suzgec__baglar">
+        <a class="cizim-suzgec__bag" href="${kisimHref}" data-view="futuhat" data-id="${kisim}">${tt({ tr: "Kısma dön", en: "Back to the part", pt: "Voltar à parte" })}</a>
+        <a class="cizim-suzgec__bag cizim-suzgec__bag--kaldir" href="${tumHref}" data-suzgec-kaldir="1">${tt({ tr: "Tüm çizimler", en: "All diagrams", pt: "Todos os diagramas" })}</a>
+      </div>
+    </div>`;
+  }
+  let gosterilenKisim = null;
+  function suzgeciKaldir(adimAc) {
+    const yol = location.pathname;
+    try {
+      if (adimAc) history.pushState(null, "", yol);
+      else history.replaceState(null, "", yol);
+    } catch (_) { /* eski tarayıcı */ }
+    render();
+  }
+
   function render() {
     if (!data) return;
-    const cards = data.diagrams.map(cardHtml).join("");
+    const kisim = adrestekiKisim();
+    const yeniSuzgec = kisim !== gosterilenKisim;
+    gosterilenKisim = kisim;
+    const cards = data.diagrams.map((item) => cardHtml(item, kisim)).join("");
     const sources = (data.sources || []).map((s) => `<li>${refMetni(s)}</li>`).join("");
+    listEl.classList.toggle("cizimler-list--suzgecli", !!kisim);
     listEl.innerHTML = `
       ${CIZIM_DEFS}
+      ${suzgecHtml(kisim)}
       <p class="cizimler-intro">${linkify(tt(data.intro), null)}</p>
-      ${birlesikHaritaHtml()}
+      ${birlesikHaritaHtml(kisim ? dokuzHaritaKisimda(kisim) : null)}
       ${cards}
       <ul class="cizimler-sources">${sources}</ul>
     `;
@@ -583,6 +796,20 @@
         }
       });
     });
+    const kaldir = listEl.querySelector("[data-suzgec-kaldir]");
+    if (kaldir) kaldir.addEventListener("click", (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      suzgeciKaldir(true);
+    });
+    // Kapıdan yeni gelindiyse o kısmın ilk çizimine in (ışıktaki ilk kart).
+    if (kisim && yeniSuzgec && !wrap.hidden) {
+      const ilk = listEl.querySelector(".cizim-card--kisimda");
+      if (ilk) requestAnimationFrame(() => {
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        ilk.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      });
+    }
     // Sadece bu görünüm gerçekten açıkken kapat -- paylaşılan lightbox artık
     // tüm görünümler arasında tek bir örnek olduğu için, arka planda (görünür
     // değilken) bir dil değişimi başka bir görünümün açık lightbox'ını
@@ -590,9 +817,29 @@
     if (!wrap.hidden) window.DostLightbox.close();
   }
 
+  // Bir adım geri: süzgeç açıksa Esc onu kaldırır (lightbox zincirde önce).
+  if (window.DostGraphUtils && window.DostGraphUtils.registerStepBack) {
+    window.DostGraphUtils.registerStepBack("cizimler-wrap", () => {
+      if (!gosterilenKisim || !adrestekiKisim()) return false;
+      suzgeciKaldir(false);
+      return true;
+    });
+  }
+  // Pencere boyu değişince bakış (viewBox) ve etiket boyu yeniden ölçülür.
+  window.addEventListener("resize", window.DostGraphUtils.debounceResize(() => {
+    if (wrap.hidden || !birlesikMapEls) return;
+    birlesikKamera = null;
+    birlesikUpdateStage(birlesikMergeVal);
+  }));
+
   window.__cizimlerApp = {
     activate() {
-      fetchData().then(() => render());
+      fetchData().then(() => {
+        // Aynı süzgeçle yeniden açılınca (geri/ileri tuşu) kart yeniden
+        // ışıklansın ve ilk karta inilsin.
+        gosterilenKisim = null;
+        render();
+      });
     },
     onLangChange() {
       render();
