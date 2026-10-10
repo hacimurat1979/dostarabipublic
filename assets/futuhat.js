@@ -1431,6 +1431,8 @@
 
       <div class="futuhat-sections" id="futuhat-sections"></div>
 
+      <div id="futuhat-dost-dizini"></div>
+
       <div id="futuhat-anlamsal"></div>
 
       <div id="futuhat-yakin-pasaj"></div>
@@ -1548,8 +1550,157 @@
     setupToolbar(part);
     setupStartHint();
     renderMeasurementPanel(part);
+    renderDostDizini(part);
     renderAnlamsalBaglantilar(part);
     renderYakinPasajlar(part);
+  }
+
+  // --- Dost'un kendi dizini (2026-10-10) ---------------------------------
+  // Fihrist (c1k2), 559. Bölüm (c17k224, c18k225) ve metnin kendisinin
+  // açıkça kurduğu bölümden bölüme atıflar. Bunlar Dost'un kendi bağları,
+  // bizim ölçümümüz değil: anlamsal kutunun kesik çerçevesi yerine düz
+  // çizgi. Veri kısım başına parça (data/ibn-arabi/dost-dizini-kisim/,
+  // scripts/dost-dizini-uret.py dost-dizini.json'dan üretir); tam dizin
+  // yalnız Fihrist ve 559. Bölüm kısımlarının parçasında.
+  const dizinCache = new Map();
+  function fetchDizin(id) {
+    if (!dizinCache.has(id)) {
+      dizinCache.set(id, window.DostGraphUtils.fetchJson("data/ibn-arabi/dost-dizini-kisim/" + id + ".json").catch(() => null));
+    }
+    return dizinCache.get(id);
+  }
+  const dzBolum = (n) => tt({ tr: n + ". Bölüm", en: "Chapter " + n, pt: "Capítulo " + n });
+  const dzSayfa = (c, s) => tt({ tr: "C" + c + " s. " + s, en: "Vol. " + c + ", p. " + s, pt: "Vol. " + c + ", p. " + s });
+  function dzKisim(id) {
+    const p = partById(id);
+    const m = /^c\d+k(\d+)$/.exec(id);
+    const k = p ? p.kisim : (m ? Number(m[1]) : 0);
+    return tt({ tr: "Kısım " + roman(k), en: "Part " + roman(k), pt: "Parte " + roman(k) });
+  }
+  function dzGit(id, etiket) {
+    return `<a class="dost-dizini__git" href="${escapeHtml(window.__dostNav.href("futuhat", id))}" data-dizin-git="${escapeHtml(id)}">${escapeHtml(etiket || dzKisim(id))}</a>`;
+  }
+  // Dost'un sözü <q> içinde: duruş taraması alıntı içini taramaz, ekran
+  // okuyucu da alıntı olduğunu bilir. Şüpheli okuma kesik altçizgiyle
+  // (GORSEL_DIL: kesik = yaklaşık) ve sözle.
+  function dzSoz(obj, supheli) {
+    return `<q class="dost-dizini__soz${supheli ? " dost-dizini__soz--supheli" : ""}">${escapeHtml(tt(obj))}</q>`
+      + (supheli ? ` <span class="dost-dizini__supheli">${tt({ tr: "(okuma kesin değil)", en: "(uncertain reading)", pt: "(leitura incerta)" })}</span>` : "");
+  }
+  const dzKunye = (metin, id) => `<span class="dost-dizini__kunye">${escapeHtml(metin)}${id ? " · " + dzGit(id) : ""}</span>`;
+  const dzFihristKunye = (s) => dzKunye(tt({ tr: "Kitabın Fihristi, C1 s. ", en: "The Book's Table of Contents, Vol. 1, p. ", pt: "Índice do Livro, Vol. 1, p. " }) + s, "c1k2");
+  const dzFasil = (d, no) => { const f = (d.fasillar || []).find((x) => x.no === no); return f ? tt(f.ad) : ""; };
+
+  function dzBolumHtml(d, b) {
+    let h = `<li class="dost-dizini__bolum"><p class="dost-dizini__baslik"><strong>${dzBolum(b.bolum)}</strong>`
+      + (b.devam ? ` <span class="dost-dizini__devam">${tt({ tr: "(devamı; başlangıcı ", en: "(continued; begins in ", pt: "(continuação; começa na " })}${dzGit(b.baslangic)})</span>` : "")
+      + `<span class="dost-dizini__fasil">${escapeHtml(dzFasil(d, b.fasil))}</span></p>`;
+    h += `<p class="dost-dizini__satir"><span class="dost-dizini__etiket">${tt({ tr: "Fihrist'te", en: "In the Table of Contents", pt: "No Índice" })}</span>${dzSoz(b.fihrist, b.ocrSupheli)} ${dzFihristKunye(b.fihristSayfa)}</p>`;
+    b.dizin559.forEach((g) => {
+      h += `<p class="dost-dizini__satir"><span class="dost-dizini__etiket">${tt({ tr: "559. Bölüm'de", en: "In Chapter 559", pt: "No Capítulo 559" })}</span>${dzSoz(g.bahis, g.ocrSupheli)} ${dzKunye(tt({ tr: "559. Bölüm, ", en: "Chapter 559, ", pt: "Capítulo 559, " }) + dzSayfa(g.cilt, g.sayfa), g.kisim)}</p>`;
+    });
+    const atif = b.giden.map((a) => [tt({ tr: "Bu bölümden " + a.hedef + ". Bölüm'e", en: "From this chapter to Chapter " + a.hedef, pt: "Deste capítulo para o Capítulo " + a.hedef }), a, a.hedefKisim])
+      .concat(b.gelen.map((a) => [tt({ tr: a.kaynak + ". Bölüm'den bu bölüme", en: "From Chapter " + a.kaynak + " to this chapter", pt: "Do Capítulo " + a.kaynak + " para este capítulo" }), a, a.kaynakKisim]));
+    atif.forEach(([yon, a, hedef]) => {
+      h += `<p class="dost-dizini__satir"><span class="dost-dizini__etiket">${escapeHtml(yon)}</span>${dzSoz(a.ifade, a.ocrSupheli)} ${dzKunye(dzSayfa(a.cilt, a.sayfa), hedef)}</p>`;
+    });
+    return h + "</li>";
+  }
+
+  const dzNorm = (s) => String(s || "").toLocaleLowerCase("tr").replace(/ı/g, "i").normalize("NFD").replace(/[̀-ͯ]/g, "");
+  // Aranabilir tam liste (Fihrist'in 560 bölümü / 559'un girişleri).
+  // Arama kutusu metni süzer; numara yazılırsa o bölüm. Esc, kutu doluysa
+  // önce onu temizler (bir adım), boşsa zincire bırakır.
+  function dzListeHtml(baslik, sayiMetni, satirlar) {
+    const yer = tt({ tr: "Bölüm numarası ya da kelime", en: "Chapter number or word", pt: "Número do capítulo ou palavra" });
+    return `<details class="dost-dizini__tam" open><summary class="dost-dizini__ozet">${escapeHtml(baslik)} <span class="dost-dizini__sayi">${escapeHtml(sayiMetni)}</span></summary>`
+      + `<label class="dost-dizini__ara"><span class="sr-only">${escapeHtml(yer)}</span><input type="search" class="dost-dizini__ara-kutu" placeholder="${escapeHtml(yer)}" autocomplete="off"></label>`
+      + `<p class="dost-dizini__sonuc" aria-live="polite"></p>`
+      + `<ol class="dost-dizini__liste" tabindex="0" aria-label="${escapeHtml(baslik)}">${satirlar.join("")}</ol></details>`;
+  }
+  function dzAramaBagla(kok) {
+    kok.querySelectorAll(".dost-dizini__tam").forEach((tam) => {
+      const kutu = tam.querySelector(".dost-dizini__ara-kutu");
+      const sonuc = tam.querySelector(".dost-dizini__sonuc");
+      const satirlar = Array.from(tam.querySelectorAll("[data-dz-ara]"));
+      const suz = () => {
+        const q = dzNorm(kutu.value.trim());
+        let n = 0;
+        satirlar.forEach((li) => {
+          const ok = !q || (/^\d+$/.test(q) ? li.dataset.dzNo === q : li.dataset.dzAra.indexOf(q) >= 0);
+          li.hidden = !ok;
+          if (ok) n++;
+        });
+        sonuc.textContent = q ? tt({ tr: n + " sonuç", en: n + " result(s)", pt: n + " resultado(s)" }) : "";
+      };
+      kutu.addEventListener("input", suz);
+    });
+  }
+  if (window.DostGraphUtils) {
+    window.DostGraphUtils.registerStepBack("futuhat-wrap", () => {
+      const el = document.activeElement;
+      if (!el || !el.classList || !el.classList.contains("dost-dizini__ara-kutu") || !el.value) return false;
+      el.value = "";
+      el.dispatchEvent(new Event("input"));
+      return true;
+    });
+  }
+
+  function renderDostDizini(part) {
+    const mount = document.getElementById("futuhat-dost-dizini");
+    if (!mount) return;
+    const id = part.id;
+    fetchDizin(id).then((d) => {
+      if (!d || !mount.isConnected || activePartId !== id) return;
+      const tam = [];
+      if (d.fihristTam) {
+        let fasil = 0;
+        const satirlar = [];
+        d.fihristTam.forEach((b) => {
+          if (b.fasil !== fasil) {
+            fasil = b.fasil;
+            satirlar.push(`<li class="dost-dizini__grup" data-dz-ara="" data-dz-no="">${escapeHtml(dzFasil(d, fasil))}</li>`);
+          }
+          satirlar.push(`<li data-dz-ara="${escapeHtml(dzNorm(b.bolum + " " + tt(b.fihrist)))}" data-dz-no="${b.bolum}"><strong>${b.bolum}.</strong> ${dzSoz(b.fihrist, b.ocrSupheli)} ${dzKunye(tt({ tr: "s. ", en: "p. ", pt: "p. " }) + b.fihristSayfa, b.kisim)}</li>`);
+        });
+        tam.push(dzListeHtml(tt({ tr: "Fihrist'in bütün bölümleri", en: "All chapters of the Table of Contents", pt: "Todos os capítulos do Índice" }),
+          tt({ tr: "· " + d.fihristTam.length + " bölüm", en: "· " + d.fihristTam.length + " chapters", pt: "· " + d.fihristTam.length + " capítulos" }), satirlar));
+      }
+      if (d.yerdekiler) {
+        const satirlar = d.yerdekiler.map((g) => {
+          const bas = g.bolum ? dzGit(g.bolumKisim, dzBolum(g.bolum) + " · " + dzKisim(g.bolumKisim))
+            : `<span class="dost-dizini__numarasiz">${tt({ tr: "numarasız giriş", en: "unnumbered entry", pt: "entrada sem número" })}</span>`;
+          return `<li data-dz-ara="${escapeHtml(dzNorm((g.bolum || "") + " " + tt(g.bahis)))}" data-dz-no="${g.bolum || ""}">${bas} ${dzSoz(g.bahis, g.ocrSupheli)} ${dzKunye(dzSayfa(g.cilt, g.sayfa))}</li>`;
+        });
+        tam.push(dzListeHtml(tt({ tr: "Bu kısımdaki dizin girişleri", en: "Index entries in this part", pt: "Entradas do índice nesta parte" }),
+          tt({ tr: "· " + satirlar.length + " giriş", en: "· " + satirlar.length + " entries", pt: "· " + satirlar.length + " entradas" }), satirlar));
+      }
+      if (!d.bolumler.length && !tam.length) return;
+      const sec = document.createElement("section");
+      sec.className = "dost-dizini";
+      const n = d.bolumler.length;
+      const ozet = tt({ tr: "Dost'un kendi dizininde", en: "In Dost's own index", pt: "No próprio índice de Dost" });
+      const not = `<p class="dost-dizini__not">${tt({
+        tr: "Bu dizin Dost'un kendi Fihrist'inden ve 559. Bölüm'den aktarıldı; İngilizce/Portekizce çeviri bizim aktarımımız. Atıflar yalnız metnin hedefini açıkça söylediği yerler.",
+        en: "This index is relayed from Dost's own Table of Contents and from Chapter 559; the English/Portuguese translation is our rendering. Cross-references are only those whose target the text itself names.",
+        pt: "Este índice foi transmitido a partir do próprio Índice de Dost e do Capítulo 559; a tradução inglesa/portuguesa é a nossa transposição. As remissões são só aquelas cujo alvo o próprio texto indica." })}</p>`;
+      sec.innerHTML = (n ? `<details class="dost-dizini__kisim"><summary class="dost-dizini__ozet">${ozet} <span class="dost-dizini__sayi">${tt({ tr: "· " + n + " bölüm", en: "· " + n + (n > 1 ? " chapters" : " chapter"), pt: "· " + n + (n > 1 ? " capítulos" : " capítulo") })}</span></summary>${not}<ol class="dost-dizini__bolumler">${d.bolumler.map((b) => dzBolumHtml(d, b)).join("")}</ol></details>`
+        : `<p class="dost-dizini__ozet dost-dizini__ozet--duz">${ozet}</p>${not}`) + tam.join("");
+      mount.replaceChildren(sec);
+      dzAramaBagla(sec);
+      sec.addEventListener("click", (e) => {
+        const a = e.target.closest("a[data-dizin-git]");
+        if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (!partById(a.dataset.dizinGit)) return;  // indekste yoksa olağan bağlantı
+        e.preventDefault();
+        window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: a.dataset.dizinGit, kaynak: "dizin" });
+        activatePart(a.dataset.dizinGit);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 80;
+          window.scrollTo({ top: Math.max(0, articleEl.getBoundingClientRect().top + window.scrollY - ust - 8), behavior: "auto" });
+        }));
+      });
+    });
   }
 
   // Embedding altyapısı: iki metin gömme (embedding) yakınlığıyla bulunmuş,

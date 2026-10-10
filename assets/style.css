@@ -2540,6 +2540,136 @@ button.futuhat-part-chip:hover {
   stroke: var(--page-plane);
   stroke-width: 1.5px;
 }
+.dost-dizini {
+  max-width: 660px;
+  margin: 0 auto 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  background: color-mix(in srgb, var(--surface-1) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dost-dizini details + details { border-top: 1px solid var(--border); padding-top: 12px; }
+.dost-dizini__ozet {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+}
+.dost-dizini__ozet::-webkit-details-marker { display: none; }
+.dost-dizini__ozet::before {
+  content: "▸";
+  font-size: 0.875rem;
+  transition: transform var(--dur-orta) var(--ease-sahne);
+}
+details[open] > .dost-dizini__ozet::before { transform: rotate(90deg); }
+.dost-dizini__ozet--duz { cursor: default; }
+.dost-dizini__ozet--duz::before { content: none; }
+.dost-dizini__ozet:focus-visible { outline: 2px solid var(--series-theme); outline-offset: 3px; border-radius: 4px; }
+.dost-dizini__sayi { text-transform: none; letter-spacing: 0; }
+.dost-dizini__not {
+  margin: 8px 0 0;
+  font-size: calc(0.84rem * var(--detail-font-scale, 1));
+  line-height: 1.5;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.dost-dizini__bolumler, .dost-dizini__liste {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dost-dizini__liste {
+  gap: 8px;
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 6px;
+  font-size: calc(0.9rem * var(--detail-font-scale, 1));
+  line-height: 1.5;
+}
+.dost-dizini__liste:focus-visible { outline: 2px solid var(--series-theme); outline-offset: 2px; }
+.dost-dizini__grup {
+  margin-top: 6px;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.dost-dizini__baslik {
+  margin: 0 0 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  color: var(--text-primary);
+}
+.dost-dizini__fasil, .dost-dizini__devam { font-size: 0.8rem; color: var(--text-muted); }
+.dost-dizini__satir {
+  margin: 0 0 6px;
+  font-size: calc(0.92rem * var(--detail-font-scale, 1));
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+.dost-dizini__etiket {
+  display: block;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+.dost-dizini__soz { quotes: none; }
+.dost-dizini__soz--supheli {
+  text-decoration: underline dashed var(--text-muted);
+  text-underline-offset: 3px;
+}
+.dost-dizini__supheli, .dost-dizini__numarasiz { font-size: 0.78rem; color: var(--text-muted); }
+.dost-dizini__kunye {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dost-dizini__git {
+  color: var(--series-theme);
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.dost-dizini__git:focus-visible { outline: 2px solid var(--series-theme); outline-offset: 2px; border-radius: 3px; }
+.dost-dizini__ara { display: block; margin-top: 10px; }
+.dost-dizini__ara-kutu {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+.dost-dizini__sonuc { margin: 6px 0 0; font-size: 0.8rem; color: var(--text-muted); min-height: 1em; }
+@media (max-width: 640px) {
+  .dost-dizini { padding: 12px 14px; border-radius: 10px; }
+  .dost-dizini__kunye { white-space: normal; }
+}
+@media print {
+  .dost-dizini__liste { max-height: none; overflow: visible; }
+  .dost-dizini__ara, .dost-dizini__sonuc { display: none; }
+}
+
 .futuhat-nobet__label {
   font-size: 0.97rem;
   font-weight: 600;
@@ -9169,6 +9299,97 @@ button.share-panel__cand-text:focus-visible { outline: 2px solid var(--accent-in
   text-decoration: none;
 }
 .ayethadis-item__loc:hover, .ayethadis-item__loc:focus-visible { text-decoration: underline; }
+
+.ayethadis-bolum {
+  margin: 40px 0 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ayethadis-item__nitelik {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex: 0 0 auto;
+}
+.ayethadis-item__ref--hadis { cursor: default; }
+.ayethadis-item--ham .ayethadis-item__meal-not { display: block; margin: -4px 0 10px; }
+.ayethadis-item__rivayet {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border-inline-start: 2px solid var(--border);
+}
+.ayethadis-item__rivayet-aktarim {
+  margin: 0 0 6px;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+.ayethadis-item__rivayet-cumle {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+.ayethadis-item__rivayet-kunye {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.ayethadis-gecis {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.ayethadis-gecis__baslik {
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-interactive);
+  border-radius: 6px;
+}
+.ayethadis-gecis__baslik::-webkit-details-marker { display: none; }
+.ayethadis-gecis__baslik::before { content: "+ "; }
+.ayethadis-gecis[open] > .ayethadis-gecis__baslik::before { content: "– "; }
+.ayethadis-gecis__baslik:hover { text-decoration: underline; }
+.ayethadis-gecis__baslik:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+.ayethadis-gecis__not,
+.ayethadis-gecis__tanim {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.ayethadis-gecis__liste {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.ayethadis-gecis__satir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.ayethadis-gecis__konum {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.ayethadis-gecis__kisim { min-width: 0; }
+.ayethadis-gecis__ayrac { color: var(--text-muted); font-size: 0.78rem; }
+.ayethadis-gecis__cumle {
+  flex: 1 1 100%;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
 .ayet-tip__digeri:hover,
 .ayet-tip__digeri:focus-visible {
   text-decoration: underline;

@@ -7,6 +7,14 @@
  * kaynakları hover künyeleri için kullanması). Bu görünüm o hover mekanizmasının
  * TERSİ: künyeyi metnin içinde tek tek bulmak yerine, hepsini tek sayfada
  * gezilebilir kılıyor.
+ *
+ * 2026-10-10: dördüncü kaynak data/ibn-arabi/ham-metin-gecisleri.json --
+ * aynı âyet/hadisin Fütûhât'ın KENDİ metninde (Demirli çevirisinin taranmış
+ * metni) hangi cilt/sayfada, hangi cümleyle anıldığı. Dizinlerle
+ * KARIŞTIRILMIYOR: dizin "sitede şu kısımda alıntılanıyor" der, bu liste
+ * "Dost şu sayfada şöyle anıyor" der. Kartın altında katlanır liste olarak
+ * duruyor; satırlar ilk açılışta çiziliyor (33:4'te 362 satır var). Sitede
+ * yalnız dar sayım (dar:true, guvensiz değil) gösteriliyor.
  */
 window.__ayetHadisApp = (function () {
   "use strict";
@@ -20,6 +28,8 @@ window.__ayetHadisApp = (function () {
 
   let dataPromise = null;
   let kuran = null, ayetDizin = null, hadisDizin = null, hadisMetin = {};
+  // Ham metin geçişleri: anahtar -> kayıt (âyet ve hadis ayrı), kısım başlıkları.
+  let hamAyet = {}, hamHadis = {}, hamKisim = {};
 
   // ayet-onizleme.js (künye hover kutusu) da AYNI üç dosyayı indiriyor; onun
   // GU.fetchJson önbelleğiyle gerçekten paylaşabilmemiz için o modülün
@@ -35,12 +45,21 @@ window.__ayetHadisApp = (function () {
       GU.fetchJson(base() + "/data/ibn-arabi/kuran.json"),
       GU.fetchJson(base() + "/data/ibn-arabi/ayet-dizini.json"),
       GU.fetchJson(base() + "/data/ibn-arabi/hadis-dizini.json"),
+      // Geçiş listesi ek bilgi: inmezse dizin yine görünür, yalnız katlanır
+      // listeler çıkmaz (sessizce değil -- konsola uyarı düşer).
+      GU.fetchJson(base() + "/data/ibn-arabi/ham-metin-gecisleri.json").catch((err) => {
+        console.warn("Ham metin geçişleri yüklenemedi", err);
+        return null;
+      }),
     ])
-      .then(([k, ad, hd]) => {
+      .then(([k, ad, hd, hm]) => {
         kuran = k;
         ayetDizin = ad.dizin || {};
         hadisDizin = hd.dizin || {};
         hadisMetin = hd.metin || {};
+        hamAyet = {}; hamHadis = {}; hamKisim = (hm && hm.kisimlar) || {};
+        ((hm && hm.ayetler) || []).forEach((a) => { hamAyet[a.anahtar] = a; });
+        ((hm && hm.hadisler) || []).forEach((h) => { hamHadis[h.anahtar] = h; });
         if (window.DostViewStatus) window.DostViewStatus.hide("ayethadis-wrap");
         return true;
       })
@@ -104,6 +123,156 @@ window.__ayetHadisApp = (function () {
       .join("");
   }
 
+  // ---------------------------------------------------------------------
+  // Fütûhât'ta anıldığı yerler (ham metin geçişleri)
+  // ---------------------------------------------------------------------
+  const CILT_ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII"];
+
+  function gorunurGecisler(kayit) {
+    return (kayit.gecisler || []).filter((g) => g.dar && !g.guvensiz);
+  }
+
+  function kisimLink(id) {
+    const href = window.__dostNav ? window.__dostNav.href("futuhat", id) : esc(base() + "/futuhat/" + id + "/");
+    const ad = hamKisim[id] ? tt(hamKisim[id]) : id;
+    return `<a class="cross-link ayethadis-item__loc" href="${esc(href)}" data-view="futuhat" data-id="${esc(id)}">${esc(ad)}</a>`;
+  }
+
+  function konumHtml(g) {
+    const sayfa = g.sayfa == null ? "" : (g.sayfaYaklasik ? "≈" : "") + g.sayfa;
+    return esc(tt({
+      tr: `Cilt ${CILT_ROMAN[g.cilt]} · s. ${sayfa}`,
+      en: `Vol. ${CILT_ROMAN[g.cilt]} · p. ${sayfa}`,
+      pt: `Vol. ${CILT_ROMAN[g.cilt]} · p. ${sayfa}`,
+    }));
+  }
+
+  function gecisSatirlari(kayit) {
+    const satirlar = gorunurGecisler(kayit).map((g) => {
+      const kisimlar = (g.kisimSinirda || [g.kisim]).map(kisimLink).join('<span class="ayethadis-gecis__ayrac"> / </span>');
+      return (
+        `<li class="ayethadis-gecis__satir">` +
+        `<span class="ayethadis-gecis__konum">${konumHtml(g)}</span>` +
+        `<span class="ayethadis-gecis__kisim">${kisimlar}</span>` +
+        `<span class="ayethadis-gecis__cumle" lang="tr">${esc(g.cumle)}</span>` +
+        `</li>`
+      );
+    }).join("");
+    const seffaflik = tt({
+      tr: "Demirli çevirisinin taranmış metninde sayıldı; sayfa numaraları ±1 sapabilir, ≈ işaretli sayfalar komşu sayfalardan tahmin edildi. Cümleler o metinden aktarıldı; yalnız bariz tarama hataları düzeltildi.",
+      en: "Counted in the scanned text of Demirli's Turkish translation; page numbers may be off by ±1, and pages marked ≈ were estimated from the neighbouring pages. The sentences are quoted in Turkish from that text; only obvious scanning errors were corrected.",
+      pt: "Contado no texto digitalizado da tradução turca de Demirli; os números de página podem variar ±1, e as páginas marcadas com ≈ foram estimadas a partir das páginas vizinhas. As frases são citadas em turco a partir desse texto; só foram corrigidos erros evidentes de digitalização.",
+    });
+    return (
+      `<p class="ayethadis-gecis__not">${esc(seffaflik)}</p>` +
+      `<p class="ayethadis-gecis__tanim">${esc(tt(kayit.sayim.aciklama))}</p>` +
+      `<ol class="ayethadis-gecis__liste">${satirlar}</ol>`
+    );
+  }
+
+  // Katlanır liste: başlık sayıyı söyler, satırlar ilk açılışta çizilir.
+  function gecisHtml(tip, kayit) {
+    if (!kayit) return "";
+    const s = kayit.sayim;
+    const baslik = tt({
+      tr: `Fütûhât'ta anıldığı yerler (${s.gecis} geçiş, ${s.cilt} cilt)`,
+      en: `Where it is mentioned in the Futuhat (${s.gecis} passages, ${s.cilt} volumes)`,
+      pt: `Onde é mencionado no Futuhat (${s.gecis} passagens, ${s.cilt} volumes)`,
+    });
+    return (
+      `<details class="ayethadis-gecis" data-ham-tip="${tip}" data-ham="${esc(kayit.anahtar)}">` +
+      `<summary class="ayethadis-gecis__baslik">${esc(baslik)}</summary>` +
+      `<div class="ayethadis-gecis__icerik"></div>` +
+      `</details>`
+    );
+  }
+
+  let sonAcilan = null;
+  function gecisleriBagla() {
+    listEl.querySelectorAll("details.ayethadis-gecis").forEach((d) => {
+      d.addEventListener("toggle", () => {
+        if (!d.open) { if (sonAcilan === d) sonAcilan = null; return; }
+        sonAcilan = d;
+        const icerik = d.querySelector(".ayethadis-gecis__icerik");
+        if (icerik.dataset.cizildi) return;
+        const kayit = (d.dataset.hamTip === "ayet" ? hamAyet : hamHadis)[d.dataset.ham];
+        if (!kayit) return;
+        icerik.innerHTML = gecisSatirlari(kayit);
+        icerik.dataset.cizildi = "1";
+      });
+    });
+  }
+
+  // Esc bir adım geri: en son açılan geçiş listesini kapatır (sonra bir
+  // öncekini), odağı kendi başlığına bırakır. Açık liste yoksa zincir sürer.
+  GU.registerStepBack("ayethadis-wrap", () => {
+    let d = sonAcilan && sonAcilan.open ? sonAcilan : null;
+    if (!d) {
+      const acik = listEl.querySelectorAll("details.ayethadis-gecis[open]");
+      d = acik.length ? acik[acik.length - 1] : null;
+    }
+    if (!d) return false;
+    d.open = false;
+    const s = d.querySelector("summary");
+    if (s) s.focus();
+    return true;
+  });
+
+  function ayetKartiHtml(ref, list) {
+    const a = kuran.ayetler && kuran.ayetler[ref];
+    const ar = a ? esc(a.ar || "") : "";
+    return (
+      `<article class="ayethadis-item">` +
+      `<div class="ayethadis-item__head">` +
+      `<span class="ayet-ref ayethadis-item__ref" data-ayet="${esc(ref)}" tabindex="0">${sureAdi(ref)} ${esc(ref)}</span>` +
+      (list ? `<span class="ayethadis-item__n">${list.length}</span>` : "") +
+      `</div>` +
+      (ar ? `<p class="ayethadis-item__ar" dir="rtl" lang="ar">${ar}</p>` : "") +
+      `<p class="ayethadis-item__meal">${ayetMeal(ref)}</p>` +
+      (list ? `<div class="ayethadis-item__locs">${locHtml(list)}</div>` : "") +
+      gecisHtml("ayet", hamAyet[ref]) +
+      `</article>`
+    );
+  }
+
+  function kunyeHtml(n) {
+    return esc(tt({
+      tr: `Cilt ${CILT_ROMAN[n.cilt]}, s. ${n.sayfa}`,
+      en: `Vol. ${CILT_ROMAN[n.cilt]}, p. ${n.sayfa}`,
+      pt: `Vol. ${CILT_ROMAN[n.cilt]}, p. ${n.sayfa}`,
+    })) + " · " + kisimLink(n.kisim);
+  }
+
+  // Yalnız ham metinde sayılan hadis: metin + künye + geçiş listesi.
+  function hamHadisKartiHtml(h) {
+    const nitelik = h.nitelik === "kudsi"
+      ? { tr: "kutsî hadis", en: "sacred saying", pt: "dito sagrado" }
+      : { tr: "hadis", en: "hadith", pt: "hadith" };
+    const not = h.rivayetNotu
+      ? `<div class="ayethadis-item__rivayet">` +
+        `<p class="ayethadis-item__rivayet-aktarim">${esc(tt(h.rivayetNotu.aktarim))}</p>` +
+        `<blockquote class="ayethadis-item__rivayet-cumle" lang="tr">${esc(h.rivayetNotu.cumle)}</blockquote>` +
+        `<p class="ayethadis-item__rivayet-kunye">${kunyeHtml(h.rivayetNotu)}</p>` +
+        `</div>`
+      : "";
+    return (
+      `<article class="ayethadis-item ayethadis-item--ham">` +
+      `<div class="ayethadis-item__head">` +
+      `<span class="ayethadis-item__ref ayethadis-item__ref--hadis">${esc(tt(h.ad))}</span>` +
+      `<span class="ayethadis-item__nitelik">${esc(tt(nitelik))}</span>` +
+      `</div>` +
+      `<p class="ayethadis-item__meal">“${esc(tt(h.metin))}”</p>` +
+      `<p class="ayethadis-item__meal-not">${esc(tt({
+        tr: "Metin, Demirli'nin Fütûhât'taki ifadesinden.",
+        en: "The text follows Demirli's Turkish wording in the Futuhat; the English rendering is ours.",
+        pt: "O texto segue a formulação turca de Demirli no Futuhat; a versão portuguesa é nossa.",
+      }))}</p>` +
+      not +
+      gecisHtml("hadis", h) +
+      `</article>`
+    );
+  }
+
   function render() {
     const ayetItems = Object.keys(ayetDizin).map((ref) => ({ tip: "ayet", ref, list: ayetDizin[ref] }));
     const hadisItems = Object.keys(hadisDizin).map((ref) => ({ tip: "hadis", ref, list: hadisDizin[ref] }));
@@ -117,21 +286,7 @@ window.__ayetHadisApp = (function () {
 
     const rows = all
       .map((item) => {
-        if (item.tip === "ayet") {
-          const a = kuran.ayetler && kuran.ayetler[item.ref];
-          const ar = a ? esc(a.ar || "") : "";
-          return (
-            `<article class="ayethadis-item">` +
-            `<div class="ayethadis-item__head">` +
-            `<span class="ayet-ref ayethadis-item__ref" data-ayet="${esc(item.ref)}" tabindex="0">${sureAdi(item.ref)} ${esc(item.ref)}</span>` +
-            `<span class="ayethadis-item__n">${item.list.length}</span>` +
-            `</div>` +
-            (ar ? `<p class="ayethadis-item__ar" dir="rtl" lang="ar">${ar}</p>` : "") +
-            `<p class="ayethadis-item__meal">${ayetMeal(item.ref)}</p>` +
-            `<div class="ayethadis-item__locs">${locHtml(item.list)}</div>` +
-            `</article>`
-          );
-        }
+        if (item.tip === "ayet") return ayetKartiHtml(item.ref, item.list);
         return (
           `<article class="ayethadis-item">` +
           `<div class="ayethadis-item__head">` +
@@ -144,12 +299,38 @@ window.__ayetHadisApp = (function () {
           // taraması). Metin, sitede zaten alıntılanan biçimiyle dizinden gelir.
           (hadisMetin[item.ref] ? `<p class="ayethadis-item__meal">“${esc(tt(hadisMetin[item.ref]))}”</p>` : "") +
           `<div class="ayethadis-item__locs">${locHtml(item.list)}</div>` +
+          gecisHtml("hadis", hamHadis[item.ref]) +
           `</article>`
         );
       })
       .join("");
 
-    listEl.innerHTML = `<p class="ayethadis-intro">${intro}</p><div class="ayethadis-list">${rows}</div>`;
+    // Dizinde olmayan, yalnız ham metinde sayılan âyet ve hadisler: ayrı
+    // bir bölümde, en çok geçenden başlayarak.
+    const hamYalniz = Object.keys(hamAyet).filter((r) => !ayetDizin[r]).map((r) => ({ tip: "ayet", k: hamAyet[r] }))
+      .concat(Object.keys(hamHadis).filter((h) => !hadisDizin[h]).map((h) => ({ tip: "hadis", k: hamHadis[h] })))
+      .sort((a, b) => b.k.sayim.gecis - a.k.sayim.gecis);
+    let hamBolum = "";
+    if (hamYalniz.length) {
+      const nA = hamYalniz.filter((x) => x.tip === "ayet").length;
+      const nH = hamYalniz.length - nA;
+      hamBolum =
+        `<h2 class="ayethadis-bolum">${esc(tt({
+          tr: "Fütûhât'ın metninde sayılanlar",
+          en: "Counted in the text of the Futuhat",
+          pt: "Contados no texto do Futuhat",
+        }))}</h2>` +
+        `<p class="ayethadis-intro">${esc(tt({
+          tr: `Sitede henüz alıntılanmayan ${nA} âyet ve ${nH} hadisin Fütûhât'ta anıldığı yerler, Demirli çevirisinin taranmış metni üzerinde sayıldı.`,
+          en: `Where ${nA} verses and ${nH} hadiths not yet quoted on the site are mentioned in the Futuhat, counted in the scanned text of Demirli's Turkish translation.`,
+          pt: `Onde ${nA} versículos e ${nH} hadiths ainda não citados no site são mencionados no Futuhat, contados no texto digitalizado da tradução turca de Demirli.`,
+        }))}</p>` +
+        `<div class="ayethadis-list">${hamYalniz.map((x) => (x.tip === "ayet" ? ayetKartiHtml(x.k.anahtar, null) : hamHadisKartiHtml(x.k))).join("")}</div>`;
+    }
+
+    listEl.innerHTML = `<p class="ayethadis-intro">${intro}</p><div class="ayethadis-list">${rows}</div>${hamBolum}`;
+    sonAcilan = null;
+    gecisleriBagla();
   }
 
   return {
