@@ -7,7 +7,7 @@ ve `scripts/sync-to-live.py` ile buraya kopyalanır.
 Burada yapılan bir değişiklik bir sonraki senkronda kaybolur.
 
 Kuralların tam ve güncel hâli özel repodaki `CLAUDE.md`'dedir.
-Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-09).
+Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-10).
 
 ## Geçerli temel kurallar
 
@@ -24,6 +24,10 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-09).
   sorularımızdı; `/acik-sorular` ana haritaya düşüyor.
 - **Daphne makalelerine üçer soru (2026-10-09, kullanıcı kararı):** makalenin
   kendi akışından doğar; Dost'a ya da bizim bağlantılarımıza atıf yok.
+- **Daphne'nin Ortak Temalar ve Bağlar Haritası sekmeleri (2026-10-10,
+  kullanıcı kararı):** bizim kurduğumuz köprüleri gösterir; 2026-10-05
+  öncesindeki dolu hâliyle geri getirildi. İstisna bu içerikle sınırlı;
+  yeni tema/bağ önce kullanıcıyla karara bağlanır.
 - **Mişkâtü'l-Envâr'da** her sayfa hadisin kendi Türkçe metniyle açılır.
 - **Üç dil (TR/EN/PT) birlikte güncellenir.**
 - **Yaptığımız işi olduğundan farklı göstermeyiz:**

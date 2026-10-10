@@ -96,6 +96,31 @@
     margin: 0 auto 16px;
     padding: 0 clamp(16px, 4vw, 48px);
   }
+  /* Beş sekme (2026-10-10): dar ekranda genel kural (style.css,
+     .bookmap-tabs @900px) sekmeleri alt alta diziyor -- beş satır grafiği
+     ilk ekranın dışına itiyordu. Bu sayfada sekmeler tek satırda kalır,
+     sığmayan yatay kayar (Fütûhât/Mişkât şeridindeki çip kaydırıcısıyla
+     aynı hareket); seçilen sekme görünür alana getirilir (compare.js). */
+  @media (max-width: 900px) {
+    #compare-tabs {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 2px solid var(--gridline);
+      gap: 2px;
+      -webkit-overflow-scrolling: touch;
+    }
+    #compare-tabs::-webkit-scrollbar { display: none; }
+    #compare-tabs .bookmap-tab {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      min-height: 44px;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+    }
+    #compare-tabs .bookmap-tab--active { border-bottom-color: var(--series-theme); }
+  }
 </style>
 </head>
 <body class="viz-root">
@@ -133,6 +158,25 @@
   </header>
 
   <main>
+    <!-- Ortak Temalar ve Bağlar Haritası (2026-10-10, kullanıcı kararı):
+         ikisi de bizim kurduğumuz köprüleri gösteriyor; "yalnız okumaların
+         özeti" kuralının bilinçli istisnası (CLAUDE.md). Tanıtım metinleri
+         bunu okura açıkça söylüyor. -->
+    <section class="intro" id="intro-text-temalar" hidden>
+      <p data-tr="Aşağıdaki takımyıldızda ortadaki altın düğümler, iki dünyanın örtüştüğü temaları gösteriyor — birine tıklayın. Köprüleri biz kurduk: Daphne'nin alıntıları İbn Arabî'yi anmıyor; her temayı bir İbn Arabî kavramıyla biz eşleştirdik ve yankıyı biz yazdık."
+         data-en="In the constellation below, the golden nodes at the center are the themes where the two worlds overlap — click one. We built these bridges: Daphne's quotations do not mention Ibn Arabi; we paired each theme with an Ibn Arabi concept and wrote the resonance ourselves."
+         data-pt="Na constelação abaixo, os nós dourados no centro são os temas onde os dois mundos se sobrepõem — clique em um. Fomos nós que construímos estas pontes: as citações de Daphne não mencionam Ibn Arabi; emparelhámos cada tema com um conceito de Ibn Arabi e escrevemos nós a ressonância.">
+      </p>
+    </section>
+
+    <section class="intro" id="intro-text-bagharita" hidden>
+      <p data-tr="Taradığımız her yazıda, Dost'un hangi kavramına dokunduğunu elle işaretledik; burası o bağların hepsinin bir arada durduğu yer. Bağları ve gerekçelerini biz yazdık; 5 Ekim 2026'dan sonra eklenen yazılarda bağ işaretlenmedi. Merkezde Daphne var; bir kavram ne kadar çok yazıda dönüyorsa merkeze o kadar yakın duruyor. Bu bir puan değil, bir sayım: neyin tekrar ettiğini gösteriyor, ne anlama geldiğini değil. Bir düğüme tıklayın."
+         data-en="For each piece we surveyed, we marked by hand which of Dost's concepts it touches; this is where all those links stand together. We wrote the links and their reasons ourselves; pieces added after 5 October 2026 carry no marked links. Daphne is at the center; the more essays return to a concept, the closer it sits. This is not a score but a count: it shows what recurs, not what it means. Click a node."
+         data-pt="Em cada texto que analisámos, marcámos à mão quais conceitos de Dost ele toca; aqui é onde todos esses vínculos se encontram. Fomos nós que escrevemos os vínculos e as suas razões; os textos acrescentados depois de 5 de outubro de 2026 não têm vínculos marcados. Daphne está no centro; quanto mais ensaios retornam a um conceito, mais perto ele fica. Isto não é uma pontuação, mas uma contagem: mostra o que se repete, não o que significa. Clique num nó.">
+      </p>
+      <p class="intro__olcu" id="bagharita-olcu"></p>
+    </section>
+
     <section class="intro" id="intro-text-baglar" hidden>
       <p data-tr="Daphne'nin yazılarında tekrar eden eksenler; her iplik bir eksenin geçtiği yazıları birleştirir. Yazılar yayın tarihine göre bir sarmala dizili. Eksenleri ve her yazının hangi ekseni taşıdığını biz işaretledik (Daphne'nin Profili sekmesindeki eksenler). Bu bir sayım: neyin tekrar ettiğini gösteriyor, ne anlama geldiğini değil. Bir eksene değinin; bir yazıyı seçince kartı açılır."
          data-en="The axes that recur in Daphne's writing; each thread joins the pieces an axis runs through. The pieces are laid on a spiral by publication date. We marked the axes, and which axes each piece carries (the axes of the Daphne's Profile tab). This is a count: it shows what recurs, not what it means. Touch an axis; select a piece to open its card."
@@ -149,13 +193,40 @@
     </section>
 
     <div class="bookmap-tabs" id="compare-tabs" role="tablist">
+      <button type="button" class="bookmap-tab" data-tab="temalar" role="tab" aria-selected="false"
+        data-tr="Ortak Temalar" data-en="Shared Themes" data-pt="Temas Comuns"></button>
       <button type="button" class="bookmap-tab bookmap-tab--active" data-tab="profil" role="tab" aria-selected="true"
         data-tr="Daphne'nin Profili" data-en="Daphne's Profile" data-pt="O Perfil de Daphne"></button>
+      <button type="button" class="bookmap-tab" data-tab="bagharita" role="tab" aria-selected="false"
+        data-tr="Bağlar Haritası" data-en="Map of Links" data-pt="Mapa de Vínculos"></button>
       <button type="button" class="bookmap-tab" data-tab="baglar" role="tab" aria-selected="false"
         data-tr="Eksen İplikleri" data-en="Axis Threads" data-pt="Fios dos Eixos"></button>
       <button type="button" class="bookmap-tab" data-tab="yazilar" role="tab" aria-selected="false"
         data-tr="Taranan Yazılar" data-en="Articles Surveyed" data-pt="Textos Analisados"></button>
     </div>
+
+    <section class="graph-wrap" id="compare-wrap" data-tab-panel="temalar" hidden>
+      <svg id="graph"></svg>
+      <div class="view-status" id="compare-wrap-status" hidden>
+        <div class="view-status__spinner" aria-hidden="true"></div>
+        <p class="view-status__text"></p>
+        <button class="view-status__retry" type="button" hidden></button>
+      </div>
+      <button class="graph-recenter" id="compare-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
+      </button>
+      <div class="legend" id="legend">
+        <button class="legend__toggle" type="button" aria-expanded="true">
+          <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
+          <span class="legend__toggle-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="legend__body">
+          <div class="legend__item"><span class="legend__dot legend__dot--ibnarabi"></span><span data-tr="İbn Arabî kavramları" data-en="Ibn Arabi concepts" data-pt="Conceitos de Ibn Arabi">İbn Arabî kavramları</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--theme"></span><span data-tr="Ortak temalar" data-en="Shared themes" data-pt="Temas compartilhados">Ortak temalar</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--daphne"></span><span data-tr="Daphne'nin yazıları" data-en="Daphne's writings" data-pt="Escritos de Daphne">Daphne'nin yazıları</span></div>
+        </div>
+      </div>
+    </section>
 
     <section class="graph-wrap" id="profile-wrap" data-tab-panel="profil">
       <svg id="profile-graph"></svg>
@@ -167,6 +238,33 @@
       <button class="graph-recenter" id="profile-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
       </button>
+    </section>
+
+    <section class="graph-wrap" id="bagharita-wrap" data-tab-panel="bagharita" hidden>
+      <svg id="bagharita-graph"></svg>
+      <div class="view-status" id="bagharita-wrap-status" hidden>
+        <div class="view-status__spinner" aria-hidden="true"></div>
+        <p class="view-status__text"></p>
+        <button class="view-status__retry" type="button" hidden></button>
+      </div>
+      <p class="baglar-bos" id="bagharita-bos" hidden></p>
+      <button class="graph-recenter" id="bagharita-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
+      </button>
+      <div class="legend" id="bagharita-legend">
+        <button class="legend__toggle" type="button" aria-expanded="true">
+          <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
+          <span class="legend__toggle-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="legend__body">
+          <div class="legend__item"><span class="legend__dot legend__dot--daphne"></span><span data-tr="Merkez: Daphne" data-en="Center: Daphne" data-pt="Centro: Daphne">Merkez: Daphne</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--ibnarabi"></span><span data-tr="Ontoloji düğümü" data-en="Ontology node" data-pt="Nó da Ontologia">Ontoloji düğümü</span></div>
+          <div class="legend__item"><span class="legend__dot legend__dot--theme"></span><span data-tr="Terim" data-en="Term" data-pt="Termo">Terim</span></div>
+          <div class="legend__item"><span class="baglar-lejant-cizgi baglar-lejant-cizgi--ortusme"></span><span data-tr="örtüşme — düz daire" data-en="overlap — plain circle" data-pt="sobreposição — círculo simples">örtüşme — düz daire</span></div>
+          <div class="legend__item"><span class="baglar-lejant-cizgi baglar-lejant-cizgi--fark"></span><span data-tr="fark — çizili daire" data-en="difference — struck circle" data-pt="diferença — círculo riscado">fark — çizili daire</span></div>
+          <div class="legend__item"><span class="baglar-lejant-cizgi baglar-lejant-cizgi--soru"></span><span data-tr="açık soru — kapanmamış halka" data-en="open question — unclosed ring" data-pt="pergunta aberta — anel não fechado">açık soru — kapanmamış halka</span></div>
+        </div>
+      </div>
     </section>
 
     <section class="graph-wrap" id="baglar-wrap" data-tab-panel="baglar" hidden>
@@ -204,9 +302,9 @@
   </main>
 
   <footer class="app-footer">
-    <p data-tr="Kaynaklar: thelivingfractal.com ve Substack (thelivingfractal1)."
-       data-en="Sources: thelivingfractal.com and Substack (thelivingfractal1)."
-       data-pt="Fontes: thelivingfractal.com e Substack (thelivingfractal1).">
+    <p data-tr="Kaynaklar: thelivingfractal.com, Substack (thelivingfractal1); Ortak Temalar ve Bağlar Haritası'ndaki kavramlar için Fütûhât-ı Mekkiyye / Füsûsu'l-Hikem gibi İbn Arabî eserleri."
+       data-en="Sources: thelivingfractal.com, Substack (thelivingfractal1); for the concepts in Shared Themes and the Map of Links, Ibn Arabi's works such as Futuhat al-Makkiyya / Fusus al-Hikam."
+       data-pt="Fontes: thelivingfractal.com, Substack (thelivingfractal1); para os conceitos de Temas Comuns e do Mapa de Vínculos, obras de Ibn Arabi como Futuhat al-Makkiyya / Fusus al-Hikam.">
     </p>
   </footer>
 
@@ -250,7 +348,9 @@
   <script src="assets/honorifics.js" integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
   <script src="assets/daphne-profil.js" integrity="sha384-6ph3HXERCLsb4MyFfa1u8cGyoiJLDSbFgERFWXx7nGvXPnNZrUCQjjdlOZ9/fkgX"></script>
   <script src="assets/daphne-baglar.js" integrity="sha384-xunKZWDJJWJcKX5Leva3wZ6mmog6duAZvEibM1906gYES0Ho4rZYWf7PseHvs5/F"></script>
-  <script src="assets/compare.js" integrity="sha384-zWaT+nHZNsZxNY9S5sjS7oWqkhVAYIhzPxlWqXI9MqX4tjIZibhoUStLlvZoILBK"></script>
+  <script src="assets/ortak-temalar.js" integrity="sha384-jhJRlTHERCuoKLtS/cYmObEpAWMwGBhCof4RE8ztnpbbxL0gUmDg9MvVLqTO+2F3"></script>
+  <script src="assets/daphne-bag-haritasi.js" integrity="sha384-IKWE80rLM8cXBcLKrZ852A7oIHEFOrZeZwVTGi+AI5+u+9+Y2TeHjZWA6A++/hQX"></script>
+  <script src="assets/compare.js" integrity="sha384-F1HsICaiikRIE62w+4t/bU5QpgYwLjCb+leiF48eWP+D4g1Y2YY4h9Gv7QBH61YV"></script>
   <script src="assets/edit-mode.js" integrity="sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ"></script>
   <!-- @revise kipinin taramaları (2026-10-09): ana sayfadaki gibi Daphne
        bölümünde de aynı çipten açılıyor. -->
