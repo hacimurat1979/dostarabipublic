@@ -28,7 +28,7 @@
      üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
      bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
      domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-cjheSZxdnEzaKXWxMGqsuKGbIzfNWtwQRgcQjUS/++E=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-xkjc3829AfyZ28jWlpkjSvV2tgzrf16mdKf27VEh/3U='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-yzArq5potEZgae1/zaHVfNSa8zqA2pW8OrNfx7oEkrI=' 'sha256-cjheSZxdnEzaKXWxMGqsuKGbIzfNWtwQRgcQjUS/++E=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-xkjc3829AfyZ28jWlpkjSvV2tgzrf16mdKf27VEh/3U='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
      köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
      her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
@@ -36,7 +36,7 @@
      kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
      satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
 <base href="/">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Dost Arabî — Kazâ ve Kader</title>
 <meta name="description" content="Fütûhât&#x27;ın 413. bölümünde Dost bu ikisini birbirinden ayırıyor ve gerekçesini de veriyor: “Kazâ genel (mücmel), verilen hüküm o genelin tafsilidir ve ona kader…">
 <link rel="canonical" href="https://dostarabi.com/kavram/ontoloji/kaza-kader/">
@@ -184,6 +184,13 @@
           ? stored
           : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         document.body.setAttribute("data-theme", theme);
+      } catch (e) {}
+      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
+      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
+      try {
+        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
+          document.documentElement.classList.add("dost-uygulama");
+        }
       } catch (e) {}
     })();
   </script>
@@ -1388,7 +1395,7 @@ mesmo antes que o assombro exista."></blockquote>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-wJjXOjqathRvpklI0/9bosjU2rBLeJ3bWZOZ19r/+VxFiJ10sJHenP6LN1UIlTf+"></script>
   <script src="assets/view-status.js" defer integrity="sha384-QqM+7WhjdfP0QaEJQioJpJVFbX4j/zkZMh7XlWxRxny7QUmI2jbPyeIvtycYXTan"></script>
-  <script src="assets/graph-utils.js" defer integrity="sha384-Cc1HM2V+Af4Yo9IGAf+bZXoiAeWLSSaqCm1lB7J4AchQbxpH0J00KKGcLQqfTFqG"></script>
+  <script src="assets/graph-utils.js" defer integrity="sha384-sFwMtciqfDNmHd16L4CXA11YGKTAHWL+nm3hEUObVVuIcRz4ai6nzDvZ4FOjjSce"></script>
   <!-- nav-drawer.js graph-utils.js'ten SONRA gelmeli (2026-08-15): artık
        açılışta GU.registerStepBack çağırıyor. -->
   <script src="assets/nav-drawer.js" defer integrity="sha384-PSQ3VHw824GsJo6RHsN4BvYtx7e26oS29tbIYc9DQOpBEwaZh8hhfVpYapse+GUZ"></script>
@@ -1400,6 +1407,7 @@ mesmo antes que o assombro exista."></blockquote>
        detayını çizerken window.__dostKademe hazır olmalı. -->
   <script src="assets/kademe.js" defer integrity="sha384-qstXPmVEy5j/ElqnV6hvOfNFBOxlrwj8IhlrgYL2vtn8VzXUESTxdpuBfDN2uZM9"></script>
   <script src="assets/search.js" defer integrity="sha384-pDs5L1a/MsgHhvDCU8wwM9qzBnOVn6cEmzliqa+sPISC/5HVDkd03U0qTk2LAXsY"></script>
+  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-hIH5ZDKR9fps1P3U81hcPDPmw+k93j3x2y1Gqnfb02dIcnS/X6X05bhm0YZv+1if"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-pptqqmGNxso09k5o3wT0I5nvlVbpPA4CJJ/VB1WKwOwKEMo7iE8ALEpu6m1klg3c"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
@@ -1411,8 +1419,8 @@ mesmo antes que o assombro exista."></blockquote>
        ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
        (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
        static <script> etiketi yok. -->
-  <script src="assets/view-loader.js" defer integrity="sha384-U+WkYAGc+q+zfCdQOq8Abha8I1Utg2HQW9gD7wVIKK0/crRNkO1IHLwfcsmOtuL3"></script>
-  <script src="assets/ontology.js" defer integrity="sha384-FXdHw5duRCaaNcoFjtnmTAvzGfVgzr1MeAdyUh2LKJpV++UrYRSmB6n/zzQbkFCA"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-KNJnhhSB5mrKO9cJYCZDYKPmmPrmIbusH+v3y8OzOdhFura37Zm4oacmx8zAdyVP"></script>
+  <script src="assets/ontology.js" defer integrity="sha384-uOd1DIYVFk36QahWE+4EjJWA3uQ+eVBfP5Mx26FrlrUpKSr1Ge+hJySMG7FlOAbb"></script>
   <script src="assets/crosslink-preview.js" defer integrity="sha384-Ql+mJC8qoRFExWxkLBHP+85sCuCXqJwVTmYYk1Bk+EWaRK8amiurfak5/gDhaQg+"></script>
   <script src="assets/ayet-onizleme.js" defer integrity="sha384-dRjrG5LDGutq6k8N5qimc3vad2avxLsVwHlAkj3zO4pYqFgOAhpJT6nO3juyamkf"></script>
   <script src="assets/start-hint.js" defer integrity="sha384-vtQnEinwGN6wZtbYZxihvIMKZX4X7Ctms+6OneV/OhKe8FSg03UkBmjfm+kzfv//"></script>
@@ -1425,7 +1433,7 @@ mesmo antes que o assombro exista."></blockquote>
        istendiğinde iniyor (SRI orada, sri-guncelle.py tazeliyor). -->
   <script src="assets/sessiz-mod.js" defer integrity="sha384-Bpwzt1cCiqXtBYt/0FYwvcQIUZJ4MUX6VQgkAHfDU7xFd9P6YxdzVUrdJiTGXqWj"></script>
   <!-- Çevrimdışı okuma satırı (2026-10-10): nav-drawer.js'ten sonra. -->
-  <script src="assets/cevrimdisi.js" defer integrity="sha384-vJPMv0rC6qmJiUwZkUBw8QtVN4722gi6Bd+6Zqmw+d8NX38bMJsTv1Fm+mSnFqRs"></script>
+  <script src="assets/cevrimdisi.js" defer integrity="sha384-JNoNXvbZ2Oh5N0sfVKeB0x+sfE0+VT0QyYmHwsmwYa/3UlgxU217T0WRbDw4d714"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-xkJEH+qGBiumsuXheD2YbLbMbRv6Xg3bY3Iq261DhUjzzIZxGt0SG+9gTtjlw3cF"></script>
   <script>
     // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script

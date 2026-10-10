@@ -381,8 +381,11 @@
   window.addEventListener("resize", window.DostGraphUtils.debounceResize(updateHeaderHeightVar));
   window.addEventListener("resize", window.DostGraphUtils.debounceResize(updateTypoHeightVar));
 
+  // Kapat düğmesi Esc'in son adımıyla aynı şeyi yapar: paneli kapatır ve
+  // adresi bölüm sayfasına döndürür (bkz. kaydiKapat, updateHash).
   detailClose.addEventListener("click", () => {
     detailPanel.hidden = true;
+    kaydiKapat();
   });
 
   const detailPrint = document.getElementById("detail-print");
@@ -1245,13 +1248,38 @@
   ["pointerdown", "keydown"].forEach((t) =>
     document.addEventListener(t, () => { navOtomatik = false; }, true));
 
+  // Bir adım geri (2026-10-10, site geneli karar): Esc ya da panelin kapat
+  // düğmesi bir kaydı kapatınca adres de bölüm sayfasına döner
+  // (/esma/rahman/ -> /esma/) -- Android'in geri tuşu ondan sonra beklenen
+  // yere gitsin. Geri adım hiçbir zaman YENİ bir tarih girdisi açmaz:
+  //  - bu girdi, gidilecek yoldan bir seçimle açıldıysa (graph-utils.js'in
+  //    tarih kaydı: dostOnceki) history.back() -- yoksa geri tuşu aynı
+  //    adresi ikinci kez gösteren ölü bir adıma takılırdı;
+  //  - değilse (sayfaya doğrudan /esma/rahman/ ile girildi, ya da başka bir
+  //    görünümden gelindi) replaceState. Statik rotanın canonical'ı
+  //    tarayıcıya gelen HTML'de durur; burada yalnız açık sayfanın meta'sı
+  //    adresle birlikte güncellenir.
+  // geriAdimda: Esc zinciri (graph-utils.js) ya da kapat düğmesi sürerken
+  // true -- görünümlerin o sırada çağırdığı setHash(view) bu kurala uyar.
+  let geriAdimda = false;
+  let kendiGeriYolu = null, kendiGeriZaman = null;
+  function geriyeGit(path) {
+    kendiGeriYolu = path;
+    clearTimeout(kendiGeriZaman);
+    // popstate gelmezse (tarayıcı geri adımı yutarsa) bekleyiş düşer.
+    kendiGeriZaman = setTimeout(() => { kendiGeriYolu = null; }, 1500);
+    history.back();
+  }
+
   function updateHash(view, id) {
     if (view === "acik-sorular") { view = "ontoloji"; id = undefined; }
     const path = routePath(view, id);
     if (location.pathname !== path) {
-      const replace = navOtomatik;
+      const replace = navOtomatik || geriAdimda;
+      const geri = geriAdimda && !navOtomatik && window.DostGraphUtils.tarihOncekiYol() === path;
       try {
-        if (replace) history.replaceState(null, "", path);
+        if (geri) geriyeGit(path);
+        else if (replace) history.replaceState(null, "", path);
         else history.pushState(null, "", path);
       } catch (e) { /* eski tarayıcı */ }
       if (!replace && !id) navOtomatik = true;
@@ -1562,8 +1590,45 @@
 
   window.addEventListener("popstate", () => {
     navOtomatik = true;
+    // Kendi geri adımımızın (geriyeGit) dönüşü: görünüm adımını zaten attı,
+    // adres ve meta da yazıldı -- yeniden çözmek ikinci bir adım atardı.
+    if (kendiGeriYolu && location.pathname === kendiGeriYolu) {
+      kendiGeriYolu = null;
+      clearTimeout(kendiGeriZaman);
+      return;
+    }
+    kendiGeriYolu = null;
     parseHashAndGo(true);
   });
+
+  // Kayıtları ayrıntı panelinde açan görünümler (adres /view/id/). Okuma
+  // metinleri (Fütûhât/Füsûs/Mişkât kısmı), Kavram'ın yerinde açılan sayfası
+  // ve Hakkında'nın alt sekmeleri panel değil sayfadır: kapanacak bir şeyleri
+  // yok, adresleri olduğu gibi kalır.
+  const PANEL_KAYITLARI = new Set(["ontoloji", "esma", "hal", "terimler", "sirlar", "sorular",
+    "menziller", "hocalar", "eser-agi", "bilmiyoruz", "elestiri-arkeolojisi", "kuran-dokusu",
+    "seyahat-atlasi", "yolculuk"]);
+  // Panel kapandı (Esc ya da kapat düğmesi): adres bölüm sayfasına.
+  function kaydiKapat() {
+    const { view, id } = currentRoute;
+    if (!id || !PANEL_KAYITLARI.has(view) || !detailPanel.hidden) return;
+    const once = geriAdimda;
+    geriAdimda = true;
+    try { updateHash(view); } finally { geriAdimda = once; }
+  }
+  // Esc zinciri graph-utils.js'te (window, kabarcık); bu dinleyici yakalama
+  // evresinde ondan ÖNCE çalışır, zincir bitince panel kapandıysa adresi
+  // düzeltir. Görünümlerin zincir içinde çağırdığı setHash da geri adım
+  // sayılır (geriAdimda).
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const panelAcikti = !detailPanel.hidden;
+    geriAdimda = true;
+    setTimeout(() => {
+      if (panelAcikti) kaydiKapat();
+      geriAdimda = false;
+    }, 0);
+  }, true);
 
   // Site içi tüm gezinme #/view yerine gerçek /view yollarını kullanıyor
   // (bkz. 404.html) — bu yüzden linkify()'ın ürettiği <a class="cross-link">

@@ -225,6 +225,10 @@
       .observe(drawer, { attributes: true, attributeFilter: ["hidden"] });
   }
 
+  // Telefon kabuğu (uygulama-kabugu.js) bu satırı "Daha" sayfasına taşıyınca
+  // boyutu söyleyebilsin diye özeti oradan da ister (çekmece açılmadan).
+  window.DostCevrimdisi = { hazirla: ozetiAl };
+
   durumOku().then(function (d) {
     durum = d;
     render();
