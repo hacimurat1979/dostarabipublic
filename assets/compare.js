@@ -11,7 +11,9 @@
   // Dil değişince İKİ graf da yeniden çizilmeli: Daphne profili artık ayrı
   // bir sayfa değil, bu sayfanın bir sekmesi (2026-07-27).
   I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
+    if (window.__dostOrtakTemalarApp) window.__dostOrtakTemalarApp.render();
     if (window.__dostDaphneProfileApp) window.__dostDaphneProfileApp.render();
+    if (window.__dostDaphneBagHaritasiApp) window.__dostDaphneBagHaritasiApp.render();
     if (window.__dostDaphneBaglarApp) window.__dostDaphneBaglarApp.render();
   });
   window.DostGraphUtils.setupLegendToggles();
@@ -26,8 +28,21 @@
     const tabButtons = document.querySelectorAll("#compare-tabs .bookmap-tab");
     if (!tabButtons.length) return;
     const tabPanels = document.querySelectorAll("[data-tab-panel]");
-    const introProfile = document.getElementById("intro-text-profile");
-    const introBaglar = document.getElementById("intro-text-baglar");
+    // Her sekmenin kendi tanıtım metni ve kendi grafiği (2026-10-10: Ortak
+    // Temalar ve Bağlar Haritası geri geldi, Eksen İplikleri yanında).
+    const intros = {
+      temalar: document.getElementById("intro-text-temalar"),
+      profil: document.getElementById("intro-text-profile"),
+      bagharita: document.getElementById("intro-text-bagharita"),
+      baglar: document.getElementById("intro-text-baglar"),
+    };
+    const uygulamalar = {
+      temalar: () => window.__dostOrtakTemalarApp,
+      profil: () => window.__dostDaphneProfileApp,
+      yazilar: () => window.__dostDaphneProfileApp,
+      bagharita: () => window.__dostDaphneBagHaritasiApp,
+      baglar: () => window.__dostDaphneBaglarApp,
+    };
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const tab = btn.dataset.tab;
@@ -36,19 +51,14 @@
           b.setAttribute("aria-selected", String(b === btn));
         });
         tabPanels.forEach((p) => { p.hidden = p.dataset.tabPanel !== tab; });
-        if (introProfile) introProfile.hidden = tab !== "profil";
-        if (introBaglar) introBaglar.hidden = tab !== "baglar";
+        Object.keys(intros).forEach((k) => { if (intros[k]) intros[k].hidden = tab !== k; });
         detailPanel.hidden = true;
-        if ((tab === "profil" || tab === "yazilar") && window.__dostDaphneProfileApp) {
+        // Dar ekranda sekme çubuğu yatay kayıyor: seçilen sekme görünsün.
+        if (btn.scrollIntoView) btn.scrollIntoView({ block: "nearest", inline: "nearest" });
+        const app = uygulamalar[tab] && uygulamalar[tab]();
+        if (app) {
           // double-RAF ensures panel has reflowed (clientWidth > 0) before buildGraph reads it
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            window.__dostDaphneProfileApp.activate();
-          }));
-        }
-        if (tab === "baglar" && window.__dostDaphneBaglarApp) {
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            window.__dostDaphneBaglarApp.activate();
-          }));
+          requestAnimationFrame(() => requestAnimationFrame(() => app.activate()));
         }
       });
     });
@@ -80,7 +90,7 @@
   // kaldırılıp aynı davranış zincirin KENDİSİNE bir stepBack olarak
   // kaydedildi -- artık zamanlamaya bağlı bir bayrağa (escPanelAcikti)
   // gerek yok, sıra tek bir merkezi yerde tanımlı. wrapId burada `null`:
-  // bu sayfanın dört sekmesi (temalar/profil/baglar/yazilar) ayrı
+  // bu sayfanın beş sekmesi (temalar/profil/bagharita/baglar/yazilar) ayrı
   // wrap'lara bölünmüş ve o an aktif olmayanı `hidden` -- sekme hangisi
   // olursa olsun Esc aynı anlama gelmeli, o yüzden görünürlük kapısına
   // bağlanmıyor (lightbox.js/graph-hint.js/durus-kontrol.js'teki aynı
@@ -114,9 +124,9 @@
     });
   }
 
-  // Açılış sekmesi Daphne'nin Profili (2026-10-09): "Ortak Temalar" sekmesi
-  // kaldırıldı (bizim kurduğumuz İbn Arabî–Daphne köprüleriydi; gövdesi
-  // assets/ortak-temalar.js'te, yayında değil). Profil grafiği ölçü
+  // Açılış sekmesi Daphne'nin Profili (2026-10-09'dan beri). Ortak Temalar
+  // 2026-10-10'da birinci sekme olarak geri geldi ama açılış sekmesi
+  // olmadı: köprüleri biz kurduk, sayfa okumanın özetiyle açılsın. Profil grafiği ölçü
   // isterken ilk boyamadan sonra kurulur (sekme tıklamasındaki aynı
   // çift-RAF).
   requestAnimationFrame(() => requestAnimationFrame(() => {
