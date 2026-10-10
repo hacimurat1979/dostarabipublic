@@ -2172,7 +2172,11 @@
         activatePart(chip.dataset.id);
       });
     }
-    activatePart(activePartId, !kisimAdreste);
+    // Yeniden çizim (dil değişimi, çapraz bağların gelişi, görünüme dönüş)
+    // bir kullanıcı seçimi değil: okuyucunun yeri korunur, makalenin
+    // başına inilmez (2026-10-10, mobil senaryo: TR→EN geçişi okuru
+    // metnin başına atıyordu). kisimAdreste bu çağrıda değişmez.
+    activatePart(activePartId, true);
   }
 
   setupCrossLinkPreviews();
