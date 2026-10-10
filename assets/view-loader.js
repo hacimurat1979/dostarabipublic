@@ -70,10 +70,10 @@
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-CDbna35WA4X8qv3hwTqhvnfV2/ebCf5NBjcPiELP0ULRymZLDET3TYh1eOH0VwA0", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-lhV6fjytAUeYtHf21NISrCcQMyK6FmjNDqEwzfaMyG76MpR2u+eBBAUa12I72g+2", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-dzPyZVmLIPNauB0iYAP1uXbYf4ORb0HMx8X+FnKhilCR1PBJPKLMV8OVULrFZDgA", wrap: "futuhat-wrap" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-N220xSMDNp7wb1ufweoelqjhU8cPCYO31UqxCWYqHoKJNlQIbwAXk70rRCrqM8m0", wrap: "futuhat-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-nRtAoGfzRdxcsKff/qRHL7sMuBO7WR/cQEbcYc+XEOtITTl6798LcNqPGkvGpDKW", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-WHMiHe51h+RtW/DOCkKXKVQvnq+mhgX1Pzf15WRG3TTkAUXyGFT+LqASnnVeCWXq", wrap: "tasiyicilar-wrap" },
-    __fususApp: { src: "assets/fusus.js", integrity: "sha384-vrcEQ7hEVbmdaIk2pFyIjpav9gd0fdnXxOE0KueaFbRqnGMX0nTGvedlJPAbpBRD", wrap: "fusus-wrap" },
+    __fususApp: { src: "assets/fusus.js", integrity: "sha384-pNZ2GkaPDM0LqS3ndD6U8qSibxm1B164ou6iTnCDaVqm9ia8jE+oLEZkwga6IFiF", wrap: "fusus-wrap" },
     __miskatApp: { src: "assets/miskat.js", integrity: "sha384-V/s+Zs75fbD273qHPiWeX9QS2MmtOyGFA4p93PZBoc7Y86Z8bKcof45cPj+lCqLc", wrap: "miskat-wrap" },
   };
 
@@ -82,7 +82,7 @@
     "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
-    "share-mode": { src: "assets/share-mode.js", integrity: "sha384-L4hxQr91esbod70wRrNzaRgn6yGwBH0eZRnZsdzZimpo4CpzLqXhUCOKNIuKQ94B" },
+    "share-mode": { src: "assets/share-mode.js", integrity: "sha384-PMEFUuv3fYxExMg7EG6Dyk6MsFQVExnZ1RvhcHNyIxxmWZhfogt+TX/sBjnPrphS" },
   };
 
   var loadingPromises = {};

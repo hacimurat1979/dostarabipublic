@@ -228,7 +228,11 @@
   function loadBilmiyoruz() { return cachedFetch("bilmiyoruz", "data/ibn-arabi/bilmiyoruz.json"); }
   function loadOntoloji() { return cachedFetch("ontoloji", "data/ibn-arabi/ontology.json"); }
   function loadEsma() { return cachedFetch("esma", "data/ibn-arabi/esma.json"); }
-  function loadFususAtlas() { return cachedFetch("fusus-atlas", "data/ibn-arabi/fusus-atlas.json"); }
+  // Füsûs (2026-10-10): hafif indeks (27 fassın künyesi, sarmal için) +
+  // istenen fassın tam metni ayrı dosyada (build-static-routes.py
+  // write_fusus_split). Eskiden bütün atlas tek parça iniyordu.
+  function loadFususAtlas() { return cachedFetch("fusus-index", "data/ibn-arabi/fusus-atlas-index.json"); }
+  function loadFususFass(id) { return cachedFetch("fusus-fass:" + id, "data/ibn-arabi/fusus-parts/" + id + ".json"); }
   function loadMiskatAtlas() { return cachedFetch("miskat-atlas", "data/ibn-arabi/miskat-atlas.json"); }
   function loadSiirler() { return cachedFetch("siirler", "data/ibn-arabi/siirler.json"); }
   // "Karşılaştır" şablonu ve "İki Kutu"nun eleştiri/Dost'un dediği çiftleri
@@ -632,8 +636,11 @@
     esma: (ref, l) => loadEsma().then((d) => kavramSahnesi(ref, l, (d.nodes || []).find((n) => n.id === ref.id), "esma")),
     fusus: (ref, l) => loadFususAtlas().then((d) => {
       const all = d.fasses || [];
-      const f = all.find((x) => x.id === ref.id);
-      if (!f) return null;
+      if (!all.some((x) => x.id === ref.id)) return null;
+      return loadFususFass(ref.id).then((f) => ({ all: all, f: f }));
+    }).then((r) => {
+      if (!r) return null;
+      const all = r.all, f = r.f;
       let t = null, ses = "alinti";
       if (ref.si != null) { const e = emBul(f, l, ref); t = e && govde(e.t, 300); }
       else {
@@ -772,9 +779,12 @@
     fusus: () => loadFususAtlas().then((d) => {
       const active = (d.fasses || []).filter((f) => f.status === "active");
       if (!active.length) return null;
-      const f = pick(active);
+      return loadFususFass(pick(active).id).then((f) => ({ f: f, n: active.length }));
+    }).then((r) => {
+      if (!r) return null;
+      const f = r.f;
       const ks = alintiKonumlari(f, shareLangId, 260);
-      return { ref: Object.assign({ tpl: "fusus", id: f.id }, ks.length ? konum(pick(ks)) : {}), havuz: active.length };
+      return { ref: Object.assign({ tpl: "fusus", id: f.id }, ks.length ? konum(pick(ks)) : {}), havuz: r.n };
     }),
     miskat: () => loadMiskatAtlas().then((d) => {
       const active = (d.hadisler || []).filter((h) => h.status === "active");
@@ -847,7 +857,9 @@
     }
     if (view === "fusus") {
       return loadFususAtlas().then((d) => {
-        const f = (d.fasses || []).find((x) => x.id === id);
+        if (!(d.fasses || []).some((x) => x.id === id)) return null;
+        return loadFususFass(id);
+      }).then((f) => {
         if (!f) return null;
         const ks = shuffled(alintiKonumlari(f, shareLangId, 260));
         const refs = ks.map((e) => Object.assign({ tpl: "fusus", id: f.id }, konum(e)));

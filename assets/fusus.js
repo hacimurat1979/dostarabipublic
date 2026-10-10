@@ -12,9 +12,12 @@
  *  2. Açılış haritasının kendisi de bir sarmal: yirmi yedi fass, okunma
  *     sırasıyla dizilmiş; okunmuş olanlar vurgulu, henüz okunmamışlar sönük.
  *
- * Veri: data/ibn-arabi/fusus-atlas.json (tek dosya -- Fütûhât'taki gibi
- * kısım başına ayrı dosyaya bölmek için henüz sebep yok; 27 fass hepsi
- * yazıldığında bile atlas'ın bugünkü boyunun çok altında kalıyor).
+ * Veri (2026-10-10, Fütûhât'taki desen): önce data/ibn-arabi/fusus-atlas-
+ * index.json (27 fassın hafif kaydı: harita, liste, gezinme), sonra yalnız
+ * açılan fassın data/ibn-arabi/fusus-parts/<id>.json'u. İkisi de
+ * fusus-atlas.json'dan (yazım kaynağı) build-static-routes.py
+ * write_fusus_split() ile üretilir; düzeltme kaynağa yapılır. Eskiden
+ * bütün atlas (~330 KB gzip) görünüm açılınca tek parça iniyordu.
  */
 (function () {
   "use strict";
@@ -99,10 +102,21 @@
     return window.__dostCrossLink ? window.__dostCrossLink.linkify(text) : text;
   }
 
+  // Açılmış fassların tam içeriği (fusus-parts/<id>.json). İndeksteki
+  // kayıt yalnız harita/liste alanlarını taşır; yazının kendisi buradan.
+  var partCache = {};
+  function loadPart(id) {
+    if (partCache[id]) return Promise.resolve(partCache[id]);
+    return window.DostGraphUtils.fetchJson("data/ibn-arabi/fusus-parts/" + id + ".json").then(function (p) {
+      partCache[id] = p;
+      return p;
+    });
+  }
+
   function load() {
     if (dataPromise) return dataPromise;
     if (window.DostViewStatus) window.DostViewStatus.showLoading("fusus-wrap");
-    dataPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/fusus-atlas.json")
+    dataPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/fusus-atlas-index.json")
       .then(function (d) {
         data = d;
         if (window.DostViewStatus) window.DostViewStatus.hide("fusus-wrap");
@@ -532,13 +546,38 @@
         if (yeniOdak) { try { yeniOdak.focus({ preventScroll: true }); } catch (e) { /* eski tarayıcı */ } }
       }
       renderList();
-      renderArticle(f);
-      if (adreste && window.__dostNav) window.__dostNav.setHash("fusus", f.id);
-      if (!crossLinkSubscribed && window.__dostCrossLink && window.__dostCrossLink.onReady) {
-        crossLinkSubscribed = true;
-        window.__dostCrossLink.onReady(function () {
-          if (data && activeId && window.DostGraphUtils.isViewActive(wrap)) renderArticle(fassById(activeId));
-        });
+      return renderActivePart(f.id, function () {
+        // Sıra eskisi gibi: önce yazı (DostMeta.setRecord), sonra adres.
+        if (adreste && window.__dostNav) window.__dostNav.setHash("fusus", f.id);
+        if (!crossLinkSubscribed && window.__dostCrossLink && window.__dostCrossLink.onReady) {
+          crossLinkSubscribed = true;
+          window.__dostCrossLink.onReady(function () {
+            if (data && activeId && partCache[activeId] && window.DostGraphUtils.isViewActive(wrap)) renderArticle(partCache[activeId]);
+          });
+        }
+      });
+    });
+  }
+
+  // Fassın tam içeriği gelince yazıyı çizer. Bu arada kullanıcı başka bir
+  // fass seçtiyse ya da görünümden çıktıysa geç gelen yanıt yazılmaz
+  // (activate'teki yavaş ağ bekçisiyle aynı aile). "Yükleniyor" yalnız
+  // istek gecikirse görünür -- önbellekten/hızlı gelen parçada yanıp sönmesin.
+  function renderActivePart(id, sonra) {
+    var bekleme = null;
+    if (window.DostViewStatus && !partCache[id]) {
+      bekleme = setTimeout(function () { window.DostViewStatus.showLoading("fusus-wrap"); }, 250);
+    }
+    return loadPart(id).then(function (full) {
+      if (bekleme) { clearTimeout(bekleme); window.DostViewStatus.hide("fusus-wrap"); }
+      if (activeId !== id || !window.DostGraphUtils.isViewActive(wrap)) return;
+      renderArticle(full);
+      if (sonra) sonra();
+    }).catch(function (err) {
+      if (bekleme) clearTimeout(bekleme);
+      console.error("Füsûs fassı yüklenemedi / Failed to load Fusus bezel", id, err);
+      if (window.DostViewStatus) {
+        window.DostViewStatus.showError("fusus-wrap", function () { window.__fususApp.activate(id); });
       }
     });
   }
@@ -553,7 +592,7 @@
       renderList();
       if (mapScene) mapScene.setLang();
       if (seritScene) seritScene.setLang();
-      renderArticle(fassById(activeId));
+      if (partCache[activeId]) renderArticle(partCache[activeId]);
     },
   };
 })();

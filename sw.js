@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-1ac0313f4619";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-f24773ab2dfc";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
@@ -43,10 +43,29 @@ const SHELL_URLS = [
   "./assets/ontoloji-mobil-liste.js",
   "./assets/secret-nav.js",
   "./assets/sessiz-mod.js",
+  "./assets/cevrimdisi.js",
   "./assets/kavram-defteri.js",
   "./assets/fonts/SourceSans3-Regular-static.woff2",
   "./assets/fonts/Fraunces-SemiBold-static.woff2",
 ];
+
+// --- Çevrimdışı katman (2026-10-10, Android uygulaması hazırlığı) ---------
+// ÇEVRİMİÇİ DAVRANIŞ DEĞİŞMEDİ: sayfa/JS/CSS yine önce ağdan, veri yine
+// stale-while-revalidate (yalnız CACHE_VERSION önbelleğinden). Aşağıdakiler
+// yalnız AĞ BAŞARISIZ olunca devreye girer:
+//  - "Bütün içeriği indir" (assets/cevrimdisi.js) kullanıcı isteyince
+//    sitenin dosyalarını ICERIK_CACHE'e indirir; sürümden bağımsızdır,
+//    activate onu silmez. İndiricinin istekleri INDIR_BASLIGI taşır ve bu
+//    betik onlara hiç karışmaz (doğrudan ağ -- eski bir önbellek kopyası
+//    indirmeye "yeni" diye yazılmasın).
+//  - Gezinme çevrimdışıyken: indirme tamamsa onun uygulama kabuğu (aynı
+//    indirmenin JS'leriyle tutarlı -- SRI özetleri birbirini tutar), yoksa
+//    önbellekteki sayfa, o da yoksa kabuk, o da yoksa offline.html; hiçbiri
+//    yoksa küçük bir yedek sayfa. Hepsi HTTP 200 (TWA 200 dışını çökme sayar).
+const ICERIK_CACHE = "dost-cevrimdisi";
+const ICERIK_DURUM = "./__cevrimdisi-durum.json"; // indirmenin künyesi: { surum, tamam, dosyalar }
+const OFFLINE_URL = "./offline.html";
+const INDIR_BASLIGI = "X-Dost-Cevrimdisi";
 
 self.addEventListener("install", (event) => {
   // cache.addAll() tarayıcının kendi HTTP önbelleğinden besleniyor -- satır
@@ -59,7 +78,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) =>
       Promise.all(
-        SHELL_URLS.map((url) =>
+        SHELL_URLS.concat([OFFLINE_URL]).map((url) =>
           fetch(new Request(url, { cache: "reload" }))
             .then((resp) => { if (resp.ok) return cache.put(url, resp); })
             .catch(() => {})
@@ -73,7 +92,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)))
+      Promise.all(keys.filter((k) => k !== CACHE_VERSION && k !== ICERIK_CACHE).map((k) => caches.delete(k)))
     )
   );
   self.clients.claim();
@@ -88,20 +107,91 @@ function isDataRequest(url) {
   return url.pathname.includes("/data/");
 }
 
+// caches.match({cacheName}) önbellek yoksa onu YARATMAZ (caches.open
+// yaratırdı) -- indirme hiç yapılmadıysa ICERIK_CACHE hiç oluşmasın.
+function onbellekte(req, cacheName) {
+  return caches.match(req, { cacheName })
+    .then((r) => r || caches.match(req, { cacheName, ignoreSearch: true }))
+    .catch(() => undefined);
+}
+
+function indirmeTamam() {
+  return caches.match(ICERIK_DURUM, { cacheName: ICERIK_CACHE })
+    .then((r) => (r ? r.json() : null))
+    .then((d) => !!(d && d.tamam))
+    .catch(() => false);
+}
+
+// Uygulama kabuğunun (index.html) çözebildiği adres mi? Elle yazılmış
+// sayfalar (compare.html, gizlilik/, araştırma araçları) kabukla açılmaz.
+function uygulamaAdresi(url) {
+  const p = url.pathname;
+  if (/\.[a-z0-9]+$/i.test(p) && !/\/index\.html$/.test(p)) return false;
+  return !/^\/(gizlilik|arastirma|\.well-known)(\/|$)/.test(p);
+}
+
+function yedekSayfa() {
+  const html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dost Arabî</title></head>'
+    + '<body style="font-family:system-ui,sans-serif;max-width:34rem;margin:15vh auto;padding:0 16px;text-align:center">'
+    + '<p>Şu an çevrimdışısın. · You are offline. · Está offline.</p>'
+    + '<p><a href="/">Ana sayfa · Home · Início</a></p></body></html>';
+  return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+}
+
+// Bir kaynak (JS/CSS/font/veri/arama dizini) ağdan gelmedi: önce tutarlı
+// tam indirme (varsa), sonra sürüm önbelleği -- ya da tersi.
+function cevrimdisiKaynak(req) {
+  return indirmeTamam().then((tam) => {
+    const sira = tam ? [ICERIK_CACHE, CACHE_VERSION] : [CACHE_VERSION, ICERIK_CACHE];
+    return onbellekte(req, sira[0]).then((r) => r || onbellekte(req, sira[1]));
+  });
+}
+
+function cevrimdisiSayfa(req) {
+  const url = new URL(req.url);
+  const uygulama = uygulamaAdresi(url);
+  return indirmeTamam().then((tam) => {
+    const adimlar = [];
+    if (tam && uygulama) adimlar.push(() => onbellekte("./index.html", ICERIK_CACHE));
+    adimlar.push(() => onbellekte(req, CACHE_VERSION));
+    adimlar.push(() => onbellekte(req, ICERIK_CACHE));
+    if (uygulama) {
+      adimlar.push(() => onbellekte("./index.html", CACHE_VERSION));
+      adimlar.push(() => onbellekte("./index.html", ICERIK_CACHE));
+    }
+    adimlar.push(() => onbellekte(OFFLINE_URL, CACHE_VERSION));
+    adimlar.push(() => onbellekte(OFFLINE_URL, ICERIK_CACHE));
+    return adimlar.reduce((p, adim) => p.then((r) => r || adim()), Promise.resolve(undefined))
+      .then((r) => r || yedekSayfa());
+  });
+}
+
+// GitHub Pages rota dosyası olmayan adreslere (ör. /esma/cemil/) 404.html'i
+// HTTP 404 ile veriyor; o sayfa JS ile /?p=... adresine yönlendiriyor
+// (bkz. 404.html). Ziyaretçi için sonuç aynı; yalnız ara yanıtın durumu
+// 200'e çevrilir -- TWA bir gezinmenin 404 dönmesini çökme sayıyor. Gövde
+// ve başlıklar değişmez; bu yanıt önbelleğe yazılmaz.
+function yumusat404(resp) {
+  return new Response(resp.body, { status: 200, statusText: "OK", headers: resp.headers });
+}
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // Analytics vb. üçüncü taraf -- karışma.
+  if (req.headers.has(INDIR_BASLIGI)) return;      // "Bütün içeriği indir": doğrudan ağ.
 
   if (isDataRequest(url)) {
     // stale-while-revalidate: cache varsa hemen onu ver, arka planda tazele.
+    // Ağ da yoksa (çevrimdışı, hiç görülmemiş dosya) indirilmiş içerik.
     event.respondWith(
       caches.open(CACHE_VERSION).then((cache) =>
         cache.match(req).then((cached) => {
           const network = fetch(req)
             .then((resp) => { if (resp.ok) cache.put(req, resp.clone()); return resp; })
-            .catch(() => cached);
+            .catch(() => cached || cevrimdisiKaynak(req));
           return cached || network;
         })
       )
@@ -130,10 +220,9 @@ self.addEventListener("fetch", (event) => {
           const toCache = resp.clone();
           caches.open(CACHE_VERSION).then((cache) => cache.put(req, toCache));
         }
+        if (req.mode === "navigate" && resp.status === 404) return yumusat404(resp);
         return resp;
       })
-      .catch(() =>
-        caches.match(req).then((cached) => cached || (req.mode === "navigate" ? caches.match("./index.html") : undefined))
-      )
+      .catch(() => (req.mode === "navigate" ? cevrimdisiSayfa(req) : cevrimdisiKaynak(req)))
   );
 });

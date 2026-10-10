@@ -154,7 +154,7 @@
       // Aşağıdaki 13 kaynak o boşluğu kapatıyor (vahdet hariç -- o
       // Hakkında sayfasının bir alt-sekmesi, goTo() dispatch'inde bağımsız
       // bir "view" değil, ayrı bir iş gerektirir).
-      window.DostGraphUtils.fetchJson("data/ibn-arabi/fusus-atlas.json").then((d) => {
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/fusus-atlas-index.json").then((d) => {
         (d.fasses || []).forEach((f) => {
           index.push({
             view: "fusus", id: f.id, label: f.title, sub: f.hikmet,
