@@ -983,6 +983,37 @@
     `;
     },
 
+    // İki kulluk (2026-10-10). Zorunlu kulluk asıl (vurgulu), gönüllü kulluk
+    // onun fer'i. Dost'un sözü: gönüllü bir ibadete BAŞLAYAN kul kendini
+    // kulluğa mecbur etmiştir, o esnadaki durumu zorunlu kulluktur (Cilt V,
+    // s. 140-141; Cilt IV, s. 112-113). Çizilen tek şey bu dönüş: ışık
+    // gönüllüden çıkıp bir yay çizerek zorunluya varıyor, vardığı yerde
+    // parlıyor -- ok ucu yok, yön ışığın kendisinde (GORSEL_DIL).
+    "donen-kulluk": (d) => {
+      const r = 28, cy = 100;
+      const yari = Math.max(enL(d.zorunlu), enL(d.gonullu), enN(d.zorunluNot), enN(d.gonulluNot)) / 2 + 12;
+      const W = Math.max(420, yari * 2 + 220, enN(d.caption) + 30, enNA(d.donus) + 60);
+      const a = Math.max(64, yari), b = W - Math.max(64, yari);
+      const id = "tdIsik" + (isikYoluSayaci++);
+      const x1 = b - 10, y1 = cy - r + 2, x2 = a + 10, y2 = cy - r + 2;
+      const yol = `M ${x1.toFixed(0)} ${y1} Q ${((a + b) / 2).toFixed(0)} 0 ${x2.toFixed(0)} ${y2}`;
+      const renk = "var(--series-theme)";
+      return `
+      <svg class="term-diagram__svg" viewBox="0 0 ${W.toFixed(0)} 206" role="img" aria-label="${tt(d.note)}">
+        <defs><linearGradient id="${id}" x1="${x1.toFixed(0)}" y1="0" x2="${x2.toFixed(0)}" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" style="stop-color:${renk};stop-opacity:0.1"/><stop offset="100%" style="stop-color:${renk};stop-opacity:0.9"/></linearGradient></defs>
+        <path class="term-diagram-isikyolu" data-isikyolu-yon="oneway" d="${yol}" fill="none" stroke="url(#${id})"/>
+        <text class="term-diagram-note term-diagram-note--accent" x="${((a + b) / 2).toFixed(0)}" y="24" text-anchor="middle">${tt(d.donus)}</text>
+        <circle class="term-diagram-node term-diagram-node--accent" cx="${a.toFixed(0)}" cy="${cy}" r="${r}"/>
+        <circle class="term-diagram-node" cx="${b.toFixed(0)}" cy="${cy}" r="${r}"/>
+        <text class="term-diagram-label--small" x="${a.toFixed(0)}" y="${cy + r + 20}" text-anchor="middle">${tt(d.zorunlu)}</text>
+        <text class="term-diagram-note" x="${a.toFixed(0)}" y="${cy + r + 38}" text-anchor="middle">${tt(d.zorunluNot)}</text>
+        <text class="term-diagram-label--small" x="${b.toFixed(0)}" y="${cy + r + 20}" text-anchor="middle">${tt(d.gonullu)}</text>
+        <text class="term-diagram-note" x="${b.toFixed(0)}" y="${cy + r + 38}" text-anchor="middle">${tt(d.gonulluNot)}</text>
+        <text class="term-diagram-note" x="${(W / 2).toFixed(0)}" y="198" text-anchor="middle">${tt(d.caption)}</text>
+      </svg>
+    `;
+    },
+
     // Kapısız ev. Metnin kendi benzetmesi: makâm, beş sütuna dayalı bir
     // çatısı olan, KAPISIZ duvarlarla çevrili bir ev; dış duvara bitişik
     // tek bir sütun var ve bilgi yalnız oradan alınıyor. Duvar kesik

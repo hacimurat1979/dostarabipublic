@@ -53,7 +53,7 @@
   var VIEWS = {
     __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-HZJfV5UjNsG518yhfSPLkHgED+Eo4SCN9p0zD8FZGsxx/TkIkZx7vJTS9DjMCRy8", wrap: "sirlar-wrap" },
     __kavramApp: { src: "assets/kavram.js", integrity: "sha384-Jps2pLgn3yvqs6ZTlf+7EIj/7GyzXzxWExnwAf11mDVF19bEayAfsBsQg0qbfPjC", wrap: "kavram-wrap" },
-    __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-MfmDEpi64jN/oXKLLf+i1c+UYHj2uCZ6v/DGrlvnB5zxGz0grbr62iVQ1/TsXH/b", wrap: "ayethadis-wrap" },
+    __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-vSgyXyHBGcJDPk2KL1UIHRZeUwZgqD3aEcnw1OWigxnPaLTfpjbUM/a22rd+EdGv", wrap: "ayethadis-wrap" },
     __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-3DAmRScI+L9wWXXhl7hJ+vPPOCivyCDlNFjOkGi+POHuSA/16/KYsSWuqWgoKJ/9", wrap: "hakkinda-wrap" },
     __vahdetApp: { src: "assets/vahdet.js", integrity: "sha384-0rJbqChXtTiUMn1Rmhpu4aGkenqDUd/em73w7zgNq7d+z59Gp0ZkSY541ktt104J", wrap: "hakkinda-wrap" },
     __okumaYollariApp: { src: "assets/okuma-yollari.js", integrity: "sha384-WVd8Tqt6ZBDLetnvyT9kYtJxL1DM56TU45COH8rhEf2/W4/XrtkYPrJPPRphujEn", wrap: "hakkinda-wrap" },
@@ -67,10 +67,10 @@
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-Dzv+H9iFpIbPMgFhI4keFI7OcgDaotjrk2EDwPxVxql6P6BWWOo+dAUeHoF2lWUs", wrap: "kuran-dokusu-wrap" },
     __esmaApp: { src: "assets/esma.js", integrity: "sha384-HqiQqMNLZPeDQrkXPnJwuedxgQDrLY3Oh7BMXeL+aqHA0p2OO/WWnfwoE8tFB+y/", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-JNwSpEfgW8YxH0rkWtMvcs0I5aDF6n/47mZRFQ2VQ2Xt2QXYvSaJj+5ci36+7PCC", wrap: "hal-wrap" },
-    __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-N8KLmXh5PCg162jkPdlyycR2+tgZ3ZGdfFHCU5U/+iHANNHHouekAuvzsBy/laRE", wrap: "terimler-wrap" },
+    __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-CDbna35WA4X8qv3hwTqhvnfV2/ebCf5NBjcPiELP0ULRymZLDET3TYh1eOH0VwA0", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-lhV6fjytAUeYtHf21NISrCcQMyK6FmjNDqEwzfaMyG76MpR2u+eBBAUa12I72g+2", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-SkD1jSh/DZZsxMxYTrXBuMWhr+RcFN/HUYZ16j0y+Hb+vI189brynZLH4K/0+K9u", wrap: "futuhat-wrap" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-yGAA0YVElUEyTN3mQafAAguwas+46ppAYlQcXPYYojjgZ/L/ns4toxzDisc6x3/d", wrap: "futuhat-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-5WXDFmmMhVmnZQoPtKF0jt4Pby5/U+XvY8u+K2qE5qUAvyQmY5pXUN7O8BoDMT7z", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-WHMiHe51h+RtW/DOCkKXKVQvnq+mhgX1Pzf15WRG3TTkAUXyGFT+LqASnnVeCWXq", wrap: "tasiyicilar-wrap" },
     __fususApp: { src: "assets/fusus.js", integrity: "sha384-vrcEQ7hEVbmdaIk2pFyIjpav9gd0fdnXxOE0KueaFbRqnGMX0nTGvedlJPAbpBRD", wrap: "fusus-wrap" },
@@ -80,7 +80,7 @@
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
   var KIPLER = {
     "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ" },
-    "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-Ils69HDB9I+FwCAmd78cZogJbzCDkSInA96ULy6QP1Mx3L+deUntKkER6JUyJQe9" },
+    "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-L4hxQr91esbod70wRrNzaRgn6yGwBH0eZRnZsdzZimpo4CpzLqXhUCOKNIuKQ94B" },
   };

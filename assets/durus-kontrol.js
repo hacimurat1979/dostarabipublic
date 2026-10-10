@@ -1147,7 +1147,9 @@
     var sayac = { indirilen: 0, atlanan: 0, dosya: 0 };
     var g = gecerliGorunum();
     return paylasilaniYukle().then(function () { return json(KAPSAM); }).then(function (kapsam) {
-      var dosyalar = kapsam.dosyalar.slice();
+      // durusMuaf (2026-10-10): Türkçesi baştan sona kaynağın sözü olan
+      // dosya (Dost'un Dizini) duruş taramasına hiç girmez; tahkik girer.
+      var dosyalar = kapsam.dosyalar.filter(function (d) { return !d.durusMuaf; });
       var atlas = "data/ibn-arabi/futuhat-atlas.json";
       var kisimlar = json(kapsam.futuhat.indeks).then(function (idx) {
         return (idx.parts || []).map(function (p) {
