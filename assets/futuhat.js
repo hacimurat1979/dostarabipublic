@@ -1809,10 +1809,6 @@
         e.preventDefault();
         window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: a.dataset.dizinGit, kaynak: "dizin" });
         activatePart(a.dataset.dizinGit);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 80;
-          window.scrollTo({ top: Math.max(0, articleEl.getBoundingClientRect().top + window.scrollY - ust - 8), behavior: "auto" });
-        }));
       });
     });
   }
@@ -2074,10 +2070,23 @@
   }
 
   // otomatik: görünüm kısmı kendiliğinden açıyor (bkz. kisimAdreste).
+  // Kullanıcı bir kısım seçtiğinde (liste, sarmal, gezinti, dizin) yeni
+  // kısım makalenin başından okunur: makalenin başı ekranda değilse sayfa
+  // oraya iner (2026-10-10, mobil bulgusu: alttaki listeden seçilen kısım
+  // ~4.600 px aşağıda, metnin ortasında açılıyordu). Başı zaten
+  // görünüyorsa (masaüstünde yan sütundan seçim) sayfa yerinden oynamaz.
+  let makaleBasinaGit = false;
+  function makaleninBasinaIn() {
+    if (!articleEl) return;
+    const ust = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--app-header-height")) || 80;
+    const top = articleEl.getBoundingClientRect().top;
+    if (top >= ust && top < window.innerHeight * 0.8) return;
+    window.scrollTo({ top: Math.max(0, top + window.scrollY - ust - 8), behavior: "auto" });
+  }
   function activatePart(id, otomatik) {
     const meta = partById(id);
     if (!meta) return;
-    if (!otomatik) kisimAdreste = true;
+    if (!otomatik) { kisimAdreste = true; makaleBasinaGit = true; }
     activePartId = id;
     saveLastPart(id);
     if (partsEl) {
@@ -2124,6 +2133,10 @@
         return;
       }
       renderPart(part);
+      if (makaleBasinaGit) {
+        makaleBasinaGit = false;
+        requestAnimationFrame(() => requestAnimationFrame(makaleninBasinaIn));
+      }
     });
   }
 

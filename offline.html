@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Çevrimdışı yanıt sayfası (2026-10-10). sw.js onu kurulumda önbelleğe
+     alır ve yalnız şu durumda döndürür: ağ yok, istenen sayfa da uygulama
+     kabuğu da önbellekte yok. HTTP 200 ile döner (Android uygulaması --
+     TWA -- 200 dışı bir yanıtı çökme sayıyor). Her adreste
+     gösterilebildiği için bütün bağlantılar kökten ("/..."); JS yok. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
+<meta name="robots" content="noindex">
+<title>Çevrimdışı — Dost Arabî</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<style>
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-SemiBold-static.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  :root {
+    --page-plane: #f9f9f7; --text-primary: #1a1a1a; --text-secondary: #52514e;
+    --text-muted: #6f6d65; --gridline: #e1e0d9; --accent-interactive: #8a6100;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page-plane: #0d0d0d; --text-primary: #ede9e2; --text-secondary: #c3c2b7;
+      --text-muted: #898781; --gridline: #2c2c2a; --accent-interactive: #c98500;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0; background: var(--page-plane); color: var(--text-primary);
+    font: 400 1.0625rem/1.6 "Source Sans Dost", system-ui, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 32px 16px;
+  }
+  main { max-width: 34rem; text-align: center; }
+  /* Tek bir kesik çizgili halka: sitenin görsel dilinde kesik çizgi
+     "henüz" demektir -- bağlantı henüz yok. */
+  .halka { width: 72px; height: 72px; margin: 0 auto 24px; display: block; color: var(--text-muted); }
+  h1 { font-family: "Fraunces Dost", Georgia, serif; font-weight: 600; font-size: 1.6rem; line-height: 1.25; margin: 0 0 10px; }
+  p { margin: 0 0 10px; color: var(--text-secondary); }
+  .dil + .dil { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--gridline); }
+  .dil:not(:first-of-type) h1 { font-size: 1.15rem; }
+  .eylem { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .eylem a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+    border-radius: 22px; border: 1px solid var(--accent-interactive);
+    color: var(--accent-interactive); text-decoration: none;
+  }
+  .eylem a.dolu { background: var(--accent-interactive); color: var(--page-plane); }
+  .eylem a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <svg class="halka" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 6" stroke-linecap="round"/></svg>
+
+  <section class="dil" lang="tr">
+    <h1>Şu an çevrimdışısın</h1>
+    <p>Bu sayfa cihazında kayıtlı değil. Bağlantı gelince yeniden dene; daha önce açtığın sayfalar ana sayfadan açılır.</p>
+    <p>Bağlıyken menünün altındaki “Çevrimdışı okuma” satırından bütün içeriği indirebilirsin.</p>
+    <div class="eylem">
+      <a class="dolu" href="/">Ana sayfaya dön</a>
+      <a href="">Yeniden dene</a>
+    </div>
+  </section>
+
+  <section class="dil" lang="en">
+    <h1>You are offline</h1>
+    <p>This page is not saved on your device. Try again once you are connected; pages you opened before open from the home page.</p>
+    <p>While connected, you can download all content from the “Offline reading” line at the bottom of the menu.</p>
+    <div class="eylem">
+      <a class="dolu" href="/">Back to home</a>
+      <a href="">Try again</a>
+    </div>
+  </section>
+
+  <section class="dil" lang="pt">
+    <h1>Está offline</h1>
+    <p>Esta página não está guardada no seu dispositivo. Tente de novo quando tiver ligação; as páginas que abriu antes abrem a partir da página inicial.</p>
+    <p>Com ligação, pode descarregar todo o conteúdo na linha “Leitura offline”, no fundo do menu.</p>
+    <div class="eylem">
+      <a class="dolu" href="/">Voltar ao início</a>
+      <a href="">Tentar de novo</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

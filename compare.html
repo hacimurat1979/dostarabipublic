@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <!-- bkz. index.html'deki aynı etiketin yorumu -- aynı gerekçe, aynı politika. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-lekwPcLDRjYm37sgERAHDeKpN6qv770FKpoFJzh42eg=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-JG8VEOMVh41hGFMcL3AzwbZ6l0d+9CypnZBRrt2oW1w='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Dost — Daphne: Yazılar ve Eksenler</title>
@@ -20,8 +20,24 @@
     function getConsent() {
       try { return localStorage.getItem(KEY); } catch (e) { return null; }
     }
+    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
+    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
+    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
+    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
+    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
+    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
+    window.__dostUygulama = (function () {
+      var A = "dost-uygulama";
+      var isaret = false;
+      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
+      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
+      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
+      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
+      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
+      return false;
+    })();
     window.__dostLoadAnalytics = function () {
-      if (window.__dostAnalyticsLoaded) return;
+      if (window.__dostAnalyticsLoaded || window.__dostUygulama) return;
       window.__dostAnalyticsLoaded = true;
       var ga = document.createElement("script");
       ga.async = true;
@@ -211,7 +227,7 @@
       if (!banner) return;
       var stored = null;
       try { stored = localStorage.getItem(KEY); } catch (e) {}
-      if (!stored) banner.hidden = false;
+      if (!stored && !window.__dostUygulama) banner.hidden = false;
       function decide(value) {
         try { localStorage.setItem(KEY, value); } catch (e) {}
         banner.hidden = true;

@@ -28,7 +28,7 @@
      üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
      bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
      domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-lekwPcLDRjYm37sgERAHDeKpN6qv770FKpoFJzh42eg=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-cjheSZxdnEzaKXWxMGqsuKGbIzfNWtwQRgcQjUS/++E=' 'sha256-JG8VEOMVh41hGFMcL3AzwbZ6l0d+9CypnZBRrt2oW1w=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-Nq6azO8dOvbQP6bT0ImpDzWBxdFgCz8jsproV5Ho6xI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-cjheSZxdnEzaKXWxMGqsuKGbIzfNWtwQRgcQjUS/++E=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-Nq6azO8dOvbQP6bT0ImpDzWBxdFgCz8jsproV5Ho6xI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
      köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
      her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
@@ -124,8 +124,24 @@
     function getConsent() {
       try { return localStorage.getItem(KEY); } catch (e) { return null; }
     }
+    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
+    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
+    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
+    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
+    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
+    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
+    window.__dostUygulama = (function () {
+      var A = "dost-uygulama";
+      var isaret = false;
+      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
+      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
+      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
+      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
+      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
+      return false;
+    })();
     window.__dostLoadAnalytics = function () {
-      if (window.__dostAnalyticsLoaded) return;
+      if (window.__dostAnalyticsLoaded || window.__dostUygulama) return;
       window.__dostAnalyticsLoaded = true;
       var ga = document.createElement("script");
       ga.async = true;
@@ -344,6 +360,19 @@
             <a class="btn-ghost btn-ghost--sub" id="hakkinda-sub-okuma-yollari-btn" href="hakkinda/okuma-yollari/" data-tr="Okuma Yolları" data-en="Reading Paths" data-pt="Caminhos de Leitura">Okuma Yolları</a>
             <a class="btn-ghost btn-ghost--sub" id="hakkinda-sub-nereden-baslamali-btn" href="hakkinda/nereden-baslamali/" data-tr="Nereden Başlamalı" data-en="Where to Begin" data-pt="Por Onde Começar">Nereden Başlamalı</a>
           </div>
+        </div>
+        <!-- Çevrimdışı okuma (2026-10-10): assets/cevrimdisi.js. Kullanıcı
+             dokunmadıkça hiçbir şey indirmez. Tarayıcı desteklemiyorsa satır
+             gizli kalır (bağlanmamış düğme olmasın). data-cekmece-kalir:
+             düğmeye basınca çekmece kapanmaz (nav-drawer.js). Halka: kesik
+             iz = henüz inmemiş, dolu yay = inen kısım (GORSEL_DIL). -->
+        <div class="nav-drawer__cevrimdisi" id="cevrimdisi" hidden data-cekmece-kalir>
+          <button type="button" class="cevrimdisi__dugme" id="cevrimdisi-dugme">
+            <svg class="cevrimdisi__halka" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle class="cevrimdisi__iz" cx="10" cy="10" r="7.5"/><circle class="cevrimdisi__dolu" cx="10" cy="10" r="7.5"/></svg>
+            <span class="cevrimdisi__metin" id="cevrimdisi-metin">Çevrimdışı okuma</span>
+          </button>
+          <button type="button" class="cevrimdisi__kaldir" id="cevrimdisi-kaldir" hidden data-tr="Kaldır" data-en="Remove" data-pt="Remover">Kaldır</button>
+          <p class="cevrimdisi__not" id="cevrimdisi-not" role="status" aria-live="polite" hidden></p>
         </div>
       </nav>
       <button class="theme-toggle" id="theme-toggle" type="button" title="Aydınlık / Karanlık mod — Light / Dark mode — Modo claro / escuro" aria-label="Aydınlık / Karanlık mod — Light / Dark mode — Modo claro / escuro">
@@ -1299,6 +1328,9 @@ mesmo antes que o assombro exista."></blockquote>
       <span data-tr="İletişim:" data-en="Contact:" data-pt="Contato:">İletişim:</span>
       <a href="mailto:hacimurat.karaman@gmail.com">hacimurat.karaman@gmail.com</a>
     </p>
+    <p class="app-footer__gizlilik">
+      <a href="gizlilik/" data-tr="Gizlilik" data-en="Privacy" data-pt="Privacidade">Gizlilik</a>
+    </p>
   </footer>
 
   <div class="consent-banner" id="consent-banner" role="dialog" aria-live="polite" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
@@ -1317,7 +1349,7 @@ mesmo antes que o assombro exista."></blockquote>
       if (!banner) return;
       var stored = null;
       try { stored = localStorage.getItem(KEY); } catch (e) {}
-      if (!stored) banner.hidden = false;
+      if (!stored && !window.__dostUygulama) banner.hidden = false;
       function decide(value) {
         try { localStorage.setItem(KEY, value); } catch (e) {}
         banner.hidden = true;
@@ -1359,7 +1391,7 @@ mesmo antes que o assombro exista."></blockquote>
   <script src="assets/graph-utils.js" defer integrity="sha384-Cc1HM2V+Af4Yo9IGAf+bZXoiAeWLSSaqCm1lB7J4AchQbxpH0J00KKGcLQqfTFqG"></script>
   <!-- nav-drawer.js graph-utils.js'ten SONRA gelmeli (2026-08-15): artık
        açılışta GU.registerStepBack çağırıyor. -->
-  <script src="assets/nav-drawer.js" defer integrity="sha384-VczrzqKf7uDKz3/O8iTqSwGaeTbSxsQK3zSciXDrVU4pJ/ink4Ap2Cp4gJN13oEn"></script>
+  <script src="assets/nav-drawer.js" defer integrity="sha384-PSQ3VHw824GsJo6RHsN4BvYtx7e26oS29tbIYc9DQOpBEwaZh8hhfVpYapse+GUZ"></script>
   <script src="assets/helix.js" defer integrity="sha384-wm030WHQzBOuVeREq78pw2DLEWr0L7FX/vmCq1SDcUTsfDwVelFfJ4B/6xJqkMC4"></script>
   <script src="assets/graph-hint.js" defer integrity="sha384-X9m2G527jZ4206R85Mx9UwMXx88yyLYBNsLOvNMmWfS2157Z1FwPTD8wiTeGJV5I"></script>
   <script src="assets/lightbox.js" defer integrity="sha384-TDvma/+BP131maM3JIl5cFvo+vnYxexF1FwxIhBck6kV8Yuq/4Gj/osPA6Foolok"></script>
@@ -1367,7 +1399,7 @@ mesmo antes que o assombro exista."></blockquote>
        tembel-yükleme listesine değil buraya konuyor: ontology.js sır
        detayını çizerken window.__dostKademe hazır olmalı. -->
   <script src="assets/kademe.js" defer integrity="sha384-qstXPmVEy5j/ElqnV6hvOfNFBOxlrwj8IhlrgYL2vtn8VzXUESTxdpuBfDN2uZM9"></script>
-  <script src="assets/search.js" defer integrity="sha384-KGPeC4mMpX9EGhi66REVpITbI3c3E0JEzOKJMnSUXHv5dZKOEn0GevWR00/FtxUE"></script>
+  <script src="assets/search.js" defer integrity="sha384-pDs5L1a/MsgHhvDCU8wwM9qzBnOVn6cEmzliqa+sPISC/5HVDkd03U0qTk2LAXsY"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-pptqqmGNxso09k5o3wT0I5nvlVbpPA4CJJ/VB1WKwOwKEMo7iE8ALEpu6m1klg3c"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
@@ -1379,7 +1411,7 @@ mesmo antes que o assombro exista."></blockquote>
        ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
        (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
        static <script> etiketi yok. -->
-  <script src="assets/view-loader.js" defer integrity="sha384-ImEy1rllXJEcI6vssAHx4y7gXJymttXvtoe8D0hkW1u3bcU4lvz3E/4hGNeDviyG"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-CdqG5qfrb+EBcD4AkGf65lFrsBjV37FVfni8uCDYz4lMr3ahNNQtqT+/4EbjkNtG"></script>
   <script src="assets/ontology.js" defer integrity="sha384-E2kW4erlk+2upy45NuOF8F5XOrhzmPS181wCNmCmp6i5r3GfNPxDNYIo9HMvEhlr"></script>
   <script src="assets/crosslink-preview.js" defer integrity="sha384-Ql+mJC8qoRFExWxkLBHP+85sCuCXqJwVTmYYk1Bk+EWaRK8amiurfak5/gDhaQg+"></script>
   <script src="assets/ayet-onizleme.js" defer integrity="sha384-dRjrG5LDGutq6k8N5qimc3vad2avxLsVwHlAkj3zO4pYqFgOAhpJT6nO3juyamkf"></script>
@@ -1392,6 +1424,8 @@ mesmo antes que o assombro exista."></blockquote>
        etiket DEĞİL: assets/view-loader.js'in KIPLER haritasından kip ilk
        istendiğinde iniyor (SRI orada, sri-guncelle.py tazeliyor). -->
   <script src="assets/sessiz-mod.js" defer integrity="sha384-Bpwzt1cCiqXtBYt/0FYwvcQIUZJ4MUX6VQgkAHfDU7xFd9P6YxdzVUrdJiTGXqWj"></script>
+  <!-- Çevrimdışı okuma satırı (2026-10-10): nav-drawer.js'ten sonra. -->
+  <script src="assets/cevrimdisi.js" defer integrity="sha384-vJPMv0rC6qmJiUwZkUBw8QtVN4722gi6Bd+6Zqmw+d8NX38bMJsTv1Fm+mSnFqRs"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-xkJEH+qGBiumsuXheD2YbLbMbRv6Xg3bY3Iq261DhUjzzIZxGt0SG+9gTtjlw3cF"></script>
   <script>
     // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script

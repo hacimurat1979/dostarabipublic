@@ -152,6 +152,9 @@
     // Görünüm kapıları 2026-10-09'dan beri gerçek <a href> (orta tık /
     // yeni sekme çalışsın diye); grup başlıkları hâlâ <p role="button">.
     if (!e.target.closest("a.btn-ghost, button")) return;
+    // Çekmecenin kendi içinde iş gören satırlar (çevrimdışı okuma,
+    // assets/cevrimdisi.js) bir yere gitmiyor -- çekmece açık kalır.
+    if (e.target.closest("[data-cekmece-kalir]")) return;
     // Ctrl/⌘/Shift tık yeni sekmede/pencerede açar -- bu sayfa yerinde kalır.
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     close();
