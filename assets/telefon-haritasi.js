@@ -356,6 +356,49 @@
     iste();
   }
 
+  // Önceki / sonraki kayıt (2026-10-11, grafik gezinme denetimi O5): sıralı
+  // görünümlerde (Menziller, Hâller, Eser Ağı, Seyahat Atlası, Eleştiri
+  // Arkeolojisi) panelin başında iki komşu dairesi -- numara/yıl dairenin
+  // içinde, ad yanında. Dokunmak komşu kaydı açar (adreste yeni bir adım;
+  // geri tuşu döner). Görünüm sırasını opts.komsular() verir:
+  // [{ id, no, ad }], açılış __dostNav.goTo(view, id).
+  const MG_KOMSU = {
+    onceki: { tr: "Önceki", en: "Previous", pt: "Anterior" },
+    sonraki: { tr: "Sonraki", en: "Next", pt: "Seguinte" },
+    grup: { tr: "Komşu kayıtlar", en: "Neighbouring records", pt: "Registos vizinhos" },
+  };
+  let _mgKomsuGozcu = null;
+  function _mgKomsuKur() {
+    const icerik = document.getElementById("detail-content");
+    if (_mgKomsuGozcu || !icerik) return;
+    const yaz = () => {
+      const api = _mgAktif();
+      const eski = icerik.querySelector(":scope > .mg-komsu");
+      const parca = location.pathname.split("/").filter((x) => x && !/^(en|pt)$/.test(x));
+      const liste = api && telefonMu() && api.o.komsular && parca.length > 1 && parca[0] === api.o.gorunum ? api.o.komsular() : null;
+      const i = liste ? liste.findIndex((x) => String(x.id) === decodeURIComponent(parca[1])) : -1;
+      if (i < 0 || !icerik.querySelector(".detail-title")) { if (eski) eski.remove(); return; }
+      const anahtar = api.o.gorunum + "/" + liste[i].id + "/" + document.documentElement.lang;
+      if (eski && eski.dataset.anahtar === anahtar) return;
+      const d = (x, yon) => x ? `<button type="button" class="mg-komsu__dugme mg-komsu__dugme--${yon}" data-mg-komsu="${GU.escapeHtml(String(x.id))}" aria-label="${GU.escapeHtml(_mgT(MG_KOMSU[yon]) + ": " + x.ad)}"><span class="mg-komsu__no" aria-hidden="true">${GU.escapeHtml(String(x.no))}</span><span class="mg-komsu__ad">${GU.escapeHtml(x.ad)}</span></button>` : `<span class="mg-komsu__bos"></span>`;
+      const nav = document.createElement("nav");
+      nav.className = "mg-komsu";
+      nav.dataset.anahtar = anahtar;
+      nav.setAttribute("aria-label", _mgT(MG_KOMSU.grup));
+      nav.innerHTML = d(liste[i - 1], "onceki") + d(liste[i + 1], "sonraki");
+      nav.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-mg-komsu]");
+        if (b && window.__dostNav) window.__dostNav.goTo(api.o.gorunum, b.dataset.mgKomsu);
+      });
+      if (eski) eski.remove();
+      icerik.insertBefore(nav, icerik.firstChild);
+    };
+    _mgKomsuGozcu = new MutationObserver(() => requestAnimationFrame(yaz));
+    _mgKomsuGozcu.observe(icerik, { childList: true });
+    window.addEventListener("popstate", () => requestAnimationFrame(yaz));
+    yaz();
+  }
+
   // opts: { wrapEl, liste (createMobileListFallback dönüşü), dugumSecici,
   //   isaret (düğümün görünen işareti, ops.), kaydir(dx, dy) (kamerayı
   //   ekran pikseliyle taşı), merkezle (false | fn(el, alan): görünüm kendi
@@ -403,6 +446,7 @@
     };
     _telefonlar.push(api);
     _mgHapKur();
+    if (opts.komsular) _mgKomsuKur();
     _mgDokunusKur(api);
     _mgEtiketKur(api);
     new MutationObserver(() => uygula(false)).observe(_mgHTML, { attributes: true, attributeFilter: ["class"] });

@@ -78,6 +78,7 @@
     defter: { tr: "Defterim", en: "Notebook", pt: "Caderno" },
     daha: { tr: "Daha", en: "More", pt: "Mais" },
     geri: { tr: "Geri", en: "Back", pt: "Voltar" },
+    harita0: { tr: "Harita", en: "Map", pt: "Mapa" },
     panelBuyut: { tr: "Paneli büyüt", en: "Expand the panel", pt: "Expandir o painel" },
     panelKucult: { tr: "Paneli küçült, haritayı göster", en: "Shrink the panel, show the map", pt: "Reduzir o painel, mostrar o mapa" },
     gezinti: { tr: "Uygulama gezintisi", en: "App navigation", pt: "Navegação do app" },
@@ -180,6 +181,93 @@
     if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons($('[data-eylem="kucult"]', daha), $('[data-eylem="buyut"]', daha));
   }
 
+  // --- Dış katmanlar: çekmece, Ara, Defterim (2026-10-11, grafik gezinme
+  // denetimi K1) -------------------------------------------------------------
+  // Daha/Okuma sayfası gibi tarihte kendi girdisini açarlar (dostKatman:
+  // "dis-<ad>", adres aynı): Android'in geri tuşu YALNIZ en üstteki katmanı
+  // kapatır. Eskiden girdileri yoktu; geri tuşu altındaki kaydı kapatıyor,
+  // çekmeceyle birlikte iki adım atıyor, Ara'yı açık bırakıyordu.
+  // Katmanın kendi kapanışı (Esc, ✕, dışarı dokunuş, kapı) girdisinden
+  // sessizce çıkar; kapıyla gidilirse yeni adres girdinin yerine yazılır
+  // (graph-utils.js tarih kaydı). Katmanın davranışı kendi dosyasında
+  // kalır: kabuk yalnız görünürlüğünü izler, kapatmak için katmanın kendi
+  // düğmesine basar.
+  var DIS = [
+    { ad: "cekmece", id: "nav-drawer", dugme: "nav-toggle" },
+    { ad: "ara", id: "search-panel", dugme: "search-toggle" },
+    { ad: "defter", id: "defter-panel", dugme: "defter-toggle" },
+  ];
+  var disYigin = [], disYut = 0, disSessiz = null;
+  function disGirdi(ad) { return "dis-" + ad; }
+  function disBul(ad) { for (var i = 0; i < DIS.length; i++) if (DIS[i].ad === ad) return DIS[i]; return null; }
+  function disSimdi() { var k = GU && GU.tarihKatmani ? GU.tarihKatmani() : null; return k && k.indexOf("dis-") === 0 ? k.slice(4) : null; }
+  function disDegisti(d) {
+    var acik = !d.el.hidden;
+    var i = disYigin.indexOf(d.ad);
+    if (acik && i < 0) {
+      if (!acikMi()) return;
+      disYigin.push(d.ad);
+      if (disSessiz === d.ad) { disSessiz = null; return; } // ileri tuşuyla yeniden açıldı
+      try { history.pushState({ dostKatman: disGirdi(d.ad) }, ""); } catch (e) { /* eski tarayıcı */ }
+      guncelle();
+    } else if (!acik && disSessiz === d.ad) {
+      disSessiz = null; // geri tuşu kapattı (disKapat)
+      guncelle();
+    } else if (!acik && i >= 0) {
+      disYigin.splice(i, 1);
+      // Tıklamanın öteki dinleyicileri (kapı) önce bitsin: bir yere
+      // gidildiyse girdi zaten yeni adresle değişmiştir.
+      setTimeout(function () {
+        if (disSimdi() === d.ad) { disYut++; history.back(); }
+      }, 0);
+      guncelle();
+    }
+  }
+  function disBagla() {
+    DIS.forEach(function (d) {
+      if (d.el) return;
+      d.el = document.getElementById(d.id);
+      if (d.el) new MutationObserver(function () { disDegisti(d); }).observe(d.el, { attributes: true, attributeFilter: ["hidden"] });
+    });
+  }
+  // Geri tuşunun kapattığı katman: yığından hemen düşer (gözcü eşzamansız),
+  // gözcü de onu "kendi kapanışı" saymaz (disSessiz).
+  function disKapat(ad) {
+    var i = disYigin.indexOf(ad);
+    if (i >= 0) disYigin.splice(i, 1);
+    var d = disBul(ad);
+    if (!d || !d.el || d.el.hidden) return;
+    disSessiz = ad;
+    tikla(d.dugme);
+    if (!d.el.hidden) d.el.hidden = true;
+  }
+  // Ölü girdi: altındaki katman kendi yoluyla kapanmıştı -- geri tuşu onu atlar.
+  function disOluAtla() {
+    var k = disSimdi();
+    if (k && disYigin.indexOf(k) < 0) history.back();
+  }
+  function disPopstate(e) {
+    if (disYut) { disYut--; e.stopImmediatePropagation(); guncelle(); return true; }
+    var k = disSimdi();
+    var ust = disYigin.length ? disYigin[disYigin.length - 1] : null;
+    if (ust && k !== ust && !acikSayfa) {
+      // Geri tuşu üstteki katmanın girdisinden çıktı: yalnız o kapanır.
+      while (disYigin.length && disYigin[disYigin.length - 1] !== k) disKapat(disYigin[disYigin.length - 1]);
+      e.stopImmediatePropagation();
+      guncelle();
+      if (k && disYigin.indexOf(k) < 0) setTimeout(disOluAtla, 0);
+      return true;
+    }
+    if (k && disYigin.indexOf(k) < 0 && !acikSayfa) {
+      // İleri tuşu bir katman girdisine geldi: katman yeniden açılır.
+      var d = disBul(k);
+      e.stopImmediatePropagation();
+      if (d && acikMi()) { disSessiz = k; tikla(d.dugme); if (d.el && d.el.hidden) disSessiz = null; }
+      return true;
+    }
+    return false;
+  }
+
   // --- Sayfa aç/kapa ---------------------------------------------------------
   // Okuma/Daha sayfası açılınca tarihte kendi girdisi olur (adres aynı,
   // durum dostKatman): Android'in geri tuşu YALNIZ sayfayı kapatır; Esc,
@@ -207,7 +295,8 @@
   }
   var katmanGeriBekleniyor = false, katmanGeriZaman = null;
   function katmanAdi(el) { return el === daha ? "daha" : "okuma"; }
-  function katmanGirdisiBizim() { return !!(GU && GU.tarihKatmani && GU.tarihKatmani()); }
+  function sayfaKatmani() { var k = GU && GU.tarihKatmani ? GU.tarihKatmani() : null; return k === "daha" || k === "okuma" ? k : null; }
+  function katmanGirdisiBizim() { return !!sayfaKatmani(); }
   function simdikiYol() { return location.pathname + location.search; }
   function buradaMi() { return simdikiYol() === katmanYolu; }
   // Sayfa açıkken dil değiştiyse (/esma/ -> /en/esma/) yalnız katman girdisinin
@@ -286,13 +375,15 @@
 
   // Bu dinleyici ontology.js'inkinden ÖNCE kurulur (betik sırası).
   window.addEventListener("popstate", function (e) {
-    var k = GU && GU.tarihKatmani ? GU.tarihKatmani() : null;
+    if (disPopstate(e)) return;
+    var k = sayfaKatmani();
     if (katmanGeriBekleniyor) {
       katmanGeriBekleniyor = false;
       clearTimeout(katmanGeriZaman);
       if (katmaninAltindaMi()) { e.stopImmediatePropagation(); yerindeKal(); guncelle(); return; }
     }
     if (acikSayfa && !k && katmaninAltindaMi()) {
+      setTimeout(disOluAtla, 0);
       // Geri tuşu açık sayfanın girdisinden çıktı: yalnız sayfa kapanır.
       gizle(acikSayfa);
       e.stopImmediatePropagation();
@@ -373,8 +464,79 @@
   // yalnız geri gidilecek bir şey varken görünür (bağlanmamış düğme olmasın):
   // açık sayfa, açık panel ya da uygulama içinde açılmış bir adres.
   function derinlik() { return GU && GU.tarihAdimi ? GU.tarihAdimi() : 0; }
+
+  // --- Geri: <ad> (2026-10-11, O4) ----------------------------------------------
+  // Yer adının altında tek satır: geri tuşunun / dairesinin götüreceği yerin
+  // adı, tarihin kendisinden (Navigation API; yoksa graph-utils.js'in
+  // dostOnceki kaydı). Panelin iz satırının (#detail-breadcrumb) yerine
+  // geçer -- o görünüm değişince sıfırlanıyor, geri tuşunda ileriye doğru
+  // büyüyordu ve dokununca yeni bir adım açıyordu.
+  var ADLAR = {};
+  var donus = document.createElement("span");
+  donus.className = "uyg-donus";
+  donus.hidden = true;
+  donus.setAttribute("aria-hidden", "true");
+  function yolAnahtari(u) { try { return new URL(u, location.href).pathname; } catch (e) { return u; } }
+  function parcalar(yol) { return yol.split("/").filter(function (x) { return x && !/^(en|pt)$/.test(x); }); }
+  function bolumAdi(v) {
+    if (!v || v === "ontoloji") return t(ETIKET.harita0);
+    var a = document.getElementById(v + "-btn");
+    return a ? a.textContent.trim() : "";
+  }
+  function adiKaydet() {
+    var yol = location.pathname, p = parcalar(yol), ad = "";
+    var pn = panel();
+    if (p.length > 1 && pn && !pn.hidden) {
+      var ti = pn.querySelector(".detail-title");
+      if (ti) { var c = ti.cloneNode(true); c.querySelectorAll(".pole-badge, [class*='badge'], .mg-komsu").forEach(function (b) { b.remove(); }); ad = c.textContent.trim(); }
+    }
+    if (!ad && p.length <= 1) ad = bolumAdi(p[0]);
+    if (ad) ADLAR[yol] = ad.replace(/\s+/g, " ");
+  }
+  function oncekiYol() {
+    var n = window.navigation;
+    if (n && n.currentEntry && n.entries) {
+      var i = n.currentEntry.index, es = n.entries();
+      return i > 0 && es[i - 1] ? yolAnahtari(es[i - 1].url) : null;
+    }
+    return GU && GU.tarihOncekiYol ? GU.tarihOncekiYol() : null;
+  }
+  function donusAdi() {
+    if (derinlik() === 0 && !acikSayfa) return null;
+    var y = oncekiYol();
+    if (!y) return null;
+    var p = parcalar(y);
+    return ADLAR[y] || (p.length <= 1 ? bolumAdi(p[0]) : bolumAdi(p[0])) || null;
+  }
+  function donusYaz() {
+    adiKaydet();
+    var ad = acikMi() && !geri.hidden ? donusAdi() : null;
+    donus.hidden = !ad;
+    donus.textContent = ad ? t(ETIKET.geri) + ": " + ad : "";
+    geri.setAttribute("aria-label", ad ? t(ETIKET.geri) + ": " + ad : t(ETIKET.geri));
+    geri.title = geri.getAttribute("aria-label");
+    var nt = document.getElementById("nav-toggle");
+    if (nt && donus.parentNode !== nt) nt.appendChild(donus);
+    if (nt) nt.classList.toggle("uyg-donuslu", !!ad);
+  }
+
+  // --- Bölüm rozeti (2026-10-11, O6) -------------------------------------------
+  // Panel metninde başka bir bölüme götüren bağlantı adı konmuş bir kapıdır:
+  // yanında hedef bölümün adı küçük bir rozetle yazar (dokunmatikte hover
+  // önizlemesi yok). Aynı bölümdeki bağlantılara dokunulmaz.
+  function rozetle() {
+    var ic = document.getElementById("detail-content");
+    if (!ic) return;
+    var cur = parcalar(location.pathname)[0] || "ontoloji";
+    ic.querySelectorAll("a.cross-link[data-view]").forEach(function (a) {
+      var v = a.dataset.view;
+      var ad = acikMi() && v && v !== cur ? bolumAdi(v) : "";
+      if (ad) a.setAttribute("data-bolum", ad); else a.removeAttribute("data-bolum");
+    });
+  }
   geri.addEventListener("click", function () {
     if (sayfaKapat()) return;
+    if (disYigin.length && disSimdi()) { history.back(); return; }
     if (panelAcik() && derinlik() === 0) { paneliKapat(); return; }
     if (derinlik() > 0) history.back();
   });
@@ -411,6 +573,8 @@
     daha.setAttribute("aria-label", t(ETIKET.daha));
     if (acikSayfa === daha) dahaCiz();
     if (acikSayfa === okuma) kitaplariCiz();
+    // Dil değişti: "Geri: <ad>" ve bölüm rozetleri yeni dilde yeniden yazılır.
+    if (typeof ADLAR === "object" && ADLAR) { for (var k in ADLAR) delete ADLAR[k]; setTimeout(function () { rozetle(); donusYaz(); }, 0); }
   }
 
   function guncelle() {
@@ -425,13 +589,15 @@
       if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
       if (b.dataset.uyg === "okuma" || b.dataset.uyg === "daha") b.setAttribute("aria-expanded", String(acikSayfa === (b.dataset.uyg === "okuma" ? okuma : daha)));
     });
-    geri.hidden = !(acikSayfa || derinlik() > 0 || panelAcik());
+    geri.hidden = !(acikSayfa || disYigin.length || derinlik() > 0 || panelAcik());
     if (!panelAcik()) panelTam = false;
+    else boyKaydet();
     var yarim = yarimMi();
     HTML.classList.toggle("uyg-panel-yarim", yarim);
     perde.hidden = !(acikSayfa || (acikUyg && panelAcik() && !yarim));
     tutamakYaz();
     ilerleme();
+    donusYaz();
   }
   // Tutamak yalnız haritadaki panelde bir düğmedir (büyüt / küçült); başka
   // yerde süs olarak kalır, odaklanmaz (bağlanmamış düğme olmasın).
@@ -460,9 +626,38 @@
     panelTam = tam;
     guncelle();
   }
+  // Panel boyu (yarım / tam) her tarih girdisinde hatırlanır: geri tuşuyla
+  // dönülen kayıt bırakıldığı boyda açılır (eskiden hep yarıma düşüyordu).
+  var BOYLAR = {};
+  function girdiAnahtari() {
+    var n = window.navigation;
+    return n && n.currentEntry ? n.currentEntry.key : location.pathname + "#" + derinlik();
+  }
+  var boyBekleyen = null;
+  function boyKaydet() { if (boyBekleyen == null && haritaAcik()) BOYLAR[girdiAnahtari()] = panelTam; }
+  window.addEventListener("popstate", function () {
+    var k = girdiAnahtari();
+    if (!(k in BOYLAR)) return;
+    boyBekleyen = BOYLAR[k];
+    var dene = function (n) {
+      if (panelAcik() && haritaAcik()) { var b = boyBekleyen; boyBekleyen = null; if (b !== panelTam) panelBoyu(b); return; }
+      if (n > 0) setTimeout(function () { dene(n - 1); }, 120); else boyBekleyen = null;
+    };
+    setTimeout(function () { dene(8); }, 60);
+  });
   document.querySelectorAll("main > section").forEach(function (s) { new MutationObserver(guncelle).observe(s, { attributes: true, attributeFilter: ["hidden"] }); });
   var pnl = panel();
   if (pnl) new MutationObserver(function () { if (pnl.hidden) pnl.style.transform = ""; guncelle(); }).observe(pnl, { attributes: true, attributeFilter: ["hidden"] });
+  var icerik = document.getElementById("detail-content");
+  if (icerik) new MutationObserver(function () { rozetle(); donusYaz(); }).observe(icerik, { childList: true });
+  window.addEventListener("popstate", function () { setTimeout(function () { rozetle(); donusYaz(); }, 0); });
+  ["pushState", "replaceState"].forEach(function (m) {
+    var f = history[m];
+    history[m] = function () { var r = f.apply(this, arguments); if (panelAcik()) boyKaydet(); setTimeout(function () { rozetle(); donusYaz(); }, 0); return r; };
+  });
+  disBagla();
+  document.addEventListener("DOMContentLoaded", disBagla);
+  window.addEventListener("load", disBagla);
   new MutationObserver(etiketle).observe(HTML, { attributes: true, attributeFilter: ["lang"] });
 
   // Panelin tutamağı (çekme yeri) -- yalnız kabukta görünür.

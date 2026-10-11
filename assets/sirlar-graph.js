@@ -656,6 +656,11 @@
   function enterReading(themeNode) {
     focusedTheme = themeNode;
     wrapEl.classList.add("sir-reading");
+    // Odak tarihte bir adım (graph-utils.js gorunumAdimi): Android'in geri
+    // tuşu Esc gibi önce odaktan çıkarır, Sırlar'dan değil. Panel kapanınca
+    // da odak sürer (gaOdak).
+    wrapEl.dataset.gaOdak = "1";
+    if (GU.gorunumAdimi) GU.gorunumAdimi("sirlar-wrap");
     const kids = (childrenOf.get(themeNode.id) || []).map((id) => byId.get(id));
     let cx = themeNode.x, cy = themeNode.y;
     if (kids.length) {
@@ -694,6 +699,8 @@
   function exitReading() {
     focusedTheme = null;
     wrapEl.classList.remove("sir-reading");
+    delete wrapEl.dataset.gaOdak;
+    if (GU.gorunumAdimiBitti) GU.gorunumAdimiBitti("sirlar-wrap");
     fitAll();
     ensureFrame();
   }

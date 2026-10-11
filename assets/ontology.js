@@ -383,9 +383,20 @@
 
   // Kapat düğmesi Esc'in son adımıyla aynı şeyi yapar: paneli kapatır ve
   // adresi bölüm sayfasına döndürür (bkz. kaydiKapat, updateHash).
+  // 2026-10-11 (grafik gezinme denetimi O1/O3): ✕ geri tuşu ve Esc'le aynı
+  // TEK adımdır -- önce görünümün kendi bir adımı (Sorular'da kategori
+  // listesinden açılan soru o listeye döner, Kur'ân Dokusu odağını bırakır),
+  // görünümün adımı yoksa panel kapanır; adres de aynı kuralla geri gider.
   detailClose.addEventListener("click", () => {
-    detailPanel.hidden = true;
-    kaydiKapat();
+    const view = currentRoute.view;
+    const once = geriAdimda;
+    geriAdimda = true;
+    let n = 0;
+    try {
+      if (PANEL_KAYITLARI.has(view)) n = window.DostGraphUtils.stepBackView(wrapIdFor(view), 1);
+      if (!n) detailPanel.hidden = true;
+      kaydiKapat();
+    } finally { geriAdimda = once; }
   });
 
   const detailPrint = document.getElementById("detail-print");
@@ -1263,8 +1274,10 @@
   // true -- görünümlerin o sırada çağırdığı setHash(view) bu kurala uyar.
   let geriAdimda = false;
   let kendiGeriYolu = null, kendiGeriZaman = null;
-  function geriyeGit(path) {
+  let kendiGeriSonra = null;
+  function geriyeGit(path, sonra) {
     kendiGeriYolu = path;
+    kendiGeriSonra = sonra || null;
     clearTimeout(kendiGeriZaman);
     // popstate gelmezse (tarayıcı geri adımı yutarsa) bekleyiş düşer.
     kendiGeriZaman = setTimeout(() => { kendiGeriYolu = null; }, 1500);
@@ -1276,9 +1289,17 @@
     const path = routePath(view, id);
     if (location.pathname !== path) {
       const replace = navOtomatik || geriAdimda;
-      const geri = geriAdimda && !navOtomatik && window.DostGraphUtils.tarihOncekiYol() === path;
+      const onceki = window.DostGraphUtils.tarihOncekiYol();
+      const geri = geriAdimda && !navOtomatik && onceki === path;
+      // Kayıt aynı görünümün başka bir kaydından açılmıştı (paneldeki
+      // bağlantı, haritada başka düğüm): kapanış da geri tuşu gibi bir adım
+      // -- o kayda dönülür. Eskiden adres bölüme yazılıyor, önceki kayıt
+      // girdisi altta kalıp geri tuşunda "hayalet" olarak açılıyordu (O1).
+      const oncekiParca = onceki ? onceki.slice(ROUTE_BASE.length).replace(/^\/(en|pt)(?=\/|$)/, "").split("/").filter(Boolean) : [];
+      const geriKayda = geriAdimda && !navOtomatik && !geri && !id && oncekiParca.length > 1 && oncekiParca[0] === view;
       try {
         if (geri) geriyeGit(path);
+        else if (geriKayda) history.back();
         else if (replace) history.replaceState(null, "", path);
         else history.pushState(null, "", path);
       } catch (e) { /* eski tarayıcı */ }
@@ -1558,6 +1579,13 @@
     const oncekiGorunum = currentRoute.view;
     currentRoute = { view, id };
     updateMeta(view, id);
+    if (fromPop && !id && view === oncekiGorunum && window.DostGraphUtils.tarihGorunumAdimi() === wrapIdFor(view)) {
+      // Üstteki kayıttan görünüm içi bir adımın girdisine dönüldü (Sırlar'da
+      // tema odağı, Sorular'da kategori listesi): yalnız bir adım geri --
+      // adım yerinde kalır (graph-utils.js gorunumAdimi).
+      if (!window.DostGraphUtils.stepBackView(wrapIdFor(view), 1)) detailPanel.hidden = true;
+      return;
+    }
     if (fromPop && !id && view === oncekiGorunum) {
       window.DostGraphUtils.stepBackView(wrapIdFor(view));
       if (view === "hakkinda" && window.__siirlerApp) window.__siirlerApp.switchTo("hakkinda");
@@ -1595,6 +1623,9 @@
     if (kendiGeriYolu && location.pathname === kendiGeriYolu) {
       kendiGeriYolu = null;
       clearTimeout(kendiGeriZaman);
+      const sonra = kendiGeriSonra;
+      kendiGeriSonra = null;
+      if (sonra) sonra();
       return;
     }
     kendiGeriYolu = null;
@@ -1612,6 +1643,9 @@
   function kaydiKapat() {
     const { view, id } = currentRoute;
     if (!id || !PANEL_KAYITLARI.has(view) || !detailPanel.hidden) return;
+    // Ontoloji'de kayıt kapanınca seçim de bırakılır -- geri tuşu da
+    // ikisini birlikte geri alıyor (goToOntologyNode); Esc ile aynı tek adım.
+    if (view === "ontoloji" && nodeSel) { nodeSel.classed("node--active", false); currentDetailNode = null; }
     const once = geriAdimda;
     geriAdimda = true;
     try { updateHash(view); } finally { geriAdimda = once; }
@@ -1654,6 +1688,31 @@
   });
 
   window.__dostNav = {
+    // Kaydı kapat (✕ ile aynı tek adım): panelin içindeki "← geri"
+    // bağlantıları (Menziller "Halkaya dön") bunu kullanır (O2).
+    kapat() {
+      detailPanel.hidden = true;
+      kaydiKapat();
+    },
+    // Panel açık kalıp kayıttan bölüm düzeyine inildi (Sorular "← Bütün
+    // Sorular"): adres bölüme döner, yeni tarih adımı açılmaz; panelin
+    // kendisi görünüm içi bir adım olarak kalır (geri tuşu onu kapatır).
+    adressizPanel(view) {
+      const path = routePath(view);
+      if (location.pathname === path) return;
+      const wid = wrapIdFor(view);
+      const isaretle = () => {
+        if (!detailPanel.hidden && window.DostGraphUtils.tarihGorunumAdimi() !== wid) {
+          try { history.replaceState({ dostGorunumAdim: wid }, ""); } catch (e) { /* eski tarayıcı */ }
+        }
+      };
+      currentRoute = { view, id: undefined };
+      updateMeta(view);
+      try {
+        if (window.DostGraphUtils.tarihOncekiYol() === path) geriyeGit(path, isaretle);
+        else { history.replaceState(null, "", path); isaretle(); }
+      } catch (e) { /* eski tarayıcı */ }
+    },
     goTo(view, id) {
       // Önce adres (push), sonra görünüm -- bkz. updateHash.
       updateHash(view, id);
@@ -4162,7 +4221,29 @@
   // bu dosyadan SONRA gelen defer betiklerinin (mobil liste, ipuçları...)
   // de çalışmış olmasını garanti ediyor -- eski düzende rota zaten bir
   // fetch'in arkasında olduğu için hep onlardan sonra çözülüyordu.
+  // Soğuk açılış tohumu (2026-10-11, grafik gezinme denetimi K2/D1):
+  // Android uygulaması bir kayıt ya da bölüm adresiyle açıldığında
+  // (paylaşılan bağlantı, kısayol) tarih tek girdidir ve Android'in geri
+  // tuşu ilk basışta uygulamayı kapatır -- panel açıkken bile. Tarihin
+  // altına görünmeden Harita ve bölüm girdisi yazılır: geri tuşu önce
+  // paneli kapatır, sonra bölüme, sonra Harita'ya döner, ancak orada
+  // uygulamadan çıkar. Yalnız uygulamada (tarayıcıdaki ziyaretçinin geri
+  // tuşu geldiği siteye dönmeye devam eder).
+  function tarihTohumla() {
+    if (window.__dostUygulama !== true) return;
+    if (window.navigation && window.navigation.entries ? window.navigation.entries().length !== 1 : history.length !== 1) return;
+    const onek = ROUTE_BASE + window.DostMeta.langPrefix();
+    const parca = location.pathname.slice(onek.length).split("/").filter(Boolean);
+    if (!parca.length || !/^[a-z-]+$/.test(parca[0])) return;
+    const yol = location.pathname + location.search;
+    try {
+      history.replaceState(null, "", onek + "/");
+      if (parca.length > 1) history.pushState(null, "", onek + "/" + parca[0] + "/");
+      history.pushState(null, "", yol);
+    } catch (e) { /* eski tarayıcı */ }
+  }
   function ilkRota() {
+    tarihTohumla();
     parseHashAndGo(false);
     window.__dostAppReady = true;
   }

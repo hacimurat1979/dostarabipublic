@@ -728,7 +728,16 @@
       ${notu}
       ${okumaBagiHtml(n)}
       <p class="menzil-kaynak">${L.kaynak}: ${tt(n.kaynak)}</p>`;
-    detailContent.querySelector(".menzil-back-link").addEventListener("click", () => { activeId = null; showIntro(); ensureFrame(); });
+    // "Halkaya dön" kaydı kapatır -- ✕ ve geri tuşuyla aynı tek adım
+    // (2026-10-11, O2). Eskiden giriş panelini açıp adreste YENİ bir adım
+    // açıyordu; ardından geri tuşu kapatılan menzili geri getiriyordu.
+    detailContent.querySelector(".menzil-back-link").addEventListener("click", () => {
+      activeId = null;
+      showIntro(false, false);
+      ensureFrame();
+      if (window.__dostNav && window.__dostNav.kapat) window.__dostNav.kapat();
+      else detailPanel.hidden = true;
+    });
     detailPanel.hidden = false;
     window.__dostNav && window.__dostNav.setHash("menziller", String(n.sira));
     ensureFrame();
@@ -846,6 +855,9 @@
       liste: menzillerMobilListe,
       dugumSecici: "g.menzil-node",
       isaret: "circle.menzil-node__sphere",
+      // Önceki / sonraki (2026-10-11, O5): panelin başındaki komşu daireleri.
+      gorunum: "menziller",
+      komsular: () => nodes.slice().sort((a, b) => Number(a.sira) - Number(b.sira)).map((n) => ({ id: String(n.sira), no: n.sira, ad: n.menzil })),
       kaydir(dx, dy) {
         if (!zoomBehavior) return;
         const k = d3.zoomTransform(svgNode).k;

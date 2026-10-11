@@ -229,7 +229,7 @@ window.__kuranDokusuApp = (function () {
       .attr("d", kenarYolu)
       .attr("fill", "none");
 
-    hitSel.on("mouseenter", function (ev, d) { vurgula(d.sureNo, null, true, d); kenarIpucu(ev, d); })
+    hitSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(d.sureNo, null, true, d); kenarIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
       .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); });
     // Ürün denetimi P2-6 (2026-09-02): role:"img" -- bu kenar tıklanamaz,
@@ -283,10 +283,10 @@ window.__kuranDokusuApp = (function () {
       .text((d) => sigdir(tt(d.ad)));
     olcu.remove();
 
-    sureSel.on("mouseenter", function (ev, d) { vurgula(d.no, null, true); sureIpucu(ev, d); })
+    sureSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(d.no, null, true); sureIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
       .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); })
-      .on("focus", function (ev, d) { vurgula(d.no, null, true); })
+      .on("focus", function (ev, d) { if (dokunmatik() && !this.matches(":focus-visible")) return; vurgula(d.no, null, true); })
       .on("blur", function () { secimeDon(); })
       .on("click", (ev, d) => surePaneli(d))
       .on("keydown", function (ev, d) {
@@ -305,10 +305,10 @@ window.__kuranDokusuApp = (function () {
     babSel.append("circle").attr("class", "kuran-dokusu-bab__vurus").attr("r", 10).attr("fill", "transparent");
     babSel.append("circle").attr("class", "kuran-dokusu-bab__nokta").attr("r", (d) => d.r);
 
-    babSel.on("mouseenter", function (ev, d) { vurgula(null, d.view + "/" + d.id, true); babIpucu(ev, d); })
+    babSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(null, d.view + "/" + d.id, true); babIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
       .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); })
-      .on("focus", function (ev, d) { vurgula(null, d.view + "/" + d.id, true); })
+      .on("focus", function (ev, d) { if (dokunmatik() && !this.matches(":focus-visible")) return; vurgula(null, d.view + "/" + d.id, true); })
       .on("blur", function () { secimeDon(); })
       .on("click", (ev, d) => babPaneli(d))
       .on("keydown", function (ev, d) {
@@ -475,6 +475,9 @@ window.__kuranDokusuApp = (function () {
     vurgula(null, null, false);
   }
 
+  // Telefonda değinmek yok (ETKILESIM_DILI "Telefonda harita"): dokunuşun
+  // uyumluluk fare olayları ışık yolunu seçimden sonra da yakık tutuyordu.
+  function dokunmatik() { return !!(GU.telefonMu && GU.telefonMu()); }
   function ortala(animate) {
     if (!zoom) return;
     const hedef = animate && !reduceMotion ? svg.transition().duration(420) : svg;
@@ -532,6 +535,13 @@ window.__kuranDokusuApp = (function () {
         // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
         girisPaneli();
         detailPanel.hidden = true;
+        // Seçimin kurduğu odak (ışık yolu + telefonda yaklaşan kamera) da
+        // aynı adımda geri alınır (2026-10-11, K3): eskiden kamera seçilende
+        // kalıyor, Esc bir şey yapmıyor, geri tuşu bölümden çıkıyordu.
+        const a = document.activeElement;
+        if (a && wrapEl.contains(a) && a.blur) a.blur();
+        vurgula(null, null, false);
+        ortala(true);
         if (window.__dostNav) window.__dostNav.setHash("kuran-dokusu");
         return true;
       }

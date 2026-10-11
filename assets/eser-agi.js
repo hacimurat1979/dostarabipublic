@@ -781,6 +781,10 @@ window.__eserAgiApp = (function () {
       liste: eserAgiMobilListe,
       dugumSecici: "g.eser-agi-eser",
       isaret: "rect.eser-agi-eser__govde",
+      // Önceki / sonraki (2026-10-11, O5): panelin başındaki komşu daireleri.
+      gorunum: "eser-agi",
+      komsular: () => eserler.map((e, i) => ({ e, i })).sort((a, b) => ((a.e.yil && a.e.yil.miladi) || 0) - ((b.e.yil && b.e.yil.miladi) || 0) || a.i - b.i)
+        .map(({ e }) => ({ id: e.id, no: (e.yil && e.yil.miladi) || "", ad: e.eser })),
       kaydir(dx, dy) {
         if (!zoom) return;
         const k = d3.zoomTransform(svgNode).k;

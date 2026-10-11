@@ -138,6 +138,9 @@
   let zoomLayer, bgLayer, ringLayer, linkLayer, particleLayer, nodeLayer, centerLayer, defs;
   let zoomBehavior = null, simulation = null, currentK = 1;
   let currentDetailQuestion = null, hoveredId = null, focusId = null;
+  // Soru kategori listesinden mi açıldı (2026-10-11): o zaman bir adım geri
+  // kategori listesidir, değilse sorunun kendisi kapanır.
+  let kategoriListesiAcik = false, soruKategoriden = false;
   let width = 900, height = 640;
   let dragging = false;
   let bgParticles = [], edgeParticles = [];
@@ -455,7 +458,7 @@
       if (tilt3d) { tilt3d.resetView(); render(performance.now()); }
       fitView(true);
     });
-    if (backBtn) { backBtn.hidden = !currentDetailQuestion && !expandedCatId; backBtn.onclick = () => showAllQuestionsList(); }
+    if (backBtn) { backBtn.hidden = !currentDetailQuestion && !expandedCatId; backBtn.onclick = () => tumSorular(); }
     // Boşluğa tıklamak: önce odağı bırakır, sonra açık kategoriyi kapatır.
     // toggleCategory()'nin aynı kapatma yolunda yaptığı gibi panel de
     // listeye dönmeli -- eskiden yalnız grafik kapanıyordu, panel eski
@@ -1246,6 +1249,7 @@
     const cat = categoryById.get(catId);
     if (!cat) return;
     currentDetailQuestion = null;
+    kategoriListesiAcik = true;
     if (backBtn) backBtn.hidden = false;
     const rows = cat.questions.map((q) => `
       <button class="sorular-question-row" type="button" data-id="${q.id}"><span>${I18n.pick3(q.question)}</span><span class="sorular-question-row__arrow" aria-hidden="true">→</span></button>`).join("");
@@ -1254,14 +1258,23 @@
       <h2 class="detail-title">${I18n.pick3(cat.name)}</h2>
       <p class="sorular-category-tag">${cat.questions.length} ${tt({ tr: "soru", en: "questions", pt: "perguntas" })}</p>
       <div class="sorular-question-list">${rows}</div>`;
-    detailContent.querySelector(".sorular-back-link").addEventListener("click", () => showAllQuestionsList());
+    detailContent.querySelector(".sorular-back-link").addEventListener("click", () => tumSorular());
     wireQuestionRows();
     detailPanel.hidden = false;
     ensureFrame();
   }
 
+  // "← Bütün Sorular" (panel ve görünümün geri düğmesi): bütün-liste
+  // gösterilir, adres de soru kaydından bölüm sayfasına döner -- yeni bir
+  // tarih adımı açmadan (2026-10-11, O2; ontology.js adressizPanel).
+  function tumSorular() {
+    showAllQuestionsList();
+    if (window.__dostNav && window.__dostNav.adressizPanel) window.__dostNav.adressizPanel("sorular");
+  }
+
   function showAllQuestionsList(keepScene, openPanel) {
     currentDetailQuestion = null; focusId = null;
+    kategoriListesiAcik = false;
     if (backBtn) backBtn.hidden = true;
     if (expandedCatId && !keepScene) collapseCategory(true);
     else if (nodes.length) fitView(true);
@@ -1313,6 +1326,8 @@
   }
 
   function showQuestionDetail(q) {
+    if (currentDetailQuestion !== q) soruKategoriden = kategoriListesiAcik && !detailPanel.hidden;
+    kategoriListesiAcik = false;
     currentDetailQuestion = q;
     focusId = q.id;
     if (backBtn) backBtn.hidden = false;
@@ -1323,7 +1338,7 @@
       <p class="sorular-category-tag">${cat ? I18n.pick3(cat.name) : ""}</p>
       <div class="detail-block detail-block--ibnarabi">${window.DostGraphUtils.has3(q.answer) ? `<p>${linkify(I18n.pick3(q.answer), "sorular", q.id)}</p>` : ""}${sourceHtml(q)}</div>
       ${analogyHtml(q.analogy)}${soruSahneHtml(q.id)}${crossLinkHtml(q)}${sirlarHtml(q)}${relatedQuestionsHtml(q)}`;
-    detailContent.querySelector(".sorular-back-link").addEventListener("click", () => showAllQuestionsList());
+    detailContent.querySelector(".sorular-back-link").addEventListener("click", () => tumSorular());
     // Köprü verisi geç gelirse paneli tazele -- ilk açılışta bağlar
     // görünmeden kalmasın.
     if (!koprü) koprüYukle().then((k) => {
@@ -1392,12 +1407,29 @@
 
   // Bir adım geri: açık soru ya da açık kategori varsa bütün-liste hâline
   // dön. (Recenter'dan 2026-08-03'te ayrıştı: o yalnız çerçeveyi kuruyor.)
+  // 2026-10-11 (grafik gezinme denetimi K3/O3): Esc, Android'in geri tuşu
+  // ve geri dairesi aynı tek adımı atar. Soru kategori listesinden
+  // açıldıysa o listeye dönülür (adres bölüme); doğrudan açılan soru
+  // kapanır; açık kategori kapanır. Eskiden her adım kullanıcının hiç
+  // açmadığı "Bütün Sorular" listesine düşüyordu.
   GU.registerStepBack("sorular-wrap", () => {
-    if (!currentDetailQuestion && !expandedCatId) return false;
-    showAllQuestionsList();
-    // Panel bütün sorulara döndü: adres de soru kaydından bölüm sayfasına
-    // (bir adım geri -- yeni tarih girdisi açmaz, bkz. ontology.js updateHash).
-    window.__dostNav && window.__dostNav.setHash("sorular");
+    if (currentDetailQuestion) {
+      const kategoriye = expandedCatId && (soruKategoriden || (GU.tarihGorunumAdimi && GU.tarihGorunumAdimi() === "sorular-wrap"));
+      if (kategoriye) showCategoryList(expandedCatId);
+      else {
+        currentDetailQuestion = null; focusId = null;
+        if (expandedCatId) collapseCategory(true);
+        if (backBtn) backBtn.hidden = true;
+        detailPanel.hidden = true;
+      }
+      window.__dostNav && window.__dostNav.setHash("sorular");
+      return true;
+    }
+    if (!expandedCatId) return false;
+    collapseCategory(true);
+    kategoriListesiAcik = false;
+    if (backBtn) backBtn.hidden = true;
+    detailPanel.hidden = true;
     return true;
   });
 

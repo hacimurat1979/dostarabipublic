@@ -28,7 +28,7 @@
      üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
      bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
      domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-yzArq5potEZgae1/zaHVfNSa8zqA2pW8OrNfx7oEkrI=' 'sha256-cjheSZxdnEzaKXWxMGqsuKGbIzfNWtwQRgcQjUS/++E=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-hWRq/wO4HCtJ5DheALoAZR1WbzWwIU9QS+pVyRsMhtg='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-yzArq5potEZgae1/zaHVfNSa8zqA2pW8OrNfx7oEkrI=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-hWRq/wO4HCtJ5DheALoAZR1WbzWwIU9QS+pVyRsMhtg='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
      köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
      her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
@@ -211,8 +211,14 @@
         // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
         // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
         // doğruluyor.)
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(redirect)) {
-          history.replaceState(null, "", redirect);
+        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
+        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
+        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
+        var soru = redirect ? redirect.indexOf("?") : -1;
+        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
+        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
+        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
+          history.replaceState(null, "", hedefYol + hedefSorgu);
         }
       } catch (e) {}
     })();
@@ -1395,7 +1401,7 @@ mesmo antes que o assombro exista."></blockquote>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-wJjXOjqathRvpklI0/9bosjU2rBLeJ3bWZOZ19r/+VxFiJ10sJHenP6LN1UIlTf+"></script>
   <script src="assets/view-status.js" defer integrity="sha384-QqM+7WhjdfP0QaEJQioJpJVFbX4j/zkZMh7XlWxRxny7QUmI2jbPyeIvtycYXTan"></script>
-  <script src="assets/graph-utils.js" defer integrity="sha384-xxUyFm5n1Bqvi/EonctGyB0z5rC3e7AfO0DKhOH4fXeTZJP7PiQraL+yW4qOnOXg"></script>
+  <script src="assets/graph-utils.js" defer integrity="sha384-iHhBDDclSkF3nhvaaVMDC2CNCsGgMEo7BhTUkzQ3Ct1cqlRURfQctplDwa2GdhEz"></script>
   <!-- nav-drawer.js graph-utils.js'ten SONRA gelmeli (2026-08-15): artık
        açılışta GU.registerStepBack çağırıyor. -->
   <script src="assets/nav-drawer.js" defer integrity="sha384-PSQ3VHw824GsJo6RHsN4BvYtx7e26oS29tbIYc9DQOpBEwaZh8hhfVpYapse+GUZ"></script>
@@ -1407,7 +1413,7 @@ mesmo antes que o assombro exista."></blockquote>
        detayını çizerken window.__dostKademe hazır olmalı. -->
   <script src="assets/kademe.js" defer integrity="sha384-qstXPmVEy5j/ElqnV6hvOfNFBOxlrwj8IhlrgYL2vtn8VzXUESTxdpuBfDN2uZM9"></script>
   <script src="assets/search.js" defer integrity="sha384-pDs5L1a/MsgHhvDCU8wwM9qzBnOVn6cEmzliqa+sPISC/5HVDkd03U0qTk2LAXsY"></script>
-  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-KKsR7SgJGxsGWGkMhteSAdezgUHdvbxNrCdR1az66WtPwlO223+UmqWQ6HF1zUi4"></script>
+  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-BUPUIITtp6IxmYpwAj6Q3nPn4ajmwKhdLApIYwfHi/hhAgf+tO0IshcY7qQSvsC0"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-pptqqmGNxso09k5o3wT0I5nvlVbpPA4CJJ/VB1WKwOwKEMo7iE8ALEpu6m1klg3c"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
@@ -1419,8 +1425,8 @@ mesmo antes que o assombro exista."></blockquote>
        ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
        (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
        static <script> etiketi yok. -->
-  <script src="assets/view-loader.js" defer integrity="sha384-AxL5Iylg8QNCdUh4jehOxeTkxcmQg9ZlwHewi19CshGVjciaUS9p7jr3k8YxWXp6"></script>
-  <script src="assets/ontology.js" defer integrity="sha384-ebj5rRILogo+jrbtRC5r1zAsjd8/JUEW3F/f3a+lf3ezg6awY/Ifkyj/sNWH5ERj"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-BRBWZIUY9Bq+YYuzdj8zr6bw8oXO4t6jvtMErTozzBBD+Ltk/gt0IGIxY4iHG2EB"></script>
+  <script src="assets/ontology.js" defer integrity="sha384-36Y8UwrcWwVesTv6ay8GmCvUZrB/whMrMXmCClZSwukxUcFSMTv9GBcwCRe2AujV"></script>
   <script src="assets/crosslink-preview.js" defer integrity="sha384-Ql+mJC8qoRFExWxkLBHP+85sCuCXqJwVTmYYk1Bk+EWaRK8amiurfak5/gDhaQg+"></script>
   <script src="assets/ayet-onizleme.js" defer integrity="sha384-dRjrG5LDGutq6k8N5qimc3vad2avxLsVwHlAkj3zO4pYqFgOAhpJT6nO3juyamkf"></script>
   <script src="assets/start-hint.js" defer integrity="sha384-vtQnEinwGN6wZtbYZxihvIMKZX4X7Ctms+6OneV/OhKe8FSg03UkBmjfm+kzfv//"></script>

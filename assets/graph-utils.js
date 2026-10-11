@@ -1559,6 +1559,7 @@ window.DostGraphUtils = (function () {
     const s = history.state;
     return s && typeof s === "object" ? s : {};
   }
+  const _ga = { son: null }; // görünüm adımı: bilinen son tarih durumu (aşağıda)
   if (!history.__dostKayit) {
     const push = history.pushState, replace = history.replaceState;
     const nesne = (st) => (st && typeof st === "object" ? st : {});
@@ -1570,11 +1571,13 @@ window.DostGraphUtils = (function () {
     // zaten altındaki sayfanınkinin bir fazlası -- yeni girdiye aynen geçer.
     history.pushState = function (st, ti, url) {
       const eski = tarihDurumu();
-      if (eski.dostKatman) {
+      if (eski.dostKatman && !(st && st.dostKatman)) {
         return replace.call(history, Object.assign({}, nesne(st), { dostAdim: eski.dostAdim || 1, dostOnceki: eski.dostOnceki }), ti, url);
       }
       const ek = { dostAdim: (eski.dostAdim || 0) + 1, dostOnceki: location.pathname };
-      return push.call(history, Object.assign({}, nesne(st), ek), ti, url);
+      const r = push.call(history, Object.assign({}, nesne(st), ek), ti, url);
+      _ga.son = tarihDurumu();
+      return r;
     };
     history.replaceState = function (st, ti, url) {
       const eski = tarihDurumu();
@@ -1584,13 +1587,82 @@ window.DostGraphUtils = (function () {
       let ayniYol = url == null;
       if (!ayniYol) { try { ayniYol = new URL(url, location.href).pathname === location.pathname; } catch (e) { /* geçersiz */ } }
       if (eski.dostKatman && ayniYol && !(st && st.dostKatman === null)) ek.dostKatman = (st && st.dostKatman) || eski.dostKatman;
-      return replace.call(history, Object.assign({}, nesne(st), ek), ti, url);
+      if (eski.dostGorunumAdim && ayniYol && !(st && st.dostGorunumAdim === null)) ek.dostGorunumAdim = eski.dostGorunumAdim;
+      const r = replace.call(history, Object.assign({}, nesne(st), ek), ti, url);
+      _ga.son = tarihDurumu();
+      return r;
     };
     history.__dostKayit = true;
   }
   function tarihAdimi() { return tarihDurumu().dostAdim || 0; }
   function tarihOncekiYol() { return tarihDurumu().dostOnceki || null; }
   function tarihKatmani() { return tarihDurumu().dostKatman || null; }
+  function tarihGorunumAdimi() { return tarihDurumu().dostGorunumAdim || null; }
+
+  // Görünüm içi adım (2026-10-11, grafik gezinme denetimi K3/O3): adres
+  // değiştirmeyen bir adım -- Sırlar'da tema odağı, bir haritada adressiz
+  // açılan panel (Sorular'ın kategori listesi) -- tarihte aynı adreste bir
+  // girdi açar (dostGorunumAdim: wrapId). Telefonda Esc yok; Android'in geri
+  // tuşu o girdiden çıkınca görünümün KENDİ Esc adımı bir kez çalışır
+  // (stepBackView(wrap, 1)) -- Esc, geri tuşu ve geri dairesi aynı adımı
+  // atar, davranış görünümün dosyasında kalır. Adım başka yoldan (Esc,
+  // dokunuş) biterse görünüm gorunumAdimiBitti der: girdiden sessizce çıkılır.
+  // Girdinin adımı artık yoksa (ölü girdi) geri tuşu onu atlar.
+  let gaYut = 0, gaGeriden = false;
+  _ga.son = tarihDurumu();
+  function gorunumAdimi(wrapId) {
+    if (tarihDurumu().dostGorunumAdim === wrapId) return;
+    try { history.pushState({ dostGorunumAdim: wrapId }, ""); } catch (e) { /* eski tarayıcı */ }
+  }
+  function gorunumAdimiBitti(wrapId) {
+    if (gaGeriden || tarihDurumu().dostGorunumAdim !== wrapId) return;
+    gaYut++;
+    history.back();
+  }
+  const _gaPanel = () => document.getElementById("detail-panel");
+  window.addEventListener("popstate", (e) => {
+    const st = tarihDurumu(), onc = _ga.son || {};
+    _ga.son = st;
+    if (gaYut) { gaYut--; e.stopImmediatePropagation(); return; }
+    const geri = (st.dostAdim || 0) < (onc.dostAdim || 0);
+    const w = onc.dostGorunumAdim && st.dostGorunumAdim !== onc.dostGorunumAdim ? document.getElementById(onc.dostGorunumAdim) : null;
+    if (geri && w && !w.hidden) {
+      gaGeriden = true;
+      let n = 0;
+      try {
+        n = stepBackView(onc.dostGorunumAdim, 1);
+        const p = _gaPanel();
+        if (!n && p && !p.hidden) { p.hidden = true; n = 1; }
+      } finally { gaGeriden = false; }
+      e.stopImmediatePropagation();
+      if (!n) history.back(); // ölü girdi: bir adım daha
+      return;
+    }
+    // İleri tuşu bir adım girdisine geldi: adım yeniden kurulamaz, atlanır.
+    if (!geri && st.dostGorunumAdim && st.dostGorunumAdim !== onc.dostGorunumAdim) {
+      gaYut++;
+      e.stopImmediatePropagation();
+      history.back();
+    }
+  }, true);
+  // Adressiz panel: bir harita görünümünde panel kayıt adresi olmadan açılınca
+  // (bölüm sayfasında) bir görünüm adımıdır; kapanınca girdiden çıkılır.
+  function _gaKayitli() { return location.pathname.split("/").filter((x) => x && !/^(en|pt)$/.test(x)).length > 1; }
+  function _gaPanelIzle() {
+    const p = _gaPanel();
+    if (!p) return;
+    new MutationObserver(() => setTimeout(() => {
+      const w = document.querySelector("main > section.graph-wrap:not([hidden])");
+      if (!p.hidden && w && !_gaKayitli() && !tarihKatmani()) gorunumAdimi(w.id);
+      else if (p.hidden && tarihDurumu().dostGorunumAdim && !_gaKayitli()) {
+        const ws = document.getElementById(tarihDurumu().dostGorunumAdim);
+        // Sırlar'ın tema odağı panel kapanınca sürer -- o adım kendisi biter.
+        if (!(ws && ws.dataset.gaOdak)) gorunumAdimiBitti(tarihDurumu().dostGorunumAdim);
+      }
+    }, 0)).observe(p, { attributes: true, attributeFilter: ["hidden"] });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _gaPanelIzle);
+  else _gaPanelIzle();
 
   // Üç ses, üç doku (2026-10-09): okuma metinlerinde (Fütûhât/Füsûs/Mişkât)
   // metni tırnakla başlayan <em> Dost'un doğrudan sözüdür; kavram vurgusu
@@ -1711,7 +1783,7 @@ window.DostGraphUtils = (function () {
     return null;
   }
 
-  return { telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

@@ -478,6 +478,10 @@ window.__seyahatAtlasiApp = (function () {
       wrapEl: wrapEl,
       liste: seyahatMobilListe,
       dugumSecici: "g.seyahat-durak",
+      // Önceki / sonraki (2026-10-11, O5): panelin başındaki komşu daireleri.
+      gorunum: "seyahat-atlasi",
+      komsular: () => duraklar.map((d, i) => ({ d, i })).sort((a, b) => (Number(a.d.yil_baslangic) || 0) - (Number(b.d.yil_baslangic) || 0) || a.i - b.i)
+        .map(({ d }) => ({ id: d.id, no: d.yil_baslangic || "", ad: (window.DostI18n.pick3(d.sehir) || "").split(" (")[0] })),
       altEngel: ".seyahat-atlasi-zaman",
       isaret: "circle.seyahat-durak__nokta",
       kaydir(dx, dy) {
