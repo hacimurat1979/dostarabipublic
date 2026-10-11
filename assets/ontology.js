@@ -2171,6 +2171,23 @@
       return Math.max(0, Math.min(tuval().h * 0.2, sr.bottom - hr.top + 12));
     }
     function computeFitTransform() {
+      // Telefonda harita (taslak, GU.telefonHaritasi): sahne düğüm
+      // dairelerine göre odak alanına sığar. Adlar ekranda sabit boylu ve
+      // seyreltiliyor (çakışan gizlenir, yaklaşınca döner); masaüstündeki
+      // gibi en uzun adın yarı genişliğini pay saymak 379 px'lik tuvalde
+      // çemberi 214 px'e indiriyordu (düğüm 8 px, yazı 4,4 px; ölçüldü).
+      const GUt = window.DostGraphUtils;
+      if (GUt.telefonMu && GUt.telefonMu() && ontologyWrap.classList.contains("mg-telefon") && svg.node().clientWidth) {
+        let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+        nodes.forEach((n) => {
+          const r = radiusFor(n) * 1.6;
+          const bx = tiltTarget > 0.5 && n.px != null ? n.px : n.tx;
+          const by = tiltTarget > 0.5 && n.py != null ? n.py : n.ty;
+          x0 = Math.min(x0, bx - r); x1 = Math.max(x1, bx + r);
+          y0 = Math.min(y0, by - r); y1 = Math.max(y1, by + r);
+        });
+        return GUt.telefonSigdir(ontologyWrap, svg.node(), { x0, y0, x1, y1 }, 0.3, 2.4, 14);
+      }
       const pad = 48;
       const alt = altPay();
       const { w: tw, h: th } = tuval();
@@ -2547,6 +2564,23 @@
       // ölçüldü). Küçük bir tampon bunu azaltıyor (garanti değil, çünkü
       // sürekli dönen bir 3B sahnede HER açıda çakışmasızlık matematiksel
       // olarak garanti edilemez -- bkz. graph-utils.js'teki not).
+      // Telefonda harita (taslak): adlar düğümünün yanında kalır, çakışan
+      // ad itilmez, gizlenir (GU.telefonHaritasi seyreltmesi; yaklaşınca
+      // döner). İtmek dar ekranda adları kılavuz çizgilerin ucunda
+      // düğümünden 250 px öteye taşıyordu (ölçüldü).
+      const telefonAdlari = window.DostGraphUtils.telefonMu && window.DostGraphUtils.telefonMu() && ontologyWrap.classList.contains("mg-telefon");
+      if (telefonAdlari) {
+        // Yazı ekranda 12 px; dairesinden uzaklığı da ekran pikseliyle
+        // (yoksa uzaklaşınca ad kendi dairesinin üstüne biniyordu).
+        const kz = d3.zoomTransform(svg.node()).k;
+        pend.forEach((it) => {
+          const s = Math.max(0.05, kz * (it.scale || 1));
+          const rr = radiusFor(it.lbl.datum()) * s;
+          it.lbl.attr("y", (it.dir < 0 ? -(rr + 7) : rr + 4 + 11) / s);
+        });
+        nodeGroup.selectAll(".onto-label__leader").remove();
+        return;
+      }
       deconflictLabels(pend, nodeObstacles, { y: 10, x: 10 });
       // Kılavuz çizgi. Çakışma çözücüsü bir etiketi düğümünün altından
       // uzağa ittiğinde hangi adın hangi noktaya ait olduğu okunmuyordu:

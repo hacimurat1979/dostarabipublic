@@ -989,15 +989,23 @@
     } else {
       k = Math.max(mn, Math.min(mx, Math.min(vw / bw, height / bh)));
     }
-    const t = d3.zoomIdentity.translate(vw / 2 - k * (x0 + bw / 2), height / 2 - k * (y0 + bh / 2)).scale(k);
+    let t = d3.zoomIdentity.translate(vw / 2 - k * (x0 + bw / 2), height / 2 - k * (y0 + bh / 2)).scale(k);
+    // Telefonda harita: odak alanına sığar; adların yan payı daha dar.
+    if (telefonKipi()) t = GU.telefonSigdir(wrapEl, svgNode, { x0: x0 + 34, x1: x1 - 34, y0: y0 + 16, y1: y1 - 16 }, viewMode === "nehir" ? Math.max(mn, 0.85) : mn, mx, 6, !detailPanel.hidden);
     const sel = (animate && !reduceMotion) ? svg.transition().duration(500).ease(d3.easeCubicInOut) : svg;
     sel.call(zoomBehavior.transform, t);
-    currentK = k;
+    currentK = t.k;
   }
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") && GU.telefonSigdir); }
 
   function panTo(d) {
     const k = Math.max(currentK, 1.1);
-    const t = d3.zoomIdentity.translate(width / 2 - k * d.x, height / 2 - k * d.y).scale(k);
+    let t = d3.zoomIdentity.translate(width / 2 - k * d.x, height / 2 - k * d.y).scale(k);
+    // Telefonda harita: seçilen soru yarım panelin üstündeki alanın ortasına.
+    if (telefonKipi()) {
+      const a = GU.telefonOdakAlani(wrapEl, true), sr = svgNode.getBoundingClientRect();
+      t = d3.zoomIdentity.translate(a.cx - sr.left - k * d.x, a.cy - sr.top - k * d.y).scale(k);
+    }
     const sel = reduceMotion ? svg : svg.transition().duration(450).ease(d3.easeCubicInOut);
     sel.call(zoomBehavior.transform, t);
     currentK = k;
@@ -1424,11 +1432,6 @@
     // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
     pipColor: (n) => "var(" + (CATEGORY_COLOR_VAR[n.__cat] || "--series-theme") + ")",
     title: { tr: "Sorular", en: "Questions", pt: "Perguntas" },
-    note: {
-      tr: "Grafiği okumak için ekran dar geldi — sorular burada kümeleriyle listede. Bir soruya dokun, cevabı oku.",
-      en: "The graph does not fit this narrow screen — the questions are here as a list, with their clusters. Tap a question to read its answer.",
-      pt: "O grafo não cabe neste ecrã estreito — as perguntas estão aqui como lista, com os seus grupos. Toque numa pergunta para ler a resposta.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (grafiği göster)",
       en: "Open the map (show the graph)",
@@ -1436,6 +1439,25 @@
     },
     goTo: (id) => window.__sorularApp.goToNode(id),
   });
+
+  // Telefonda harita (2026-10-11): grafik önce, liste hapın ikinci kipi.
+  // Soruya dokununca görünüm kendi kamerasıyla (panTo) seçileni yarım
+  // panelin üstüne getiriyor; ortak katman yalnız yakın dokunuşu ve hapı
+  // veriyor.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: sorularMobilListe,
+      dugumSecici: "g.sorular-node",
+      isaret: "circle.sorular-sphere",
+      merkezle: false,
+      kaydir(dx, dy) {
+        if (!zoomBehavior) return;
+        const k = d3.zoomTransform(svgNode).k;
+        (reduceMotion ? svg : svg.transition().duration(420)).call(zoomBehavior.translateBy, dx / k, dy / k);
+      },
+    });
+  }
 
   window.__sorularApp = {
     activate() {

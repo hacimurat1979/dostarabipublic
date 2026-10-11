@@ -59,9 +59,13 @@ window.__kuranDokusuApp = (function () {
   let focusSureNo = null;
   let focusBabId = null;
 
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") && GU.telefonSigdir); }
   function boyut() {
     const r = wrapEl.getBoundingClientRect();
-    return { w: Math.max(360, r.width), h: Math.max(360, r.height) };
+    // Telefonda harita: tuval alt gezinmenin üstünde biter (yatayda 305 px);
+    // 360'lık alt sınır sahneyi alt gezinmenin arkasına taşırıyordu.
+    const alt = telefonKipi() ? 200 : 360;
+    return { w: Math.max(alt, r.width), h: Math.max(alt, r.height) };
   }
 
   // Etiketler yarıçap yönünde uzadığı için yayın yarıçapı tek başına
@@ -107,7 +111,7 @@ window.__kuranDokusuApp = (function () {
   // bölüme) değinince/seçince ondan çıkan ışık yolları belirir ve
   // ilerledikçe söner (zuhûr); geri kalan her şey perdelenir (matlık).
   const BOSLUK = 0.2; // yayların iki ucundaki boşluk (radyan)
-  let merkezX = 0, merkezY = 0;
+  let merkezX = 0, merkezY = 0, sonR = 0;
 
   // Açık lejant sol altta duruyor; geniş ekranda sahne onun sağında kalan
   // alana ortalanır ki alt yayın sol ucu lejantın altında kalmasın.
@@ -135,6 +139,7 @@ window.__kuranDokusuApp = (function () {
     const Ryatay = genislik / 2 - pay - (darEkran ? 4 : 12);
     const Rdikey = (h - 56 - pay) / 2;
     const R = Math.max(Math.min(w, h) * 0.2, Math.min(Ryatay, Rdikey));
+    sonR = R;
     merkezX = sol + genislik / 2;
     merkezY = Math.max(R + 34, (h - (2 * R + pay + 24)) / 2 + R + 24);
     etiketAlani = darEkran ? pay - 14
@@ -473,8 +478,29 @@ window.__kuranDokusuApp = (function () {
   function ortala(animate) {
     if (!zoom) return;
     const hedef = animate && !reduceMotion ? svg.transition().duration(420) : svg;
+    // Telefonda harita: daire (iki yay + sûre adları) odak alanına sığar.
+    if (telefonKipi() && sonR) {
+      hedef.call(zoom.transform, GU.telefonSigdir(wrapEl, svgNode,
+        { x0: merkezX - sonR - 30, x1: merkezX + sonR + 30, y0: merkezY - sonR - 14, y1: merkezY + sonR + 58 }, 0.6, 3.5, 4));
+      return;
+    }
     hedef.call(zoom.transform, d3.zoomIdentity);
   }
+
+  // Odak + bağlam (telefon): 88 nokta 377 px'te 6,5 px aralıklıydı
+  // (ölçüldü); bağlı uçlar yayın iki ucuna dağıldığı için hepsini sığdırmak
+  // hiç yaklaştırmıyordu. Panel bağlı bâbları zaten listeliyor.
+  function telefonOdak(el) {
+    const d = el && el.__data__;
+    if (!d || !zoom) return;
+    // Seçilenin yay üzerindeki çevresi büyür (en az 2,2 kat): komşu sûreler
+    // ve bâblar parmak aralığına açılır, seçilen yarım panelin üstündeki
+    // alanın ortasında kalır; ışık yolları bağlı uçlara doğru yükselir.
+    const k = Math.max(2.2, d3.zoomTransform(svgNode).k);
+    const x = merkezX + d.x, y = merkezY + d.y;
+    GU.telefonOdakla(wrapEl, svg, zoom, { x0: x - 1, x1: x + 1, y0: y - 1, y1: y + 1 }, k, k);
+  }
+
 
   let yuklendi = false;
   function yukle() {
@@ -543,11 +569,6 @@ window.__kuranDokusuApp = (function () {
       },
     })),
     title: { tr: "Kur'ân Dokusu", en: "Qur'anic Texture", pt: "Textura Corânica" },
-    note: {
-      tr: "Dokuyu okumak için ekran dar geldi — atıf alan sûreler burada listede. Bir sûreye dokun, hangi bâblarda geçtiğini panelden oku.",
-      en: "The texture does not fit this narrow screen — the cited surahs are here as a list. Tap a surah to read, in its panel, the chapters where it appears.",
-      pt: "A textura não cabe neste ecrã estreito — as suras citadas estão aqui como lista. Toque numa sura para ler, no painel, em que capítulos aparece.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (dokuyu göster)",
       en: "Open the map (show the texture)",
@@ -555,6 +576,19 @@ window.__kuranDokusuApp = (function () {
     },
     goTo: (id) => window.__kuranDokusuApp.goToNode(id),
   });
+
+  // Telefonda harita (2026-10-11): grafik önce, liste hapın ikinci kipi.
+  // Dokununca odak + bağlam (telefonOdak); yakın dokunuş 30 px içindeki en
+  // yakın noktayı seçer.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: kuranMobilListe,
+      dugumSecici: "g.kuran-dokusu-sure, g.kuran-dokusu-bab",
+      isaret: "circle.kuran-dokusu-sure__nokta, circle.kuran-dokusu-bab__nokta",
+      merkezle: (el) => telefonOdak(el),
+    });
+  }
 
   return {
     activate() {

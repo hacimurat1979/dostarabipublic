@@ -232,6 +232,8 @@
     svg.call(zoomBehavior.transform, d3.zoomIdentity.translate(w / 2, h / 2).scale(1));
     // zoom sırasında currentK'yı izleyip LOD güncelle
     svgNode.addEventListener("wheel", () => { setTimeout(readZoom, 0); }, { passive: true });
+    // Telefonda iki parmakla yaklaşınca da ayrıntı düzeyi (yaprak adları) güncellensin.
+    svgNode.addEventListener("touchend", () => { setTimeout(() => { readZoom(); ensureFrame(); }, 0); }, { passive: true });
     svg.on("click", () => { if (focusedTheme) exitReading(); });
 
     // exitReading burada da bir KAMERA geri alma: focusOnTheme sahneyi
@@ -666,6 +668,26 @@
     // yakınlaştır; 36 etiketi birden dökmek yerine kullanıcı bir yaprağın
     // üzerine gelince o yaprağın metni (ipucu + detay paneli) açılır.
     const k = kids.length <= 12 ? 1.95 : 1.5;
+    // Telefonda harita: odak temanın kendisine yakın kurulur (yaprakların
+    // ortalaması geniş bir temada köke düşüyor, tema ekranın dibinde
+    // kalıyordu) ve sahnenin yavaş dönüşü hesaba katılır -- konum ekrandan
+    // okunur, yakınlaştırma katmanının koordinatına çevrilir.
+    if (telefonKipi()) {
+      const t0 = d3.zoomTransform(svgNode), sr = svgNode.getBoundingClientRect();
+      const katmanda = (d) => {
+        const el = nodeLayer.selectAll("g.sir-node").filter((n) => n.id === d.id).select("circle.sir-dot").node();
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return t0.invert([r.left + r.width / 2 - sr.left, r.top + r.height / 2 - sr.top]);
+      };
+      const pt = katmanda(themeNode);
+      if (pt) {
+        let mx = 0, my = 0, say = 0;
+        kids.forEach((c) => { const q = katmanda(c); if (q) { mx += q[0]; my += q[1]; say++; } });
+        if (say) { mx /= say; my /= say; } else { mx = pt[0]; my = pt[1]; }
+        cx = pt[0] * 0.6 + mx * 0.4; cy = pt[1] * 0.6 + my * 0.4;
+      }
+    }
     zoomToPoint(cx, cy, k);
     ensureFrame();
   }
@@ -676,9 +698,16 @@
     ensureFrame();
   }
 
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") && GU.telefonOdakAlani); }
   function zoomToPoint(cx, cy, k) {
     const w = svgNode.clientWidth || 900, h = svgNode.clientHeight || 620;
-    const t = d3.zoomIdentity.translate(w / 2 - k * cx, h / 2 - k * cy).scale(k);
+    let t = d3.zoomIdentity.translate(w / 2 - k * cx, h / 2 - k * cy).scale(k);
+    // Telefonda harita: okuma odağı düğme satırı ile hapın arasındaki alanın
+    // ortasına (tuvalin ortası değil).
+    if (telefonKipi()) {
+      const a = GU.telefonOdakAlani(wrapEl, false), sr = svgNode.getBoundingClientRect();
+      t = d3.zoomIdentity.translate(a.cx - sr.left - k * cx, a.cy - sr.top - k * cy).scale(k);
+    }
     const sel = reduceMotion ? svg : svg.transition().duration(650).ease(d3.easeCubicInOut);
     sel.call(zoomBehavior.transform, t);
     currentK = k;
@@ -692,9 +721,13 @@
     // 3B'de sahne düz halkadan daha uzun; sığdırma ekran konumuna bakmalı.
     list.forEach((d) => { const r = baseRadius(d) + 40; const x = nx_(d), y = ny_(d); minx = Math.min(minx, x - r); maxx = Math.max(maxx, x + r); miny = Math.min(miny, y - r); maxy = Math.max(maxy, y + r); });
     const bw = Math.max(1, maxx - minx), bh = Math.max(1, maxy - miny);
-    const k = Math.max(0.35, Math.min(2.4, Math.min(w / bw, h / bh) * 0.9));
+    const k0 = Math.max(0.35, Math.min(2.4, Math.min(w / bw, h / bh) * 0.9));
     const cx = (minx + maxx) / 2, cy = (miny + maxy) / 2;
-    const t = d3.zoomIdentity.translate(w / 2 - k * cx, h / 2 - k * cy).scale(k);
+    // Telefonda harita: odak alanına sığar (düğme satırı, hap, alt gezinme dışı).
+    const t = telefonKipi()
+      ? GU.telefonSigdir(wrapEl, svgNode, { x0: minx + 28, y0: miny + 28, x1: maxx - 28, y1: maxy - 28 }, 0.35, 2.4, 6)
+      : d3.zoomIdentity.translate(w / 2 - k0 * cx, h / 2 - k0 * cy).scale(k0);
+    const k = t.k;
     const sel = reduceMotion ? svg : svg.transition().duration(650).ease(d3.easeCubicInOut);
     sel.call(zoomBehavior.transform, t);
     currentK = k;
@@ -793,11 +826,6 @@
     // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
     pipColor: (n) => "var(" + (THEME_COLOR_VAR[n.theme] || "--series-theme") + ")",
     title: { tr: "Sırlar", en: "Mysteries", pt: "Mistérios" },
-    note: {
-      tr: "Grafiği okumak için ekran dar geldi — kayıtlar burada tema başlıklarıyla listede. Bir başlığa dokun, paneli oku.",
-      en: "The graph does not fit this narrow screen — the records are here as a list, under their themes. Tap a title to read its panel.",
-      pt: "O gráfico não cabe neste ecrã estreito — os registos estão aqui como lista, sob os seus temas. Toque num título para ler o painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (grafiği göster)",
       en: "Open the map (show the graph)",
@@ -805,6 +833,26 @@
     },
     goTo: goToEntry,
   });
+
+  // Telefonda harita (2026-10-11): telefonda grafik önce açılır, liste
+  // hapın ikinci kipi. Temaya dokunmak zaten bir odak + bağlam hareketi
+  // (enterReading: tema ve yaprakları büyür, geri kalanı söner); yaprağa
+  // dokununca panel yarım açılır ve yaprak üstteki alanın ortasına gelir.
+  // 105 düğümde komşu aralığı 9 px idi: yakın dokunuş 30 px içindeki en
+  // yakın düğümü seçer.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: sirlarMobilListe,
+      dugumSecici: "g.sir-node",
+      isaret: "circle.sir-dot",
+      kaydir(dx, dy) {
+        if (!zoomBehavior) return;
+        const k = d3.zoomTransform(svgNode).k;
+        (reduceMotion ? svg : svg.transition().duration(420)).call(zoomBehavior.translateBy, dx / k, dy / k);
+      },
+    });
+  }
 
   window.__sirlarGraphApp = {
     activate() { fetchData().then((data) => { if (!data) return; if (!built) buildGraph(data); else ensureFrame(); }); },

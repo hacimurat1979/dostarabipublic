@@ -73,11 +73,6 @@
     ],
     pipClass: pipCls,
     title: { tr: "Varlık Mertebeleri", en: "The Ranks of Being", pt: "As Hierarquias do Ser" },
-    note: {
-      tr: "Grafiği okumak için ekran dar geldi — mertebeler burada iniş sırasıyla, listede. Bir başlığa dokun, paneli oku.",
-      en: "The graph does not fit this narrow screen — the ranks are here as a list, in order of descent. Tap a title to read its panel.",
-      pt: "O gráfico não cabe neste ecrã estreito — as hierarquias estão aqui como lista, na ordem da descida. Toque num título para ler o painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (grafiği göster)",
       en: "Open the map (show the graph)",
@@ -85,4 +80,35 @@
     },
     goTo: goToNode,
   }) || { onLangChange: () => {} };
+
+  // Telefonda harita (2026-10-10, taslak): telefonda grafik önce açılır,
+  // liste hapın ikinci kipi. Kamera ontology.js'in d3-zoom'u
+  // (window.__ontologyZoom); adlar ekranda 12 px, çakışan gizlenir --
+  // öncelik Zât, sonra omurga, sonra yan kavramlar.
+  if (GU.telefonHaritasi) {
+    const omurgaSira = new Map(OMURGA.map((id, i) => [id, i]));
+    GU.telefonHaritasi({
+      wrapEl: wrap,
+      liste: window.__ontolojiMobilListeApp,
+      dugumSecici: "g.node",
+      isaret: "circle.node-govde",
+      kaydir(dx, dy) {
+        const z = window.__ontologyZoom;
+        if (!z) return;
+        const k = d3.zoomTransform(z.svg.node()).k;
+        const az = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        (az ? z.svg : z.svg.transition().duration(420)).call(z.zoom.translateBy, dx / k, dy / k);
+      },
+      etiket: {
+        secici: "text.node-label",
+        px: 12,
+        oncelik(el) {
+          const d = el.__data__ || {};
+          if (d.id === "dhat") return 100;
+          if (omurgaSira.has(d.id)) return 50 - omurgaSira.get(d.id);
+          return 10;
+        },
+      },
+    });
+  }
 })();

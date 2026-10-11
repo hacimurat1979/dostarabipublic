@@ -625,7 +625,12 @@
     const bh = Math.max(1, b.y1 - b.y0) + pad * 2;
     const k = Math.max(0.5, Math.min(3, Math.min(vw / bw, height / bh)));
     const mx = (b.x0 + b.x1) / 2, my = (b.y0 + b.y1) / 2;
-    const t = d3.zoomIdentity.translate(vw / 2 - k * mx, height / 2 - k * my).scale(k);
+    // Telefonda harita: sarmal odak alanına sığar (düğme satırı, hap, alt
+    // gezinme dışı); masaüstündeki sığdırma aynen.
+    const telefon = GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") && GU.telefonSigdir;
+    const t = telefon
+      ? GU.telefonSigdir(wrapEl, svgNode, { x0: b.x0 - 10, y0: b.y0 - 10, x1: b.x1 + 10, y1: b.y1 + 10 }, 0.5, 3, 4)
+      : d3.zoomIdentity.translate(vw / 2 - k * mx, height / 2 - k * my).scale(k);
     if (vw > 0 && isFinite(t.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), t);
     const sel = (animate && !reduceMotion) ? svg.transition().duration(450).ease(d3.easeCubicInOut) : svg;
     sel.call(zoomBehavior.transform, t);
@@ -824,11 +829,6 @@
     // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
     pipColor: (n) => hueFor(n.id - 1),
     title: { tr: "Menziller", en: "The Waystations", pt: "As Estações" },
-    note: {
-      tr: "Sarmalı okumak için ekran dar geldi — yirmi sekiz menzil burada seyir sırasıyla listede. Bir menzile dokun, paneli oku.",
-      en: "The spiral does not fit this narrow screen — the twenty-eight waystations are here as a list, in the order of the journey. Tap a waystation to read its panel.",
-      pt: "A espiral não cabe neste ecrã estreito — as vinte e oito estações estão aqui como lista, na ordem do percurso. Toque numa estação para ler o painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (sarmalı göster)",
       en: "Open the map (show the spiral)",
@@ -836,6 +836,23 @@
     },
     goTo: (id) => window.__menzillerApp.goToNode(id),
   });
+
+  // Telefonda harita (2026-10-11): grafik önce, liste hapın ikinci kipi.
+  // Dokunulan menzil yarım panelin üstündeki alanın ortasına gelir; 3B'de
+  // tek parmak (görünümün kendi kuralı) döndürür.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: menzillerMobilListe,
+      dugumSecici: "g.menzil-node",
+      isaret: "circle.menzil-node__sphere",
+      kaydir(dx, dy) {
+        if (!zoomBehavior) return;
+        const k = d3.zoomTransform(svgNode).k;
+        (reduceMotion ? svg : svg.transition().duration(420)).call(zoomBehavior.translateBy, dx / k, dy / k);
+      },
+    });
+  }
 
   window.__menzillerApp = {
     activate() {

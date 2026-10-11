@@ -523,6 +523,18 @@
     if (!any) return;
     const bw = Math.max(1, maxx - minx), bh = Math.max(1, maxy - miny);
     const cx = (minx + maxx) / 2, cy = (miny + maxy) / 2;
+    // Telefonda harita (taslak): görünür küme odak alanına (düğme satırı,
+    // hap ve alt gezinme dışı) sığar; sahnenin kökeni tuvalin ortası.
+    if (telefonKipi()) {
+      const a = GU.telefonOdakAlani(wrapEl, false);
+      const sr = svgNode.getBoundingClientRect();
+      const ts = Math.max(0.32, Math.min(1.35, Math.min(a.w / bw, a.h / bh) * 0.96));
+      zoomTarget = ts;
+      telefonSigK = ts;
+      panTargetX = (a.cx - (sr.left + sr.width / 2)) - cx * ts;
+      panTargetY = (a.cy - (sr.top + sr.height / 2)) - cy * ts;
+      return;
+    }
     const s = Math.max(0.32, Math.min(1.35, Math.min(w / bw, h / bh) * 0.82));
     zoomTarget = s;
     panTargetX = -cx * s;
@@ -1370,7 +1382,24 @@
     ensureFrame();
   }
 
+  let telefonSigK = 0.6;
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon")); }
   function focusCameraOn(n) {
+    // Telefonda harita (taslak): seçilen ad yarım panelin üstündeki alanın
+    // tam ortasına gelir ve çevresi büyür (sığdırma ölçeğinin 1,6 katı) -- yoğun kümede
+    // komşulara parmakla dokunulabilsin diye (101 ad 377 px'te: komşu
+    // aralığı ortanca 10 px idi, ölçüldü).
+    if (telefonKipi()) {
+      project(n);
+      const a = GU.telefonOdakAlani(wrapEl, true);
+      const sr = svgNode.getBoundingClientRect();
+      const bx = (n.px - panX) / zoom, by = (n.py - panY) / zoom;
+      const z2 = Math.min(1.6, Math.max(zoomTarget, telefonSigK * 1.6));
+      zoomTarget = z2;
+      panTargetX = (a.cx - (sr.left + sr.width / 2)) - bx * z2;
+      panTargetY = (a.cy - (sr.top + sr.height / 2)) - by * z2;
+      return;
+    }
     // n'yi merkeze getirmeye çalış (projeksiyon konumunu değil, pan hedefini
     // ayarlıyoruz; seçili düğüm ekranda ortaya yakın dursun).
     project(n);
@@ -1964,6 +1993,10 @@
         // gizli) bir adım sayılmaz: Esc açık paneli kapatsın.
         if (!aktifOnboarding || !aktifOnboarding.isConnected || aktifOnboarding.classList.contains("esmaX-onb--out")
           || !aktifOnboarding.getClientRects().length) return false;
+        // Telefon kabuğunun alttan açılan sayfası (Daha/Okuma) kutunun
+        // üstündeki katman: Esc önce onu kapatır (telefonda harita taslağı
+        // grafiği açınca bu kutu telefonda da görünür oldu).
+        if (document.querySelector(".uyg-sayfa:not([hidden])")) return false;
         aktifOnboarding.querySelector(".esmaX-onb__skip").click();
         return true;
       }, { oncelikli: true });
@@ -2111,11 +2144,6 @@
     // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
     pipColor: (n) => (n.id === "allah" ? "var(--series-theme)" : ({ celal: "var(--series-celal)", cemal: "var(--series-cemal)", kemal: "var(--series-kemal)" })[n.pole] || "var(--series-esma-neutral)"),
     title: { tr: "Esmâü'l-Hüsnâ", en: "The Beautiful Names", pt: "Os Belos Nomes" },
-    note: {
-      tr: "Grafiği okumak için ekran dar geldi — yüz bir isim burada Celâl/Cemâl/Kemâl gruplarıyla listede. Bir isme dokun, paneli oku.",
-      en: "The graph does not fit this narrow screen — the hundred and one Names are here as a list, grouped by Jalal/Jamal/Kamal. Tap a Name to read its panel.",
-      pt: "O gráfico não cabe neste ecrã estreito — os cento e um Nomes estão aqui como lista, agrupados por Jalal/Jamal/Kamal. Toque num Nome para ler o painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (grafiği göster)",
       en: "Open the map (show the graph)",
@@ -2123,6 +2151,20 @@
     },
     goTo: goToNode,
   });
+
+  // Telefonda harita (2026-10-10, taslak): telefonda grafik önce açılır,
+  // liste hapın ikinci kipi. Seçilenin ortalanmasını bu görünüm kendi
+  // kamerasıyla yapıyor (focusCameraOn); adlar zaten ekran boyunda ve
+  // kendi çakışma planıyla seyreliyor (buildLabelPlan).
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: esmaMobilListe,
+      dugumSecici: "g.esmaX-node",
+      isaret: "circle.esmaX-dot",
+      merkezle: false,
+    });
+  }
 
   window.__esmaApp = {
     activate() {
