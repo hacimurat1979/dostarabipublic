@@ -1694,6 +1694,24 @@
       detailPanel.hidden = true;
       kaydiKapat();
     },
+    // Bölüme dön (adı konmuş kapı, Menziller "← Halkaya dön"): görünümün giriş
+    // hâline -- komşu daireleriyle kayıttan kayda geçildiyse de -- tarihte
+    // bölüm sayfasının en yakın girdisine kadar geri gidilir (history.go(-n));
+    // yeni bir adım açılmaz. Böyle bir girdi yoksa ✕ ile aynı tek adım.
+    bolumeDon(view) {
+      const path = routePath(view);
+      const nav = window.navigation;
+      if (nav && nav.currentEntry && nav.entries) {
+        const es = nav.entries(), i = nav.currentEntry.index;
+        for (let j = i - 1; j >= 0; j--) {
+          let p = null;
+          try { p = new URL(es[j].url).pathname; } catch (e) { /* geçersiz */ }
+          if (p === path) { history.go(j - i); return; }
+          if (!p || p.indexOf(path) !== 0) break; // görünümün dışına çıkıldı
+        }
+      }
+      this.kapat();
+    },
     // Panel açık kalıp kayıttan bölüm düzeyine inildi (Sorular "← Bütün
     // Sorular"): adres bölüme döner, yeni tarih adımı açılmaz; panelin
     // kendisi görünüm içi bir adım olarak kalır (geri tuşu onu kapatır).

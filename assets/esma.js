@@ -2002,6 +2002,14 @@
       }, { oncelikli: true });
     }
     if (reduceMotion) ov.classList.add("esmaX-onb--nomo");
+    // Telefonda (2026-10-11): tanıtım açıkken de iki parmak grafiği
+    // yakınlaştırır -- kutunun arkası dokunuşu geçirir (style.css), sayfa
+    // kendisi büyümez. Haritaya dokunmak tanıtımı "Geç" gibi kapatır.
+    if (GU.telefonMu && GU.telefonMu()) {
+      const svgEl = svgNode;
+      const kapat = () => { if (aktifOnboarding === ov && ov.isConnected && !ov.classList.contains("esmaX-onb--out")) done(); };
+      if (svgEl) svgEl.addEventListener("pointerdown", kapat, { once: true });
+    }
     wrapEl.appendChild(ov);
     onboardRedraw = draw;
     draw();
