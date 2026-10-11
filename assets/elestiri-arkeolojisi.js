@@ -569,6 +569,10 @@ window.__elestiriArkeolojisiApp = (function () {
       wrapEl: wrapEl,
       liste: elestiriMobilListe,
       dugumSecici: "g.elestiri-kisi",
+      // Önceki / sonraki (2026-10-11, O5): panelin başındaki komşu daireleri.
+      gorunum: "elestiri-arkeolojisi",
+      komsular: () => kisiler.map((k, i) => ({ k, i })).sort((a, b) => ((a.k.olum && a.k.olum.miladi) || 0) - ((b.k.olum && b.k.olum.miladi) || 0) || a.i - b.i)
+        .map(({ k }) => ({ id: k.id, no: (k.olum && k.olum.miladi) || "", ad: window.DostI18n.pick3(k.ad) })),
       isaret: ".elestiri-kisi__sekil",
       kaydir(dx, dy) {
         if (!zoom) return;

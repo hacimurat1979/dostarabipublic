@@ -1176,6 +1176,9 @@
       liste: halMobilListe,
       dugumSecici: "g.hal-node",
       isaret: "circle.hal-sphere",
+      // Önceki / sonraki (2026-10-11, O5): panelin başındaki komşu daireleri.
+      gorunum: "hal",
+      komsular: () => ((halData && halData.nodes) || []).map((n, i) => ({ id: n.id, no: i + 1, ad: tt(n.name) })),
       kaydir(dx, dy) {
         if (!zoomBehavior) return;
         const k = d3.zoomTransform(svgNode).k;

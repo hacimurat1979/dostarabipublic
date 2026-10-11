@@ -19,6 +19,12 @@
     // arındırıp adres çubuğuna geri koyma işini ontology.js (ROUTE_BASE) yapar.
     var basePrefix = "";
     var loc = window.location;
+    // Android uygulaması (TWA) kendini ?kaynak=twa ya da android-app://
+    // yönlendiricisiyle tanıtır (index.html). Bu yönlendirmeden sonra
+    // yönlendirici bu sayfa olur; işaret oturuma burada yazılır (2026-10-11).
+    try {
+      if (/(?:^|[?&])kaynak=twa(?:&|$)/.test(loc.search) || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0) sessionStorage.setItem("dost-uygulama", "1");
+    } catch (e) {}
     var target = loc.pathname + loc.search + loc.hash;
     loc.replace(loc.origin + basePrefix + "/?p=" + encodeURIComponent(target));
   })();
