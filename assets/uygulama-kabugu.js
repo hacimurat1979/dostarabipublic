@@ -78,6 +78,8 @@
     defter: { tr: "Defterim", en: "Notebook", pt: "Caderno" },
     daha: { tr: "Daha", en: "More", pt: "Mais" },
     geri: { tr: "Geri", en: "Back", pt: "Voltar" },
+    panelBuyut: { tr: "Paneli büyüt", en: "Expand the panel", pt: "Expandir o painel" },
+    panelKucult: { tr: "Paneli küçült, haritayı göster", en: "Shrink the panel, show the map", pt: "Reduzir o painel, mostrar o mapa" },
     gezinti: { tr: "Uygulama gezintisi", en: "App navigation", pt: "Navegação do app" },
     bolumler: { tr: "Bölümler", en: "Sections", pt: "Seções" },
     ayarlar: { tr: "Ayarlar", en: "Settings", pt: "Configurações" },
@@ -272,6 +274,13 @@
   function panel() { return document.getElementById("detail-panel"); }
   function panelAcik() { var p = panel(); return !!(p && !p.hidden); }
   function paneliKapat() { var c = document.getElementById("detail-close"); if (c) c.click(); }
+  // Yarım panel (2026-10-10, telefonda harita taslağı; GU.telefonHaritasi):
+  // grafik kipindeki bir haritada panel ekranın alt yarısını alır, harita
+  // üstte dokunulabilir kalır. Tutamak (ya da yukarı çekmek) tam boya
+  // büyütür; tutamak yeniden küçültür. Panel kapanınca yarım hâle döner.
+  var panelTam = false;
+  function haritaAcik() { return !!document.querySelector("main > section.graph-wrap.mg-telefon.grafik-acik:not([hidden])"); }
+  function yarimMi() { return acikMi() && panelAcik() && haritaAcik() && !panelTam; }
   function tikla(id) { var a = document.getElementById(id); if (a) a.click(); }
   function kapiAc(id) { eylemleKapat(function () { tikla(id); }); }
 
@@ -417,8 +426,39 @@
       if (b.dataset.uyg === "okuma" || b.dataset.uyg === "daha") b.setAttribute("aria-expanded", String(acikSayfa === (b.dataset.uyg === "okuma" ? okuma : daha)));
     });
     geri.hidden = !(acikSayfa || derinlik() > 0 || panelAcik());
-    perde.hidden = !(acikSayfa || (acikUyg && panelAcik()));
+    if (!panelAcik()) panelTam = false;
+    var yarim = yarimMi();
+    HTML.classList.toggle("uyg-panel-yarim", yarim);
+    perde.hidden = !(acikSayfa || (acikUyg && panelAcik() && !yarim));
+    tutamakYaz();
     ilerleme();
+  }
+  // Tutamak yalnız haritadaki panelde bir düğmedir (büyüt / küçült); başka
+  // yerde süs olarak kalır, odaklanmaz (bağlanmamış düğme olmasın).
+  function tutamakYaz() {
+    var tu = document.querySelector(".uyg-tutamak--panel");
+    if (!tu) return;
+    var dugme = acikMi() && panelAcik() && haritaAcik();
+    tu.classList.toggle("uyg-tutamak--dugme", dugme);
+    HTML.classList.toggle("uyg-panel-harita", dugme);
+    if (dugme) {
+      tu.removeAttribute("aria-hidden");
+      tu.setAttribute("role", "button");
+      tu.setAttribute("tabindex", "0");
+      tu.setAttribute("aria-expanded", String(panelTam));
+      tu.setAttribute("aria-label", t(panelTam ? ETIKET.panelKucult : ETIKET.panelBuyut));
+    } else {
+      tu.setAttribute("aria-hidden", "true");
+      tu.removeAttribute("role");
+      tu.removeAttribute("tabindex");
+      tu.removeAttribute("aria-expanded");
+      tu.removeAttribute("aria-label");
+    }
+  }
+  function panelBoyu(tam) {
+    if (!(acikMi() && panelAcik() && haritaAcik())) return;
+    panelTam = tam;
+    guncelle();
   }
   document.querySelectorAll("main > section").forEach(function (s) { new MutationObserver(guncelle).observe(s, { attributes: true, attributeFilter: ["hidden"] }); });
   var pnl = panel();
@@ -431,6 +471,10 @@
     tut.className = "uyg-tutamak uyg-tutamak--panel";
     tut.setAttribute("aria-hidden", "true");
     pnl.insertBefore(tut, pnl.firstChild);
+    tut.addEventListener("click", function () { panelBoyu(!panelTam); });
+    tut.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); panelBoyu(!panelTam); }
+    });
   }
 
   // --- Hareketler (use-gesture) -----------------------------------------------
@@ -477,13 +521,25 @@
   var ORTAK = { pointer: { touch: true }, threshold: 10, axisThreshold: { touch: 8 }, swipe: { velocity: 0.45, distance: 40, duration: 260 } };
   function secenek(ek) { var o = {}; for (var k in ORTAK) o[k] = ORTAK[k]; for (var j in ek) o[j] = ek[j]; return o; }
 
+  function tiklamayiYut(el) {
+    function yut(e) { e.stopPropagation(); e.preventDefault(); }
+    el.addEventListener("click", yut, { capture: true, once: true });
+    setTimeout(function () { el.removeEventListener("click", yut, { capture: true }); }, 350);
+  }
+
   function hareketleriBagla(DragGesture) {
     // 1) Aşağı çekince kapanan sayfalar: ayrıntı paneli, Okuma, Daha.
-    function cekipKapat(el, acikmi, kapat) {
+    // kaynak (ops.): hareketi dinleyen öğe, el'den başkaysa -- panelin
+    // düğmeleri (kapat, paylaş, yazdır...) panelin çocuğu değil, sabit
+    // konumlu kardeşleri; parmak onların üstünde başlayınca da panel çekilir.
+    function cekipKapat(el, acikmi, kapat, kaynak) {
       if (!el) return;
-      new DragGesture(el, function (s) {
+      var dinleyen = kaynak || el;
+      new DragGesture(dinleyen, function (s) {
         if (!acikMi() || !acikmi()) return;
         if (s.first && el.scrollTop > 0) { s.cancel(); return; }
+        // Yarım panel yukarı çekilince tam boya büyür (haritadaki panel).
+        if (el === panel() && !s.active && s.movement[1] < -50 && yarimMi()) { tiklamayiYut(dinleyen); panelBoyu(true); return; }
         // İçerik kaydırılmışsa (yukarı itip geri gelindiyse) çekme sayılmaz.
         var dy = el.scrollTop > 0 ? 0 : Math.max(0, s.movement[1]);
         if (s.active) {
@@ -493,10 +549,17 @@
         }
         el.style.transition = "";
         el.style.transform = "";
+        // Sürükleme bir dokunuş değil: parmak bir düğmenin üstünde başlayıp
+        // orada bittiyse o düğmeye basılmış sayılmaz.
+        if (Math.abs(s.movement[1]) > 10) tiklamayiYut(dinleyen);
         if (dy > KAPAT_ESIK || (s.swipe[1] === 1 && dy > SAVURMA_ESIK)) kapat();
       }, secenek({ axis: "y" }));
     }
     cekipKapat(panel(), panelAcik, paneliKapat);
+    ["detail-close", "detail-print", "detail-share", "detail-notebook-toggle", "detail-share-visual"].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b && b !== panel() && !panel().contains(b)) cekipKapat(panel(), panelAcik, paneliKapat, b);
+    });
     cekipKapat(okuma, function () { return acikSayfa === okuma; }, function () { sayfaKapat(); });
     cekipKapat(daha, function () { return acikSayfa === daha; }, function () { sayfaKapat(); });
 

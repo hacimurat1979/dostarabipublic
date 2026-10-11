@@ -68,9 +68,13 @@ window.__seyahatAtlasiApp = (function () {
   let stopIndex = 0;
   let xScale = null, yScale = null;
 
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") && GU.telefonSigdir); }
   function boyut() {
     const r = wrapEl.getBoundingClientRect();
-    return { w: Math.max(360, r.width), h: Math.max(320, r.height) };
+    // Telefonda harita: tuval alt gezinmenin üstünde biter (yatayda 305 px);
+    // 320'lik alt sınır sahneyi alt gezinmenin arkasına taşırıyordu.
+    const alt = telefonKipi() ? 200 : 0;
+    return { w: Math.max(alt || 360, r.width), h: Math.max(alt || 320, r.height) };
   }
 
   // Basit düzlem izdüşümü (gerçek bir harita projeksiyonu değil) -- enlem/
@@ -320,6 +324,18 @@ window.__seyahatAtlasiApp = (function () {
   function ortala(animate) {
     if (!zoom) return;
     const hedef = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches ? svg.transition().duration(420) : svg;
+    // Telefonda harita: sahnenin kendisi (adlar dahil) odak alanına sığar --
+    // düğme satırının ve hapın altında kalmasın.
+    // Kutu düğümlerden kurulur (adların yarı genişliği kadar yan pay); en
+    // dış adlar kenara değebilir, düğümler küçülmez.
+    if (telefonKipi() && g && duraklar.length) {
+      let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+      duraklar.forEach((d) => { if (d.x == null) return; x0 = Math.min(x0, d.x); x1 = Math.max(x1, d.x); y0 = Math.min(y0, d.y); y1 = Math.max(y1, d.y); });
+      if (x1 > x0) {
+        hedef.call(zoom.transform, GU.telefonSigdir(wrapEl, svg.node(), { x0: x0 - 34, y0: y0 - 18, x1: x1 + 34, y1: y1 + 34 }, 0.5, 1.8, 4));
+        return;
+      }
+    }
     hedef.call(zoom.transform, d3.zoomIdentity);
   }
 
@@ -447,11 +463,6 @@ window.__seyahatAtlasiApp = (function () {
       };
     }),
     title: { tr: "Seyahat Atlası", en: "Travel Atlas", pt: "Atlas de Viagens" },
-    note: {
-      tr: "Haritayı okumak için ekran dar geldi — duraklar burada yolculuk sırasıyla listede. Bir durağa dokun, paneli oku.",
-      en: "The map does not fit this narrow screen — the stops are here as a list, in the order of the journey. Tap a stop to read its panel.",
-      pt: "O mapa não cabe neste ecrã estreito — as paradas estão aqui como lista, na ordem da viagem. Toque numa parada para ler o painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (atlası göster)",
       en: "Open the map (show the atlas)",
@@ -459,6 +470,23 @@ window.__seyahatAtlasiApp = (function () {
     },
     goTo: (id) => window.__seyahatAtlasiApp.goToNode(id),
   });
+
+  // Telefonda harita (2026-10-11): grafik önce, liste hapın ikinci kipi.
+  // Dokunulan öğe yarım panelin üstündeki alanın ortasına gelir.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: seyahatMobilListe,
+      dugumSecici: "g.seyahat-durak",
+      altEngel: ".seyahat-atlasi-zaman",
+      isaret: "circle.seyahat-durak__nokta",
+      kaydir(dx, dy) {
+        if (!zoom) return;
+        const k = d3.zoomTransform(svg.node()).k;
+        (window.matchMedia("(prefers-reduced-motion: reduce)").matches ? svg : svg.transition().duration(400)).call(zoom.translateBy, dx / k, dy / k);
+      },
+    });
+  }
 
   return {
     activate() {

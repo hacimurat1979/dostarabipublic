@@ -79,7 +79,10 @@ window.__eserAgiApp = (function () {
 
   function boyut() {
     const r = wrapEl.getBoundingClientRect();
-    return { w: Math.max(360, r.width), h: Math.max(360, r.height) };
+    // Telefonda harita: tuval alt gezinmenin üstünde biter; yatay telefonda
+    // 305 px'tir, 360'lık alt sınır svg'yi alt gezinmenin arkasına taşırıyordu.
+    const alt = GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") ? 200 : 360;
+    return { w: Math.max(alt, r.width), h: Math.max(alt, r.height) };
   }
 
   function xOfYil(yil) {
@@ -269,9 +272,13 @@ window.__eserAgiApp = (function () {
     // translateExtent ve tekerlek dinleyicisi eksen yönüne göre kuruluyor).
     zoom = GU.createZoomBehavior(svg, g, [0.25, 3.5], null, { allowSingleTouchPan: true });
     const pad = 48;
+    // Telefonda harita: dokunulan kart yarım panelin üstüne çekilebilsin
+    // diye dikeyde bir ekran boyu pay (yoksa sınır kartı panelin altında
+    // tutuyordu).
+    const dikeyPay = GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") ? Math.max(pad, wrapEl.clientHeight) : pad;
     zoom.translateExtent([
-      [contentX0 - pad, -pad],
-      [contentX0 + contentW + pad, contentH + pad],
+      [contentX0 - pad, -dikeyPay],
+      [contentX0 + contentW + pad, contentH + dikeyPay],
     ]);
     ortala(false);
   }
@@ -487,6 +494,22 @@ window.__eserAgiApp = (function () {
   // aynı ölçüm burada da geçerli).
   function ortala(animate) {
     if (!zoom) return;
+    // Telefonda harita (taslak): okuma ölçeği. Sığdırmak (k=0,5) kartları
+    // 74 px'e, yazıyı 5,4 px'e indiriyordu -- 28 eserin 5'i ekrandaydı ama
+    // hiçbiri okunmuyordu (ölçüldü). Telefonda kart yazısı en az ~12 px
+    // (k >= 1,1); bütün katlar odak alanına sığıyorsa biraz daha büyür.
+    // Kronoloji en erken eserden açılır, tek parmak yatayda gezdirir.
+    if (GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon")) {
+      const a = GU.telefonOdakAlani(wrapEl, false);
+      const sr = svgNode.getBoundingClientRect();
+      const k = Math.max(1.1, Math.min(1.5, (a.h - 16) / Math.max(1, contentH)));
+      const tx = (a.x - sr.left) + 8 - contentX0 * k;
+      const ty = (a.cy - sr.top) - (contentH * k) / 2;
+      const t = d3.zoomIdentity.translate(tx, ty).scale(k);
+      const hedef = animate && !reduceMotion ? svg.transition().duration(420) : svg;
+      hedef.call(zoom.transform, t);
+      return;
+    }
     const { w, h } = boyut();
     const availH = Math.max(120, h - 96);
     const availW = Math.max(160, w - 48);
@@ -567,11 +590,6 @@ window.__eserAgiApp = (function () {
     // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
     pipColor: (n) => (n.__katalog ? "var(--series-theme)" : "var(--series-ibnarabi)"),
     title: { tr: "Eser Ağı", en: "Network of Works", pt: "Rede de Obras" },
-    note: {
-      tr: "Ağı okumak için ekran dar geldi — eserler burada listede. Bir esere dokun, panelden bağlarını oku.",
-      en: "The network does not fit this narrow screen — the works are here as a list. Tap a work to read its bonds in the panel.",
-      pt: "A rede não cabe neste ecrã estreito — as obras estão aqui como lista. Toque numa obra para ler os seus vínculos no painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (ağı göster)",
       en: "Open the map (show the network)",
@@ -579,6 +597,23 @@ window.__eserAgiApp = (function () {
     },
     goTo: (id) => window.__eserAgiApp.goToNode(id),
   });
+
+  // Telefonda harita (2026-10-10, taslak): telefonda zaman çizelgesi önce
+  // açılır, liste hapın ikinci kipi. Dokunulan kart yarım panelin üstündeki
+  // alanda ortalanır.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: eserAgiMobilListe,
+      dugumSecici: "g.eser-agi-eser",
+      isaret: "rect.eser-agi-eser__govde",
+      kaydir(dx, dy) {
+        if (!zoom) return;
+        const k = d3.zoomTransform(svgNode).k;
+        (reduceMotion ? svg : svg.transition().duration(380)).call(zoom.translateBy, dx / k, dy / k);
+      },
+    });
+  }
 
   return {
     activate() {

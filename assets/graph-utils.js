@@ -137,6 +137,8 @@ window.DostGraphUtils = (function () {
     if (!wrapEl || wrapEl.hidden || document.visibilityState === "hidden") return false;
     if (_mobilMq && _mobilMq.matches && !wrapEl.classList.contains("grafik-acik")
         && wrapEl.querySelector(':scope > [class$="-mobil-liste"]')) return false;
+    // Telefonda harita: liste kipindeki görünüm (yatayda da) çizilmez.
+    if (wrapEl.classList.contains("mg-liste")) return false;
     return true;
   }
 
@@ -326,7 +328,14 @@ window.DostGraphUtils = (function () {
       .scaleExtent(scaleExtent)
       .filter((event) => {
         if (event.type === "wheel") return plainWheelZooms || event.ctrlKey || event.metaKey;
-        if (event.touches) return allowSingleTouchPan ? event.touches.length >= 1 : event.touches.length > 1;
+        if (event.touches) {
+          if (allowSingleTouchPan) return event.touches.length >= 1;
+          // Telefonda harita (taslak): tuval ekranın kendisi, altında
+          // kaydırılacak sayfa yok -- tek parmak kaydırır (görünümün kendi
+          // koşuluyla: ör. Hâller'de 3B'de tek parmak döndürür, kaydırmaz).
+          if (event.touches.length === 1 && _mgTekParmak(svg.node()) && (!extraFilter || extraFilter(event))) return true;
+          return event.touches.length > 1;
+        }
         return extraFilter ? extraFilter(event) : true;
       })
       .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
@@ -355,7 +364,13 @@ window.DostGraphUtils = (function () {
       d.fx = null;
       d.fy = null;
     }
-    return d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended);
+    // Telefonda harita (taslak): dokunuşla düğüm sürüklenmez -- tek parmak
+    // tuvali kaydırır, iki parmak (biri düğümün üstünde olsa da) yaklaştırır.
+    // Eskiden düğümün üstünde başlayan iki parmak hareketi sürüklemeye
+    // yutuluyor, yaklaştırma hiç başlamıyordu (2026-10-10, ölçüldü).
+    return d3.drag()
+      .filter((event) => (!event.ctrlKey || event.type === "wheel") && !event.button && !(event.type === "touchstart" && _mgTekParmak(event.target)))
+      .on("start", dragstarted).on("drag", dragged).on("end", dragended);
   }
 
   // #detail-panel/#detail-close aynı id'lerle her üç sayfada da yaşıyor
@@ -1086,7 +1101,8 @@ window.DostGraphUtils = (function () {
   //     "var(--series-celal)") -- görünümün KENDİ renk eşlemesi; verilmezse
   //     varsayılan mavi (2026-10-09 görsel taraması: bütün listelerde tek
   //     renkti, grafikteki Celâl/Cemâl/Kemâl vb. ayrımı listede kayboluyordu).
-  //   title:{tr,en,pt}, note:{tr,en,pt}, graphButtonLabel:{tr,en,pt},
+  //   title:{tr,en,pt}, note:{tr,en,pt} (ops.; 2026-10-11'de "ekran dar geldi"
+  //     notları kaldırıldı: grafik artık telefonda da açılıyor), graphButtonLabel:{tr,en,pt},
   //   goTo(id): düğüme git,
   //   onGraphOpen(): "Haritayı aç" tıklanınca (resize dispatch çağırana kalır).
   // }
@@ -1157,7 +1173,7 @@ window.DostGraphUtils = (function () {
       if (omurga) { omurga.destroy(); omurga = null; }
       listEl.innerHTML = `
         <h2 class="mobil-liste__baslik">${tt(opts.title)}</h2>
-        <p class="mobil-liste__not">${tt(opts.note)}</p>
+        ${tt(opts.note) ? `<p class="mobil-liste__not">${tt(opts.note)}</p>` : ""}
         <button class="mobil-liste__grafik-btn" type="button">${tt(opts.graphButtonLabel)}</button>
         <div class="mobil-liste__sarmal">${groupsHtml(nodes)}</div>
       `;
@@ -1170,6 +1186,9 @@ window.DostGraphUtils = (function () {
       const grafikBtn = listEl.querySelector(".mobil-liste__grafik-btn");
       if (grafikBtn) {
         grafikBtn.addEventListener("click", () => {
+          // Telefonda harita katmanı kurulu görünümde kip ondan geçer.
+          const tel = _telefonlar.find((a) => a.o.wrapEl === wrapEl);
+          if (tel && telefonMu()) { tel.kipSec("harita", true); return; }
           wrapEl.classList.add("grafik-acik");
           wakeViews();
           requestAnimationFrame(() => {
@@ -1180,8 +1199,12 @@ window.DostGraphUtils = (function () {
       }
     }
 
+    let yuklendi = false;
     function yukle() {
+      if (yuklendi) return;
+      yuklendi = true;
       fetchJson(opts.fetchUrl).then((d) => doldur(opts.extractNodes(d) || [])).catch(() => {
+        yuklendi = false;
         // Sessizce başarısız ol: masaüstünde liste zaten hiç gösterilmez.
       });
     }
@@ -1194,7 +1217,8 @@ window.DostGraphUtils = (function () {
       mq.addEventListener("change", kez);
     }
 
-    return { onLangChange: () => { if (sonNodes) doldur(sonNodes); } };
+    // yukle: telefonda harita katmanı liste kipine geçince (yatayda da) çağırır.
+    return { onLangChange: () => { if (sonNodes) doldur(sonNodes); }, yukle };
   }
 
   // Mobil listenin dikey sarmal omurgası (2026-10-09, görsel taraması
@@ -1651,7 +1675,36 @@ window.DostGraphUtils = (function () {
     return true;
   }, { oncelikli: true });
 
-  return { dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  // Telefonda harita (2026-10-10, TASLAK): katmanın kendisi
+  // assets/telefon-haritasi.js'te (yalnız telefonda iş yapar). Burada yalnız
+  // ortak motorun ona bakan iki kancası: telefon kabuğu açık mı, ve bir
+  // öğe telefonda grafik kipindeki bir haritanın içinde mi (tek parmak
+  // kaydırır, dokunuşla düğüm sürüklenmez). _telefonlar: kayıtlı haritalar
+  // (createMobileListFallback'in "Haritayı aç" düğmesi kipi onlardan geçirir).
+  const _mgHTML = document.documentElement;
+  const _telefonlar = [];
+  function telefonMu() { return _mgHTML.classList.contains("dost-uygulama"); }
+  function _mgTekParmak(el) { return !!(el && el.closest && telefonMu() && el.closest(".graph-wrap.mg-telefon.grafik-acik")); }
+  // Görünüm modülü (view-loader ile tembel iner) telefon-haritasi.js'ten
+  // önce çalışabilir: kayıt sıraya alınır, katman yüklenince kurulur.
+  const _telefonBekleyen = [];
+  // Kip sınıfları burada hemen konur: görünüm ilk çizimini (tuval boyunu)
+  // katman inmeden yapabilir -- liste kipinde gizli (0 px) tuvalde kurulan
+  // sahne 800 px yedeğine göre ölçeklenip küçük kalıyordu.
+  function telefonHaritasi(opts) {
+    _telefonBekleyen.push(opts);
+    const w = opts && opts.wrapEl;
+    if (w && telefonMu()) {
+      let liste = false;
+      try { liste = localStorage.getItem("dost-mobil-kip") === "liste"; } catch (e) { /* özel pencere */ }
+      w.classList.add("mg-telefon");
+      w.classList.toggle("grafik-acik", !liste);
+      w.classList.toggle("mg-liste", liste);
+    }
+    return null;
+  }
+
+  return { telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

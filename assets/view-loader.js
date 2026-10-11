@@ -51,7 +51,7 @@
   "use strict";
 
   var VIEWS = {
-    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-HZJfV5UjNsG518yhfSPLkHgED+Eo4SCN9p0zD8FZGsxx/TkIkZx7vJTS9DjMCRy8", wrap: "sirlar-wrap" },
+    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-FIaliJVLFTrz5dWGL5wjkwcGesH11+TUw/cpYVJYsl1GoS++QeUuzMA4v096V6Y7", wrap: "sirlar-wrap" },
     __kavramApp: { src: "assets/kavram.js", integrity: "sha384-zDDUL/umsIwdNOgVUEjAmFBXfL5pUt1RULm8ksvVDBeTq+7l5/1tqaUTAOiZEzS1", wrap: "kavram-wrap" },
     __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-vSgyXyHBGcJDPk2KL1UIHRZeUwZgqD3aEcnw1OWigxnPaLTfpjbUM/a22rd+EdGv", wrap: "ayethadis-wrap" },
     __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-3DAmRScI+L9wWXXhl7hJ+vPPOCivyCDlNFjOkGi+POHuSA/16/KYsSWuqWgoKJ/9", wrap: "hakkinda-wrap" },
@@ -59,17 +59,17 @@
     __okumaYollariApp: { src: "assets/okuma-yollari.js", integrity: "sha384-WVd8Tqt6ZBDLetnvyT9kYtJxL1DM56TU45COH8rhEf2/W4/XrtkYPrJPPRphujEn", wrap: "hakkinda-wrap" },
     __neredenBaslamaliApp: { src: "assets/nereden-baslamali.js", integrity: "sha384-yDtO/XYSNvn8Pdmncj6PbBcRtcFwXHCYduLifAcnm764wmD5VDT4msgSMHvrPk+C", wrap: "hakkinda-wrap" },
     __bilmiyoruzApp: { src: "assets/bilmiyoruz.js", integrity: "sha384-DLjARBSTx+9ybpkNxK9XgJgjf88sITzzidNunobf5to2bHP05vWA+WaRkKiB8UL5", wrap: "bilmiyoruz-wrap" },
-    __elestiriArkeolojisiApp: { src: "assets/elestiri-arkeolojisi.js", integrity: "sha384-d5q036I6YmxpHQFn9rDqNOF5BEk/m02eQ3yccfFDTGxBEbFvS8qmbRJlJqnrD0Mi", wrap: "elestiri-arkeolojisi-wrap" },
+    __elestiriArkeolojisiApp: { src: "assets/elestiri-arkeolojisi.js", integrity: "sha384-SDQy5kHdyk+AvFufud/rApjxiFKkP2SmRdhxApy2Y85vyttcWyNGa/gAF2gGqnHd", wrap: "elestiri-arkeolojisi-wrap" },
     __hocalarApp: { src: "assets/hocalar.js", integrity: "sha384-ZUg09P+CQfGKPQFH6sLcYbo8cMe41Kh3XqhNu1etnLJpM3LWSB5IMPg4DchLhQ+T", wrap: "hocalar-wrap" },
-    __eserAgiApp: { src: "assets/eser-agi.js", integrity: "sha384-ziHcfuhv8Ezavd6RX2l3nt6AvnUanw+InQdnGxA82OOmgilcTWW3AwomYa6psmZ4", wrap: "eser-agi-wrap" },
-    __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-r3AN66Afehf3Q4HDyRj+segIh2g9+XzCTOWnGhbK/greuc10ATqTz7Fe8E91S+D+", wrap: "seyahat-atlasi-wrap" },
+    __eserAgiApp: { src: "assets/eser-agi.js", integrity: "sha384-z1IO1/6LNZTrHkepzltcu2d9DQRbPzhRr74pcyo98AfsmLNJvN50bHzUJVv16Fs/", wrap: "eser-agi-wrap" },
+    __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-tbF7loR8QpTJv0EZ1cxoCKpARcTBRmUUUI1HITt9ozthsnlA6aCH44gYZgQCT8Nf", wrap: "seyahat-atlasi-wrap" },
     __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-ZJ+W1ohrpGr6oRBiWuYNvtug8ma1vSqcm8S/s7UZ83Ua8u4in5a261v1PgA3SJrc", wrap: "yolculuk-wrap" },
-    __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-Dzv+H9iFpIbPMgFhI4keFI7OcgDaotjrk2EDwPxVxql6P6BWWOo+dAUeHoF2lWUs", wrap: "kuran-dokusu-wrap" },
-    __esmaApp: { src: "assets/esma.js", integrity: "sha384-aUTNAFBAJpWkkNj2O56QrQZamBrucpXp+JNEnDpUQVx//lPlRXsa1x+QaooWHeUp", wrap: "esma-wrap" },
-    __halApp: { src: "assets/hal.js", integrity: "sha384-JNwSpEfgW8YxH0rkWtMvcs0I5aDF6n/47mZRFQ2VQ2Xt2QXYvSaJj+5ci36+7PCC", wrap: "hal-wrap" },
+    __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-vOlruE0nC2QqgDKVB+ukGAokAgFUPeWtg3k+GHGyrxU2oqQv3WYY9dRmGeyWMCrl", wrap: "kuran-dokusu-wrap" },
+    __esmaApp: { src: "assets/esma.js", integrity: "sha384-KMzDa9adOBHN1V0pQO1EpodkG4N+XxLfDRR7DNZupvkww+CRAnnPSSQL2aO/KFn9", wrap: "esma-wrap" },
+    __halApp: { src: "assets/hal.js", integrity: "sha384-kmqHp0nLIRepn3A+eOmhkXyT1xcxbSJa9imK3URswcey7rMAWb9C0AQKTkk61JI9", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
-    __sorularApp: { src: "assets/sorular.js", integrity: "sha384-4bMjpoJv6OUE1dCpDZ1adWkNAJrfpvAkJIdc9L78MNxaAbgOaE04cXcrxzqeMNNO", wrap: "sorular-wrap" },
-    __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-FZIkTZ2Y8qu9s1PfHX0MkFhCMmIQTTE/RbnZg+Vut/ThKitVIHKcZ5EGM16VTFMy", wrap: "menziller-wrap" },
+    __sorularApp: { src: "assets/sorular.js", integrity: "sha384-miRCHoQiKiFShbc9ZEf2y2uLO4i/po6xPv9aAIq3sMVKEmC1HOAypABR6qWu1ZxY", wrap: "sorular-wrap" },
+    __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-ygAZcO15zbDYvvUjsfV7LToc09qUQT1axb0/GHb7rgU3hTC5JPW87EsbymrHDYwf", wrap: "menziller-wrap" },
     __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-KgEYRkkhhQKwLfXBmqofbnQxALk1sz8a5exxpixhxvPVI6H0HY+bgvAYXrftYOtW", wrap: "futuhat-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-nRtAoGfzRdxcsKff/qRHL7sMuBO7WR/cQEbcYc+XEOtITTl6798LcNqPGkvGpDKW", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-gTiC6dHqEktNNV7Iaji9OKFsUeBGSOmp12l13xLfF7KHAHsOZMdCqDDwjIjjrnr3", wrap: "tasiyicilar-wrap" },
@@ -93,6 +93,12 @@
     "use-gesture": { src: "assets/vendor/use-gesture.min.js", integrity: "sha384-LhyW3KlzpheznKnMTXB++7tcg1mRN6Ww91GrC18V+sDN0KXSdRGPHXYU79pV6G2j" },
   };
 
+  // Telefonda harita katmanı (2026-10-10, taslak; assets/telefon-haritasi.js):
+  // yalnız telefon kabuğu açıkken (html.dost-uygulama) iner -- masaüstünün
+  // ilk yükü değişmez. Görünümler kaydını GU.telefonHaritasi kuyruğuna
+  // bırakır; katman inince kurulur.
+  var TELEFON = { src: "assets/telefon-haritasi.js", integrity: "sha384-2hVEtyO0N3zsfoVbifejeDoQxIB1/ZSQOdmEH30icH6gEb17biO04jEvkvVu3oZG" };
+
   var loadingPromises = {};
 
   function scriptYukle(anahtar, cfg) {
@@ -114,6 +120,17 @@
 
   function loadScript(globalName) { return scriptYukle(globalName, VIEWS[globalName]); }
   function kipYukle(ad) { return scriptYukle("kip:" + ad, KIPLER[ad]); }
+  (function telefonHaritasiIndir() {
+    var html = document.documentElement;
+    function dene() {
+      if (!html.classList.contains("dost-uygulama")) return false;
+      scriptYukle("telefon-haritasi", TELEFON).catch(function (e) { console.warn(e); });
+      return true;
+    }
+    if (dene()) return;
+    var mo = new MutationObserver(function () { if (dene()) mo.disconnect(); });
+    mo.observe(html, { attributes: true, attributeFilter: ["class"] });
+  })();
   window.__dostVendorYukle = function (ad) {
     return VENDOR[ad] ? scriptYukle("vendor:" + ad, VENDOR[ad]) : Promise.reject(new Error("view-loader: bilinmeyen kitaplık " + ad));
   };

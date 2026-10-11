@@ -855,6 +855,17 @@
       const sr = svgNode.getBoundingClientRect();
       if (lr.width && sr.width) leftPad = Math.max(leftPad, lr.width + 28);
     }
+    // Telefonda harita (taslak): sarmal odak alanına (düğme satırı, hap,
+    // alt gezinme dışı) sığar; lejant payı yok (lejant kapalı ve hapın
+    // üstünde), yanlardaki adlar için yatay pay.
+    if (GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon")) {
+      const [mn0, mx0] = zoomBehavior.scaleExtent();
+      const tt0 = GU.telefonSigdir(wrapEl, svgNode, { x0: x0 - 46, x1: x1 + 46, y0: y0 - 26, y1: y1 + 30 }, mn0, mx0, 4);
+      if (!members && svgNode.clientWidth && isFinite(tt0.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), tt0);
+      const sel0 = (animate && !reduceMotion) ? svg.transition().duration(500).ease(d3.easeCubicInOut) : svg;
+      sel0.call(zoomBehavior.transform, tt0);
+      return;
+    }
     x0 -= leftPad; x1 += 74; y0 -= 64; y1 += 74;
     const bw = Math.max(1, x1 - x0), bh = Math.max(1, y1 - y0);
     const [mn, mx] = zoomBehavior.scaleExtent();
@@ -1148,11 +1159,6 @@
     // Satır işareti grafikteki rengin aynısı (2026-10-09 görsel taraması).
     pipColor: (n) => { if (!journeyColor) buildColorScale(n.__n); return journeyColor(n.__i); },
     title: { tr: "Hâller", en: "The States", pt: "Os Estados" },
-    note: {
-      tr: "Sarmalı okumak için ekran dar geldi — on sekiz hâl burada seyir sırasıyla listede. Bir hâle dokun, paneli oku.",
-      en: "The spiral does not fit this narrow screen — the eighteen states are here as a list, in the order of the journey. Tap a state to read its panel.",
-      pt: "A espiral não cabe neste ecrã estreito — os dezoito estados estão aqui como lista, na ordem do percurso. Toque num estado para ler o painel.",
-    },
     graphButtonLabel: {
       tr: "Haritayı aç (sarmalı göster)",
       en: "Open the map (show the spiral)",
@@ -1160,6 +1166,23 @@
     },
     goTo: (id) => window.__halApp.goToNode(id),
   });
+
+  // Telefonda harita (2026-10-10, taslak): sarmal telefonda zaten okunuyor
+  // (düğüm 30 px, yazı 14 px; ölçüldü) -- grafik önce açılır, liste hapın
+  // ikinci kipi. Seçilen hâl yarım panelin üstündeki alanda ortalanır.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: halMobilListe,
+      dugumSecici: "g.hal-node",
+      isaret: "circle.hal-sphere",
+      kaydir(dx, dy) {
+        if (!zoomBehavior) return;
+        const k = d3.zoomTransform(svgNode).k;
+        (reduceMotion ? svg : svg.transition().duration(420)).call(zoomBehavior.translateBy, dx / k, dy / k);
+      },
+    });
+  }
 
   window.__halApp = {
     activate() { fetchData().then((data) => { if (!data) return; if (!built) buildGraph(data); else ensureFrame(); }); },
