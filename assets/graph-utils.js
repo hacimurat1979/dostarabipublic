@@ -1101,11 +1101,18 @@ window.DostGraphUtils = (function () {
   //     "var(--series-celal)") -- görünümün KENDİ renk eşlemesi; verilmezse
   //     varsayılan mavi (2026-10-09 görsel taraması: bütün listelerde tek
   //     renkti, grafikteki Celâl/Cemâl/Kemâl vb. ayrımı listede kayboluyordu).
-  //   title:{tr,en,pt}, note:{tr,en,pt} (ops.; 2026-10-11'de "ekran dar geldi"
-  //     notları kaldırıldı: grafik artık telefonda da açılıyor), graphButtonLabel:{tr,en,pt},
+  //   title:{tr,en,pt}, note:{tr,en,pt} (ops.; verilmezse LISTE_NOTU -- on
+  //     haritada ortak, 2026-10-11 kullanıcı kararı; eski "ekran dar geldi"
+  //     notlarının yerinde: grafik artık telefonda da açılıyor, liste onun
+  //     ikinci kipi), graphButtonLabel:{tr,en,pt},
   //   goTo(id): düğüme git,
   //   onGraphOpen(): "Haritayı aç" tıklanınca (resize dispatch çağırana kalır).
   // }
+  const LISTE_NOTU = {
+    tr: "Aynı harita, liste olarak — bir başlığa dokun, paneli oku.",
+    en: "The same map as a list — tap a title to read its panel.",
+    pt: "O mesmo mapa em lista — toque num título para ler o painel.",
+  };
   function createMobileListFallback(opts) {
     const wrapEl = opts.wrapEl, listEl = opts.listEl;
     if (!wrapEl || !listEl) return null;
@@ -1173,7 +1180,7 @@ window.DostGraphUtils = (function () {
       if (omurga) { omurga.destroy(); omurga = null; }
       listEl.innerHTML = `
         <h2 class="mobil-liste__baslik">${tt(opts.title)}</h2>
-        ${tt(opts.note) ? `<p class="mobil-liste__not">${tt(opts.note)}</p>` : ""}
+        <p class="mobil-liste__not">${tt(opts.note || LISTE_NOTU)}</p>
         <button class="mobil-liste__grafik-btn" type="button">${tt(opts.graphButtonLabel)}</button>
         <div class="mobil-liste__sarmal">${groupsHtml(nodes)}</div>
       `;

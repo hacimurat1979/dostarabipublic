@@ -1383,7 +1383,7 @@
   }
 
   let telefonSigK = 0.6;
-  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon")); }
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && GU.telefonOdakAlani && wrapEl.classList.contains("mg-telefon")); }
   function focusCameraOn(n) {
     // Telefonda harita (taslak): seçilen ad yarım panelin üstündeki alanın
     // tam ortasına gelir ve çevresi büyür (sığdırma ölçeğinin 1,6 katı) -- yoğun kümede

@@ -2177,7 +2177,11 @@
       // gibi en uzun adın yarı genişliğini pay saymak 379 px'lik tuvalde
       // çemberi 214 px'e indiriyordu (düğüm 8 px, yazı 4,4 px; ölçüldü).
       const GUt = window.DostGraphUtils;
-      if (GUt.telefonMu && GUt.telefonMu() && ontologyWrap.classList.contains("mg-telefon") && svg.node().clientWidth) {
+      // GUt.telefonSigdir: telefon katmanı (telefon-haritasi.js) ayrı iner;
+      // görünüm ondan önce çizilirse bu sığdırma atlanır, katman inince
+      // yeniden çizilir (mobil senaryoda yakalandı: "telefonSigdir is not a
+      // function" bütün grafiği düşürüyordu).
+      if (GUt.telefonMu && GUt.telefonMu() && GUt.telefonSigdir && ontologyWrap.classList.contains("mg-telefon") && svg.node().clientWidth) {
         let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
         nodes.forEach((n) => {
           const r = radiusFor(n) * 1.6;

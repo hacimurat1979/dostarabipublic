@@ -858,7 +858,7 @@
     // Telefonda harita (taslak): sarmal odak alanına (düğme satırı, hap,
     // alt gezinme dışı) sığar; lejant payı yok (lejant kapalı ve hapın
     // üstünde), yanlardaki adlar için yatay pay.
-    if (GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon")) {
+    if (GU.telefonMu && GU.telefonMu() && GU.telefonSigdir && wrapEl.classList.contains("mg-telefon")) {
       const [mn0, mx0] = zoomBehavior.scaleExtent();
       const tt0 = GU.telefonSigdir(wrapEl, svgNode, { x0: x0 - 46, x1: x1 + 46, y0: y0 - 26, y1: y1 + 30 }, mn0, mx0, 4);
       if (!members && svgNode.clientWidth && isFinite(tt0.k) && !ilkBakis.has(bakisAnahtari())) ilkBakis.set(bakisAnahtari(), tt0);
