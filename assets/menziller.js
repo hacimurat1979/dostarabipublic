@@ -728,14 +728,16 @@
       ${notu}
       ${okumaBagiHtml(n)}
       <p class="menzil-kaynak">${L.kaynak}: ${tt(n.kaynak)}</p>`;
-    // "Halkaya dön" kaydı kapatır -- ✕ ve geri tuşuyla aynı tek adım
-    // (2026-10-11, O2). Eskiden giriş panelini açıp adreste YENİ bir adım
-    // açıyordu; ardından geri tuşu kapatılan menzili geri getiriyordu.
+    // "Halkaya dön" adı konmuş bir kapı: halkaya, görünümün giriş hâline
+    // döner -- komşu daireleriyle menzilden menzile geçildiyse de; tarihte
+    // bölüm girdisine kadar geri gidilir, yeni adım açılmaz (2026-10-11, O2).
+    // Eskiden giriş panelini açıp YENİ bir adım açıyordu; ardından geri tuşu
+    // kapatılan menzili geri getiriyordu. ✕, Esc ve geri tuşu tek adım kalır.
     detailContent.querySelector(".menzil-back-link").addEventListener("click", () => {
       activeId = null;
       showIntro(false, false);
       ensureFrame();
-      if (window.__dostNav && window.__dostNav.kapat) window.__dostNav.kapat();
+      if (window.__dostNav && window.__dostNav.bolumeDon) window.__dostNav.bolumeDon("menziller");
       else detailPanel.hidden = true;
     });
     detailPanel.hidden = false;
