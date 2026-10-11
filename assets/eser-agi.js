@@ -25,6 +25,17 @@
 // kartın x'i bir öncekiyle çakışıyorsa bir üst kata çıkıyor, kat boşalınca
 // (kronolojik olarak yeterince ileri gidilince) yeniden kullanılıyor --
 // klasik takvim/genom-tarayıcı yığma algoritması.
+//
+// DİKEY TELEFONDA DİKEY EKSEN (2026-10-11, kullanıcı kararı; taslak:
+// scratchpad/mobil-grafik/eser-agi-dikey/karsilastirma.html). Dikey tutulan
+// telefonda yatay şerit ekranın üçte ikisini boş bırakıyor, aynı anda iki
+// kart gösteriyordu. Orada eksen döner: yıl yukarıdan aşağı akar (70 px/yıl,
+// yine gerçek yıla orantılı), her eser eksende kendi yılının noktasıdır,
+// kartı sağdaki iki sütundan birinde durur. İki sütun da doluysa kart aşağı
+// kayar ve sapıyla noktasına bağlı kalır (yıl noktada, kart okunabilir
+// yerde). Kart boyları ekran pikseliyle kurulur (yazı 13/12 px, kart 48 px
+// -- parmak boyunda) ve ekran genişliğinden hesaplanır. Yatay telefonda ve
+// masaüstünde düzen değişmez (cizDikey yalnız dikeyMi() iken çalışır).
 window.__eserAgiApp = (function () {
   "use strict";
 
@@ -133,10 +144,132 @@ window.__eserAgiApp = (function () {
     return tikler;
   }
 
+  // ---- Dikey telefon: dikey zaman ekseni (bkz. dosya başı) --------------
+  // Ölçüler ekran pikseli (sahne k=1'de açılır). Sütun genişliği ekrandan:
+  // 360 px'lik telefonda 139, Pixel 7'de 165 px.
+  const D_PX = 70;      // yıl başına
+  const D_KH = 48;      // kart yüksekliği (dokunma hedefi >= 44 px)
+  const D_AX = 54;      // eksenin x'i (solunda yıl yazıları)
+  const D_SAP = 12;     // eksenden ilk sütuna
+  const D_ARA = 8;      // sütunlar ve alt alta kartlar arası
+  const D_SAG = 8;      // sağ kenar payı
+  const D_UST = 30;     // ilk yılın sahnedeki y'si
+  function telefondaMi() {
+    // GU.telefonOdakAlani: telefon katmanı ayrı iner; inmeden çizilirse
+    // masaüstü düzeni çizilir, katman inince yeniden çizilir.
+    return !!(GU.telefonMu && GU.telefonMu() && GU.telefonOdakAlani && wrapEl.classList.contains("mg-telefon"));
+  }
+  function dikeyMi() {
+    return telefondaMi() && window.innerHeight > window.innerWidth;
+  }
+  // Yazıyı ölçerek kısaltır (karakter sayısıyla kısaltmak dar sütunda
+  // taşıyor, geniş sütunda boşuna kesiyordu). Ölçülemiyorsa (gizli tuval)
+  // karakter tahminine düşer; kip değişince resize zaten yeniden çizer.
+  function sigdir(textEl, metin, maxW, pxBasina) {
+    const n = textEl.node();
+    n.textContent = metin;
+    let w = n.getComputedTextLength();
+    if (!w) { n.textContent = kisalt(metin, Math.max(6, Math.floor(maxW / pxBasina))); return; }
+    if (w <= maxW) return;
+    let s = metin.slice(0, Math.max(1, Math.floor(metin.length * maxW / w)));
+    for (;;) {
+      n.textContent = s.replace(/[\s,;:–—(/-]+$/, "") + "…";
+      if (s.length <= 1 || n.getComputedTextLength() <= maxW) return;
+      s = s.slice(0, -1);
+    }
+  }
+  function cizDikey() {
+    const { w, h } = boyut();
+    svg.selectAll("*").remove();
+    svg.attr("viewBox", `0 0 ${w} ${h}`).classed("eser-agi--dikey", true);
+    g = svg.append("g").attr("class", "eser-agi-scene");
+    const kok = g.append("g");
+    const kw = Math.max(110, Math.min(220, Math.floor((w - D_AX - D_SAP - D_ARA - D_SAG) / 2)));
+    minYil = eserler.length ? eserler[0].yil.miladi : 0;
+    const maxYil = eserler.length ? eserler[eserler.length - 1].yil.miladi : 0;
+    const yOf = (yil) => D_UST + (yil - minYil) * D_PX;
+    const sutunX = [D_AX + D_SAP, D_AX + D_SAP + kw + D_ARA];
+    // İki sütunlu yığma: kart noktasının hizasında durmak ister; seçilen
+    // sütun doluysa öteki denenir, ikisi de doluysa kart aşağı kayar.
+    const sonY = [-1e9, -1e9];
+    eserler.forEach((d) => {
+      d.x = D_AX; d.y = yOf(d.yil.miladi);
+      let s = sonY[0] <= sonY[1] ? 0 : 1;
+      let ky = d.y - D_KH / 2;
+      if (ky < sonY[s] + D_ARA) {
+        if (ky >= sonY[1 - s] + D_ARA) s = 1 - s;
+        else ky = sonY[s] + D_ARA;
+      }
+      d.__kx = sutunX[s] - D_AX; d.__ky = ky - d.y; sonY[s] = ky + D_KH;
+    });
+    const yEnd = Math.max(yOf(maxYil), ...eserler.map((d) => d.y + d.__ky + D_KH));
+    contentH = yEnd + 24;
+    contentX0 = 0; contentW = w;
+
+    kok.append("line").attr("class", "eser-agi-eksen")
+      .attr("x1", D_AX).attr("x2", D_AX).attr("y1", D_UST - 20).attr("y2", yEnd + 10);
+    const tikSel = kok.append("g").attr("class", "eser-agi-tikler").selectAll("g.eser-agi-tik").data(yilTikleri()).join("g")
+      .attr("class", "eser-agi-tik").attr("transform", (y) => `translate(${D_AX}, ${yOf(y)})`);
+    tikSel.append("line").attr("x1", -7).attr("x2", 0);
+    tikSel.append("text").attr("x", -11).attr("dy", "0.32em").attr("text-anchor", "end").text((y) => y);
+
+    // Aynı şehir zinciri eksenin üstünde, noktadan noktaya (masaüstündeki
+    // yatay parçanın dikey karşılığı; boyu yine gerçek zaman farkı).
+    kok.append("g").attr("class", "eser-agi-kenarler").selectAll("line.eser-agi-kenar")
+      .data(baglar, (d, i) => d.kaynak_id + "|" + i).join("line")
+      .attr("class", "eser-agi-kenar").attr("pointer-events", "none")
+      .attr("x1", D_AX).attr("x2", D_AX)
+      .attr("y1", (d) => eserById.get(d.kaynak_id).y).attr("y2", (d) => eserById.get(d.hedef_id).y);
+
+    // Saplar ayrı katmanda, kartların altında: ikinci sütunun sapı ilk
+    // sütundaki kartın üstünden geçmesin.
+    kok.append("g").attr("class", "eser-agi-saplar").selectAll("line").data(eserler, (d) => d.id).join("line")
+      .attr("class", "eser-agi-eser__sap")
+      .attr("x1", D_AX).attr("y1", (d) => d.y)
+      .attr("x2", (d) => D_AX + d.__kx).attr("y2", (d) => d.y + d.__ky + D_KH / 2);
+
+    const sel = kok.append("g").attr("class", "eser-agi-dugumler").selectAll("g.eser-agi-eser").data(eserler, (d) => d.id).join("g")
+      .attr("class", (d) => "eser-agi-eser" + (d.ozel === "katalog" ? " eser-agi-eser--katalog" : ""))
+      .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
+      .attr("tabindex", 0).attr("role", "button").attr("aria-label", (d) => d.eser);
+    // Dokunma alanı yalnız kartın kendisi (+4 px): sapı da kaplayan geniş
+    // alan aşağı kaymış kartlarda komşu kartların üstüne taşıyordu.
+    sel.append("rect").attr("class", "eser-agi-eser__vurus")
+      .attr("x", (d) => d.__kx - 4).attr("width", kw + 8)
+      .attr("y", (d) => d.__ky - 4).attr("height", D_KH + 8)
+      .attr("fill", "transparent");
+    sel.each(function (d) {
+      const node = d3.select(this);
+      const cls = "eser-agi-eser__nokta" + (d.yil.kesin ? "" : " eser-agi-eser__nokta--yaklasik");
+      if (d.ozel === "katalog") node.append("path").attr("class", cls).attr("d", `M0,${-R * 1.4} L${R * 1.4},0 L0,${R * 1.4} L${-R * 1.4},0 Z`);
+      else node.append("circle").attr("class", cls).attr("r", R + 1);
+    });
+    sel.append("rect").attr("class", (d) => "eser-agi-eser__govde" + (d.yil.kesin ? "" : " eser-agi-eser__govde--yaklasik"))
+      .attr("x", (d) => d.__kx).attr("width", kw).attr("y", (d) => d.__ky).attr("height", D_KH).attr("rx", 8);
+    const icW = kw - 16;
+    sel.append("text").attr("class", "eser-agi-eser__baslik").attr("text-anchor", "middle")
+      .attr("x", (d) => d.__kx + kw / 2).attr("y", (d) => d.__ky + 20)
+      .each(function (d) { sigdir(d3.select(this), d.eser, icW, 7.2); });
+    sel.append("text").attr("class", "eser-agi-eser__alt-satir").attr("text-anchor", "middle")
+      .attr("x", (d) => d.__kx + kw / 2).attr("y", (d) => d.__ky + 37)
+      .each(function (d) { sigdir(d3.select(this), (d.yil.hicri ? d.yil.hicri + "/" : "") + d.yil.miladi + " — " + tt(d.sehir), icW, 6.2); });
+    sel.on("click", (ev, d) => eserPaneli(d))
+      .on("focus", function (ev, d) { vurgulaEser(d.id, true); })
+      .on("blur", function () { vurgulaEser(null, false); })
+      .on("keydown", function (ev, d) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); eserPaneli(d); } });
+
+    zoom = GU.createZoomBehavior(svg, g, [0.5, 3], null, { allowSingleTouchPan: true });
+    // Bir ekran boyu pay: dokunulan kart (ilki de sonuncusu da) yarım
+    // panelin üstündeki alanın ortasına çekilebilsin.
+    zoom.translateExtent([[0, -h], [w, contentH + h]]);
+    ortala(false);
+  }
+
   function ciz() {
+    if (dikeyMi()) return cizDikey();
     const { w, h } = yerlestir();
     svg.selectAll("*").remove();
-    svg.attr("viewBox", `0 0 ${w} ${h}`);
+    svg.attr("viewBox", `0 0 ${w} ${h}`).classed("eser-agi--dikey", false);
     g = svg.append("g").attr("class", "eser-agi-scene");
     const kok = g.append("g");
 
@@ -205,11 +338,14 @@ window.__eserAgiApp = (function () {
     function kartAltY(d) { return -sapUzunlugu(d); }
     function kartUstY(d) { return kartAltY(d) - KART_H; }
 
-    // Görünmez tıklama alanı artık küçük bir daire değil, sap+kart'ın
-    // TAMAMINI kaplayan bir dikdörtgen -- asıl etkileşim yüzeyi kart oldu.
+    // Görünmez tıklama alanı küçük bir daire değil, kartın kendisi (+ pay)
+    // -- asıl etkileşim yüzeyi kart. 2026-10-11: eskiden sapı da kaplayıp
+    // eksene iniyordu; aynı yılın üst kattaki kartı alt kattakinin üstünü
+    // örtüyor, alttaki karta dokunan üsttekinin panelini açıyordu (yatay
+    // telefonda ölçüldü: Mevâki'u'n-nücûm -> Ankâ Mugrib). Görünüm aynı.
     sel.append("rect").attr("class", "eser-agi-eser__vurus")
       .attr("x", -(KART_W / 2 + 6)).attr("width", KART_W + 12)
-      .attr("y", (d) => kartUstY(d) - 4).attr("height", (d) => sapUzunlugu(d) + KART_H + 10)
+      .attr("y", (d) => kartUstY(d) - 4).attr("height", KART_H + 8)
       .attr("fill", "transparent");
 
     sel.append("line").attr("class", "eser-agi-eser__sap")
@@ -293,7 +429,8 @@ window.__eserAgiApp = (function () {
     if (!zoom) return;
     e.preventDefault();
     const t = d3.zoomTransform(svgNode);
-    zoom.translateBy(svg, -e.deltaY / t.k, 0);
+    if (svgNode.classList.contains("eser-agi--dikey")) zoom.translateBy(svg, 0, -e.deltaY / t.k);
+    else zoom.translateBy(svg, -e.deltaY / t.k, 0);
   }
 
   function kisalt(s, n) {
@@ -367,8 +504,30 @@ window.__eserAgiApp = (function () {
     });
   }
 
+  // Telefonda seçilen kart yarım panelin üstündeki alanın ortasına gelir
+  // (dikey eksende yalnız dikeyde kayar: kart yana sıçramaz).
+  function telefondaOrtala(el, a) {
+    if (!zoom || !el || !el.isConnected) return;
+    const r = (el.querySelector("rect.eser-agi-eser__govde") || el).getBoundingClientRect();
+    if (!r.width) return; // liste kipinde tuval gizli
+    const dx = dikeyMi() ? 0 : a.cx - (r.left + r.width / 2);
+    const dy = a.cy - (r.top + r.height / 2);
+    if (Math.hypot(dx, dy) <= 6) return;
+    const k = d3.zoomTransform(svgNode).k;
+    (reduceMotion ? svg : svg.transition().duration(380)).call(zoom.translateBy, dx / k, dy / k);
+  }
+  function telefondaSecileneGit(d) {
+    // Panel (ve kabuğun yarım panel sınıfı) yerleştikten sonra.
+    setTimeout(() => requestAnimationFrame(() => {
+      if (detailPanel.hidden) return;
+      const el = g && g.selectAll("g.eser-agi-eser").filter((x) => x === d).node();
+      telefondaOrtala(el, GU.telefonOdakAlani(wrapEl, true));
+    }), 60);
+  }
+
   function panaGetir(d) {
     if (!zoom) return;
+    if (telefondaMi() && GU.telefonOdakAlani) { telefondaSecileneGit(d); return; }
     const hedef = reduceMotion ? svg : svg.transition().duration(360);
     zoom.translateTo(hedef, d.x, contentH / 2);
   }
@@ -494,12 +653,21 @@ window.__eserAgiApp = (function () {
   // aynı ölçüm burada da geçerli).
   function ortala(animate) {
     if (!zoom) return;
+    // Dikey eksen: k=1 (ölçüler zaten ekran pikseli), kronoloji en erken
+    // eserden açılır -- ilk kart odak alanının tepesinde.
+    if (svgNode.classList.contains("eser-agi--dikey")) {
+      const a = GU.telefonOdakAlani(wrapEl, false), sr = svgNode.getBoundingClientRect();
+      const ilkUst = eserler.length ? Math.min(...eserler.map((d) => d.y + d.__ky)) : 0;
+      const t = d3.zoomIdentity.translate(0, a.y - sr.top + 4 - ilkUst);
+      (animate && !reduceMotion ? svg.transition().duration(420) : svg).call(zoom.transform, t);
+      return;
+    }
     // Telefonda harita (taslak): okuma ölçeği. Sığdırmak (k=0,5) kartları
     // 74 px'e, yazıyı 5,4 px'e indiriyordu -- 28 eserin 5'i ekrandaydı ama
     // hiçbiri okunmuyordu (ölçüldü). Telefonda kart yazısı en az ~12 px
     // (k >= 1,1); bütün katlar odak alanına sığıyorsa biraz daha büyür.
     // Kronoloji en erken eserden açılır, tek parmak yatayda gezdirir.
-    if (GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon")) {
+    if (telefondaMi()) {
       const a = GU.telefonOdakAlani(wrapEl, false);
       const sr = svgNode.getBoundingClientRect();
       const k = Math.max(1.1, Math.min(1.5, (a.h - 16) / Math.max(1, contentH)));
@@ -569,6 +737,12 @@ window.__eserAgiApp = (function () {
     window.addEventListener("resize", GU.debounceResize(() => {
       if (!yuklendi || wrapEl.hidden) return;
       ciz();
+      // Telefonda yön değişince (ya da katman geç inince) açık paneldeki
+      // kart yeniden ekrana gelir; yoksa çizim kronolojinin başından açar.
+      if (focusId && !detailPanel.hidden) {
+        vurgulaEser(focusId, true);
+        if (telefondaMi()) telefondaSecileneGit(eserById.get(focusId));
+      }
     }));
   }
 
@@ -612,6 +786,9 @@ window.__eserAgiApp = (function () {
         const k = d3.zoomTransform(svgNode).k;
         (reduceMotion ? svg : svg.transition().duration(380)).call(zoom.translateBy, dx / k, dy / k);
       },
+      // Dikey eksende seçilen kart yalnız dikeyde kayar (style.css: lejant
+      // orada sağ üstte, alttaki kartları örtmez).
+      merkezle: telefondaOrtala,
     });
   }
 
@@ -640,7 +817,12 @@ window.__eserAgiApp = (function () {
       this.activate();
       yukle().then(() => {
         const d = eserById.get(id);
-        if (d) eserPaneli(d);
+        if (d) {
+          eserPaneli(d);
+          // Telefonda doğrudan adresle gelinen kart ekranda olsun (dikey
+          // eksende 1240'taki bir eser açılışta ekranın çok altında).
+          if (telefondaMi() && GU.telefonOdakAlani) telefondaSecileneGit(d);
+        }
         // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
         else if (id && window.__dostNav) window.__dostNav.setHash("eser-agi");
       });

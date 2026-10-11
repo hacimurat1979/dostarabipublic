@@ -411,5 +411,11 @@
   }
 
   Object.assign(GU, { telefonHaritasi, telefonOdakAlani, telefonSigdir, telefonOdakla });
-  (GU._telefonBekleyen || []).splice(0).forEach((o) => telefonHaritasi(o));
+  const bekleyen = (GU._telefonBekleyen || []).splice(0);
+  bekleyen.forEach((o) => telefonHaritasi(o));
+  // Görünüm bu katmandan önce inip çizildiyse sığdırması masaüstüne göre
+  // yapıldı (katmanın işlevleri yoktu): görünür olan bir kez yeniden çizilir.
+  if (telefonMu() && bekleyen.some((o) => o.wrapEl && !o.wrapEl.hidden && o.wrapEl.isConnected)) {
+    requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+  }
 })();
