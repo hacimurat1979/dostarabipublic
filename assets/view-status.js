@@ -18,6 +18,23 @@ window.DostViewStatus = (function () {
     if (text) text.textContent = pick3({ tr: "Yükleniyor…", en: "Loading…", pt: "Carregando…" });
     const retry = el.querySelector(".view-status__retry");
     if (retry) retry.hidden = true;
+    cevrimdisiTemizle(el, wrapId);
+  }
+
+  // --- Çevrimdışı durumu (2026-10-15, mobil teknik dalga 1, S-01) -------------
+  // Görünüm betiği bağlantı yokluğundan yüklenemediyse (view-loader.js) genel
+  // "yüklenemedi" yerine bunu söyler, nasıl önceden indirileceğini hatırlatır
+  // ve bağlantı geri gelince bölümü kendiliğinden yeniden dener. "Yeniden dene"
+  // bağlantı yokken boşuna istek atmaz: bağlantıyı beklediğini söyler.
+  const bekleyenBaglanti = {};
+  function cevrimdisiTemizle(el, wrapId) {
+    el.classList.remove("view-status--cevrimdisi");
+    const ip = el.querySelector(".view-status__hint");
+    if (ip) ip.hidden = true;
+    if (bekleyenBaglanti[wrapId]) {
+      window.removeEventListener("online", bekleyenBaglanti[wrapId]);
+      delete bekleyenBaglanti[wrapId];
+    }
   }
 
   function showError(wrapId, onRetry) {
@@ -43,7 +60,7 @@ window.DostViewStatus = (function () {
 
   function hide(wrapId) {
     const el = node(wrapId);
-    if (el) el.hidden = true;
+    if (el) { el.hidden = true; cevrimdisiTemizle(el, wrapId); }
   }
 
   // Görünüm BETİĞİ yüklenemedi ya da çöktü (2026-10-09, dalga-web; bkz.
@@ -51,7 +68,7 @@ window.DostViewStatus = (function () {
   // ipucu...) hiçbir şey yapmıyordu -- bağlanmamış düğme. Artık kısa bir
   // kutu ve ÇALIŞAN bir "yeniden dene". Durum düğümü olmayan sarmalayıcıya
   // (hakkinda-wrap) aynı yapı eklenir.
-  function showLoadError(wrapId, onRetry) {
+  function showLoadError(wrapId, onRetry, opts) {
     let el = node(wrapId);
     if (!el) {
       const wrap = document.getElementById(wrapId);
@@ -66,22 +83,69 @@ window.DostViewStatus = (function () {
     el.hidden = false;
     el.classList.add("view-status--error");
     el.setAttribute("role", "alert");
+    const cevrimdisi = !!(opts && opts.cevrimdisi);
+    cevrimdisiTemizle(el, wrapId);
+    el.classList.toggle("view-status--cevrimdisi", cevrimdisi);
     const text = el.querySelector(".view-status__text");
     if (text) {
-      text.textContent = pick3({
-        tr: "Bu bölüm yüklenemedi.",
-        en: "This section couldn't load.",
-        pt: "Esta seção não pôde ser carregada.",
+      text.textContent = cevrimdisi
+        ? pick3({
+          tr: "Çevrimdışısın ve bu bölüm henüz indirilmedi.",
+          en: "You're offline and this section hasn't been downloaded yet.",
+          pt: "Você está offline e esta seção ainda não foi baixada.",
+        })
+        : pick3({
+          tr: "Bu bölüm yüklenemedi.",
+          en: "This section couldn't load.",
+          pt: "Esta seção não pôde ser carregada.",
+        });
+    }
+    let ip = el.querySelector(".view-status__hint");
+    if (cevrimdisi) {
+      if (!ip) {
+        ip = document.createElement("p");
+        ip.className = "view-status__hint";
+        if (text) text.insertAdjacentElement("afterend", ip); else el.appendChild(ip);
+      }
+      ip.hidden = false;
+      ip.textContent = pick3({
+        tr: "Bağlantı gelince açılır. Önceden indirmek için “Çevrimdışı okuma”yı kullanabilirsin.",
+        en: "It opens once you're back online. To get it ahead of time, use “Offline reading”.",
+        pt: "Abre quando a conexão voltar. Para baixar com antecedência, use “Leitura offline”.",
       });
     }
     const retry = el.querySelector(".view-status__retry");
+    const yeniden = function () {
+      showLoading(wrapId);
+      onRetry();
+    };
     if (retry) {
       retry.hidden = false;
       retry.textContent = pick3({ tr: "Yeniden dene", en: "Try again", pt: "Tentar de novo" });
       retry.onclick = function () {
-        showLoading(wrapId);
-        onRetry();
+        if (cevrimdisi && navigator.onLine === false) {
+          // Bağlantı yok: istek atmak boşuna. Beklediğimizi söyle; bağlantı
+          // gelince aşağıdaki dinleyici yeniden dener.
+          if (text) {
+            text.textContent = pick3({
+              tr: "Hâlâ çevrimdışısın. Bağlantı gelince bu bölüm kendiliğinden açılacak.",
+              en: "Still offline. This section will open on its own once you're connected.",
+              pt: "Ainda offline. Esta seção abrirá sozinha quando houver conexão.",
+            });
+          }
+          return;
+        }
+        yeniden();
       };
+    }
+    if (cevrimdisi) {
+      const acik = function () {
+        const e2 = node(wrapId);
+        if (!e2 || e2.hidden || !e2.classList.contains("view-status--error")) { cevrimdisiTemizle(el, wrapId); return; }
+        yeniden();
+      };
+      bekleyenBaglanti[wrapId] = acik;
+      window.addEventListener("online", acik, { once: true });
     }
   }
 

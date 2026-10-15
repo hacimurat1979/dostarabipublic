@@ -340,6 +340,7 @@
   // graph-utils.js yorumu; burada ensureFrame() lastTs'i performance.now()
   // ile sıfırlıyordu, sürekli-aktif durumdayken -- ki `anim` || true yüzünden
   // burası hep sürekli-aktifti -- dt'yi neredeyse 0'a çöktürüyordu).
+  const Y = GU.yaz;
   const frameLoop = GU.createFrameLoop(wrapEl, function (ts, dt) {
     if (!startTs) startTs = ts;
     // 3B'de düzlemsel dönüş yerini yaw'a bırakıyor: sahne dikey eksen
@@ -401,10 +402,13 @@
     if (!reduceMotion && bgParticles.length) {
       const bgSel = bgLayer.selectAll("circle.sir-bgdot").data(bgParticles);
       bgSel.enter().append("circle").attr("class", "sir-bgdot").merge(bgSel)
-        .attr("cx", (p) => (p.r * Math.cos(p.a)).toFixed(1))
-        .attr("cy", (p) => (p.r * Math.sin(p.a)).toFixed(1))
-        .attr("r", (p) => p.rad)
-        .style("opacity", 0.018 * growth);
+        .each(function (p) {
+          // Mobil teknik dalga 1: yalnız değişen değer yazılır (GU.yaz).
+          Y.A(this, "cx", (p.r * Math.cos(p.a)).toFixed(1));
+          Y.A(this, "cy", (p.r * Math.sin(p.a)).toFixed(1));
+          Y.A(this, "r", p.rad);
+          Y.Se(this, "opacity", 0.018 * growth, 0.0005);
+        });
       bgSel.exit().remove();
     }
 
@@ -428,7 +432,6 @@
       onBlur: () => setHover(null),
     });
     lkEnter.merge(lk).each(function (l) {
-      const path = d3.select(this);
       const dep = l.target.kind === "theme" ? 1 : 2;
       const baseW = dep === 1 ? 1.7 : 0.8;         // köke yakın kalın, uzakta ince (#1)
       let op = dep === 1 ? 0.42 : 0.26;
@@ -438,10 +441,10 @@
       }
       // büyüme: kenarları ilerlemeli çiz
       const grown = Math.min(1, growth * 1.15 - (dep === 2 ? 0.15 : 0));
-      path.attr("d", linkPath(l))
-        .style("stroke", themeColor(l.target.theme || l.source.theme || "suskunluk"))
-        .style("stroke-width", baseW)
-        .style("opacity", op * Math.max(0, grown));
+      Y.A(this, "d", linkPath(l));
+      Y.S(this, "stroke", themeColor(l.target.theme || l.source.theme || "suskunluk"));
+      Y.S(this, "stroke-width", String(baseW));
+      Y.Se(this, "opacity", op * Math.max(0, grown), 0.004);
     });
     lk.exit().remove();
 
@@ -454,7 +457,9 @@
         const [x, y] = pointOnLink(p.l, p.t);
         let op = 0.28;
         if (act) op = (act.set.has(p.l.source.id) && act.set.has(p.l.target.id)) ? 0.5 : 0.02;
-        d3.select(this).attr("cx", x).attr("cy", y).style("fill", themeColor(p.l.target.theme || "suskunluk")).style("opacity", op * growth);
+        Y.A(this, "cx", x); Y.A(this, "cy", y);
+        Y.S(this, "fill", themeColor(p.l.target.theme || "suskunluk"));
+        Y.Se(this, "opacity", op * growth, 0.004);
       });
       ps.exit().remove();
     }
@@ -496,6 +501,14 @@
     const labelItems = [];
     const labelObstacles = [];
     merged.each(function (d) {
+      // Mobil teknik dalga 1 (P-01): alt öğeler bir kez önbelleğe alınır, her
+      // karede yalnız değişen değer yazılır (GU.yaz). Etiket (.sir-label) hariç:
+      // yerleşimini deconflictLabels de yazıyor, önbelleği onunla sapar.
+      let c = d.__c;
+      if (!c || c.g !== this) {
+        c = d.__c = { g: this, hit: this.querySelector(".sir-hit"), glow: this.querySelector(".sir-glow"),
+          halo: this.querySelector(".sir-halo"), dot: this.querySelector(".sir-dot"), depth: this.querySelector(".sir-depth") };
+      }
       const g = d3.select(this);
       const br = breath(d, ts);
       // 3B perspektif ölçeği: uzaktaki düğüm küçülür.
@@ -524,40 +537,39 @@
       // Atmosfer: 3B'de uzaktaki düğüm soluklaşır -- perdelenmenin kendisi.
       if (t3 > 0.02) op *= Math.max(0.55, Math.min(1, (d.__depth == null ? 1 : d.__depth) * 1.02));
       const col = nodeColor(d);
-      g.style("opacity", op).style("display", op < 0.02 ? "none" : null)
-        .attr("transform", `translate(${nx_(d).toFixed(1)},${ny_(d).toFixed(1)})`);
-      g.classed("is-anchor", act && d.id === act.anchor);
+      Y.Se(this, "opacity", op, 0.004);
+      Y.S(this, "display", op < 0.02 ? "none" : null);
+      Y.A(this, "transform", `translate(${nx_(d).toFixed(1)},${ny_(d).toFixed(1)})`);
+      Y.C(this, "is-anchor", !!(act && d.id === act.anchor));
       // Görünmez tıklama alanı. Sabit 14 birim yetmiyordu: sahne uzaklaşınca
       // (currentK < 1) SVG birimi ekranda küçülüyor, en dipteki yapraklar
       // tıklanamaz hâle geliyordu (kullanıcı notu 2026-07-27). Hedefi
       // EKRAN ölçüsünde tutuyoruz -- yarıçap ~22 ekran pikselinin altına
       // düşmüyor.
-      g.select(".sir-hit").attr("r", Math.max(14, r + 8, 22 / Math.max(0.3, currentK)));
+      Y.Ae(c.hit, "r", Math.max(14, r + 8, 22 / Math.max(0.3, currentK)), 0.5);
       // dış parıltı (rengiyle uyumlu, glossy değil)
       const isRoot = d.kind === "root";
       const glowStrength = isRoot ? 1 : d.kind === "theme" ? 0.7 : 0.4;
-      const glowSel = g.select(".sir-glow");
       if (isRoot) {
         // Zât formatı: yarıçapı burada veriyoruz, geri kalan her şeyi
         // (renk, opaklık, nefes) .node--root .node-halo CSS'i yürütüyor.
         // 2.0 katsayısı Ontoloji'deki Zât halosunun düğüme oranıyla aynı
         // hissi veriyor; CSS'teki scale(1.4) tepe noktasını zaten ekliyor.
-        glowSel.attr("r", r * 2.0).style("fill", null).style("opacity", null);
+        Y.Ae(c.glow, "r", r * 2.0, 0.06); Y.S(c.glow, "fill", null); Y.S(c.glow, "opacity", null);
       } else {
-        glowSel
-          .attr("r", r * 1.7)
-          .style("fill", col)
-          .style("opacity", 0.13 * glowStrength * (act && d.id === act.anchor ? 1.6 : 1));
+        Y.Ae(c.glow, "r", r * 1.7, 0.06);
+        Y.S(c.glow, "fill", col);
+        Y.Se(c.glow, "opacity", 0.13 * glowStrength * (act && d.id === act.anchor ? 1.6 : 1), 0.004);
       }
       // hover halosu (#10): genişleyen, sönümlenen
-      const halo = g.select(".sir-halo");
+      const halo = c.halo;
       if (haloNodeId === d.id) {
         const p = Math.min(1, (ts - haloStart) / HALO_DUR);
-        halo.attr("r", r + 8 + 32 * p).style("stroke", col).style("opacity", 0.15 * (1 - p) + 0.02);
-        if (p >= 1) { /* kalıcı hafif */ halo.style("opacity", 0.04); }
-      } else halo.style("opacity", 0);
-      g.select(".sir-dot").attr("r", r).style("fill", col);
-      g.select(".sir-depth").attr("r", r);
+        Y.A(halo, "r", r + 8 + 32 * p); Y.S(halo, "stroke", col);
+        Y.S(halo, "opacity", String(p >= 1 ? 0.04 : 0.15 * (1 - p) + 0.02)); // p>=1: kalıcı hafif
+      } else Y.S(halo, "opacity", "0");
+      Y.S(c.dot, "fill", col); Y.Ae(c.dot, "r", r, 0.03);
+      Y.Ae(c.depth, "r", r, 0.03);
       // etiket (#4 yatay + gölge; #8 LOD)
       const lbl = g.select(".sir-label");
       const showLabel = labelVisible(d, act);

@@ -1307,6 +1307,22 @@ body.sessiz-mod-on .sessiz-mod-rozet { display: block; }
   color: var(--accent-interactive);
   border-color: var(--accent-interactive);
 }
+.view-status__hint {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.view-status__hint[hidden] { display: none; }
+.view-status--cevrimdisi .view-status__retry { min-height: 44px; padding: 0 22px; }
+html.dost-uygulama .view-status--cevrimdisi {
+  position: fixed;
+  top: var(--app-header-height, 57px);
+  left: 0;
+  right: 0;
+  bottom: calc(var(--uyg-alt-h, 64px) + var(--uyg-guvenli-alt, 0px));
+}
 @media (prefers-reduced-motion: reduce) {
   .view-status__spinner { animation: none; border-top-color: var(--border); }
 }
@@ -2430,6 +2446,8 @@ button.futuhat-part-chip:hover {
   color: var(--text-secondary);
   font-style: normal;
 }
+.futuhat-anlamsal-box--deneysel .futuhat-anlamsal-box__eyebrow { color: #636159; }
+.viz-root[data-theme="dark"] .futuhat-anlamsal-box--deneysel .futuhat-anlamsal-box__eyebrow { color: #94928b; }
 .futuhat-anlamsal-box__gosterBtn {
   align-self: flex-start;
   font: inherit;
@@ -5315,6 +5333,21 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
 }
 @media (prefers-reduced-motion: reduce) {
   .consent-banner:not([hidden]) { animation: none; }
+}
+@media (max-width: 899px) {
+  html.dost-uygulama .consent-banner {
+    left: 12px;
+    right: 12px;
+    bottom: calc(var(--uyg-alt-h, 64px) + var(--uyg-guvenli-alt, 0px) + 8px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    gap: 8px 14px;
+    max-height: calc(100svh - var(--uyg-alt-h, 64px) - var(--uyg-guvenli-alt, 0px) - var(--app-header-height, 57px) - 24px);
+    overflow-y: auto;
+  }
+  html.dost-uygulama .consent-banner p { margin: 0; font-size: 0.84rem; line-height: 1.4; }
+  html.dost-uygulama .consent-banner__actions { width: 100%; justify-content: flex-end; }
 }
 
 @media (max-width: 640px) {
@@ -10041,12 +10074,14 @@ button.share-panel__cand-text:focus-visible { outline: 2px solid var(--accent-in
   border-color: var(--accent, #b5804a);
   background: color-mix(in srgb, var(--accent, #b5804a) 8%, transparent);
 }
-.kavram-bookref--yogun .kavram-bookref__label { color: var(--accent, #b5804a); }
+.kavram-bookref--yogun .kavram-bookref__label { color: #8a6035; }
+.viz-root[data-theme="dark"] .kavram-bookref--yogun .kavram-bookref__label { color: var(--accent, #b5804a); }
 .kavram-chip__n {
   opacity: 0.6;
   font-variant-numeric: tabular-nums;
   margin-left: 2px;
 }
+.kavram-chip--guclu .kavram-chip__n { opacity: 0.66; }
 .kavram-detail__back { margin: 0 0 14px; }
 .kavram-back-link {
   background: none;
@@ -12753,3 +12788,5 @@ html.dost-uygulama .mg-komsu {
 .mg-komsu__ad { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mg-komsu__dugme:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; }
 .mg-komsu__bos { flex: 0 0 0; }
+
+html.dost-uygulama .nav-toggle.uyg-donuslu { height: auto; min-height: 44px; row-gap: 0; }
