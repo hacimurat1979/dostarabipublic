@@ -3333,7 +3333,7 @@
           result += original;
         } else {
           seen.add(key);
-          result += `<a href="${ROUTE_BASE}/${hit.view}/${hit.id}" class="cross-link" data-view="${hit.view}" data-id="${hit.id}">${original}</a>`;
+          result += `<a href="${ROUTE_BASE}/${hit.view}/${hit.id}/" class="cross-link" data-view="${hit.view}" data-id="${hit.id}">${original}</a>`;
         }
       }
       lastIndex = end;
@@ -3384,7 +3384,7 @@
   // hangi okumada karşımıza çıktığı görülebiliyor.
   function sirlarOkumaHtml(entry) {
     if (!entry.okuma || !entry.okuma.view || !entry.okuma.id) return "";
-    const href = `${ROUTE_BASE}/${entry.okuma.view}/${entry.okuma.id}`;
+    const href = `${ROUTE_BASE}/${entry.okuma.view}/${entry.okuma.id}/`;
     const label = tt({
       tr: "Bu satırları hangi okumada bulduk",
       en: "The reading round where we found these lines",
@@ -3411,7 +3411,7 @@
       pt: `Encontramos este motivo de forma independente em ${total} fontes independentes`,
     });
     const links = siblings.map((s) => {
-      const href = `${ROUTE_BASE}/sirlar/${s.id}`;
+      const href = `${ROUTE_BASE}/sirlar/${s.id}/`;
       return `<a class="cross-link cross-link--kucuk" href="${href}" data-view="sirlar" data-id="${s.id}">${volumeLabel(s.volume)}</a>`;
     }).join("");
     return `<div class="detail-block detail-block--bagimsiz-kaynak">
@@ -3692,7 +3692,7 @@
     const satir = bag.map((b) => {
       const q = soruBaslik.get(b.soru);
       if (!q) return "";
-      return `<a class="sorular-sir" href="${base}/sorular/${b.soru}" data-view="sorular" data-id="${b.soru}">
+      return `<a class="sorular-sir" href="${base}/sorular/${b.soru}/" data-view="sorular" data-id="${b.soru}">
         <span class="sorular-sir__baslik">${I18n.pick3(q)}</span>
         <span class="sorular-sir__neden">${I18n.pick3(b.neden)}</span>${confidenceInlineHtml(b.confidence)}</a>`;
     }).join("");

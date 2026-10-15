@@ -42,8 +42,8 @@ window.__bilmiyoruzApp = (function () {
   function soruAilesiNavHtml(buradaki) {
     const base = window.__dostRouteBase || "";
     const AILE = {
-      sorular: { view: "sorular", href: "/sorular", baslik: { tr: "Sorular", en: "Questions", pt: "Perguntas" }, aciklama: { tr: "okuyucuya cevap veren bir SSS", en: "an FAQ that answers the reader", pt: "um FAQ que responde ao leitor" } },
-      bilmiyoruz: { view: "bilmiyoruz", href: "/bilmiyoruz", baslik: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" }, aciklama: { tr: "metnin kendi çözülmemiş noktaları — biz sormuyoruz, sınırı o gösteriyor", en: "the text's own unresolved points — not our question, its own limit", pt: "os próprios pontos não resolvidos do texto" } },
+      sorular: { view: "sorular", href: "/sorular/", baslik: { tr: "Sorular", en: "Questions", pt: "Perguntas" }, aciklama: { tr: "okuyucuya cevap veren bir SSS", en: "an FAQ that answers the reader", pt: "um FAQ que responde ao leitor" } },
+      bilmiyoruz: { view: "bilmiyoruz", href: "/bilmiyoruz/", baslik: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" }, aciklama: { tr: "metnin kendi çözülmemiş noktaları — biz sormuyoruz, sınırı o gösteriyor", en: "the text's own unresolved points — not our question, its own limit", pt: "os próprios pontos não resolvidos do texto" } },
     };
     const digerleri = Object.keys(AILE).filter((k) => k !== buradaki);
     const linkler = digerleri.map((k) => {

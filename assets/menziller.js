@@ -704,7 +704,7 @@
       en: "The part where we read this section",
       pt: "A parte onde lemos esta secção",
     });
-    return `<a class="cross-link" href="${base}/futuhat/${n.okuma}" data-view="futuhat" data-id="${n.okuma}">${label} →</a>`;
+    return `<a class="cross-link" href="${base}/futuhat/${n.okuma}/" data-view="futuhat" data-id="${n.okuma}">${label} →</a>`;
   }
 
   function openMenzil(n) {
