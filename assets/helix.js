@@ -198,6 +198,10 @@
     sc.order = "";
   }
 
+  // Etiketin düğüm çakışması düzeltmesi (MI-02) yalnız telefonda; masaüstü
+  // yerleşimi bilerek değişmedi.
+  var telefonDar = window.matchMedia ? window.matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)") : { matches: false };
+
   function draw(sc) {
     var span = Math.max(1, sc.nodes.length - 1);
     sc.pathEl.setAttribute("d", pathBetween(sc, 0, span, 120));
@@ -303,11 +307,39 @@
       }
       var len = el.__baseLen * it.p.depth, fs = 11.5 * it.p.depth;
       var x0 = it.anchor === "start" ? it.lx : it.anchor === "end" ? it.lx - len : it.lx - len / 2;
-      var kay = 0, pay = 4;
+      var kay = 0, pay = 4, yy = it.ly;
       if (x0 < pay) kay = pay - x0;
       else if (x0 + len > sc.w - pay) kay = (sc.w - pay) - (x0 + len);
-      if (kay) { x0 += kay; el.text.setAttribute("x", (it.lx + kay).toFixed(1)); }
-      var kutu = { x0: x0 - 3, x1: x0 + len + 3, y0: it.ly - fs * 1.0, y1: it.ly + fs * 0.4 };
+      if (kay) {
+        x0 += kay;
+        // Sahne kenarına kenetlenen etiket kendi düğümünün üstüne biniyorsa
+        // (2026-10-15, mobil okuma taraması MI-02: "5 · Âdem: aynanın
+        // cilâsının kendisi" düğümün içinden başlıyordu) etiket düğümün
+        // karşı yanına, o da sığmazsa üstüne ya da altına alınır.
+        var dugumeBiner = function (bx0, by) {
+          var nx = Math.max(bx0, Math.min(it.p.x, bx0 + len)), ny = Math.max(by - fs, Math.min(it.p.y, by + fs * 0.4));
+          return (nx - it.p.x) * (nx - it.p.x) + (ny - it.p.y) * (ny - it.p.y) < (it.r + 1.5) * (it.r + 1.5);
+        };
+        var sigar = function (bx0) { return bx0 >= pay && bx0 + len <= sc.w - pay; };
+        var adaylar = [];
+        if (it.anchor !== "middle") adaylar.push({ x0: it.anchor === "start" ? it.p.x - it.r - 7 - len : it.p.x + it.r + 7, y: it.p.y + 4, a: it.anchor === "start" ? "end" : "start" });
+        adaylar.push({ x0: Math.max(pay, Math.min(sc.w - pay - len, it.p.x - len / 2)), y: it.p.y - it.r - 8, a: "middle" });
+        adaylar.push({ x0: Math.max(pay, Math.min(sc.w - pay - len, it.p.x - len / 2)), y: it.p.y + it.r + fs + 2, a: "middle" });
+        if (telefonDar.matches && dugumeBiner(x0, yy)) {
+          for (var ai = 0; ai < adaylar.length; ai++) {
+            var ad = adaylar[ai];
+            if (sigar(ad.x0) && !dugumeBiner(ad.x0, ad.y)) {
+              x0 = ad.x0; yy = ad.y;
+              el.text.setAttribute("text-anchor", ad.a);
+              el.text.setAttribute("y", yy.toFixed(1));
+              kay = (ad.a === "start" ? x0 : ad.a === "end" ? x0 + len : x0 + len / 2) - it.lx;
+              break;
+            }
+          }
+        }
+        el.text.setAttribute("x", (it.lx + kay).toFixed(1));
+      }
+      var kutu = { x0: x0 - 3, x1: x0 + len + 3, y0: yy - fs * 1.0, y1: yy + fs * 0.4 };
       var carp = it.i !== sc.focus && (yerlesen.some(function (k) {
         return kutu.x0 < k.x1 && kutu.x1 > k.x0 && kutu.y0 < k.y1 && kutu.y1 > k.y0;
       }) || cemberler.some(function (c) {

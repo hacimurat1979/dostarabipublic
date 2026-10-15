@@ -52,9 +52,9 @@
 
   var VIEWS = {
     __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-zk3R9bNXSaTFsvWcw9IAiWX96ofM4S5HO8jt+bJQWqv9L+KOBEAy03t8aqB+2Of7", wrap: "sirlar-wrap" },
-    __kavramApp: { src: "assets/kavram.js", integrity: "sha384-zDDUL/umsIwdNOgVUEjAmFBXfL5pUt1RULm8ksvVDBeTq+7l5/1tqaUTAOiZEzS1", wrap: "kavram-wrap" },
+    __kavramApp: { src: "assets/kavram.js", integrity: "sha384-F2HLt+bS2IrHKJqQ7+PovZmr/58fXIUmqlOnD6lZ0dMcwVAWEg9NdvVu6N6uSmAZ", wrap: "kavram-wrap" },
     __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-vSgyXyHBGcJDPk2KL1UIHRZeUwZgqD3aEcnw1OWigxnPaLTfpjbUM/a22rd+EdGv", wrap: "ayethadis-wrap" },
-    __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-3DAmRScI+L9wWXXhl7hJ+vPPOCivyCDlNFjOkGi+POHuSA/16/KYsSWuqWgoKJ/9", wrap: "hakkinda-wrap" },
+    __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-18hn9pGbWme+gxON30Ywdy8tAFlPvCGZl5v8LWfBsfP1CfJJMbRXOkhyTmoh5a2A", wrap: "hakkinda-wrap" },
     __vahdetApp: { src: "assets/vahdet.js", integrity: "sha384-0rJbqChXtTiUMn1Rmhpu4aGkenqDUd/em73w7zgNq7d+z59Gp0ZkSY541ktt104J", wrap: "hakkinda-wrap" },
     __okumaYollariApp: { src: "assets/okuma-yollari.js", integrity: "sha384-WVd8Tqt6ZBDLetnvyT9kYtJxL1DM56TU45COH8rhEf2/W4/XrtkYPrJPPRphujEn", wrap: "hakkinda-wrap" },
     __neredenBaslamaliApp: { src: "assets/nereden-baslamali.js", integrity: "sha384-yDtO/XYSNvn8Pdmncj6PbBcRtcFwXHCYduLifAcnm764wmD5VDT4msgSMHvrPk+C", wrap: "hakkinda-wrap" },
@@ -70,11 +70,11 @@
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-WXb4zpLtz38hR/CtDFTxZ0xvHKmqos+TU3oXGRPZdGJdVd48+gKc4aAE7LXB9J0E", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-KgEYRkkhhQKwLfXBmqofbnQxALk1sz8a5exxpixhxvPVI6H0HY+bgvAYXrftYOtW", wrap: "futuhat-wrap" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-+cEeGLn77bG5FcQGPN/IZd3bZUtIVP36hwovJAj8WiuHlh/OLWhRNglxbsEsf+vB", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-nRtAoGfzRdxcsKff/qRHL7sMuBO7WR/cQEbcYc+XEOtITTl6798LcNqPGkvGpDKW", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-gTiC6dHqEktNNV7Iaji9OKFsUeBGSOmp12l13xLfF7KHAHsOZMdCqDDwjIjjrnr3", wrap: "tasiyicilar-wrap" },
-    __fususApp: { src: "assets/fusus.js", integrity: "sha384-pNZ2GkaPDM0LqS3ndD6U8qSibxm1B164ou6iTnCDaVqm9ia8jE+oLEZkwga6IFiF", wrap: "fusus-wrap" },
-    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-V/s+Zs75fbD273qHPiWeX9QS2MmtOyGFA4p93PZBoc7Y86Z8bKcof45cPj+lCqLc", wrap: "miskat-wrap" },
+    __fususApp: { src: "assets/fusus.js", integrity: "sha384-PM2sxwPPWLpk2wGRbxEZXuy+9HvS6qnB9uHeQkSH/2nf82TNRsm+JDbqkeVb8xmy", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
+    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-idwHvrQlSn4MmQ2lp4iB2IfsyF2QAWJhqcPa2V2SDFXwB9+qQ5jpblPux9YR6q3b", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
   };
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
@@ -99,6 +99,13 @@
   // bırakır; katman inince kurulur.
   var TELEFON = { src: "assets/telefon-haritasi.js", integrity: "sha384-KoSgNjo1JrGunyVeRtrl310Ci1t+RLvmjIi+N9eZyR1PW5sQ6p5FkYINlQGbq7Y8" };
 
+  // Okuma yüzeyi (2026-10-15): Fütûhât/Füsûs/Mişkât betiğinden ÖNCE iner
+  // (VIEWS[...].once) -- görünümler çizimini bitirince ona haber verir
+  // (okuma yeri, "Bu metinde" sayfası, Defterim yıldızı, çubukların çekilmesi).
+  var ONCE = {
+    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-Y1uAMif/AI4vLF+qbFPEWGI+3Y65a4lIqNlsUAF+AcYgW0wZ86q0rokpXoLQrYdD" },
+  };
+
   var loadingPromises = {};
 
   function scriptYukle(anahtar, cfg) {
@@ -118,7 +125,13 @@
     return loadingPromises[anahtar];
   }
 
-  function loadScript(globalName) { return scriptYukle(globalName, VIEWS[globalName]); }
+  function loadScript(globalName) {
+    var cfg = VIEWS[globalName];
+    var once = cfg.once && ONCE[cfg.once]
+      ? scriptYukle("once:" + cfg.once, ONCE[cfg.once]).catch(function (e) { console.warn(e); })
+      : Promise.resolve();
+    return once.then(function () { return scriptYukle(globalName, cfg); });
+  }
   function kipYukle(ad) { return scriptYukle("kip:" + ad, KIPLER[ad]); }
   (function telefonHaritasiIndir() {
     var html = document.documentElement;

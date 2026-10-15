@@ -256,6 +256,13 @@
         tabs[k].btn.setAttribute("aria-selected", String(active));
         tabs[k].panel.hidden = !active;
       });
+      // Telefonda alt sekmeler tek satır yana kayıyor (style.css, MI-07): etkin
+      // sekme şeridin ortasına gelir (yalnız şerit kayar, sayfa değil).
+      const serit = tabs[which].btn.parentElement;
+      if (serit && serit.scrollWidth > serit.clientWidth + 2) {
+        const b = tabs[which].btn;
+        serit.scrollLeft = b.offsetLeft - (serit.clientWidth - b.offsetWidth) / 2;
+      }
       if (which === "siirler" && !initialized) activate();
       if (which === "vahdet") window.__vahdetApp && window.__vahdetApp.activate();
       if (which === "okuma-yollari") window.__okumaYollariApp && window.__okumaYollariApp.activate();

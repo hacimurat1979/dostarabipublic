@@ -231,6 +231,9 @@
     closePopup();
     const li = wrapEl && wrapEl.querySelector(`.futuhat-sources li[data-source-index="${index}"]`);
     if (!li) return;
+    // Telefonda kaynaklar katlanmış olabilir (ekKatla): hedef görünsün diye açılır.
+    const ek = li.closest("details.futuhat-ek");
+    if (ek) ek.open = true;
     li.scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(() => {
       li.classList.add("futuhat-pulse");
@@ -1660,6 +1663,7 @@
       sayfa: pageRangeLabel(part.pageRange),
     });
 
+    ekKatla();
     renderStats(part);
     setupToolbar(part);
     setupStartHint();
@@ -1667,6 +1671,32 @@
     renderDostDizini(part);
     renderAnlamsalBaglantilar(part);
     renderYakinPasajlar(part);
+  }
+
+  // Telefonda metin sonu (2026-10-15, mobil okuma taraması GZ-05): kaynaklar,
+  // Dost'un kendi dizini ve anlamca yakın pasajlar metinle "Sonraki" düğmesi
+  // arasında 851 px (0,93 ekran) yer tutuyordu. Önceki/Sonraki metnin hemen
+  // altına alınır; o üç blok tek, katlanan "Kaynaklar, dizin ve ilgili
+  // pasajlar" satırında altta durur. Hiçbir şey silinmez (id'ler ve içerik
+  // aynı; geç gelen dizin/pasaj kutuları kendi kaplarına yazar). Masaüstünde
+  // sıra ve görünüş aynı kalır.
+  function ekKatla() {
+    if (!window.matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches) return;
+    const nav = articleEl.querySelector(".okuma-gezinti");
+    const secs = articleEl.querySelector("#futuhat-sections");
+    if (!nav || !secs) return;
+    secs.after(nav);
+    const det = document.createElement("details");
+    det.className = "futuhat-ek";
+    const ozet = document.createElement("summary");
+    ozet.className = "futuhat-ek__ozet";
+    ozet.textContent = tt({ tr: "Kaynaklar, dizin ve ilgili pasajlar", en: "Sources, index and related passages", pt: "Fontes, índice e passagens relacionadas" });
+    det.appendChild(ozet);
+    ["#futuhat-dost-dizini", "#futuhat-anlamsal", "#futuhat-yakin-pasaj", ".futuhat-sources"].forEach((sel) => {
+      const e = articleEl.querySelector(sel);
+      if (e) det.appendChild(e);
+    });
+    nav.after(det);
   }
 
   // --- Dost'un kendi dizini (2026-10-10) ---------------------------------
@@ -2133,6 +2163,9 @@
         return;
       }
       renderPart(part);
+      // Okuma yüzeyi (assets/okuma-yuzeyi.js): okuma yeri, Bu metinde, Defterim
+      // yıldızı. Kullanıcının seçtiği kısım makalenin başından okunur.
+      if (window.DostOkuma) window.DostOkuma.cizildi("futuhat", part.id, articleEl, !makaleBasinaGit);
       if (makaleBasinaGit) {
         makaleBasinaGit = false;
         requestAnimationFrame(() => requestAnimationFrame(makaleninBasinaIn));
