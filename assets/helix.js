@@ -231,10 +231,13 @@
     pts.forEach(function (it) {
       var p = it.p, node = it.node, el = sc.gs[it.i];
       var r = (it.i === cur ? 9.5 : (node.accent ? 8.5 : 6.4)) * p.depth;
-      el.g.setAttribute("class", "helix-scene__node"
+      // Aynı sınıf dizgisini her karede yeniden yazmak stil geçersizliği
+      // doğuruyordu (mobil teknik dalga 1): yalnız değişince yaz.
+      var sinif = "helix-scene__node"
         + (node.accent ? " helix-scene__node--accent" : "")
         + (it.i === cur ? " is-current" : "")
-        + (sc.focus === it.i ? " is-focus" : ""));
+        + (sc.focus === it.i ? " is-focus" : "");
+      if (el.__sinif !== sinif) { el.__sinif = sinif; el.g.setAttribute("class", sinif); }
       if (cur != null) {
         var uz = Math.abs(it.i - cur);
         el.g.style.opacity = it.i === cur ? "1" : (0.16 + 0.84 * Math.exp(-uz / kappa)).toFixed(3);
@@ -300,7 +303,7 @@
       return b.p.depth - a.p.depth;
     }).forEach(function (it) {
       var el = sc.gs[it.i];
-      if (!el.__label) { el.text.removeAttribute("visibility"); return; }
+      if (!el.__label) { if (el.__gizli !== false) { el.__gizli = false; el.text.removeAttribute("visibility"); } return; }
       if (el.__baseLen == null || el.__lenSurum !== fontSurumu) {
         el.__lenSurum = fontSurumu;
         try { el.__baseLen = el.text.getComputedTextLength() / Math.max(0.2, it.p.depth); } catch (e) { el.__baseLen = 0; }
@@ -347,8 +350,8 @@
         var nx = Math.max(kutu.x0, Math.min(c.x, kutu.x1)), ny = Math.max(kutu.y0, Math.min(c.y, kutu.y1));
         return (nx - c.x) * (nx - c.x) + (ny - c.y) * (ny - c.y) < c.r * c.r;
       }));
-      if (carp) el.text.setAttribute("visibility", "hidden");
-      else { el.text.removeAttribute("visibility"); yerlesen.push(kutu); }
+      if (carp) { if (el.__gizli !== true) { el.__gizli = true; el.text.setAttribute("visibility", "hidden"); } }
+      else { if (el.__gizli !== false) { el.__gizli = false; el.text.removeAttribute("visibility"); } yerlesen.push(kutu); }
     });
 
     // Derinlik sıralaması (arkadakiler önce çizilsin) DOM sırasını
@@ -395,20 +398,36 @@
         sc.last = ts;
         return;
       }
+      // 2026-10-15 (mobil teknik dalga 1, P-06): döngü eskiden `sc.spin` olan
+      // her sahne için ("sahne bağlı" yeter) kendini sonsuza dek yeniliyordu --
+      // Mişkât/Füsûs'tan başka görünüme geçilince sarmal gizli (IO visible=false)
+      // olsa da her karede boş dönüyor, bütün metin görünümlerinde saniyede 60
+      // rAF sürüyordu. Artık döngü yalnız gerçekten çizen bir sahne varken
+      // sürer (spin + görünür + üzerine gelinmemiş, ya da dönüş animasyonu);
+      // uyanma yolları zaten var: IO visible, pointerleave/focusout,
+      // visibilitychange, setCurrent -> ensureLoop. Dokunmatik cihazda dönüş
+      // saniyede ~30 kareye iner (hız dt ile aynı kalır, konum değişmez).
       if (sc.spin && sc.visible && !sc.hover) {
         var dt = sc.last ? Math.min(64, ts - sc.last) : 16;
         sc.yaw += dt * SPIN_PER_MS * sc.spinSpeed * Math.PI * 2;
         draw(sc);
+        live = true;
+        sc.last = ts;
+      } else {
+        sc.last = 0; // çizilmedi: dönüş sürünce dt sıçramasın
       }
-      sc.last = ts;
-      if (sc.spin) live = true;
     });
     scenes = scenes.filter(function (sc) { return sc.el.isConnected; });
-    if (live && scenes.length) rafId = requestAnimationFrame(tick);
+    if (live && scenes.length && !document.hidden) rafId = kareIste(tick, ts);
+  }
+
+  function kareIste(fn, ts) {
+    var GU = window.DostGraphUtils;
+    return GU && GU.kareIste ? GU.kareIste(fn, ts) : requestAnimationFrame(fn);
   }
 
   function ensureLoop() {
-    if (rafId == null && scenes.length) rafId = requestAnimationFrame(tick);
+    if (rafId == null && scenes.length && !document.hidden) rafId = requestAnimationFrame(tick);
   }
 
   function mount(el, spec) {

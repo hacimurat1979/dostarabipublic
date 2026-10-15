@@ -162,18 +162,139 @@ window.DostGraphUtils = (function () {
   // planlanması için truthy dönmeli (fizik/animasyon sürüyor), aksi hâlde
   // döngü durur ve dışarıdan bir tetikleyici (hover, sürükleme, onViewWake)
   // loop.ensureFrame() çağırana kadar uyur.
+  //
+  // --- Boşta kare sınırı + ekran dışı duraklama (2026-10-15, mobil teknik
+  // dalga 1; P-01/P-05) --------------------------------------------------
+  // Sahnenin "nefes alan" karakteri (yavaş dönüş, hâle nefesi, parçacıklar)
+  // aynen kalır; yalnız boşa harcanan iş kısılır:
+  //  1. Dokunmatik (pointer: coarse) cihazda kullanıcı sahneye ~1,6 sn
+  //     dokunmadıysa döngü saniyede ~30 kareye iner. Hareket dt ile
+  //     ilerlediği için hız ve konum değişmez, yalnız ara kareler atlanır;
+  //     dokunma/tekerlek/klavye olayı atlamayı anında bırakır.
+  //  2. Sarmalayıcı görünüm alanının dışındaysa (IntersectionObserver)
+  //     döngü durur, geri girince uyanır.
+  // --- Yalnız değişen değeri yazan yardımcılar (P-01/P-05, mobil teknik dalga 1)
+  // Görünüm render döngüleri her karede her düğüme aynı sınıf/renk/yarıçapı
+  // yeniden yazıyordu; bunların her biri (aynı değer olsa da) stil yeniden
+  // hesabı doğuruyor, boşta CPU'nun büyük kısmı buna gidiyordu. Her öğenin son
+  // yazılan değerleri el.__v'de tutulur; değişmediyse DOM'a dokunulmaz (çıktı
+  // birebir aynı). A=öznitelik, S=stil, C=sınıf, T=metin; Ae/Se=eşikli: fark
+  // eps'ten küçükse yazılmaz (3B dönüşte boyut/matlık kare başına binde birler
+  // değişir -- <0,03 px / <1/255 görünmez). Hareket azaltma açıkken eşik YOK:
+  // sahne oturunca durağan görüntü birebir aynı kalır. gecersiz(): açık bir
+  // eylemde (ör. "ortala") önbellek boşaltılır, sonraki kare her şeyi yazar.
+  // Bu yardımcılarla yazılan öğeye BAŞKA kod doğrudan yazmamalı (önbellek
+  // sapar); yazıyorsa o değer için bu yardımcıları kullanmamak gerekir.
+  const _azaltMq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  let _yazimEpoch = 0;
+  function _vOf(el) {
+    if (el.__e !== _yazimEpoch) { el.__v = {}; el.__e = _yazimEpoch; }
+    return el.__v || (el.__v = {});
+  }
+  const yaz = {
+    A(el, k, val) { const v = _vOf(el), key = "a" + k; if (v[key] === val) return; v[key] = val; el.setAttribute(k, val); },
+    Ae(el, k, val, eps) {
+      const v = _vOf(el), key = "a" + k;
+      if (v[key] !== undefined && eps && !(_azaltMq && _azaltMq.matches) && Math.abs(v[key] - val) < eps) return;
+      if (v[key] === val) return;
+      v[key] = val; el.setAttribute(k, val);
+    },
+    S(el, k, val) {
+      const v = _vOf(el), key = "s" + k; if (v[key] === val) return; v[key] = val;
+      if (val == null) el.style.removeProperty(k); else el.style.setProperty(k, val);
+    },
+    Se(el, k, val, eps) {
+      const v = _vOf(el), key = "n" + k;
+      if (v[key] !== undefined && eps && !(_azaltMq && _azaltMq.matches) && Math.abs(v[key] - val) < eps) return;
+      v[key] = val; yaz.S(el, k, String(val));
+    },
+    C(el, cls, on) { const v = _vOf(el), key = "c" + cls; if (v[key] === on) return; v[key] = on; el.classList.toggle(cls, on); },
+    T(el, text) { const v = _vOf(el); if (v.t === text) return; v.t = text; el.textContent = text; },
+    gecersiz() { _yazimEpoch++; },
+  };
+
+  const KARE_ARALIK_MS = 1000 / 30;     // boşta hedef: ~30 kare/sn
+  const ETKILESIM_PENCERE_MS = 1600;    // son dokunuştan sonra tam hız
+  const _kabaMq = window.matchMedia ? window.matchMedia("(pointer: coarse)") : null;
+  function kareAraligi() { return _kabaMq && _kabaMq.matches ? KARE_ARALIK_MS : 0; }
+
+  // rAF döngüsü yazan başka modüller (ontology.js spinFrame, helix.js tick)
+  // için: dokunmatik cihazda bir sonraki kareyi önceki işlenen kareden en az
+  // KARE_ARALIK_MS sonraya erteler (aradaki rAF çağrıları da çıkar).
+  // Dönüş: iptal edilebilir kimlik DEĞİL, yalnız "planlandı" bayrağı.
+  function kareIste(fn, sonTs) {
+    const ara = kareAraligi();
+    if (ara && sonTs) {
+      const bekle = ara - (performance.now() - sonTs) - 4;
+      if (bekle > 2) return setTimeout(function () { requestAnimationFrame(fn); }, bekle);
+    }
+    return requestAnimationFrame(fn);
+  }
+
   function createFrameLoop(wrapEl, tick) {
-    let rafId = null;
-    let lastTs = 0;
+    let planli = false;       // bir rAF ya da erteleme zamanlayıcısı bekliyor
+    let zamanlayici = 0;
+    let lastTs = 0, sonTick = 0, sonEtkilesim = 0;
+    let ekranda = true, icerde = false;
+
     function frame(ts) {
-      rafId = null;
-      if (!isViewActive(wrapEl)) { lastTs = 0; return; }
+      planli = false;
+      if (!ekranda || !isViewActive(wrapEl)) { lastTs = 0; return; }
+      const ara = kareAraligi();
+      if (ara && sonTick && ts - sonEtkilesim > ETKILESIM_PENCERE_MS && ts - sonTick < ara - 4) {
+        // Çok erken: bu kareyi atla, zamanı gelince rAF iste.
+        planli = true;
+        zamanlayici = setTimeout(function () { zamanlayici = 0; requestAnimationFrame(frame); }, ara - (ts - sonTick) - 4);
+        return;
+      }
       const dt = lastTs ? Math.min(64, ts - lastTs) : 16;
       lastTs = ts;
-      if (tick(ts, dt)) ensureFrame();
+      sonTick = ts;
+      icerde = true;
+      let surer;
+      try { surer = tick(ts, dt); } finally { icerde = false; }
+      if (surer) planla();
     }
+    function planla() {
+      if (planli) return;
+      planli = true;
+      // Boşta ve dokunmatikteyse bir sonraki kare için önce bekle, sonra rAF
+      // iste (aradaki boş rAF'ları hiç çıkarma).
+      const ara = kareAraligi(), simdi = performance.now();
+      if (ara && sonTick && simdi - sonEtkilesim > ETKILESIM_PENCERE_MS) {
+        const bekle = ara - (simdi - sonTick) - 4;
+        if (bekle > 2) {
+          zamanlayici = setTimeout(function () { zamanlayici = 0; requestAnimationFrame(frame); }, bekle);
+          return;
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    // Dışarıdan (olay, zamanlayıcı, veri geldi) çağrılan ensureFrame bir
+    // durum değişikliğidir: geçişin akıcı oynaması için pencere açılır.
+    // Döngünün kendi tick'i içindeki çağrılar (icerde) sayılmaz.
     function ensureFrame() {
-      if (rafId == null) rafId = requestAnimationFrame(frame);
+      if (!icerde) etkilesti();
+      planla();
+    }
+
+    // Etkileşim: ertelenmiş kare varsa hemen çalıştır, pencereyi aç.
+    function etkilesti() {
+      sonEtkilesim = performance.now();
+      if (zamanlayici) { clearTimeout(zamanlayici); zamanlayici = 0; requestAnimationFrame(frame); }
+    }
+    if (wrapEl && wrapEl.addEventListener) {
+      ["pointerdown", "pointermove", "pointerover", "wheel", "touchstart", "touchmove", "keydown", "focusin", "click"]
+        .forEach(function (a) { wrapEl.addEventListener(a, etkilesti, { passive: true, capture: true }); });
+    }
+    if (wrapEl && typeof IntersectionObserver === "function" && wrapEl.nodeType === 1) {
+      new IntersectionObserver(function (entries) {
+        const son = entries[entries.length - 1];
+        const yeni = !!(son && son.isIntersecting);
+        if (yeni === ekranda) return;
+        ekranda = yeni;
+        if (ekranda) { lastTs = 0; planla(); }
+      }).observe(wrapEl);
     }
     return { ensureFrame };
   }
@@ -1843,7 +1964,7 @@ window.DostGraphUtils = (function () {
     return null;
   }
 
-  return { telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

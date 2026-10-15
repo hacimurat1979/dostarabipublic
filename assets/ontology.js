@@ -2799,7 +2799,10 @@
         spinGroup.attr("transform", null);
         labelSel.attr("transform", null);
         nodeSel.selectAll(".onto-label__leader").attr("transform", null);
-        spinRaf = requestAnimationFrame(spinFrame);
+        // Hareket azaltma: yaw ilerlemiyor, eğim oturduysa döngü sürmesin
+        // (ensureSpin/setTilt/onViewWake uyandırır).
+        if (reduceMotion && tilt === tiltTarget) return;
+        spinRaf = kareIste(spinFrame, ts);
         return;
       }
 
@@ -2830,7 +2833,17 @@
         swayRad = deg * Math.PI / 180;
         paintPositions();
       }
-      spinRaf = requestAnimationFrame(spinFrame);
+      // 2026-10-15 (mobil teknik dalga 1, P-05): hareket azaltma açıkken sway
+      // 0'da donuk -- döngü boşuna saniyede 60 kez dönmesin (eğim animasyonu
+      // sürmüyorsa dur; ensureSpin/setTilt/onViewWake yeniden uyandırır).
+      // Dokunmatikte salınım ~30 kare/sn'de çizilir (±2,6° / 46 sn: kare
+      // başına ~0,006°, fark görünmez).
+      if (reduceMotion && tilt === tiltTarget) return;
+      spinRaf = kareIste(spinFrame, ts);
+    }
+    function kareIste(fn, sonTs) {
+      const GU = window.DostGraphUtils;
+      return GU && GU.kareIste ? GU.kareIste(fn, sonTs) : requestAnimationFrame(fn);
     }
     function ensureSpin() { if (spinRaf == null) spinRaf = requestAnimationFrame(spinFrame); }
     ensureSpin();

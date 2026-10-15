@@ -297,8 +297,12 @@
     if (sc.spin && sc.visible && !sc.hover) {
       sc.yaw += dt * SPIN_PER_MS * Math.PI * 2;
       draw();
+      return true;
     }
-    return true;
+    // Mobil teknik dalga 1 (P-05): çizilmeyen karede (hareket azaltma, sahne
+    // ekran dışı, üzerine gelinmiş) döngü sürmesin; uyandırma yolları var:
+    // IntersectionObserver görünür olunca ve pointerleave/focusout ensureLoop.
+    return false;
   });
   function ensureLoop() { if (sc) frameLoop.ensureFrame(); }
 

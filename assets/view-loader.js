@@ -51,7 +51,7 @@
   "use strict";
 
   var VIEWS = {
-    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-zk3R9bNXSaTFsvWcw9IAiWX96ofM4S5HO8jt+bJQWqv9L+KOBEAy03t8aqB+2Of7", wrap: "sirlar-wrap" },
+    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-ouXCB20X7JWo/2boAYHLVDCguX9hmKhH90G74+2LJ6BvajKaE0Aqs5vubHCVACJJ", wrap: "sirlar-wrap" },
     __kavramApp: { src: "assets/kavram.js", integrity: "sha384-F2HLt+bS2IrHKJqQ7+PovZmr/58fXIUmqlOnD6lZ0dMcwVAWEg9NdvVu6N6uSmAZ", wrap: "kavram-wrap" },
     __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-vSgyXyHBGcJDPk2KL1UIHRZeUwZgqD3aEcnw1OWigxnPaLTfpjbUM/a22rd+EdGv", wrap: "ayethadis-wrap" },
     __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-18hn9pGbWme+gxON30Ywdy8tAFlPvCGZl5v8LWfBsfP1CfJJMbRXOkhyTmoh5a2A", wrap: "hakkinda-wrap" },
@@ -65,14 +65,14 @@
     __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-eeqvUz9Fftqy4Z7W8sqJcV1mHlNDQ9GIjWRQz7897IHptVqfoNlZgjSAyCNLvkVh", wrap: "seyahat-atlasi-wrap" },
     __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-ZJ+W1ohrpGr6oRBiWuYNvtug8ma1vSqcm8S/s7UZ83Ua8u4in5a261v1PgA3SJrc", wrap: "yolculuk-wrap" },
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-UwsMvtMG+q7ctTqLSp1JUAn6RLhfYQ5KEj4SqpbQJo1qoC9Jcd37DNDy9At+XXbH", wrap: "kuran-dokusu-wrap" },
-    __esmaApp: { src: "assets/esma.js", integrity: "sha384-/pdFMuDlvfj0vxytkUZYeA6HB0Z7BOXl+os0JFX3PHMqBwFtefdPnigkjpWxS/pp", wrap: "esma-wrap" },
+    __esmaApp: { src: "assets/esma.js", integrity: "sha384-FJ/zWpVvn5GYoHzsm6X5mFn1InLSdOfx8uy+k2vHue8/eI/sbNb07v4JPsF4RFfR", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-gtASrea8ie31lnjO24iCIJdaj1BONhxkDJfKciRK+2+r9rgKpct8SyN3rNuGi9MW", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
-    __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-WXb4zpLtz38hR/CtDFTxZ0xvHKmqos+TU3oXGRPZdGJdVd48+gKc4aAE7LXB9J0E", wrap: "menziller-wrap" },
+    __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-PR4lTvb0ECieUAJ8fvDRgV/d8+1ZFd6oGZKkCe/Scbef08KkGUrW4F7agX3KQyUu", wrap: "menziller-wrap" },
     __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-+cEeGLn77bG5FcQGPN/IZd3bZUtIVP36hwovJAj8WiuHlh/OLWhRNglxbsEsf+vB", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-nRtAoGfzRdxcsKff/qRHL7sMuBO7WR/cQEbcYc+XEOtITTl6798LcNqPGkvGpDKW", wrap: "cizimler-wrap" },
-    __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-gTiC6dHqEktNNV7Iaji9OKFsUeBGSOmp12l13xLfF7KHAHsOZMdCqDDwjIjjrnr3", wrap: "tasiyicilar-wrap" },
+    __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-AOP5aDLS2dC8w8sffn6nZaVsbeevPni77ovb5yWgoca5rRLKlPwYZV6ELOvWjuHE", wrap: "tasiyicilar-wrap" },
     __fususApp: { src: "assets/fusus.js", integrity: "sha384-PM2sxwPPWLpk2wGRbxEZXuy+9HvS6qnB9uHeQkSH/2nf82TNRsm+JDbqkeVb8xmy", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
     __miskatApp: { src: "assets/miskat.js", integrity: "sha384-idwHvrQlSn4MmQ2lp4iB2IfsyF2QAWJhqcPa2V2SDFXwB9+qQ5jpblPux9YR6q3b", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
   };
@@ -118,7 +118,9 @@
       el.onerror = function () {
         delete loadingPromises[anahtar];
         el.remove();
-        reject(new Error("view-loader: " + cfg.src + " yüklenemedi"));
+        var hata = new Error("view-loader: " + cfg.src + " yüklenemedi");
+        hata.betikYuklemeHatasi = cfg.src; // hataGoster: bağlantı mı, SRI/404 mü ayırt etsin
+        reject(hata);
       };
       document.body.appendChild(el);
     });
@@ -147,6 +149,71 @@
   window.__dostVendorYukle = function (ad) {
     return VENDOR[ad] ? scriptYukle("vendor:" + ad, VENDOR[ad]) : Promise.reject(new Error("view-loader: bilinmeyen kitaplık " + ad));
   };
+
+  // --- Görünüm betiklerini çevrimdışı için önceden indir (2026-10-15, S-01) ---
+  // Bu dosyadaki görünüm betikleri bölüm ilk açılınca iner; Service Worker
+  // kabuğu onları içermiyordu, bu yüzden yalnız ana sayfa görülmüş cihazda
+  // çevrimdışıyken her bölüm açılmıyordu. Sayfa yüklendikten ve boşta
+  // kaldıktan sonra, bu listeyi (src + integrity) Service Worker'a gönderiyoruz;
+  // o da sürüm önbelleğine, integrity doğrulamasıyla indiriyor (sw.js,
+  // goruntuBetikleriniOnbellegeAl). Koşullar -- veri sorumluluğu:
+  //  - veri tasarrufu (saveData) açıksa ya da bağlantı 3g ve altıysa hiç;
+  //  - mobil veri (connection.type = cellular) ise yalnız yeniden gelen
+  //    kullanıcıda (üçüncü yükleme ve sonrası); wifi/ethernet/bilinmeyen
+  //    bağlantıda ilk boşta anında;
+  //  - sekme görünür değilse bekler.
+  // Gizli kipler (KIPLER) listeye girmez: yalnız yazar kullanır.
+  (function goruntulerOnbellege() {
+    if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
+    var gonderildi = false, bekliyor = false;
+    function ziyaretSayisi() {
+      try {
+        var n = (+localStorage.getItem("dost-onbellek-ziyaret") || 0) + 1;
+        localStorage.setItem("dost-onbellek-ziyaret", String(n));
+        return n;
+      } catch (e) { return 99; }
+    }
+    var ziyaret = ziyaretSayisi();
+    function uygunMu() {
+      var c = navigator.connection;
+      if (!c) return true;
+      if (c.saveData) return false;
+      if (/^(slow-2g|2g|3g)$/.test(c.effectiveType || "")) return false;
+      if (c.type === "cellular" && ziyaret < 3) return false;
+      return true;
+    }
+    function gonder() {
+      bekliyor = false;
+      if (gonderildi) return;
+      if (document.hidden) return;   // görünür olunca visibilitychange yeniden dener
+      if (!uygunMu()) return;
+      navigator.serviceWorker.ready.then(function (reg) {
+        var sw = reg && reg.active;
+        if (!sw) return;
+        gonderildi = true;
+        sw.postMessage({
+          tip: "goruntu-betikleri",
+          // Görünüm betikleri + onlardan önce inen ön betikler (ONCE: okuma
+          // yüzeyi); yeni bir VIEWS/ONCE girişi kendiliğinden listeye katılır.
+          liste: Object.keys(VIEWS).map(function (k) { return VIEWS[k]; })
+            .concat(Object.keys(ONCE).map(function (k) { return ONCE[k]; }))
+            .map(function (c) {
+              return { src: new URL(c.src, document.baseURI).href, integrity: c.integrity };
+            }),
+        });
+      }).catch(function () {});
+    }
+    function bekle() {
+      if (gonderildi || bekliyor) return;
+      bekliyor = true;
+      var calis = function () { setTimeout(gonder, 3000); };
+      if (window.requestIdleCallback) window.requestIdleCallback(calis, { timeout: 12000 });
+      else setTimeout(calis, 4000);
+    }
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) bekle(); });
+    if (document.readyState === "complete") bekle();
+    else window.addEventListener("load", bekle, { once: true });
+  })();
 
   // --- Gizli kipler ---------------------------------------------------
   window.__dostKipYukleyici = true;
@@ -249,12 +316,28 @@
   // görünüm hiç açılmaz.
   if (typeof Proxy === "undefined") return;
 
+  // Çevrimdışı mı? (2026-10-15, S-01) Betik yüklenemediyse sebep çoğu zaman
+  // bağlantıdır; ama navigator.onLine her durumu yakalamaz (arayüz açık, sunucu
+  // ulaşılmaz: uçak modu dışındaki kesintiler). Bu yüzden betik hatasında
+  // ayrıca küçük bir HEAD yoklaması yapılır: ağ hatası (fetch reddi) = bağlantı
+  // yok; sunucu yanıt veriyorsa hata SRI/404 gibi başka bir şeydir ve genel
+  // "yüklenemedi" metni kalır. Service Worker yalnız GET'i yakalar, HEAD
+  // doğrudan ağa gider.
+  function cevrimdisiMi(err, cfg) {
+    if (navigator.onLine === false) return Promise.resolve(true);
+    if (!err || !err.betikYuklemeHatasi || !window.fetch) return Promise.resolve(false);
+    return fetch(new URL(cfg.src, document.baseURI).href, { method: "HEAD", cache: "no-store" })
+      .then(function () { return false; }, function () { return true; });
+  }
+
   function hataGoster(globalName, prop, args, err) {
     console.error("view-loader: " + globalName + "." + prop + "() çalıştırılamadı --", err);
     var cfg = VIEWS[globalName];
     if (!cfg || !window.DostViewStatus) return;
-    window.DostViewStatus.showLoadError(cfg.wrap, function () {
-      cagir(globalName, prop, args);
+    cevrimdisiMi(err, cfg).then(function (cevrimdisi) {
+      window.DostViewStatus.showLoadError(cfg.wrap, function () {
+        cagir(globalName, prop, args);
+      }, { cevrimdisi: cevrimdisi });
     });
   }
 

@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-4a78967d29e8";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-e938733d9759";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
@@ -71,18 +71,25 @@ const OFFLINE_URL = "./offline.html";
 const INDIR_BASLIGI = "X-Dost-Cevrimdisi";
 
 self.addEventListener("install", (event) => {
-  // cache.addAll() tarayıcının kendi HTTP önbelleğinden besleniyor -- satır
-  // 60'taki "cache: reload" düzeltmesiyle aynı sebepten (GitHub Pages'in
-  // Cache-Control: max-age=600'ü), install anında GÜNCEL sürüm yerine 10
-  // dakikaya kadar eski bir kabuk önbelleğe yazılabiliyordu. Her URL ayrı
-  // ayrı reload ile çekilip elle put ediliyor; bir URL 404 verirse (ör.
-  // yeniden adlandırılmış bir vendor dosyası) yalnız o atlanır, TÜM install
+  // cache.addAll() tarayıcının kendi HTTP önbelleğinden besleniyor -- GitHub
+  // Pages'in Cache-Control: max-age=600'ü yüzünden install anında GÜNCEL sürüm
+  // yerine 10 dakikaya kadar eski bir kabuk önbelleğe yazılabiliyordu. Her URL
+  // ayrı ayrı çekilip elle put ediliyor; bir URL 404 verirse (ör. yeniden
+  // adlandırılmış bir vendor dosyası) yalnız o atlanır, TÜM install
   // addAll()'daki gibi sessizce başarısız olmaz.
+  //
+  // 2026-10-15 (mobil teknik dalga 1, S-03): istek "reload" yerine "no-cache"
+  // ile yapılıyor. İkisi de HTTP önbelleğindeki bayat kopyayı KULLANMAZ; fark:
+  // "reload" koşulsuz yeniden indirir (ilk ziyarette sayfanın az önce indirdiği
+  // ~650 KB ikinci kez iniyordu: Mişkât 893 -> 1577 KB), "no-cache" ise
+  // sunucuya doğrulama sorar (If-None-Match) -- değişmediyse 304 döner, yalnız
+  // başlık iner; değiştiyse yeni gövde iner. Tazelik güvencesi aynı: yayın
+  // sonrası her dosyanın GÜNCEL hâli önbelleğe girer.
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) =>
       Promise.all(
         SHELL_URLS.concat([OFFLINE_URL]).map((url) =>
-          fetch(new Request(url, { cache: "reload" }))
+          fetch(new Request(url, { cache: "no-cache" }))
             .then((resp) => { if (resp.ok) return cache.put(url, resp); })
             .catch(() => {})
         )
@@ -203,13 +210,18 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Sayfalar + JS/CSS: önce ağ, yalnız çevrimdışıyken önbelleğe düş.
-  // "cache: reload" şart -- yoksa fetch() tarayıcının kendi HTTP önbelleğinden
-  // (GitHub Pages'in verdiği Cache-Control: max-age=600 sebebiyle) 10 dakikaya
-  // kadar eski bir kopya döndürebilir ve "önce ağ" niyeti sessizce bozulur --
-  // sayfayı ctrl+shift+r ile zorlamadan yeni sürümün görünmemesinin sebebi buydu.
+  // Önbellek modu ("reload"/"no-cache") şart -- yoksa fetch() tarayıcının kendi
+  // HTTP önbelleğinden (GitHub Pages'in verdiği Cache-Control: max-age=600
+  // sebebiyle) 10 dakikaya kadar eski bir kopya döndürebilir ve "önce ağ"
+  // niyeti sessizce bozulur -- sayfayı ctrl+shift+r ile zorlamadan yeni
+  // sürümün görünmemesinin sebebi buydu.
+  // 2026-10-15 (S-03): "reload" -> "no-cache". Aynı tazelik (her istek
+  // sunucuya doğrulanır), ama değişmeyen dosya 304 ile döner: kontrollü
+  // sayfada her açılışta kabuğu (~430 KB) baştan indirmek yerine yalnız
+  // başlıklar iner.
   const isNavOrAsset = req.destination === "script" || req.destination === "style" || req.mode === "navigate";
   event.respondWith(
-    fetch(isNavOrAsset ? new Request(req, { cache: "reload" }) : req)
+    fetch(isNavOrAsset ? new Request(req, { cache: "no-cache" }) : req)
       .then((resp) => {
         if (resp.ok && (req.destination === "script" || req.destination === "style" || req.mode === "navigate")) {
           // clone() HEMEN burada, senkron olarak: caches.open() bekleyen bir
@@ -229,3 +241,55 @@ self.addEventListener("fetch", (event) => {
       .catch(() => (req.mode === "navigate" ? cevrimdisiSayfa(req) : cevrimdisiKaynak(req)))
   );
 });
+
+// --- Tembel görünüm betiklerinin çevrimdışı önbelleği (2026-10-15, S-01) -----
+// Görünüm betikleri (assets/esma.js, hal.js, ...) sayfa açılışında değil, bölüm
+// ilk açıldığında iner (assets/view-loader.js VIEWS). Kabuk önbelleği onları
+// içermediği için yalnız ana sayfa görülmüş bir cihazda çevrimdışıyken her
+// bölüm "yüklenemedi" diyordu. Sayfa (view-loader.js), yüklendikten ve boşta
+// kaldıktan sonra -- kullanıcı veri tasarrufunda değilken ve bağlantı
+// yeterliyken -- bu mesajı gönderir. Liste SAYFANIN kendi bildiği
+// {src, integrity} çiftleridir:
+//  - hangi dosyaların önbelleğe gireceğini sayfa belirler (yeni görünüm
+//    eklenince kendiliğinden katılır, burada elle liste tutulmaz);
+//  - her dosya sayfanın integrity özetiyle çekilir (fetch integrity): özet
+//    tutmayan (eski/yeni sürüm karışması) bir dosya önbelleğe HİÇ girmez --
+//    çevrimdışıyken sunulan betik her zaman sayfanın beklediği betiktir
+//    (SRI tutarlılığı);
+//  - sürüm önbelleğine (CACHE_VERSION) yazılır: yeni sürümde activate eskisini
+//    siler, betikler yeni sayfanın boşta anında yeniden iner.
+// İstek "no-cache": tazelik doğrulanır, değişmemişse 304.
+self.addEventListener("message", (event) => {
+  const d = event.data;
+  if (!d || d.tip !== "goruntu-betikleri" || !Array.isArray(d.liste)) return;
+  event.waitUntil(goruntuBetikleriniOnbellegeAl(d.liste));
+});
+
+function goruntuBetikleriniOnbellegeAl(liste) {
+  const isler = [];
+  liste.slice(0, 64).forEach((x) => {
+    if (!x || typeof x.src !== "string" || typeof x.integrity !== "string") return;
+    if (!/^sha(256|384|512)-[A-Za-z0-9+/]+={0,2}$/.test(x.integrity)) return;
+    let u;
+    try { u = new URL(x.src, self.location.href); } catch (e) { return; }
+    if (u.origin !== self.location.origin || !/\.js$/.test(u.pathname) || u.search || u.hash) return;
+    isler.push({ url: u.href, integrity: x.integrity });
+  });
+  if (!isler.length) return Promise.resolve();
+  return caches.open(CACHE_VERSION).then((cache) => {
+    let i = 0;
+    function isci() {
+      if (i >= isler.length) return Promise.resolve();
+      const is = isler[i++];
+      return cache.match(is.url)
+        .then((mevcut) => {
+          if (mevcut) return undefined;
+          return fetch(new Request(is.url, { cache: "no-cache", integrity: is.integrity }))
+            .then((resp) => { if (resp.ok) return cache.put(is.url, resp); });
+        })
+        .catch(() => {})
+        .then(isci);
+    }
+    return Promise.all([isci(), isci(), isci()]);
+  });
+}

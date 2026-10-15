@@ -866,6 +866,12 @@
     return idx === -1 ? full : full.slice(0, idx);
   }
 
+  // Yalnız değişen değeri yazan yardımcılar (P-01, mobil teknik dalga 1):
+  // bkz. GU.yaz (graph-utils.js). Aynı değeri yeniden yazmak bile stil
+  // geçersizliği doğuruyordu; çıktı birebir aynı.
+  const wA = GU.yaz.A, wAe = GU.yaz.Ae, wS = GU.yaz.S, wSe = GU.yaz.Se, wC = GU.yaz.C, wT = GU.yaz.T;
+  function wLine(el, a, b) { wA(el, "x1", a.px); wA(el, "y1", a.py); wA(el, "x2", b.px); wA(el, "y2", b.py); }
+
   function render(ts) {
     if (!nodeLayer) return;
     ts = ts || performance.now();
@@ -1043,16 +1049,30 @@
     sel.exit().remove();
 
     merged.each(function (n) {
-      const g = d3.select(this);
+      // Mobil teknik dalga 1 (P-01): düğümün alt öğeleri bir kez önbelleğe
+      // alınır, her karede YALNIZ değişen değer yazılır (wA/wS/wC). Önceden
+      // 99 düğümün her biri için querySelector + d3 select + aynı değerin
+      // yeniden yazımı (stil yeniden hesabı) her karede yapılıyordu; boşta
+      // yalnız konum değişir. Yazılan değerler birebir aynı.
+      let c = n.__c;
+      if (!c || c.g !== this) {
+        c = n.__c = {
+          g: this,
+          hit: this.querySelector(".esmaX-hit"), halo: this.querySelector(".esmaX-halo"),
+          dot: this.querySelector(".esmaX-dot"), sheen: this.querySelector(".node-sheen"),
+          label: this.querySelector(".esmaX-label"),
+        };
+      }
       const op = nodeOpacity(n);
-      g.style("opacity", op).style("display", op < 0.01 ? "none" : null)
-        .attr("transform", `translate(${n.px.toFixed(1)},${n.py.toFixed(1)})`);
+      wSe(c.g, "opacity", op, 0.004);
+      wS(c.g, "display", op < 0.01 ? "none" : null);
+      wA(c.g, "transform", `translate(${n.px.toFixed(1)},${n.py.toFixed(1)})`);
       if (op < 0.01) return;
       const r = n.radius * n.pscale;
-      g.select(".esmaX-hit").attr("r", Math.max(r + 10, 21));
+      wAe(c.hit, "r", Math.max(r + 10, 21), 0.5);
       const hs = haloStrength(n);
       const isActive = n.id === selectedId;
-      g.classed("is-active", isActive);
+      wC(c.g, "is-active", isActive);
       const isRoot = n.kind === "zat" || n.kind === "allah";
       let haloR, haloOp;
       if (isRoot) {
@@ -1066,22 +1086,24 @@
         haloR = r * (1.25 + hs * 0.85);
         haloOp = (0.07 + hs * 0.20) * (isActive ? 1.7 : 1);
       }
-      g.select(".esmaX-halo")
-        .attr("r", haloR)
-        .style("fill", haloColor(n, pal))
-        .style("opacity", haloOp);
-      g.select(".esmaX-dot").attr("r", r).style("fill", warmthColor(colorForNode(n, pal), n.depthA));
-      g.select(".node-sheen").attr("r", r);
+      wAe(c.halo, "r", haloR, isRoot ? 0 : 0.06);
+      wS(c.halo, "fill", haloColor(n, pal));
+      wSe(c.halo, "opacity", haloOp, isRoot ? 0 : 0.004);
+      wAe(c.dot, "r", r, 0.03);
+      wS(c.dot, "fill", warmthColor(colorForNode(n, pal), n.depthA));
+      // .node-sheen 2026-10-09 itibarıyla display:none (style.css): r değerini her
+      // karede yazmak boşuna stil geçersizliğiydi; yalnız ilk yazım.
+      if (c.sheen && c.sheen.__v === undefined) wA(c.sheen, "r", r);
       const mode = labelPlan.get(n.id) || "none";
-      const label = g.select(".esmaX-label");
-      if (mode === "none") { label.style("display", "none"); }
+      const label = c.label;
+      if (mode === "none") { wS(label, "display", "none"); }
       else {
-        label.style("display", null)
-          .attr("x", labelDx.get(n.id) || 0)
-          .attr("y", -r - 7 + (labelDy.get(n.id) || 0))
-          .style("font-size", Math.max(14, Math.min(21, 15 + n.importance * 8)) + "px")
-          .classed("esmaX-label--strong", n.kind !== "name" || isActive || n.id === hoverId)
-          .text(mode === "full" ? fullName(n.raw) : shortName(n.raw));
+        wS(label, "display", null);
+        wA(label, "x", labelDx.get(n.id) || 0);
+        wAe(label, "y", -r - 7 + (labelDy.get(n.id) || 0), 0.03);
+        wS(label, "font-size", Math.max(14, Math.min(21, 15 + n.importance * 8)) + "px");
+        wC(label, "esmaX-label--strong", n.kind !== "name" || isActive || n.id === hoverId);
+        wT(label, mode === "full" ? fullName(n.raw) : shortName(n.raw));
       }
     });
 
@@ -1095,10 +1117,9 @@
       const a = byId.get(e.from), b = byId.get(e.to);
       const inFlow = flowSet.has(e.from) && flowSet.has(e.to);
       const dim = selectedId && !(relSet.first.has(e.from) && relSet.first.has(e.to)) && !(relSet.second.has(e.from) || relSet.second.has(e.to));
-      d3.select(this)
-        .attr("x1", a.px).attr("y1", a.py).attr("x2", b.px).attr("y2", b.py)
-        .classed("esmaX-edge--flow", inFlow)
-        .style("opacity", (dim ? 0.05 : Math.max(0.06, Math.min(0.4, 0.5 - b.depthA * 0.05))) * Math.min(a.vis, b.vis));
+      wLine(this, a, b);
+      wC(this, "esmaX-edge--flow", inFlow);
+      wS(this, "opacity", String((dim ? 0.05 : Math.max(0.06, Math.min(0.4, 0.5 - b.depthA * 0.05))) * Math.min(a.vis, b.vis)));
     });
 
     // çapraz ilişkiler (yalnız her iki uç görünürken)
@@ -1126,8 +1147,8 @@
     re.merge(rs).each(function (r) {
       const a = byId.get(r.from), b = byId.get(r.to);
       const rel = selectedId && (r.from === selectedId || r.to === selectedId);
-      d3.select(this).attr("x1", a.px).attr("y1", a.py).attr("x2", b.px).attr("y2", b.py)
-        .style("opacity", (selectedId ? (rel ? 0.9 : 0.06) : 0.5) * Math.min(a.vis, b.vis));
+      wLine(this, a, b);
+      wS(this, "opacity", String((selectedId ? (rel ? 0.9 : 0.06) : 0.5) * Math.min(a.vis, b.vis)));
     });
 
     // Türetilmiş kenarlar: elle yazılmışlarla AYNI görünmemeli. Kesikli,
@@ -1156,8 +1177,8 @@
     });
     de.merge(ds).each(function (r) {
       const a = byId.get(r.from), b = byId.get(r.to);
-      d3.select(this).attr("x1", a.px).attr("y1", a.py).attr("x2", b.px).attr("y2", b.py)
-        .style("opacity", 0.42 * Math.min(a.vis, b.vis));
+      wLine(this, a, b);
+      wS(this, "opacity", String(0.42 * Math.min(a.vis, b.vis)));
     });
 
     renderParticles();
@@ -1235,13 +1256,17 @@
     });
     const ps = particleLayer.selectAll("circle.esmaX-particle").data(vis, (d) => d.from + ">" + d.to);
     ps.exit().remove();
+    // relationSets seçili düğüm için parçacık başına yeniden hesaplanıyordu;
+    // kare başına bir kez yeter (P-01).
+    const secKume = selectedId ? relationSets(selectedId).first : null;
     ps.enter().append("circle").attr("class", "esmaX-particle").attr("r", 1.5)
       .merge(ps).each(function (p) {
         const a = byId.get(p.from), b = byId.get(p.to);
         const x = a.px + (b.px - a.px) * p.t;
         const y = a.py + (b.py - a.py) * p.t;
-        const dim = selectedId && !(relationSets(selectedId).first.has(p.from));
-        d3.select(this).attr("cx", x).attr("cy", y).style("opacity", (dim ? 0.06 : 0.34) * Math.min(a.vis, b.vis));
+        const dim = secKume && !secKume.has(p.from);
+        wA(this, "cx", x); wA(this, "cy", y);
+        wS(this, "opacity", String((dim ? 0.06 : 0.34) * Math.min(a.vis, b.vis)));
       });
   }
 
@@ -1423,6 +1448,7 @@
     yaw = 0;
     pitch = -0.42;          // ilk kurulumdaki değer (bkz. yukarıdaki tanım)
     idleRotate = true;
+    GU.yaz.gecersiz();      // yazım önbelleği: bir sonraki kare her şeyi yeniden yazar
     fitVisible();           // seçili düğüm varken bile: kamera geri çekilir,
     ensureFrame();          // seçim korunur
   }

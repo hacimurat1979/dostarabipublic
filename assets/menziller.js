@@ -284,18 +284,18 @@
     const segMerged = segEnter.merge(segSel);
     segSel.exit().remove();
     segMerged.each(function (d) {
-      const p = d3.select(this);
+      // Mobil teknik dalga 1 (P-05): yalnız değişen değer yazılır (GU.yaz).
       const a = nodes[d.i], b = nodes[d.j];
       const dep = ((a.__depth || 1) + (b.__depth || 1)) / 2;
       d.__z = ((a.__z || 0) + (b.__z || 0)) / 2;
       if (d.isClose && tilt >= 0.5) {
-        p.attr("d", `M${a.x.toFixed(1)},${a.y.toFixed(1)} L${b.x.toFixed(1)},${b.y.toFixed(1)}`)
-          .classed("menziller-ring-seg--close", true)
-          .style("opacity", tilt * 0.5);
+        Y.A(this, "d", `M${a.x.toFixed(1)},${a.y.toFixed(1)} L${b.x.toFixed(1)},${b.y.toFixed(1)}`);
+        Y.C(this, "menziller-ring-seg--close", true);
+        Y.Se(this, "opacity", tilt * 0.5, 0.004);
       } else {
-        p.attr("d", samplePath(d.i, d.isClose ? d.i + 1 : d.j, 8))
-          .classed("menziller-ring-seg--close", false)
-          .style("opacity", depthFade(dep));
+        Y.A(this, "d", samplePath(d.i, d.isClose ? d.i + 1 : d.j, 8));
+        Y.C(this, "menziller-ring-seg--close", false);
+        Y.Se(this, "opacity", depthFade(dep), 0.004);
       }
     });
 
@@ -312,18 +312,17 @@
     // Merkezdeki nefes işareti yalnız 2B'de anlamlı: 3B'de halka yatınca
     // merkez sarmalın ortasına düşüyor ve düğümlerin arkasında kalıyor.
     centerLayer.attr("transform", `translate(${cx},${cy})`).style("opacity", 1 - tilt);
-    centerLayer.select(".menziller-center__label").text(tt(data.center.baslik));
-    centerLayer.select(".menziller-center__sub").text(tt({tr: "28 menzil", en: "28 mansions", pt: "28 mansões"}));
+    Y.T(centerLayer.select(".menziller-center__label").node(), tt(data.center.baslik));
+    Y.T(centerLayer.select(".menziller-center__sub").node(), tt({tr: "28 menzil", en: "28 mansions", pt: "28 mansões"}));
     // Ay etiketi: 3B'de Ay altında. Denetim G21'de gözlendiği gibi Ay
     // varsayılan görünümde uzun süre etiketsiz kalıyordu; şimdi 2B/3B
     // geçişinde etiket sabit kalıyor (aynı ad iki yerde), yalnız yerleşim
     // değişiyor.
-    moonLayer.select(".menziller-moon__label")
-      .attr("y", (moonR + 24).toFixed(1))
-      .text(tt(data.center.baslik));
-    moonLayer.select(".menziller-moon__sub")
-      .attr("y", (moonR + 42).toFixed(1))
-      .text(tt({tr: "harfler bu nefesten ayrışır", en: "the letters separate from this breath", pt: "as letras separam-se deste sopro"}));
+    const ayEtiket = moonLayer.select(".menziller-moon__label").node(), ayAlt = moonLayer.select(".menziller-moon__sub").node();
+    Y.A(ayEtiket, "y", (moonR + 24).toFixed(1));
+    Y.T(ayEtiket, tt(data.center.baslik));
+    Y.A(ayAlt, "y", (moonR + 42).toFixed(1));
+    Y.T(ayAlt, tt({tr: "harfler bu nefesten ayrışır", en: "the letters separate from this breath", pt: "as letras separam-se deste sopro"}));
 
     const gsel = nodeLayer.selectAll("g.menzil-node").data(nodes, (n) => n.sira);
     const enter = gsel.enter().append("g")
@@ -350,6 +349,10 @@
 
     const etiketler = [], kureler = [];
     merged.each(function (n) {
+      let c = n.__c;
+      if (!c || c.g !== this) {
+        c = n.__c = { g: this, glow: this.querySelector(".menzil-node__glow"), sphere: this.querySelector(".menzil-node__sphere"), harf: this.querySelector(".menzil-node__harf") };
+      }
       const g = d3.select(this);
       const isActive = activeId === n.sira;
       const isHover = hoveredId === n.sira;
@@ -363,29 +366,31 @@
       // kodlaması). Seçili/değinilen menzil puslanmaz.
       const pus = (tilt > 0 && !isActive && !isHover)
         ? Math.round(Math.max(0, Math.min(1.6, (1 - dep) * 4 * tilt)) * 5) / 5 : 0;
-      g.attr("transform", `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`)
-        .style("opacity", (activeId && !isActive ? 0.42 : 1) * fade)
-        .style("filter", pus > 0 ? `blur(${pus}px)` : null);
+      Y.A(this, "transform", `translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`);
+      Y.Se(this, "opacity", (activeId && !isActive ? 0.42 : 1) * fade, 0.004);
+      Y.S(this, "filter", pus > 0 ? `blur(${pus}px)` : null);
       // Perdeli (henüz okunmadığımız) düğümlerde çevresel parıltı da bir tık
       // soluk -- GORSEL_DIL.md: "Matlık (opacity) = Perdelenme". Küre ve
       // harfteki asıl matlık .menzil-node--perdeli CSS kuralında (opacity
       // JS'in dokunmadığı öğelerde); burada JS'in her karede yazdığı
       // opacity'ye aynı çarpanı ekliyoruz ki stil çakışmasın.
-      g.select(".menzil-node__glow").attr("r", r * 1.9)
-        .style("fill", hueFor(n.sira - 1))
-        // Işık yalnız seçimde/değinmede (zuhûr); sürekli ışıma süs ışıktı.
-        .style("opacity", (isActive ? 0.42 : isHover ? 0.24 : 0) * (n.okunmus ? 1 : 0.7));
-      g.select(".menzil-node__sphere").attr("r", r).attr("fill", hueFor(n.sira - 1));
+      Y.Ae(c.glow, "r", r * 1.9, 0.06);
+      Y.S(c.glow, "fill", hueFor(n.sira - 1));
+      // Işık yalnız seçimde/değinmede (zuhûr); sürekli ışıma süs ışıktı.
+      Y.Se(c.glow, "opacity", (isActive ? 0.42 : isHover ? 0.24 : 0) * (n.okunmus ? 1 : 0.7), 0.004);
+      Y.Ae(c.sphere, "r", r, 0.03); Y.A(c.sphere, "fill", hueFor(n.sira - 1));
       // Halka döndüğü için harf ve etiketi kendi noktaları etrafında ters
       // çevirip dik tutuyoruz.
       // Etiketler artık grup döndürmesiyle değil, düğümün kendi ekran
       // konumuyla yerleşiyor; hem 2B'de hem 3B'de kendiliğinden dik duruyorlar.
-      g.select(".menzil-node__harf").attr("y", 4 * dep)
-        .style("font-size", (1.3 * dep).toFixed(2) + "rem")
-        .text(n.harfArapca);
-      const lbl = g.select(".menzil-node__label").attr("y", r + 14)
-        .classed("menzil-node__label--active", isActive)
-        .text(n.menzil);
+      Y.Ae(c.harf, "y", 4 * dep, 0.03);
+      Y.S(c.harf, "font-size", (1.3 * dep).toFixed(2) + "rem");
+      Y.T(c.harf, n.harfArapca);
+      // Etiketin y/x/anchor/--gizli yazımına deconflictLabels da dokunuyor (önbelleğe
+      // alınmaz); yalnız render'ın yazdığı --active sınıfı ve metin diff'lenir.
+      const lbl = g.select(".menzil-node__label").attr("y", r + 14);
+      Y.C(lbl.node(), "menzil-node__label--active", isActive);
+      Y.T(lbl.node(), n.menzil);
       // Ay'ın arkasında kalan düğüm (2026-10-09 görsel taraması): küresi
       // Ay'ın diskinin içine düşen ve Ay'dan uzakta (z > 0) olan düğümü Ay
       // zaten örtüyor (derinlik sıralaması aşağıda); etiketi de Ay'ın
@@ -552,6 +557,7 @@
   // rAF döngü iskeleti artık GU.createFrameLoop'ta (bkz. graph-utils.js
   // yorumu -- eskiden burada tam olarak tarif edilen ensureFrame/lastTs
   // hatasına bir kez düşülmüştü, düzeltme oradan geliyor).
+  const Y = GU.yaz;
   const frameLoop = GU.createFrameLoop(wrapEl, function (ts, dt) {
     if (tilt !== tiltTarget) {
       if (reduceMotion) tilt = tiltTarget;
