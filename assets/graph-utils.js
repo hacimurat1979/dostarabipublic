@@ -1664,6 +1664,66 @@ window.DostGraphUtils = (function () {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _gaPanelIzle);
   else _gaPanelIzle();
 
+  // Yüzey katmanı (2026-10-15, mobil okuma taraması GZ-07): lightbox (diyagram
+  // büyütme), Daphne yazı okuması, "Bu metinde" sayfası gibi sayfanın ÜSTÜNE
+  // açılan geçici yüzeyler telefonda tarihte kendi girdisini açar (adres aynı,
+  // dostKatman: "yuzey-<ad>"): Android'in geri tuşu YALNIZ en üstteki yüzeyi
+  // kapatır, altındaki sayfa ve adres yerinde kalır -- Esc, ✕ ve geri tuşu aynı
+  // tek adımdır (ETKILESIM_DILI "Telefonda bir adım"). Daha/Okuma/çekmece
+  // katmanlarının (uygulama-kabugu.js) yüzey karşılığı; onlar gibi kendi
+  // kapanışı girdisinden sessizce çıkar, ileri tuşuyla gelinen ölü girdi
+  // atlanır (yüzey içeriği yeniden kurulamaz). Masaüstünde tarih adımı açılmaz
+  // (Esc/✕ yeter; geri tuşu bildiği gibi sayfadan döner).
+  //   const k = GU.yuzeyKatmani("lightbox", () => { görünürlüğü kapat });
+  //   k.ac();     // yüzey görünür oldu
+  //   k.bitti();  // yüzey kendi yoluyla (Esc, ✕, perde) kapandı
+  const _yuzeyYigin = [];
+  let _yuzeyYut = 0;
+  function _yuzeyTarihte() {
+    return telefonMu() || (window.matchMedia && window.matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches);
+  }
+  function yuzeyKatmani(ad, kapat) {
+    const k = { ad: "yuzey-" + ad, kapat: kapat, acik: false, yol: "" };
+    return {
+      ac() {
+        if (k.acik || !_yuzeyTarihte()) return;
+        k.acik = true;
+        k.yol = location.pathname + location.search;
+        _yuzeyYigin.push(k);
+        try { history.pushState({ dostKatman: k.ad }, ""); } catch (e) { k.acik = false; _yuzeyYigin.pop(); }
+      },
+      bitti() {
+        if (!k.acik) return;
+        k.acik = false;
+        const i = _yuzeyYigin.indexOf(k);
+        if (i >= 0) _yuzeyYigin.splice(i, 1);
+        // Tıklamanın öteki dinleyicileri (kapı) önce bitsin: bir yere gidildiyse
+        // girdi zaten yeni adresle değişmiştir.
+        setTimeout(() => { if (tarihKatmani() === k.ad) { _yuzeyYut++; history.back(); } }, 0);
+      },
+    };
+  }
+  window.addEventListener("popstate", (e) => {
+    if (_yuzeyYut) { _yuzeyYut--; e.stopImmediatePropagation(); return; }
+    const k = tarihKatmani();
+    const ust = _yuzeyYigin.length ? _yuzeyYigin[_yuzeyYigin.length - 1] : null;
+    if (ust && k !== ust.ad) {
+      // Geri tuşu en üstteki yüzeyin girdisinden çıktı: yalnız o kapanır.
+      ust.acik = false;
+      _yuzeyYigin.pop();
+      const ayni = location.pathname + location.search === ust.yol;
+      try { ust.kapat(); } catch (err) { /* yüzey kendi hatasını bilir */ }
+      if (ayni) e.stopImmediatePropagation();
+      return;
+    }
+    if (k && k.indexOf("yuzey-") === 0 && !_yuzeyYigin.some((y) => y.ad === k)) {
+      // İleri tuşu kapanmış bir yüzeyin girdisine geldi: yeniden kurulamaz, atlanır.
+      _yuzeyYut++;
+      e.stopImmediatePropagation();
+      history.back();
+    }
+  }, true);
+
   // Üç ses, üç doku (2026-10-09): okuma metinlerinde (Fütûhât/Füsûs/Mişkât)
   // metni tırnakla başlayan <em> Dost'un doğrudan sözüdür; kavram vurgusu
   // olan öteki <em>'lerle aynı italikle diziliyordu. Veri değişmeden,
@@ -1783,7 +1843,7 @@ window.DostGraphUtils = (function () {
     return null;
   }
 
-  return { telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

@@ -78,9 +78,9 @@
     var entries = loadEntries();
     if (!entries.length) {
       listEl.innerHTML = '<p class="defter-panel__empty">' + tr3(
-        "Defterin şimdilik boş. Bir terime/insight'a bakarken yıldız düğmesine basarak buraya ekleyebilirsin.",
-        "Your notebook is empty for now. While viewing a term or insight, tap the star button to add it here.",
-        "Seu caderno está vazio por enquanto. Ao visualizar um termo ou insight, toque no botão de estrela para adicioná-lo aqui."
+        "Defterin şimdilik boş. Bir terime/insight'a ya da okuduğun bir metne bakarken yıldız düğmesine basarak buraya ekleyebilirsin.",
+        "Your notebook is empty for now. While viewing a term, an insight or a text you are reading, tap the star button to add it here.",
+        "Seu caderno está vazio por enquanto. Ao visualizar um termo, um insight ou um texto que está lendo, toque no botão de estrela para adicioná-lo aqui."
       ) + "</p>";
       return;
     }

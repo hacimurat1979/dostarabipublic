@@ -37,6 +37,11 @@
   var mapScene = null;
   var sectionScenes = [];
   var crossLinkSubscribed = false;
+  // Kullanıcının kendi seçtiği hadis (çip, sarmal, Önceki/Sonraki) metnin
+  // başından okunur; adresten/kaldığın yerden gelen açılış eski okuma yerine
+  // döner (assets/okuma-yuzeyi.js).
+  var kullaniciSecimi = false;
+  function kullaniciSec(id) { kullaniciSecimi = true; activate(id); }
 
   // B2 "Kaldığın yer": bkz. fusus.js'teki aynı isimli mantık.
   var LAST_HADIS_KEY = "dost-miskat-last-hadis";
@@ -176,7 +181,7 @@
         var h = hadisById(node.id);
         if (!h) return;
         if (h.status !== "active") return;   // henüz okunmamış hadis açılmaz
-        activate(h.id);
+        kullaniciSec(h.id);
       },
     });
     renderSerit(cur);
@@ -200,7 +205,7 @@
       }),
       current: cur,
       title: { tr: "Yüz bir hadisin sarmalı", en: "The spiral of the hundred and one hadith", pt: "A espiral dos cento e um hadith" },
-      onActivate: function (node) { activate(node.id); },
+      onActivate: function (node) { kullaniciSec(node.id); },
     });
   }
 
@@ -223,7 +228,7 @@
         + "</button>";
     }).join("");
     listEl.querySelectorAll("button[data-id]").forEach(function (b) {
-      b.addEventListener("click", function () { activate(b.dataset.id); });
+      b.addEventListener("click", function () { kullaniciSec(b.dataset.id); });
     });
     window.DostGraphUtils.cipOrtala(listEl);
   }
@@ -398,7 +403,7 @@
     articleEl.dataset.dostDosya = "data/ibn-arabi/miskat-atlas.json";
     articleEl.dataset.dostKaynak = h.id;
     articleEl.innerHTML = html;
-    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
+    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { kullaniciSec(id); });
     mountHelixBlocks(articleEl, helixes, captions);
     // Üç ses: tırnakla başlayan <em> ayrı dokuda; değinince künye
     // (graph-utils dostSozIsaretle).
@@ -422,9 +427,12 @@
     if (startBtn) {
       startBtn.addEventListener("click", function () {
         isDefaultLanding = false;
-        activate(startBtn.getAttribute("data-start-hadis"));
+        kullaniciSec(startBtn.getAttribute("data-start-hadis"));
       });
     }
+    // Okuma yüzeyi (assets/okuma-yuzeyi.js): okuma yeri, Bu metinde, Defterim yıldızı.
+    if (window.DostOkuma) window.DostOkuma.cizildi("miskat", h.id, articleEl, !kullaniciSecimi);
+    kullaniciSecimi = false;
   }
 
   // otomatik: görünüm kaydı kendiliğinden açıyor (bkz. adreste).

@@ -597,6 +597,12 @@
   // çünkü arkadaki ızgara hâlâ DOM'da.
   let okuma = null;
   let okumaAcanOge = null;
+  // Telefonda geri tuşu YALNIZ okumayı kapatır, Daphne sayfasından çıkarmaz
+  // (2026-10-15, mobil okuma taraması GZ-07): okuma tarihte kendi girdisini
+  // açar (GU.yuzeyKatmani); Esc, ← Geri ve geri tuşu aynı tek adımdır.
+  const okumaKatman = window.DostGraphUtils && window.DostGraphUtils.yuzeyKatmani
+    ? window.DostGraphUtils.yuzeyKatmani("daphne-okuma", () => okumaKapat())
+    : null;
 
   function okumaKur() {
     if (okuma) return okuma;
@@ -652,12 +658,14 @@
     document.body.classList.add("daphne-okuma-acik");
     const kapat = el.querySelector(".daphne-okuma__kapat");
     if (kapat) kapat.focus();
+    if (okumaKatman) okumaKatman.ac();
   }
 
   function okumaKapat() {
     if (!okuma || okuma.hidden) return false;
     okuma.hidden = true;
     document.body.classList.remove("daphne-okuma-acik");
+    if (okumaKatman) okumaKatman.bitti();
     if (okumaAcanOge && document.contains(okumaAcanOge)) okumaAcanOge.focus();
     okumaAcanOge = null;
     return true;

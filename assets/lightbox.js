@@ -7,6 +7,11 @@ window.DostLightbox = (function () {
   let el = null;
   let lastFocused = null;
   let onCloseCb = null;
+  // Telefonda geri tuşu YALNIZ büyütmeyi kapatır (2026-10-15, mobil okuma
+  // taraması GZ-07): büyütme tarihte kendi girdisini açar (GU.yuzeyKatmani).
+  const katman = window.DostGraphUtils && window.DostGraphUtils.yuzeyKatmani
+    ? window.DostGraphUtils.yuzeyKatmani("lightbox", () => close())
+    : null;
 
   function focusableChildren(panel) {
     return Array.from(panel.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])'))
@@ -80,12 +85,14 @@ window.DostLightbox = (function () {
     node.hidden = false;
     document.body.classList.add("cizim-lightbox-open");
     node.querySelector(".cizim-lightbox__close").focus();
+    if (katman) katman.ac();
   }
 
   function close() {
     if (!el) return;
     el.hidden = true;
     document.body.classList.remove("cizim-lightbox-open");
+    if (katman) katman.bitti();
     // Lightbox içeriğine özel, ayrı bir kutu (ör. Fütûhât'ın düğüm bilgi
     // kutusu) açık kalmış olabilir -- lightbox kapanınca o da kapansın.
     document.querySelectorAll(".node-hover-tip--lightbox").forEach((t) => { t.hidden = true; });

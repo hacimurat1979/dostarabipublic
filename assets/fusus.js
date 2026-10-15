@@ -41,6 +41,11 @@
   var mapScene = null;
   var sectionScenes = [];
   var crossLinkSubscribed = false;
+  // Kullanıcının kendi seçtiği fass (çip, sarmal, Önceki/Sonraki) makalenin
+  // başından okunur; adresten/kaldığın yerden gelen açılış ise eski okuma
+  // yerine döner (assets/okuma-yuzeyi.js).
+  var kullaniciSecimi = false;
+  function kullaniciSec(id) { kullaniciSecimi = true; activate(id); }
 
   // B2 "Kaldığın yer": bkz. futuhat.js'teki aynı isimli mantık.
   var LAST_FASS_KEY = "dost-fusus-last-fass";
@@ -185,7 +190,7 @@
         var f = fassById(node.id);
         if (!f) return;
         if (f.status !== "active") return;   // henüz okunmamış fass açılmaz
-        activate(f.id);
+        kullaniciSec(f.id);
       },
     });
     renderSerit(cur);
@@ -209,7 +214,7 @@
       perTurn: 8,
       gap: 20,
       title: { tr: "Yirmi yedi fassın sarmalı", en: "The spiral of the twenty-seven bezels", pt: "A espiral dos vinte e sete engastes" },
-      onActivate: function (node) { activate(node.id); },
+      onActivate: function (node) { kullaniciSec(node.id); },
     });
   }
 
@@ -228,7 +233,7 @@
         + "</button>";
     }).join("");
     listEl.querySelectorAll("button[data-id]").forEach(function (b) {
-      b.addEventListener("click", function () { activate(b.dataset.id); });
+      b.addEventListener("click", function () { kullaniciSec(b.dataset.id); });
     });
     window.DostGraphUtils.cipOrtala(listEl);
   }
@@ -400,7 +405,7 @@
     articleEl.dataset.dostDosya = "data/ibn-arabi/fusus-atlas.json";
     articleEl.dataset.dostKaynak = f.id;
     articleEl.innerHTML = html;
-    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { activate(id); });
+    window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { kullaniciSec(id); });
     mountHelixBlocks(articleEl, helixes, captions);
     // Üç ses: Dost'un doğrudan sözü ayrı dokuda; değinince künye
     // (graph-utils dostSozIsaretle; şerh sütunları dışarıda).
@@ -426,9 +431,12 @@
     if (startBtn) {
       startBtn.addEventListener("click", function () {
         isDefaultLanding = false;
-        activate(startBtn.getAttribute("data-start-fass"));
+        kullaniciSec(startBtn.getAttribute("data-start-fass"));
       });
     }
+    // Okuma yüzeyi (assets/okuma-yuzeyi.js): okuma yeri, Bu metinde, Defterim yıldızı.
+    if (window.DostOkuma) window.DostOkuma.cizildi("fusus", f.id, articleEl, !kullaniciSecimi);
+    kullaniciSecimi = false;
   }
 
   // Embedding altyapısı: bkz. assets/futuhat.js'teki aynı adlı fonksiyon --
