@@ -1700,8 +1700,16 @@
 
   // --- künye satırı ------------------------------------------------------
   function disaAktarilabilir(s) { return !!(s && s.kunye && s.ses && s.url); }
-  function adresKisa(s) { return SITE + (s.url || ""); }
-  function adresTam(s) { return "https://" + SITE + (s.url || ""); }
+  // Paylaşılan adres sondaki "/" ile biter (2026-10-15): "/sirlar/<id>" gibi
+  // eğik çizgisiz biçim GitHub Pages'te 404'e düşer (kayıt rotaları statik
+  // dizin değil); kartlardan kopyalanan bağlantı arama motoruna da 404 ya da
+  // 301 veren bir adres olarak ulaşırdı.
+  function adresYolu(s) {
+    const y = (s && s.url) || "";
+    return y && !/[/?#]$|\.[a-z0-9]+$/i.test(y) ? y + "/" : y;
+  }
+  function adresKisa(s) { return SITE + adresYolu(s); }
+  function adresTam(s) { return "https://" + SITE + adresYolu(s); }
   function sesEtiket(s) { return tt(SES[s.ses] || {}, s.lang); }
   function kunyeHtml(s) {
     if (!disaAktarilabilir(s)) {

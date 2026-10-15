@@ -50,8 +50,8 @@
   function soruAilesiNavHtml(buradaki) {
     const base = window.__dostRouteBase || "";
     const AILE = {
-      sorular: { view: "sorular", href: "/sorular", baslik: { tr: "Sorular", en: "Questions", pt: "Perguntas" }, aciklama: { tr: "okuyucuya cevap veren bir SSS", en: "an FAQ that answers the reader", pt: "um FAQ que responde ao leitor" } },
-      bilmiyoruz: { view: "bilmiyoruz", href: "/bilmiyoruz", baslik: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" }, aciklama: { tr: "metnin kendi çözülmemiş noktaları — biz sormuyoruz, sınırı o gösteriyor", en: "the text's own unresolved points — not our question, its own limit", pt: "os próprios pontos não resolvidos do texto" } },
+      sorular: { view: "sorular", href: "/sorular/", baslik: { tr: "Sorular", en: "Questions", pt: "Perguntas" }, aciklama: { tr: "okuyucuya cevap veren bir SSS", en: "an FAQ that answers the reader", pt: "um FAQ que responde ao leitor" } },
+      bilmiyoruz: { view: "bilmiyoruz", href: "/bilmiyoruz/", baslik: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" }, aciklama: { tr: "metnin kendi çözülmemiş noktaları — biz sormuyoruz, sınırı o gösteriyor", en: "the text's own unresolved points — not our question, its own limit", pt: "os próprios pontos não resolvidos do texto" } },
     };
     const digerleri = Object.keys(AILE).filter((k) => k !== buradaki);
     const linkler = digerleri.map((k) => {
@@ -1105,7 +1105,7 @@
     const satir = bag.map((b) => {
       const baslik = sirBaslik.get(b.sir);
       if (!baslik) return "";
-      return `<a class="sorular-sir" href="${base}/sirlar/${b.sir}" data-view="sirlar" data-id="${b.sir}">
+      return `<a class="sorular-sir" href="${base}/sirlar/${b.sir}/" data-view="sirlar" data-id="${b.sir}">
         <span class="sorular-sir__baslik">${I18n.pick3(baslik)}</span>
         <span class="sorular-sir__neden">${I18n.pick3(b.neden)}</span></a>`;
     }).join("");

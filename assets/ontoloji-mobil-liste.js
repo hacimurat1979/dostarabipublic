@@ -51,7 +51,7 @@
       window.__dostNav.goTo("ontoloji", id);
     } else {
       const base = window.__dostRouteBase || "";
-      history.pushState(null, "", base + "/ontoloji/" + id);
+      history.pushState(null, "", base + "/ontoloji/" + id + "/");
       window.dispatchEvent(new PopStateEvent("popstate"));
     }
   }

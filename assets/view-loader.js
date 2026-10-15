@@ -51,14 +51,14 @@
   "use strict";
 
   var VIEWS = {
-    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-Hf7wNK7Qsqyo5BXoVEBdkswDMBK2X/oBdZGCKwXvWBDFCh9E5oWWVuJ1EZ5wnOUY", wrap: "sirlar-wrap" },
+    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-zk3R9bNXSaTFsvWcw9IAiWX96ofM4S5HO8jt+bJQWqv9L+KOBEAy03t8aqB+2Of7", wrap: "sirlar-wrap" },
     __kavramApp: { src: "assets/kavram.js", integrity: "sha384-zDDUL/umsIwdNOgVUEjAmFBXfL5pUt1RULm8ksvVDBeTq+7l5/1tqaUTAOiZEzS1", wrap: "kavram-wrap" },
     __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-vSgyXyHBGcJDPk2KL1UIHRZeUwZgqD3aEcnw1OWigxnPaLTfpjbUM/a22rd+EdGv", wrap: "ayethadis-wrap" },
     __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-3DAmRScI+L9wWXXhl7hJ+vPPOCivyCDlNFjOkGi+POHuSA/16/KYsSWuqWgoKJ/9", wrap: "hakkinda-wrap" },
     __vahdetApp: { src: "assets/vahdet.js", integrity: "sha384-0rJbqChXtTiUMn1Rmhpu4aGkenqDUd/em73w7zgNq7d+z59Gp0ZkSY541ktt104J", wrap: "hakkinda-wrap" },
     __okumaYollariApp: { src: "assets/okuma-yollari.js", integrity: "sha384-WVd8Tqt6ZBDLetnvyT9kYtJxL1DM56TU45COH8rhEf2/W4/XrtkYPrJPPRphujEn", wrap: "hakkinda-wrap" },
     __neredenBaslamaliApp: { src: "assets/nereden-baslamali.js", integrity: "sha384-yDtO/XYSNvn8Pdmncj6PbBcRtcFwXHCYduLifAcnm764wmD5VDT4msgSMHvrPk+C", wrap: "hakkinda-wrap" },
-    __bilmiyoruzApp: { src: "assets/bilmiyoruz.js", integrity: "sha384-DLjARBSTx+9ybpkNxK9XgJgjf88sITzzidNunobf5to2bHP05vWA+WaRkKiB8UL5", wrap: "bilmiyoruz-wrap" },
+    __bilmiyoruzApp: { src: "assets/bilmiyoruz.js", integrity: "sha384-IfXzWmZ82kpEjWSpiMCCHQ+RvBk80Ci6ynN4oSVcUQvUSicIZPNN/njiz/RJzhi9", wrap: "bilmiyoruz-wrap" },
     __elestiriArkeolojisiApp: { src: "assets/elestiri-arkeolojisi.js", integrity: "sha384-eWgxrR7QCVqOIlpcwbUHQo139efYuzlBYFRf4a0JtA5r2WhV/ILLR901C5VZUhMD", wrap: "elestiri-arkeolojisi-wrap" },
     __hocalarApp: { src: "assets/hocalar.js", integrity: "sha384-ZUg09P+CQfGKPQFH6sLcYbo8cMe41Kh3XqhNu1etnLJpM3LWSB5IMPg4DchLhQ+T", wrap: "hocalar-wrap" },
     __eserAgiApp: { src: "assets/eser-agi.js", integrity: "sha384-xF/I8rHpk1yR2tOWZ/2G6pfevHOJbvfQrsob0eOKxlSkTjsQNuEWXqXPpczAIyUZ", wrap: "eser-agi-wrap" },
@@ -68,8 +68,8 @@
     __esmaApp: { src: "assets/esma.js", integrity: "sha384-/pdFMuDlvfj0vxytkUZYeA6HB0Z7BOXl+os0JFX3PHMqBwFtefdPnigkjpWxS/pp", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-gtASrea8ie31lnjO24iCIJdaj1BONhxkDJfKciRK+2+r9rgKpct8SyN3rNuGi9MW", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
-    __sorularApp: { src: "assets/sorular.js", integrity: "sha384-EngGYVBykaJV7/LeGm60Ze+PBMlPgMreBZ+RazSIOTvaffxL/FTRZR36ri4QaCsB", wrap: "sorular-wrap" },
-    __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-gMK82DG7vGECfvStPv+87C1GOoZV9cjUqfnH1PlT3R1kw5kSW3/Qr0jAsKxSNsYv", wrap: "menziller-wrap" },
+    __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
+    __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-WXb4zpLtz38hR/CtDFTxZ0xvHKmqos+TU3oXGRPZdGJdVd48+gKc4aAE7LXB9J0E", wrap: "menziller-wrap" },
     __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-KgEYRkkhhQKwLfXBmqofbnQxALk1sz8a5exxpixhxvPVI6H0HY+bgvAYXrftYOtW", wrap: "futuhat-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-nRtAoGfzRdxcsKff/qRHL7sMuBO7WR/cQEbcYc+XEOtITTl6798LcNqPGkvGpDKW", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-gTiC6dHqEktNNV7Iaji9OKFsUeBGSOmp12l13xLfF7KHAHsOZMdCqDDwjIjjrnr3", wrap: "tasiyicilar-wrap" },
@@ -82,7 +82,7 @@
     "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
-    "share-mode": { src: "assets/share-mode.js", integrity: "sha384-PMEFUuv3fYxExMg7EG6Dyk6MsFQVExnZ1RvhcHNyIxxmWZhfogt+TX/sBjnPrphS" },
+    "share-mode": { src: "assets/share-mode.js", integrity: "sha384-Z4OKs4ZZx37/k64o+kokEX9QEDCfz7ttOrahTg9j/3+C/s5tuVUbanlA5seQXle5" },
   };
 
   // Üçüncü taraf kitaplıklar (2026-10-10): yalnız gerektiği yerde iner.

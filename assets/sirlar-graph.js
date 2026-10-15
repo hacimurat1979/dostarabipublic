@@ -813,7 +813,7 @@
       window.__dostNav.goTo("sirlar", id);
     } else {
       const base = window.__dostRouteBase || "";
-      history.pushState(null, "", base + "/sirlar/" + id);
+      history.pushState(null, "", base + "/sirlar/" + id + "/");
       window.dispatchEvent(new PopStateEvent("popstate"));
     }
   }

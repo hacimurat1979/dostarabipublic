@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-9f649b079f7c";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-b6300f12046a";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
@@ -130,7 +130,7 @@ function indirmeTamam() {
 function uygulamaAdresi(url) {
   const p = url.pathname;
   if (/\.[a-z0-9]+$/i.test(p) && !/\/index\.html$/.test(p)) return false;
-  return !/^\/(gizlilik|arastirma|\.well-known)(\/|$)/.test(p);
+  return !/^\/(gizlilik|dizin|arastirma|\.well-known)(\/|$)/.test(p);
 }
 
 function yedekSayfa() {
