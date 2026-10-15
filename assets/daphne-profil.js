@@ -544,9 +544,9 @@
         // anlaşılıyor.
         const rozetler = islendi
           ? `<span class="daphne-rozet-satiri">
-              ${eksenSayisi ? `<span class="daphne-rozet daphne-rozet--eksen" title="${tt({ tr: "eksen", en: "axes", pt: "eixos" })}">${eksenSayisi} ${tt({ tr: "eksen", en: "axes", pt: "eixos" })}</span>` : ""}
+              ${eksenSayisi ? `<span class="daphne-rozet daphne-rozet--eksen" title="${tt({ tr: "eksen", en: "axes", pt: "eixos" })}">${eksenSayisi} ${tt(eksenSayisi === 1 ? { tr: "eksen", en: "axis", pt: "eixo" } : { tr: "eksen", en: "axes", pt: "eixos" })}</span>` : ""}
               ${dostSayisi ? `<span class="daphne-rozet daphne-rozet--dost" title="${tt({ tr: "Dost bağı", en: "Dost link", pt: "vínculo com Dost" })}">${dostSayisi} ${tt({ tr: "Dost bağı", en: "Dost link", pt: "vínculo Dost" })}</span>` : ""}
-              ${soruSayisi ? `<span class="daphne-rozet daphne-rozet--soru" title="${tt({ tr: "açık soru", en: "open questions", pt: "perguntas abertas" })}">${soruSayisi} ${tt({ tr: "soru", en: "questions", pt: "perguntas" })}</span>` : ""}
+              ${soruSayisi ? `<span class="daphne-rozet daphne-rozet--soru" title="${tt({ tr: "açık soru", en: "open questions", pt: "perguntas abertas" })}">${soruSayisi} ${tt(soruSayisi === 1 ? { tr: "soru", en: "question", pt: "pergunta" } : { tr: "soru", en: "questions", pt: "perguntas" })}</span>` : ""}
             </span>`
           : "";
         const note = a.note_tr ? `<p class="daphne-profile-card__note">${tt({ tr: a.note_tr, en: a.note_en, pt: a.note_pt })}</p>` : "";
