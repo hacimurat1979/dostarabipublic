@@ -1762,9 +1762,11 @@
     // Modüller kendi <a class="cross-link"> etiketlerini kurarken gerçek
     // bir href'e ihtiyaç duyuyor (yeni sekmede aç / bağlantıyı kopyala
     // çalışsın diye); ROUTE_BASE burada olduğu için helper da burada.
-    // Dil öneki ve sondaki "/" adres çubuğuyla aynı (routePath).
+    // Dil öneki ve sondaki "/" adres çubuğuyla aynı (routePath); ama <a href>
+    // yalnız GERÇEKTEN var olan bir statik sayfaya işaret eder (404 veren
+    // /hal/nefs/, /en/futuhat/c1k5/ değil) -- bkz. DostMeta.anchorPath.
     href(view, id) {
-      return routePath(view, id);
+      return ROUTE_BASE + window.DostMeta.anchorPath(view, id);
     },
   };
   navHrefleriniGuncelle();
@@ -3311,12 +3313,29 @@
     let result = "";
     let lastIndex = 0;
     let m;
+    // Korunan aralıklar (2026-10-15): metindeki hazır <a>…</a> öğeleri ve
+    // herhangi bir etiketin kendisi (öznitelik değerleri dahil). Eskiden
+    // eşleşme bunların İÇİNDE de aranıyordu: Fütûhât metnindeki elle yazılmış
+    // <a href="terimler/berzah/">berzah</a> için href'in içine yeni bir <a>
+    // yazılıyor, bağlantı içinde bağlantı oluşuyordu (c14k153-155).
+    const korunan = [];
+    if (text.indexOf("<") !== -1) {
+      const kre = /<a\b[^>]*>[\s\S]*?<\/a\s*>|<[^>]*>/gi;
+      let km;
+      while ((km = kre.exec(text))) korunan.push([km.index, km.index + km[0].length]);
+    }
+    let kIdx = 0;
+    const korunanda = (pos) => {
+      while (kIdx < korunan.length && korunan[kIdx][1] <= pos) kIdx++;
+      return kIdx < korunan.length && korunan[kIdx][0] <= pos;
+    };
     while ((m = re.exec(foldedText))) {
       const start = m.index;
       const end = start + m[0].length;
       const matchLower = m[0].toLowerCase();
       const hit = cache.byFoldedLower.get(matchLower);
       if (!hit) continue;
+      if (korunan.length && korunanda(start)) continue;
       const original = text.slice(start, end);
       // `strict` varyantlar (EN/PT'de artikelle başlayan ya da sıradan
       // kelime olan adlar) yalnız birebir yazıldığında linklenir --
@@ -3346,7 +3365,7 @@
           result += original;
         } else {
           seen.add(key);
-          result += `<a href="${ROUTE_BASE}/${hit.view}/${hit.id}/" class="cross-link" data-view="${hit.view}" data-id="${hit.id}">${original}</a>`;
+          result += `<a href="${window.__dostNav ? window.__dostNav.href(hit.view, hit.id) : ROUTE_BASE + "/" + hit.view + "/" + hit.id + "/"}" class="cross-link" data-view="${hit.view}" data-id="${hit.id}">${original}</a>`;
         }
       }
       lastIndex = end;
@@ -3397,7 +3416,8 @@
   // hangi okumada karşımıza çıktığı görülebiliyor.
   function sirlarOkumaHtml(entry) {
     if (!entry.okuma || !entry.okuma.view || !entry.okuma.id) return "";
-    const href = `${ROUTE_BASE}/${entry.okuma.view}/${entry.okuma.id}/`;
+    const href = window.__dostNav ? window.__dostNav.href(entry.okuma.view, entry.okuma.id)
+      : `${ROUTE_BASE}/${entry.okuma.view}/${entry.okuma.id}/`;
     const label = tt({
       tr: "Bu satırları hangi okumada bulduk",
       en: "The reading round where we found these lines",
@@ -3424,7 +3444,7 @@
       pt: `Encontramos este motivo de forma independente em ${total} fontes independentes`,
     });
     const links = siblings.map((s) => {
-      const href = `${ROUTE_BASE}/sirlar/${s.id}/`;
+      const href = window.__dostNav ? window.__dostNav.href("sirlar", s.id) : `${ROUTE_BASE}/sirlar/${s.id}/`;
       return `<a class="cross-link cross-link--kucuk" href="${href}" data-view="sirlar" data-id="${s.id}">${volumeLabel(s.volume)}</a>`;
     }).join("");
     return `<div class="detail-block detail-block--bagimsiz-kaynak">
