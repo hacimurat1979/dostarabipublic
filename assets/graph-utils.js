@@ -2026,6 +2026,32 @@ window.DostMeta = (function () {
     };
   }
 
+  // <a href> adresi (2026-10-15, dizinleme dalga 2). Bağlantıların href'i
+  // arama motorunun ve "bağlantıyı kopyala / yeni sekmede aç"ın gideceği
+  // adrestir; tıklamayı SPA kendi data-view/data-id'sinden çözer. Yalnız
+  // GERÇEKTEN var olan statik bir sayfaya (HTTP 200) işaret edilir:
+  //   - statik rotası olan kayıt (ROTALI_KAYIT): kendi adresi, dil öneksiz
+  //     (Fütûhât/Füsûs/Mişkât kısım sayfalarının dil kopyası yok);
+  //   - esma|terimler|ontoloji kaydı: aynı kavramın /kavram/<görünüm>/<id>/
+  //     sayfası (üç kaynağın her kaydı için var, ontoloji-tutarlilik.py denetler);
+  //   - öteki kayıtlar (hâl, sır, soru ...) -- /hal/nefs/ gibi adresler 404.html
+  //     üzerinden SPA'ya düşer ve HTTP 404 döner: bölüm sayfasına bağlanır;
+  //     dil öneki yalnız o bölümün dil kopyası varsa (/en/hal/) eklenir.
+  // Adres çubuğu (pushState) bundan etkilenmez: kayıt açıkken orada yine
+  // /hal/nefs/ görünür.
+  const KAVRAMLI = new Set(["esma", "terimler", "ontoloji"]);
+  function anchorPath(view, id, lang) {
+    const l = lang || urlLang();
+    const v = view === "ontology" ? "ontoloji" : view;
+    if (id && /^[A-Za-z0-9_\/-]+$/.test(id)) {
+      const yol = v + "/" + id;
+      if (ROTALI_KAYIT.test(yol)) return "/" + yol + "/";
+      if (KAVRAMLI.has(v)) return "/kavram/" + v + "/" + id + "/";
+    }
+    const govde = v === "ontoloji" ? "" : v + "/";
+    return (DIL_KOPYALI.has(v) ? langPrefix(l) : "") + "/" + govde;
+  }
+
   // scripts/_text_utils.py truncate() ile aynı.
   function truncate(s, maks) {
     maks = maks || 160;
@@ -2109,5 +2135,5 @@ window.DostMeta = (function () {
     set({ title, description, canonical: r.canonical, alternates: r.alternates });
   }
 
-  return { route, set, setRecord, urlLang, langPrefix, truncate, SITE };
+  return { route, anchorPath, set, setRecord, urlLang, langPrefix, truncate, SITE };
 })();
