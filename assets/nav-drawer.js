@@ -137,9 +137,17 @@
   }
   // Tab ile çekmeceden dışarı çıkılınca çekmece açık kalıyordu (odak
   // haritadayken menü hâlâ üstte). Odak dışarı giderse kapanır.
+  // Kabuk V2 (2026-10-16): çekmece telefonda "Bölümler" katmanıdır; alt
+  // çubuktaki Bölümler sekmesi ☰ düğmesinin yerini tutar (uygulama-kabugu.js
+  // #nav-toggle'a basar) ve perde (.uyg-perde) kendi dinleyicisiyle tarih
+  // üzerinden kapatır -- ikisine dokunuş "dışarı tıklama" sayılmaz, yoksa
+  // sekme açıp hemen kapatır, perde de katmanı iki kez geri alırdı.
+  function tetikMi(n) {
+    return !!(n && n.closest && n.closest(".uyg-alt, .uyg-perde"));
+  }
   drawer.addEventListener("focusout", (e) => {
     const yeni = e.relatedTarget;
-    if (yeni && !drawer.contains(yeni) && !toggle.contains(yeni)) close();
+    if (yeni && !drawer.contains(yeni) && !toggle.contains(yeni) && !tetikMi(yeni)) close();
   });
 
   toggle.addEventListener("click", () => {
@@ -174,7 +182,7 @@
     });
   });
   document.addEventListener("click", (e) => {
-    if (!drawer.hidden && !drawer.contains(e.target) && !toggle.contains(e.target)) close();
+    if (!drawer.hidden && !drawer.contains(e.target) && !toggle.contains(e.target) && !tetikMi(e.target)) close();
   });
   // Escape artık burada değil, GU.registerStepBack'in merkezi sırasında --
   // iki katman aynı anda açıkken tek Escape'in hepsini kapatmaması için.

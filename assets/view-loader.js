@@ -97,13 +97,13 @@
   // yalnız telefon kabuğu açıkken (html.dost-uygulama) iner -- masaüstünün
   // ilk yükü değişmez. Görünümler kaydını GU.telefonHaritasi kuyruğuna
   // bırakır; katman inince kurulur.
-  var TELEFON = { src: "assets/telefon-haritasi.js", integrity: "sha384-KoSgNjo1JrGunyVeRtrl310Ci1t+RLvmjIi+N9eZyR1PW5sQ6p5FkYINlQGbq7Y8" };
+  var TELEFON = { src: "assets/telefon-haritasi.js", integrity: "sha384-CCQ8dgEsQNalLQ0SXA9jMO4LFZRt1Vt7aYWvoiPyBv9WA3So+uURCNS0lcWQ0vQZ" };
 
   // Okuma yüzeyi (2026-10-15): Fütûhât/Füsûs/Mişkât betiğinden ÖNCE iner
   // (VIEWS[...].once) -- görünümler çizimini bitirince ona haber verir
   // (okuma yeri, "Bu metinde" sayfası, Defterim yıldızı, çubukların çekilmesi).
   var ONCE = {
-    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-0Y2uRonaU2zLgfBNtzSfSV0wa/Rjcw1pCNR5UYQYMiNPC28tUX741Y5gViip99cR" },
+    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-NQ/RbalHbW8oZxeK7xRekJQHMx7YMYGih+8xwmtgg+UjouTlpv76EGjoYnNLnKqt" },
   };
 
   var loadingPromises = {};
