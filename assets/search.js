@@ -385,6 +385,7 @@
   panel.innerHTML = `
     <div class="search-panel__box">
       <input type="search" class="search-panel__input" id="search-input" placeholder="..." autocomplete="off">
+      <button type="button" class="uyg-ara-temizle" id="search-clear" hidden></button>
       <div class="search-panel__results" id="search-results"></div>
     </div>
   `;
@@ -392,6 +393,41 @@
 
   const input = panel.querySelector("#search-input");
   const results = panel.querySelector("#search-results");
+  const clearBtn = panel.querySelector("#search-clear");
+  clearBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+  // ── Telefon kabuğu: son aramalar + ✕ (2026-10-15, mobil kabuk taraması K11) ──
+  // Yalnız uygulama kabuğunda (html.dost-uygulama) görünür; masaüstünde hiçbir
+  // şey değişmez. Son aramalar YALNIZ bu cihazın localStorage'ında durur
+  // (sunucuya gitmez, kişisel bir kolaylık): kullanıcı bir sonucu seçince o
+  // sorgu kaydedilir; boş arama sayfasında listelenir, tek tek ya da topluca
+  // silinir. Depo engelliyse (özel pencere) liste hiç çıkmaz, arama aynen çalışır.
+  const SON_KEY = "dost-son-aramalar";
+  const SON_MAX = 8;
+  const SON_YAZI = {
+    baslik: { tr: "Son aramalar", en: "Recent searches", pt: "Buscas recentes" },
+    temizle: { tr: "Temizle", en: "Clear", pt: "Limpar" },
+    sil: { tr: "Bu aramayı sil", en: "Remove this search", pt: "Remover esta busca" },
+    aramayiTemizle: { tr: "Aramayı temizle", en: "Clear search", pt: "Limpar a busca" },
+  };
+  function uygulamaMi() { return document.documentElement.classList.contains("dost-uygulama"); }
+  function sonlariOku() {
+    try {
+      const a = JSON.parse(localStorage.getItem(SON_KEY) || "[]");
+      return Array.isArray(a) ? a.filter((x) => typeof x === "string" && x).slice(0, SON_MAX) : [];
+    } catch (e) { return []; }
+  }
+  function sonlariYaz(a) {
+    try { localStorage.setItem(SON_KEY, JSON.stringify(a.slice(0, SON_MAX))); } catch (e) { /* depo yok */ }
+  }
+  function sonEkle(q) {
+    q = (q || "").trim();
+    if (q.length < 2) return;
+    const kucuk = q.toLocaleLowerCase("tr");
+    const a = sonlariOku().filter((x) => x.toLocaleLowerCase("tr") !== kucuk);
+    a.unshift(q);
+    sonlariYaz(a);
+  }
 
   function placeholder() {
     const lang = I18n.getLang();
@@ -404,6 +440,10 @@
     input.placeholder = placeholder();
     input.setAttribute("aria-label", placeholder());
     results.innerHTML = "";
+    clearBtn.hidden = true;
+    clearBtn.setAttribute("aria-label", tt(SON_YAZI.aramayiTemizle));
+    clearBtn.title = tt(SON_YAZI.aramayiTemizle);
+    renderRecents();
     resultButtons = [];
     activeIndex = -1;
     input.removeAttribute("aria-activedescendant");
@@ -469,6 +509,7 @@
   }
 
   function activateResult(btn) {
+    if (uygulamaMi()) sonEkle(input.value);
     window.dostTrack && window.dostTrack("arama_sonucu_tiklandi", { view: btn.dataset.view, id: btn.dataset.id });
     closePanel();
     if (btn.dataset.href) { location.href = btn.dataset.href; return; }
@@ -529,6 +570,7 @@
     resultButtons = [];
     activeIndex = -1;
     input.removeAttribute("aria-activedescendant");
+    if (!items.length && !input.value) { renderRecents(); return; }
     if (!items.length) {
       results.innerHTML = input.value
         ? `<div class="search-panel__empty" data-tr="Bu terimi haritada henüz bulamadık" data-en="We haven't found this term on the map yet" data-pt="Ainda não encontramos este termo no mapa">...</div>`
@@ -566,6 +608,34 @@
     // iki kez çalıştırıyordu.
     rewireResultButtons();
   }
+
+  function renderRecents() {
+    const a = uygulamaMi() ? sonlariOku() : [];
+    if (!a.length) { results.innerHTML = ""; return; }
+    const x = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    results.innerHTML = `<div class="uyg-son"><div class="uyg-son__bas"><span>${escapeHtml(tt(SON_YAZI.baslik))}</span><button type="button" class="uyg-son__temizle">${escapeHtml(tt(SON_YAZI.temizle))}</button></div>`
+      + a.map((q, i) => `<div class="uyg-son__satir"><button type="button" class="uyg-son__ara" data-q="${escapeAttr(q)}">${escapeHtml(q)}</button>`
+        + `<button type="button" class="uyg-son__sil" data-i="${i}" aria-label="${escapeAttr(tt(SON_YAZI.sil))}">${x}</button></div>`).join("")
+      + "</div>";
+  }
+  results.addEventListener("click", (e) => {
+    const ara = e.target.closest(".uyg-son__ara");
+    if (ara) { input.value = ara.dataset.q; input.dispatchEvent(new Event("input")); input.focus(); return; }
+    const sil = e.target.closest(".uyg-son__sil");
+    if (sil) {
+      const a = sonlariOku();
+      a.splice(Number(sil.dataset.i), 1);
+      sonlariYaz(a);
+      renderRecents();
+      return;
+    }
+    if (e.target.closest(".uyg-son__temizle")) { sonlariYaz([]); renderRecents(); }
+  });
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    input.dispatchEvent(new Event("input"));
+    input.focus();
+  });
 
   // Metin içi sonuçlar ayrı bir grupta, başlık sonuçlarının ALTINDA durur:
   // başlık eşleşmesi daha kesin bir cevaptır, gövde eşleşmesi bir izdir.
@@ -643,6 +713,7 @@
   let searchTrackTimer = null;
   let fullTextTimer = null;
   input.addEventListener("input", () => {
+    clearBtn.hidden = !input.value;
     renderResults(search(input.value));
     // Dizin hâlâ kuruluyorsa, kurulum bitince aynı sorguyu bir kez daha
     // çiz: erken yazılan sorgu kısmî dizinle eksik sonuç göstermesin.

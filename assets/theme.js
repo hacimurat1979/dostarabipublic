@@ -8,9 +8,17 @@
     return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
   }
 
+  // Durum çubuğu rengi (2026-10-15, mobil kabuk taraması K06): index.html'deki
+  // iki <meta name="theme-color"> yalnız cihazın temasına (prefers-color-scheme)
+  // bağlıydı; uygulama içinden tema değiştirilince başlık #0d0d0d olurken
+  // çubuk açık kalıyordu. Artık ikisi de seçilen temanın sayfa zemini
+  // (--page-plane) renginde: açık #f9f9f7, karanlık #0d0d0d.
+  const TEMA_RENGI = { light: "#f9f9f7", dark: "#0d0d0d" };
+
   function applyTheme(theme) {
     document.body.setAttribute("data-theme", theme);
     btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", TEMA_RENGI[theme]));
   }
 
   applyTheme(currentTheme());
