@@ -75,7 +75,10 @@
     const hdr = document.querySelector(".app-header");
     const hb = hdr && hdr.getClientRects().length ? hdr.getBoundingClientRect().bottom : 0;
     const altEl = document.querySelector(".uyg-alt");
-    const at = altEl && !altEl.hidden && altEl.getClientRects().length ? altEl.getBoundingClientRect().top : window.innerHeight;
+    // Kabuk V2'de yatay telefonda alt çubuk sol ray'dır (genişliği boyundan dar):
+    // alt sınır ekranın altıdır; rayın yeri sarmalayıcının sol kenarında zaten ayrılmış.
+    const altR = altEl && !altEl.hidden && altEl.getClientRects().length ? altEl.getBoundingClientRect() : null;
+    const at = altR && altR.width >= altR.height ? altR.top : window.innerHeight;
     // Yatayda yükseklik kıt: hap sağ kenarda dikey durur, düğme satırı
     // yalnız sol üst köşeyi tutar (sahne ortalı, ancak yarı payı yeter).
     const yatay = _mgYatay();

@@ -437,6 +437,11 @@
   // =========================================================================
   var sonY = window.scrollY, birikim = 0, cekik = false, cekikZaman = null;
   function cekikUygun() {
+    // Kabuk V2'de (2026-10-16) çubuk çekme HER kaydırılan görünüme genellendi ve
+    // mantığı kabukta (uygulama-kabugu.js cekikKur): bu dosya yalnız okuma
+    // metinlerinde yüklendiği için tek yer orası. Burada V2'de devre dışı;
+    // eski kabukta (?kabuk=eski) aynen çalışır.
+    if (HTML.classList.contains("uyg-v2")) return false;
     if (!HTML.classList.contains("dost-uygulama") || !HTML.classList.contains("uyg-okuyor")) return false;
     if (sayfa) return false;
     if ($(".uyg-sayfa:not([hidden])") || $(".uyg-perde:not([hidden])")) return false;
