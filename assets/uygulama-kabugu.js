@@ -34,6 +34,16 @@
  * Tekerleğe hiç dokunulmaz (yalın tekerlek yakınlaştırmaz; ETKILESIM_DILI).
  *
  * Esc bir adım: önce açık sayfa (Daha / Okuma), sonra panel (ortak zincir).
+ *
+ * 2026-10-15 (mobil kabuk taraması K01-K20, kullanıcı onayı):
+ *  - Okuma sayfası: her metnin yanında "Kaldığın yer" + "Devam" (K09).
+ *  - Okurken üst çubukta arama yerine "Aa" dairesi: yazı boyutu hapı (K10).
+ *  - Ara tam sayfa, Defterim alttan sayfa; açıkken alt çubukta onların
+ *    sekmesi yanar (K11/K13). Açık katman varken yer adı katmanın adıdır,
+ *    geri dairesi ✕ olur (K07).
+ *  - Daha: Bölümler akordeon (K16). Yatay okurken üst/alt çubuk kayar gider
+ *    (K05). Klavye açılınca Ara klavyenin üstünde kalır (K12). Yeni sürüm
+ *    hazırsa sessiz bir "Yenile" çubuğu (K18).
  */
 (function () {
   "use strict";
@@ -68,6 +78,8 @@
     defter: '<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7.6l1.3 2.7 3 .4-2.2 2.1.5 3-2.6-1.4-2.6 1.4.5-3-2.2-2.1 3-.4Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>',
     daha: '<circle cx="6" cy="14" r="1.8" fill="currentColor"/><circle cx="12" cy="10" r="1.8" fill="currentColor"/><circle cx="18" cy="14" r="1.8" fill="currentColor"/>',
     geri: '<path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+    kapat: '<path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    sag: '<path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
   };
   function svg(ad, w) { return '<svg viewBox="0 0 24 24" width="' + (w || 22) + '" height="' + (w || 22) + '" aria-hidden="true">' + S[ad] + "</svg>"; }
 
@@ -96,6 +108,15 @@
     cevrim: { tr: "Çevrimdışı okuma", en: "Offline reading", pt: "Leitura offline" },
     kitaplar: { tr: "Okunan metinler", en: "Texts we read", pt: "Textos lidos" },
     ilerleme: { tr: "Okuma ilerlemesi", en: "Reading progress", pt: "Progresso de leitura" },
+    kapat: { tr: "Kapat", en: "Close", pt: "Fechar" },
+    bumetin: { tr: "Bu metinde", en: "In this text", pt: "Neste texto" },
+    kaldigin: { tr: "Kaldığın yer", en: "Where you left off", pt: "Onde parou" },
+    devam: { tr: "Devam", en: "Continue", pt: "Continuar" },
+    kabukGoster: { tr: "Gezinmeyi göster", en: "Show navigation", pt: "Mostrar navegação" },
+    sasirtAlt: { tr: "Rastgele bir yere götürür", en: "Takes you somewhere at random", pt: "Leva-o a um lugar ao acaso" },
+    gizlilik: { tr: "Gizlilik", en: "Privacy", pt: "Privacidade" },
+    yeniSurum: { tr: "Yeni sürüm hazır", en: "A new version is ready", pt: "Há uma nova versão" },
+    yenile: { tr: "Yenile", en: "Reload", pt: "Recarregar" },
   };
 
   // --- Alt gezinme -----------------------------------------------------------
@@ -120,11 +141,39 @@
   okuma.innerHTML = '<div class="uyg-tutamak" aria-hidden="true"></div><h2 class="uyg-sayfa__baslik" data-etiket="kitaplar"></h2><div class="uyg-kitaplar"></div>';
   document.body.appendChild(okuma);
   var KITAPLAR = [["futuhat-btn", "F"], ["fusus-btn", "Fs"], ["miskat-btn", "M"]];
+  // "Kaldığın yer" (K09): üç görünümün kendi yazdığı son kayıt (yalnız bu
+  // cihazın localStorage'ı; futuhat.js / fusus.js / miskat.js) -- kabuk
+  // yalnız okur, yeni bir durum tutmaz. Etiket kayıt numarasından kurulur
+  // (künye biçimi görünümlerin kendi başlıklarıyla aynı: Cilt I · Kısım X,
+  // Fass 3 / Bezel 3 / Engaste 3); kayıt yoksa ya da tanınmazsa satırda yalnız
+  // kitabın adı kalır.
+  var SON_ANAHTAR = { "futuhat-btn": "dost-futuhat-last-part", "fusus-btn": "dost-fusus-last-fass", "miskat-btn": "dost-miskat-last-hadis" };
+  var ROMEN = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+  function romen(n) {
+    var out = "", kalan = Number(n);
+    ROMEN.forEach(function (r) { while (kalan >= r[0]) { out += r[1]; kalan -= r[0]; } });
+    return out;
+  }
+  function sonYer(kapi) {
+    var id = null, m;
+    try { id = localStorage.getItem(SON_ANAHTAR[kapi]); } catch (e) { /* özel pencere */ }
+    if (!id) return "";
+    if (kapi === "futuhat-btn" && (m = /^c(\d+)k(\d+)$/.exec(id))) {
+      return t({ tr: "Cilt " + romen(m[1]) + " · Kısım " + romen(m[2]), en: "Volume " + romen(m[1]) + " · Part " + romen(m[2]), pt: "Volume " + romen(m[1]) + " · Parte " + romen(m[2]) });
+    }
+    if (kapi === "fusus-btn" && (m = /^fs(\d+)$/.exec(id))) return t({ tr: "Fass " + m[1], en: "Bezel " + m[1], pt: "Engaste " + m[1] });
+    if (kapi === "miskat-btn" && (m = /^h(\d+)$/.exec(id))) return t({ tr: "Metin " + m[1], en: "Text " + m[1], pt: "Texto " + m[1] });
+    return "";
+  }
   function kitaplariCiz() {
     $(".uyg-kitaplar", okuma).innerHTML = KITAPLAR.map(function (k) {
       var a = document.getElementById(k[0]);
       if (!a) return "";
-      return '<button type="button" class="uyg-kitap" data-kapi="' + k[0] + '"><span class="uyg-kitap__daire">' + k[1] + '</span><span class="uyg-kitap__ad">' + a.textContent.trim() + "</span></button>";
+      var yer = sonYer(k[0]);
+      return '<button type="button" class="uyg-kitap" data-kapi="' + k[0] + '"><span class="uyg-kitap__daire">' + k[1] + "</span>"
+        + '<span class="uyg-kitap__metin"><span class="uyg-kitap__ad">' + a.textContent.trim() + "</span>"
+        + (yer ? '<span class="uyg-kitap__yer">' + t(ETIKET.kaldigin) + ": " + yer + "</span>" : "") + "</span>"
+        + (yer ? '<span class="uyg-kitap__devam"><i aria-hidden="true"></i>' + t(ETIKET.devam) + "</span>" : "") + "</button>";
     }).join("");
   }
 
@@ -157,15 +206,29 @@
     }
   }
 
+  // Bölümler akordeon (K16, 2026-10-15): çekmecenin gruplarıyla aynı model --
+  // etkin bölümün grubu açık, ötekiler kapalı (başlıkta kaç bölüm olduğu
+  // yazar). Açık/kapalı durumu sayfa her açılışta etkin gruptan yeniden
+  // kurulur; sayfa açıkken dil/tema değişince yeniden çizim onu korur.
+  var grupAcik = null;
   function dahaCiz() {
+    var gruplar = Array.prototype.map.call(document.querySelectorAll("#nav-drawer .nav-drawer__group"), function (g) {
+      var bas = g.querySelector(".nav-drawer__heading");
+      var oge = Array.prototype.slice.call(g.querySelectorAll("a.btn-ghost[id]"));
+      return { ad: bas ? bas.textContent.trim() : "", oge: oge, etkin: oge.some(function (a) { return a.classList.contains("btn-ghost--active"); }) };
+    });
+    if (!grupAcik) { grupAcik = {}; gruplar.forEach(function (g, i) { grupAcik[i] = g.etkin; }); }
     dahaBolum.innerHTML = '<h2 class="uyg-sayfa__baslik">' + t(ETIKET.bolumler) + "</h2>"
-      + Array.prototype.map.call(document.querySelectorAll("#nav-drawer .nav-drawer__group"), function (g) {
-        var bas = g.querySelector(".nav-drawer__heading");
-        var ogeler = Array.prototype.map.call(g.querySelectorAll("a.btn-ghost[id]"), function (a) {
+      + gruplar.map(function (g, i) {
+        var ac = !!grupAcik[i];
+        var ogeler = g.oge.map(function (a) {
           return '<button type="button" class="uyg-bolum' + (a.classList.contains("btn-ghost--active") ? " is-aktif" : "") + '" data-kapi="' + a.id + '">' + a.textContent.trim() + "</button>";
         }).join("");
-        return '<div class="uyg-grup"><h3 class="uyg-grup__ad">' + (bas ? bas.textContent.trim() : "") + '</h3><div class="uyg-grup__ogeler">' + ogeler + "</div></div>";
+        return '<div class="uyg-grup"><button type="button" class="uyg-grup__bas" data-grup="' + i + '" aria-expanded="' + ac + '" aria-controls="uyg-grup-' + i + '">'
+          + '<span class="uyg-grup__ad">' + g.ad + "<small>" + g.oge.length + "</small></span>" + svg("sag", 18) + "</button>"
+          + '<div class="uyg-grup__ogeler" id="uyg-grup-' + i + '"' + (ac ? "" : " hidden") + ">" + ogeler + "</div></div>";
       }).join("");
+    var gizlilik = document.querySelector(".app-footer__gizlilik a");
     var dil = (I18n && I18n.getLang && I18n.getLang()) || "tr";
     var koyu = document.body.getAttribute("data-theme") === "dark";
     var sm = document.getElementById("sessiz-mod-toggle");
@@ -177,7 +240,8 @@
       + '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.tema) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-anahtar" data-eylem="tema" aria-pressed="' + koyu + '"><span class="uyg-anahtar__iz"><span class="uyg-anahtar__top"></span></span><span>' + t(koyu ? ETIKET.koyu : ETIKET.acik) + "</span></button></span></div>"
       + '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.yazi) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-daire" data-eylem="kucult" aria-label="' + t(ETIKET.kucult) + '">A−</button><button type="button" class="uyg-daire" data-eylem="buyut" aria-label="' + t(ETIKET.buyut) + '">A+</button></span></div>'
       + (sm ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sessiz) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-anahtar" data-eylem="sessiz" aria-label="' + t(ETIKET.sessiz) + '" aria-pressed="' + (sm.getAttribute("aria-pressed") === "true") + '"><span class="uyg-anahtar__iz"><span class="uyg-anahtar__top"></span></span></button></span></div>' : "")
-      + (su ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sasirt) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-daire" data-eylem="sasirt" aria-label="' + t(ETIKET.sasirt) + '">' + su.innerHTML + "</button></span></div>" : "");
+      + (su ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sasirt) + '<small class="uyg-ayar__alt">' + t(ETIKET.sasirtAlt) + '</small></span><span class="uyg-ayar__denetim"><button type="button" class="uyg-daire" data-eylem="sasirt" aria-label="' + t(ETIKET.sasirt) + '">' + su.innerHTML + "</button></span></div>" : "");
+    if (gizlilik) dahaBolum.insertAdjacentHTML("beforeend", '<a class="uyg-baglanti" href="' + gizlilik.getAttribute("href") + '"><span>' + t(ETIKET.gizlilik) + "</span>" + svg("sag", 18) + "</a>");
     if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons($('[data-eylem="kucult"]', daha), $('[data-eylem="buyut"]', daha));
   }
 
@@ -196,6 +260,9 @@
     { ad: "cekmece", id: "nav-drawer", dugme: "nav-toggle" },
     { ad: "ara", id: "search-panel", dugme: "search-toggle" },
     { ad: "defter", id: "defter-panel", dugme: "defter-toggle" },
+    // Okurken "Aa" yazı boyutu hapı (K10): küçük bir katman -- yer adını
+    // değiştirmez (kucuk), ama geri tuşu / Esc onu bir adımda kapatır.
+    { ad: "aa", id: "uyg-aa-pop", dugme: "uyg-aa", kucuk: true },
   ];
   var disYigin = [], disYut = 0, disSessiz = null;
   function disGirdi(ad) { return "dis-" + ad; }
@@ -207,8 +274,18 @@
     if (acik && i < 0) {
       if (!acikMi()) return;
       disYigin.push(d.ad);
-      if (disSessiz === d.ad) { disSessiz = null; return; } // ileri tuşuyla yeniden açıldı
-      try { history.pushState({ dostKatman: disGirdi(d.ad) }, ""); } catch (e) { /* eski tarayıcı */ }
+      if (disSessiz === d.ad) { disSessiz = null; guncelle(); return; } // ileri tuşuyla yeniden açıldı
+      try {
+        // Alt çubukta bir sekmeden ötekine geçilince (Ara -> Defterim) önceki
+        // katman aynı anda kapanmıştır: girdisi yerinde kalıp ölü bir adım
+        // bırakmasın diye yeni katman onun YERİNE yazılır.
+        // Aynı şey Daha/Okuma sayfasından Ara/Defterim'e geçerken: sayfa az
+        // önce kapandı, girdisi yeni katmanın yerine yazılır (eskiden geri
+        // adımı Ara'yı hemen kapatıyordu -- sayfadan Ara'ya geçilemiyordu).
+        var yeni = { dostKatman: disGirdi(d.ad) };
+        if (oluGirdi(d.ad)) history.replaceState(yeni, "");
+        else history.pushState(yeni, "");
+      } catch (e) { /* eski tarayıcı */ }
       guncelle();
     } else if (!acik && disSessiz === d.ad) {
       disSessiz = null; // geri tuşu kapattı (disKapat)
@@ -222,6 +299,28 @@
       }, 0);
       guncelle();
     }
+  }
+  // Alt çubukta başka bir sekmeye dokunulunca açık dış katmanlar (Ara,
+  // Defterim, çekmece, Aa hapı) kapanır; hedef katman hariç. Eskiden Ara
+  // bir perdeydi ve alt çubuk altında kalıyordu -- artık tam sayfa.
+  function digerKatmanlariKapat(hedef) {
+    disYigin.slice().forEach(function (ad) {
+      var d = disBul(ad);
+      if (ad !== hedef && d && d.el && !d.el.hidden) tikla(d.dugme);
+    });
+  }
+  // Tarihin üstündeki girdi kapanmış bir dış katmanınsa (ölü girdi adayı).
+  function disOlu(ad) { var d = disBul(ad); return !!(d && d.el && d.el.hidden); }
+  // Tarihin üstündeki girdi az önce kapanmış bir katmanın mı: kabuğun dış katmanı
+  // (Ara/Defterim/...), Daha/Okuma sayfası ya da okuma yüzeyinin "Bu metinde"
+  // sayfası (GU.yuzeyKatmani). Öyleyse yeni katman onun YERİNE yazılır, ölü adım
+  // kalmaz. kendi: açılmakta olan dış katman (kendi girdisi sayılmaz).
+  function oluGirdi(kendi) {
+    var k = GU && GU.tarihKatmani ? GU.tarihKatmani() : null;
+    if (!k) return false;
+    if (k.indexOf("dis-") === 0) return k.slice(4) !== kendi && disOlu(k.slice(4));
+    if (k.indexOf("yuzey-") === 0) return !document.querySelector(".okuma-sayfa");
+    return !!(sayfaKatmani() && !acikSayfa);
   }
   function disBagla() {
     DIS.forEach(function (d) {
@@ -309,7 +408,7 @@
   }
   function sayfaAc(el, tarihsiz) {
     if (acikSayfa && acikSayfa !== el) gizle(acikSayfa, true);
-    if (el === daha) { dahaCiz(); cevrimTasi(true); }
+    if (el === daha) { if (acikSayfa !== daha) grupAcik = null; dahaCiz(); cevrimTasi(true); }
     if (el === okuma) kitaplariCiz();
     if (!acikSayfa) { oncekiOdak = document.activeElement; katmanY = window.scrollY; }
     el.hidden = false;
@@ -317,8 +416,13 @@
     acikSayfa = el;
     if (!tarihsiz) {
       try {
+        // Önceki girdi az önce kapanan bir dış katmansa (Ara -> Okuma) onun yerine yazılır.
         if (katmanGirdisiBizim()) history.replaceState({ dostKatman: katmanAdi(el) }, "");
-        else { katmanAltYolu = simdikiYol(); history.pushState({ dostKatman: katmanAdi(el) }, ""); }
+        else {
+          katmanAltYolu = simdikiYol();
+          if (oluGirdi(null)) history.replaceState({ dostKatman: katmanAdi(el) }, "");
+          else history.pushState({ dostKatman: katmanAdi(el) }, "");
+        }
       } catch (e) { /* eski tarayıcı: katman tarihsiz açılır */ }
     }
     katmanYolu = location.pathname + location.search;
@@ -358,7 +462,9 @@
   function eylemleKapat(fn) {
     if (acikSayfa) gizle(acikSayfa, true);
     fn();
-    katmanGirdisiniBirak();
+    // Gözcüler (Ara/Defterim girdisi yazmak) bitsin diye bir tur sonra: eylem
+    // bir dış katman açtıysa girdi onun yerine yazılmıştır, geri adımı gerekmez.
+    setTimeout(katmanGirdisiniBirak, 0);
   }
   function panel() { return document.getElementById("detail-panel"); }
   function panelAcik() { var p = panel(); return !!(p && !p.hidden); }
@@ -410,6 +516,10 @@
     var b = e.target.closest(".uyg-alt__oge");
     if (!b) return;
     var k = b.dataset.uyg;
+    // Okuma yüzeyinin "Bu metinde" sayfası (okuma-yuzeyi.js) da bir katman: sekme
+    // değişirken o da kapanır (aksi hâlde Ara onun altında kalırdı).
+    if (window.DostOkuma && window.DostOkuma.sayfaKapat && document.querySelector(".okuma-sayfa")) window.DostOkuma.sayfaKapat();
+    digerKatmanlariKapat(k === "ara" || k === "defter" ? k : null);
     if (k === "harita") kapiAc("ontology-btn");
     else if (k === "okuma") { if (acikSayfa === okuma) sayfaKapat(); else sayfaAc(okuma); }
     else if (k === "daha") { if (acikSayfa === daha) sayfaKapat(); else sayfaAc(daha); }
@@ -420,6 +530,15 @@
   daha.addEventListener("click", function (e) {
     var b = e.target.closest("button");
     if (!b || cevrimYuva.contains(b)) return; // çevrimdışı satırı kendi dinleyicileriyle
+    if (b.dataset.grup !== undefined) {
+      // Akordeon: yalnız bu grup açılır/kapanır, sayfa yeniden çizilmez.
+      var acik = b.getAttribute("aria-expanded") !== "true";
+      b.setAttribute("aria-expanded", String(acik));
+      var kutu = document.getElementById(b.getAttribute("aria-controls"));
+      if (kutu) kutu.hidden = !acik;
+      if (grupAcik) grupAcik[b.dataset.grup] = acik;
+      return;
+    }
     if (b.dataset.kapi) { kapiAc(b.dataset.kapi); return; }
     if (b.dataset.dil) {
       var gercek = Array.prototype.find.call(document.querySelectorAll("#lang-switch .lang-btn"), function (x) { return x.textContent.trim().toLowerCase() === b.dataset.dil; });
@@ -441,6 +560,7 @@
     else if (e2 === "sasirt") kapiAc("surprise-toggle");
   });
   perde.addEventListener("click", function () {
+    if (disYigin.length && disSimdi()) { history.back(); return; } // Defterim sayfası: perdeye dokunmak geri dairesiyle aynı adım
     if (sayfaKapat()) return;
     if (panelAcik()) paneliKapat();
   });
@@ -460,6 +580,115 @@
   halka.setAttribute("aria-valuemax", "100");
   halka.innerHTML = '<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><circle class="uyg-ilerleme__iz" cx="14" cy="14" r="11"/><circle class="uyg-ilerleme__dolu" cx="14" cy="14" r="11"/></svg>';
   if (controls) controls.appendChild(halka);
+
+  // --- "Aa" yazı boyutu hapı (K10) -----------------------------------------------
+  // Okuma metinlerinde üst çubuğun sağındaki arama (alt çubuktaki Ara'nın
+  // yinelenişi, başparmaktan uzak) yerine "Aa": dokununca başlığın altında
+  // A− / A+ hapı açılır; metin arkada görünür kalır, boyut deneme yanılmayla
+  // ayarlanır. Düğmeler font-scale.js'in ortak ölçeğine bağlıdır (Daha'daki
+  // satırla aynı ölçek, aynı depo); Esc ve geri tuşu hapı bir adımda kapatır
+  // (DIS: "aa"), alt çubuktaki sekmeler ve dışarı dokunuş da.
+  var aa = document.createElement("button");
+  aa.type = "button";
+  aa.id = "uyg-aa";
+  aa.className = "uyg-aa";
+  aa.setAttribute("aria-expanded", "false");
+  aa.setAttribute("aria-controls", "uyg-aa-pop");
+  aa.innerHTML = '<span aria-hidden="true">A<small>a</small></span>';
+  if (controls) controls.insertBefore(aa, halka);
+  var aaPop = document.createElement("div");
+  aaPop.id = "uyg-aa-pop";
+  aaPop.className = "uyg-aa-pop";
+  aaPop.hidden = true;
+  aaPop.setAttribute("role", "group");
+  aaPop.innerHTML = '<button type="button" class="uyg-daire" data-aa="kucult">A−</button><span class="uyg-aa-pop__ad"></span><button type="button" class="uyg-daire" data-aa="buyut">A+</button>';
+  document.body.appendChild(aaPop);
+  var aaBagli = false;
+  function aaOlcek() { return parseFloat(HTML.style.getPropertyValue("--detail-font-scale")) || 1; }
+  function aaSinir() {
+    var o = aaOlcek();
+    var k = $('[data-aa="kucult"]', aaPop), b = $('[data-aa="buyut"]', aaPop);
+    k.setAttribute("aria-disabled", String(o <= 0.8 + 1e-6));
+    b.setAttribute("aria-disabled", String(o >= 1.8 - 1e-6));
+  }
+  function aaBagla() {
+    if (aaBagli || !window.DostFontScale) return;
+    aaBagli = true;
+    var k = $('[data-aa="kucult"]', aaPop), b = $('[data-aa="buyut"]', aaPop);
+    window.DostFontScale.bindFontScaleButtons(k, b);
+    [k, b].forEach(function (x) { x.addEventListener("click", aaSinir); });
+  }
+  aa.addEventListener("click", function () {
+    aaPop.hidden = !aaPop.hidden;
+    if (!aaPop.hidden) { aaBagla(); aaSinir(); }
+    aa.setAttribute("aria-expanded", String(!aaPop.hidden));
+  });
+  document.addEventListener("pointerdown", function (e) {
+    if (!aaPop.hidden && !aaPop.contains(e.target) && !aa.contains(e.target)) tikla("uyg-aa");
+  }, true);
+  function aaYaz() {
+    if (!aaPop.hidden && !(acikMi() && HTML.classList.contains("uyg-okuyor"))) aaPop.hidden = true;
+    aa.setAttribute("aria-expanded", String(!aaPop.hidden));
+    aa.setAttribute("aria-label", t(ETIKET.yazi));
+    aa.title = t(ETIKET.yazi);
+    $(".uyg-aa-pop__ad", aaPop).textContent = t(ETIKET.yazi);
+    aaPop.setAttribute("aria-label", t(ETIKET.yazi));
+    $('[data-aa="kucult"]', aaPop).setAttribute("aria-label", t(ETIKET.kucult));
+    $('[data-aa="buyut"]', aaPop).setAttribute("aria-label", t(ETIKET.buyut));
+  }
+  if (GU && GU.registerStepBack) GU.registerStepBack(null, function () {
+    if (aaPop.hidden) return false;
+    tikla("uyg-aa");
+    return true;
+  }, { oncelikli: true });
+
+  // --- Yatay okurken kabuk kendini çeker (K05) ------------------------------------
+  // Yatay telefonda üst çubuk + alt gezinme ekranın dörtte birini yer (412 px
+  // yükseklikte 107 px). Okuma metinlerinde aşağı kaydırırken ikisi de kayar
+  // gider; yukarı kaydırınca, metnin başına/sonuna gelince, bir katman açılınca
+  // ya da alt kenardaki tutamağa dokununca geri gelir. Yön algısı yeniden
+  // yazılmadı: okuma-yuzeyi.js (YT-04) html.okuma-cekik sınıfını her yönelimde
+  // koyar/kaldırır, dikeyde onun CSS'i, yatayda style.css'teki K05 kuralı uygular.
+  // Burada yalnız: çekilen çubuklar odaklanılamaz (inert) ve tutamak -- gerçek bir
+  // düğme -- çubukları geri getirir. Dikeyde ve haritalarda çubuklar sabit kalır.
+  var yatayMq = window.matchMedia("(orientation: landscape) and (max-height: 520px)");
+  var baslik = $(".app-header");
+  var nokta = document.createElement("button");
+  nokta.type = "button";
+  nokta.className = "uyg-nokta";
+  nokta.hidden = true;
+  nokta.innerHTML = "<span aria-hidden=\"true\"></span>";
+  document.body.appendChild(nokta);
+  var kabukGizli = false;
+  function kabukDenetle() {
+    var gizli = acikMi() && yatayMq.matches && HTML.classList.contains("okuma-cekik");
+    if (gizli === kabukGizli) return;
+    kabukGizli = gizli;
+    alt.inert = gizli;
+    if (baslik) baslik.inert = gizli;
+    nokta.hidden = !gizli;
+  }
+  nokta.addEventListener("click", function () {
+    if (window.DostOkuma && window.DostOkuma.cubuklariGetir) window.DostOkuma.cubuklariGetir();
+    else HTML.classList.remove("okuma-cekik");
+    kabukDenetle();
+  });
+  new MutationObserver(kabukDenetle).observe(HTML, { attributes: true, attributeFilter: ["class"] });
+  (yatayMq.addEventListener ? yatayMq.addEventListener("change", kabukDenetle) : yatayMq.addListener(kabukDenetle));
+
+  // --- Ekran klavyesi (K12) --------------------------------------------------------
+  // Ara tam sayfa; klavye açılınca sayfanın alt kenarı klavyenin üstüne çekilir
+  // (vh birimi klavyeyi hesaba katmıyordu: son sonuçlar klavyenin altında
+  // kalıyordu). Görsel görüş alanı küçülmüşse (yakınlaştırma yokken) aradaki
+  // fark klavyenin boyudur.
+  var vv = window.visualViewport;
+  function klavye() {
+    var kb = 0;
+    if (vv && acikMi() && vv.scale <= 1.01) kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    if (kb < 120) kb = 0;
+    HTML.style.setProperty("--uyg-klavye", kb + "px");
+  }
+  if (vv) { vv.addEventListener("resize", klavye); vv.addEventListener("scroll", klavye); }
   // Uygulama içi adım: graph-utils.js'in tarih kaydı (dostAdim). Geri dairesi
   // yalnız geri gidilecek bir şey varken görünür (bağlanmamış düğme olmasın):
   // açık sayfa, açık panel ya da uygulama içinde açılmış bir adres.
@@ -476,6 +705,24 @@
   donus.className = "uyg-donus";
   donus.hidden = true;
   donus.setAttribute("aria-hidden", "true");
+  // Uzun yer adı (K20): tek satıra sığmıyorsa (dar telefon, "A Linha do Tempo
+  // das Obras") iki satıra açılır, "Geri:" satırı düşer. Ölçüm tek satır
+  // hâlinde yapılır: sınıf önce kaldırılır.
+  var yerEtiketi = document.getElementById("nav-toggle-label");
+  function uzunAdDenetle() {
+    var nt = document.getElementById("nav-toggle");
+    if (!nt || !yerEtiketi) return;
+    nt.classList.remove("uyg-uzun-ad");
+    var uzun = acikMi() && !!yerEtiketi.offsetParent && yerEtiketi.scrollWidth > yerEtiketi.clientWidth + 1;
+    if (uzun) nt.classList.add("uyg-uzun-ad");
+  }
+  if (yerEtiketi) new MutationObserver(uzunAdDenetle).observe(yerEtiketi, { childList: true, characterData: true, subtree: true });
+  window.addEventListener("resize", uzunAdDenetle);
+  // Açık katmanın adı (K07): yer adının yerine geçer; nav-drawer.js'in yazdığı
+  // etiketle (#nav-toggle-label) yarışmasın diye ayrı bir öğe.
+  var katmanAd = document.createElement("span");
+  katmanAd.className = "uyg-katman-ad";
+  katmanAd.setAttribute("aria-hidden", "true");
   function yolAnahtari(u) { try { return new URL(u, location.href).pathname; } catch (e) { return u; } }
   function parcalar(yol) { return yol.split("/").filter(function (x) { return x && !/^(en|pt)$/.test(x); }); }
   function bolumAdi(v) {
@@ -501,6 +748,23 @@
     }
     return GU && GU.tarihOncekiYol ? GU.tarihOncekiYol() : null;
   }
+  // Adı olan en üstteki katman (K07): Daha, Okuma, Ara, Defterim, çekmece.
+  // Açıkken yer adı onun adıdır, geri dairesi ✕ (kapat) olur, "Geri: <ad>"
+  // satırı yazılmaz -- eskiden Harita'nın üstünde bile "Geri: Harita" diyordu;
+  // oysa dairenin yaptığı katmanı kapatmaktır. Aa hapı küçük bir katman:
+  // yer adına dokunmaz.
+  function ustKatman() {
+    for (var i = disYigin.length - 1; i >= 0; i--) { var d = disBul(disYigin[i]); if (d && !d.kucuk) return d.ad; }
+    if (document.querySelector(".okuma-sayfa")) return "bumetin"; // okuma-yuzeyi.js'in "Bu metinde" sayfası
+    return acikSayfa ? (acikSayfa === daha ? "daha" : "okuma") : null;
+  }
+  // "Bu metinde" sayfası kabuğun dışında (body'ye) eklenir/kaldırılır: yer adı ve ✕ onu izler.
+  new MutationObserver(function (kayitlar) {
+    for (var i = 0; i < kayitlar.length; i++) {
+      var dugumler = Array.prototype.slice.call(kayitlar[i].addedNodes).concat(Array.prototype.slice.call(kayitlar[i].removedNodes));
+      for (var j = 0; j < dugumler.length; j++) if (dugumler[j].classList && dugumler[j].classList.contains("okuma-sayfa")) { guncelle(); return; }
+    }
+  }).observe(document.body, { childList: true });
   function donusAdi() {
     if (derinlik() === 0 && !acikSayfa) return null;
     var y = oncekiYol();
@@ -510,14 +774,22 @@
   }
   function donusYaz() {
     adiKaydet();
-    var ad = acikMi() && !geri.hidden ? donusAdi() : null;
+    var kat = acikMi() ? ustKatman() : null;
+    var ad = acikMi() && !geri.hidden && !kat ? donusAdi() : null;
     donus.hidden = !ad;
     donus.textContent = ad ? t(ETIKET.geri) + ": " + ad : "";
-    geri.setAttribute("aria-label", ad ? t(ETIKET.geri) + ": " + ad : t(ETIKET.geri));
-    geri.title = geri.getAttribute("aria-label");
+    var etiket = kat ? t(ETIKET.kapat) + ": " + t(ETIKET[kat === "cekmece" ? "bolumler" : kat]) : ad ? t(ETIKET.geri) + ": " + ad : t(ETIKET.geri);
+    geri.setAttribute("aria-label", etiket);
+    geri.title = etiket;
+    var kip = kat ? "kapat" : "geri";
+    if (geri.dataset.kip !== kip) { geri.dataset.kip = kip; geri.innerHTML = svg(kip, 20); }
+    HTML.classList.toggle("uyg-katman-acik", !!kat);
+    katmanAd.textContent = kat ? t(ETIKET[kat === "cekmece" ? "bolumler" : kat]) : "";
     var nt = document.getElementById("nav-toggle");
     if (nt && donus.parentNode !== nt) nt.appendChild(donus);
+    if (nt && katmanAd.parentNode !== nt) nt.appendChild(katmanAd);
     if (nt) nt.classList.toggle("uyg-donuslu", !!ad);
+    uzunAdDenetle();
   }
 
   // --- Bölüm rozeti (2026-10-11, O6) -------------------------------------------
@@ -573,6 +845,7 @@
     daha.setAttribute("aria-label", t(ETIKET.daha));
     if (acikSayfa === daha) dahaCiz();
     if (acikSayfa === okuma) kitaplariCiz();
+    guncellemeYaz();
     // Dil değişti: "Geri: <ad>" ve bölüm rozetleri yeni dilde yeniden yazılır.
     if (typeof ADLAR === "object" && ADLAR) { for (var k in ADLAR) delete ADLAR[k]; setTimeout(function () { rozetle(); donusYaz(); }, 0); }
   }
@@ -581,7 +854,10 @@
     var acikUyg = acikMi();
     alt.hidden = !acikUyg;
     var v = (document.querySelector("main > section:not([hidden]):not(.detail-panel)") || {}).id || "";
-    var etkin = acikSayfa === daha ? "daha" : acikSayfa === okuma ? "okuma"
+    // Açık katman sekmesini yakar (K11/K13: Ara ve Defterim açıkken eskiden
+    // alttaki Harita yanık kalıyordu).
+    var kat = ustKatman();
+    var etkin = kat === "ara" || kat === "defter" ? kat : acikSayfa === daha ? "daha" : acikSayfa === okuma ? "okuma"
       : /^(futuhat|fusus|miskat)-wrap$/.test(v) ? "okuma" : v === "ontology-wrap" ? "harita" : "";
     alt.querySelectorAll(".uyg-alt__oge").forEach(function (b) {
       var on = b.dataset.uyg === etkin;
@@ -594,10 +870,15 @@
     else boyKaydet();
     var yarim = yarimMi();
     HTML.classList.toggle("uyg-panel-yarim", yarim);
-    perde.hidden = !(acikSayfa || (acikUyg && panelAcik() && !yarim));
+    var defterAcik = disYigin.indexOf("defter") >= 0;
+    HTML.classList.toggle("uyg-defter-acik", defterAcik);
+    HTML.classList.toggle("uyg-dis-katman", disYigin.length > 0);
+    perde.hidden = !(acikSayfa || defterAcik || (acikUyg && panelAcik() && !yarim));
     tutamakYaz();
     ilerleme();
     donusYaz();
+    aaYaz();
+    kabukDenetle();
   }
   // Tutamak yalnız haritadaki panelde bir düğmedir (büyüt / küçült); başka
   // yerde süs olarak kalır, odaklanmaz (bağlanmamış düğme olmasın).
@@ -757,6 +1038,9 @@
     });
     cekipKapat(okuma, function () { return acikSayfa === okuma; }, function () { sayfaKapat(); });
     cekipKapat(daha, function () { return acikSayfa === daha; }, function () { sayfaKapat(); });
+    // Defterim (K13) da alttan açılan sayfa: aşağı çekmek ✕ ile aynı adımdır.
+    var defterEl = document.getElementById("defter-panel");
+    if (defterEl) cekipKapat(defterEl, function () { return !defterEl.hidden; }, function () { tikla("defter-toggle"); });
 
     // 2) Okuma metinlerinde yana kaydırarak önceki / sonraki.
     var ipucu = document.createElement("div");
@@ -795,6 +1079,45 @@
       }, secenek({ axis: "x" }));
     });
   }
+
+  // --- Yeni sürüm hazır (K18) ----------------------------------------------------
+  // sw.js yeni sürümde hemen devralır (skipWaiting + clients.claim); uzun
+  // yaşayan bir uygulama oturumunda açık kalan eski kabuk ile yeni betikler
+  // uyuşmayabilir. Devralma görülünce okumayı bölmeden sessiz bir çubuk çıkar:
+  // "Yeni sürüm hazır · Yenile". Kendiliğinden yenileme yok (okuyan yeri kaybetmesin);
+  // ✕ ile kapatılır. İlk kurulumda (önceden denetleyici yokken) çıkmaz.
+  var yeniSurumEl = null, yeniSurumKapali = false;
+  function guncellemeYaz() {
+    if (!yeniSurumEl) return;
+    $(".uyg-guncelleme__ad", yeniSurumEl).textContent = t(ETIKET.yeniSurum);
+    $(".uyg-guncelleme__yenile", yeniSurumEl).textContent = t(ETIKET.yenile);
+    $(".uyg-guncelleme__kapat", yeniSurumEl).setAttribute("aria-label", t(ETIKET.kapat));
+  }
+  function yeniSurum() {
+    if (yeniSurumEl || yeniSurumKapali || !acikMi()) return;
+    yeniSurumEl = document.createElement("div");
+    yeniSurumEl.className = "uyg-guncelleme";
+    yeniSurumEl.setAttribute("role", "status");
+    yeniSurumEl.innerHTML = '<span class="uyg-guncelleme__ad"></span><button type="button" class="uyg-guncelleme__yenile"></button>'
+      + '<button type="button" class="uyg-daire uyg-guncelleme__kapat">' + svg("kapat", 18) + "</button>";
+    document.body.appendChild(yeniSurumEl);
+    $(".uyg-guncelleme__yenile", yeniSurumEl).addEventListener("click", function () { location.reload(); });
+    $(".uyg-guncelleme__kapat", yeniSurumEl).addEventListener("click", function () {
+      yeniSurumKapali = true;
+      yeniSurumEl.remove();
+      yeniSurumEl = null;
+    });
+    guncellemeYaz();
+  }
+  try {
+    if ("serviceWorker" in navigator) {
+      var denetleyiciVardi = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (denetleyiciVardi) yeniSurum();
+        denetleyiciVardi = true;
+      });
+    }
+  } catch (e) { /* Service Worker yok / engelli */ }
 
   (mq.addEventListener ? mq.addEventListener("change", uygula) : mq.addListener(uygula));
   etiketle();

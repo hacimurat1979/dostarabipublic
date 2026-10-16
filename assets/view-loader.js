@@ -103,7 +103,7 @@
   // (VIEWS[...].once) -- görünümler çizimini bitirince ona haber verir
   // (okuma yeri, "Bu metinde" sayfası, Defterim yıldızı, çubukların çekilmesi).
   var ONCE = {
-    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-Y1uAMif/AI4vLF+qbFPEWGI+3Y65a4lIqNlsUAF+AcYgW0wZ86q0rokpXoLQrYdD" },
+    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-0Y2uRonaU2zLgfBNtzSfSV0wa/Rjcw1pCNR5UYQYMiNPC28tUX741Y5gViip99cR" },
   };
 
   var loadingPromises = {};

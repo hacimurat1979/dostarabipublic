@@ -1,4 +1,4 @@
-/* Kişisel Kavram Defteri — okuyucunun bir terim/insight'ı kendi tarayıcısında
+/* Kişisel Kavram Defteri — okuyucunun bir terimi ya da bölümü kendi tarayıcısında
  * (yalnız bu cihazda, sunucuya gitmeyen) bir listeye eklemesi. Paylaşılan
  * detail-panel'in yıldız düğmesiyle eklenir/çıkarılır; sol üstteki dairesel
  * düğme kayıtlı listeyi bir çekmecede gösterir. Veri sitenin kendisine değil
@@ -73,14 +73,49 @@
     return I18n ? I18n.pick3({ tr: tr, en: en, pt: pt }) : tr;
   }
 
+  // "Geri al" (2026-10-15, mobil kabuk taraması K13): çıkarma anında
+  // uygulanır ama panelin altında 6 saniye boyunca tek dokunuşla geri alınır;
+  // süre dolunca ya da panel kapanınca kalıcı olur. Yalnız bu cihazın listesi.
+  var undoKaydi = null;   // { entry, index }
+  var undoZaman = null;
+  var undoEl = null;
+  function undoBitir() {
+    clearTimeout(undoZaman);
+    undoKaydi = null;
+    undoYaz();
+  }
+  function undoYaz() {
+    if (!undoEl) return;
+    undoEl.hidden = !undoKaydi;
+    if (!undoKaydi) return;
+    undoEl.querySelector(".defter-panel__geri-al-ad").textContent = tr3("Çıkarıldı: ", "Removed: ", "Removido: ") + undoKaydi.entry.title;
+    undoEl.querySelector(".defter-panel__geri-al-dugme").textContent = tr3("Geri al", "Undo", "Desfazer");
+  }
+  function undoBaslat(entry, index) {
+    clearTimeout(undoZaman);
+    undoKaydi = { entry: entry, index: index };
+    undoZaman = setTimeout(undoBitir, 6000);
+    undoYaz();
+  }
+  function undoUygula() {
+    if (!undoKaydi) return;
+    var arr = loadEntries();
+    if (findIndex(arr, undoKaydi.entry.href) === -1) arr.splice(Math.min(undoKaydi.index, arr.length), 0, undoKaydi.entry);
+    saveEntries(arr);
+    undoBitir();
+    refreshStarState();
+    renderPanelList();
+  }
+
   function renderPanelList() {
     if (!listEl) return;
     var entries = loadEntries();
+    undoYaz();
     if (!entries.length) {
       listEl.innerHTML = '<p class="defter-panel__empty">' + tr3(
-        "Defterin şimdilik boş. Bir terime/insight'a ya da okuduğun bir metne bakarken yıldız düğmesine basarak buraya ekleyebilirsin.",
-        "Your notebook is empty for now. While viewing a term, an insight or a text you are reading, tap the star button to add it here.",
-        "Seu caderno está vazio por enquanto. Ao visualizar um termo, um insight ou um texto que está lendo, toque no botão de estrela para adicioná-lo aqui."
+        "Defterin şimdilik boş. Bir terime, bir bölüme ya da okuduğun bir metne bakarken yıldız düğmesine basarak buraya ekleyebilirsin.",
+        "Your notebook is empty for now. While viewing a term, a section or a text you are reading, tap the star button to add it here.",
+        "Seu caderno está vazio por enquanto. Ao ver um termo, uma seção ou um texto que está lendo, toque no botão de estrela para adicioná-lo aqui."
       ) + "</p>";
       return;
     }
@@ -109,9 +144,10 @@
       rm.textContent = "×";
       rm.addEventListener("click", function () {
         var arr = loadEntries();
-        arr.splice(i, 1);
+        var cikan = arr.splice(i, 1)[0];
         saveEntries(arr);
         refreshStarState();
+        if (cikan) undoBaslat(cikan, i);
         renderPanelList();
       });
       item.appendChild(rm);
@@ -122,7 +158,7 @@
   function setPanelOpen(open) {
     panel.hidden = !open;
     toggleBtn.setAttribute("aria-expanded", String(open));
-    if (open) renderPanelList();
+    if (open) renderPanelList(); else undoBitir();
   }
 
   function buildToggle() {
@@ -151,6 +187,7 @@
     p.setAttribute("role", "dialog");
     p.setAttribute("aria-label", "Kavram Defterim / My Concept Notebook / Meu Caderno de Conceitos");
     p.innerHTML =
+      '<div class="uyg-tutamak" aria-hidden="true"></div>' +
       '<div class="defter-panel__head">' +
       '<p class="defter-panel__heading">' + tr3("Kavram Defterim", "My Concept Notebook", "Meu Caderno de Conceitos") + "</p>" +
       '<button type="button" class="defter-panel__close" aria-label="Kapat / Close / Fechar">×</button>' +
@@ -160,8 +197,11 @@
         "This list is kept only in this browser, on your device — it is not shared with anyone.",
         "Esta lista é mantida apenas neste navegador, no seu dispositivo — não é partilhada com ninguém."
       ) + "</p>" +
-      '<div class="defter-panel__list" id="defter-panel-list"></div>';
+      '<div class="defter-panel__list" id="defter-panel-list"></div>' +
+      '<div class="defter-panel__geri-al" role="status" hidden><span class="defter-panel__geri-al-ad"></span><button type="button" class="defter-panel__geri-al-dugme"></button></div>';
     document.body.appendChild(p);
+    undoEl = p.querySelector(".defter-panel__geri-al");
+    undoEl.querySelector("button").addEventListener("click", undoUygula);
     p.querySelector(".defter-panel__close").addEventListener("click", function () { setPanelOpen(false); });
     return p;
   }

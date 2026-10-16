@@ -16,8 +16,10 @@ window.DostViewStatus = (function () {
     el.classList.remove("view-status--error");
     const text = el.querySelector(".view-status__text");
     if (text) text.textContent = pick3({ tr: "Yükleniyor…", en: "Loading…", pt: "Carregando…" });
-    const retry = el.querySelector(".view-status__retry");
+    const retry = el.querySelector(".view-status__retry:not(.view-status__yenile)");
     if (retry) retry.hidden = true;
+    const yenile = el.querySelector(".view-status__yenile");
+    if (yenile) yenile.hidden = true;
     cevrimdisiTemizle(el, wrapId);
   }
 
@@ -44,18 +46,38 @@ window.DostViewStatus = (function () {
     el.classList.add("view-status--error");
     const text = el.querySelector(".view-status__text");
     if (text) {
+      // 2026-10-15 (K18): eski metin "bağlantını kontrol et" diyordu; sorun
+      // bağlantı değil de açık kalmış eski bir sürümse tekrar denemek işe
+      // yaramıyordu. Artık iki yol: tekrar dene, ya da sayfayı yenile.
       text.textContent = pick3({
-        tr: "Bu sayfa şu an açılamadı; bağlantını kontrol edip bir daha dener misin?",
-        en: "This page couldn't open right now; check your connection and try again?",
-        pt: "Esta página não pôde abrir agora; verifique sua conexão e tente de novo?",
+        tr: "Bu sayfa şu an açılamadı. Tekrar deneyebilir ya da sayfayı yenileyebilirsin.",
+        en: "This page couldn't open right now. You can try again or reload the page.",
+        pt: "Esta página não pôde abrir agora. Pode tentar de novo ou recarregar a página.",
       });
     }
-    const retry = el.querySelector(".view-status__retry");
+    const retry = el.querySelector(".view-status__retry:not(.view-status__yenile)");
     if (retry) {
       retry.hidden = false;
       retry.textContent = pick3({ tr: "Tekrar dene", en: "Retry", pt: "Tentar novamente" });
       retry.onclick = onRetry;
     }
+    yenileDugmesi(el, retry);
+  }
+
+  // İkinci eylem: sayfayı yenile (K18). Durum kutusunda tek bir kez kurulur;
+  // yeniden denemenin işe yaramadığı durumlar için (eski sürüm + yeni betik).
+  function yenileDugmesi(el, retry) {
+    let yenile = el.querySelector(".view-status__yenile");
+    if (!yenile) {
+      yenile = document.createElement("button");
+      yenile.type = "button";
+      yenile.className = "view-status__retry view-status__yenile";
+      yenile.addEventListener("click", function () { location.reload(); });
+      if (retry && retry.parentNode) retry.parentNode.insertBefore(yenile, retry.nextSibling);
+      else el.appendChild(yenile);
+    }
+    yenile.hidden = false;
+    yenile.textContent = pick3({ tr: "Sayfayı yenile", en: "Reload the page", pt: "Recarregar a página" });
   }
 
   function hide(wrapId) {
@@ -114,7 +136,7 @@ window.DostViewStatus = (function () {
         pt: "Abre quando a conexão voltar. Para baixar com antecedência, use “Leitura offline”.",
       });
     }
-    const retry = el.querySelector(".view-status__retry");
+    const retry = el.querySelector(".view-status__retry:not(.view-status__yenile)");
     const yeniden = function () {
       showLoading(wrapId);
       onRetry();
@@ -138,6 +160,12 @@ window.DostViewStatus = (function () {
         yeniden();
       };
     }
+    // "Sayfayı yenile" (K18): bağlantı varken ikinci yol; çevrimdışıyken yenilemek
+    // boşuna olurdu (yukarıdaki ipucu ve bağlantı gelince otomatik deneme var).
+    if (cevrimdisi) {
+      const y = el.querySelector(".view-status__yenile");
+      if (y) y.hidden = true;
+    } else yenileDugmesi(el, retry);
     if (cevrimdisi) {
       const acik = function () {
         const e2 = node(wrapId);

@@ -440,6 +440,9 @@
     if (!HTML.classList.contains("dost-uygulama") || !HTML.classList.contains("uyg-okuyor")) return false;
     if (sayfa) return false;
     if ($(".uyg-sayfa:not([hidden])") || $(".uyg-perde:not([hidden])")) return false;
+    // Kabuğun dış katmanları (Ara, Defterim, çekmece, Aa hapı) açıkken çubuklar yerinde
+    // (uygulama-kabugu.js uyg-dis-katman sınıfını koyar; mobil kabuk taraması K05/K10/K11).
+    if (HTML.classList.contains("uyg-dis-katman")) return false;
     return true;
   }
   function cekikAyarla(ac) {
@@ -494,6 +497,8 @@
     },
     sayfaAc: sayfaAc,
     sayfaKapat: sayfaKapat,
+    // Yatayda alt kenardaki tutamak (uygulama-kabugu.js, K05) çekilen çubukları geri getirir.
+    cubuklariGetir: function () { cekikAyarla(false); birikim = 0; },
   };
   // Dil değişince (görünümler yeniden çizer) yıldız etiketleri yeni dilde yazılır.
   if (window.MutationObserver) new MutationObserver(function () { yildizlariTazele(); }).observe(HTML, { attributes: true, attributeFilter: ["lang"] });

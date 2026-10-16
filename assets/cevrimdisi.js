@@ -101,14 +101,14 @@
     } else if (h === "kismi") {
       oran = ozet && ozet.toplamBayt ? Math.min(1, (durum.bayt || 0) / ozet.toplamBayt) : 0;
       var kalan = ozet && ozet.toplamBayt ? Math.max(0, ozet.toplamBayt - (durum.bayt || 0)) : 0;
+      // Boş dize YOK (2026-10-15): pick3 boş alanı yanlış sayıp Türkçeye düşer;
+      // her dil kendi tam cümlesini taşır, boyut ortadan yerleşir.
       yazi = kalan
-        ? t({ tr: "Çevrimdışı okuma: kalan ", en: "Offline reading: download the remaining ", pt: "Leitura offline: descarregar os " })
-          + mb(kalan) + t({ tr: "’ı indir", en: "", pt: " restantes" })
+        ? t({ tr: "Çevrimdışı okuma: kalan " + mb(kalan) + "’ı indir", en: "Offline reading: download the remaining " + mb(kalan), pt: "Leitura offline: descarregar os " + mb(kalan) + " restantes" })
         : t({ tr: "Çevrimdışı okuma: kalanı indir", en: "Offline reading: download the rest", pt: "Leitura offline: descarregar o resto" });
     } else {
       yazi = ozet && ozet.toplamBayt
-        ? t({ tr: "Çevrimdışı okuma: ", en: "Offline reading: download ", pt: "Leitura offline: descarregar " })
-          + mb(ozet.toplamBayt) + t({ tr: " indir", en: "", pt: "" })
+        ? t({ tr: "Çevrimdışı okuma: " + mb(ozet.toplamBayt) + " indir", en: "Offline reading: download " + mb(ozet.toplamBayt), pt: "Leitura offline: descarregar " + mb(ozet.toplamBayt) })
         : t({ tr: "Çevrimdışı okuma: bütün içeriği indir", en: "Offline reading: download all content", pt: "Leitura offline: descarregar todo o conteúdo" });
     }
     metinEl.textContent = yazi;
