@@ -958,6 +958,7 @@
     if (baslik) baslik.inert = gizli;
     nokta.hidden = v2Acik() || !gizli;
     if (halkaCek) { halkaCek.hidden = !(v2Acik() && gizli); halkaIlerle(); }
+    if (halkaAyar) halkaAyar.hidden = !(v2Acik() && gizli);
   }
   nokta.addEventListener("click", function () {
     if (window.DostOkuma && window.DostOkuma.cubuklariGetir) window.DostOkuma.cubuklariGetir();
@@ -976,7 +977,7 @@
   // dokununca döner. Sınıf adı (okuma-cekik) eski kabukla aynı kalır: yatay
   // kural, testler ve CSS tek sınıfı izler. Halka da bir düğmedir (bağlanmamış
   // düğme yok): dokununca çubuklar döner; yayı kaydırma ilerlemesini gösterir.
-  var halkaCek = null;
+  var halkaCek = null, halkaAyar = null;
   if (V2) {
     halkaCek = document.createElement("button");
     halkaCek.type = "button";
@@ -985,6 +986,16 @@
     halkaCek.innerHTML = '<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><circle class="uyg-ilerleme__iz" cx="14" cy="14" r="11"/><circle class="uyg-ilerleme__dolu" cx="14" cy="14" r="11"/></svg>';
     document.body.appendChild(halkaCek);
     halkaCek.addEventListener("click", function () { cekikAyarla(false); cBirikim = 0; });
+    // Çubuklar çekikken ⋮ Ayarlar da ekranda kalır (2026-10-17, kullanıcı notu: "ayarlara
+    // ulaştığım sağ üstteki kısım kayboldu"): halkanın yanında, aynı koşulda görünür; dokununca
+    // Ayarlar açılır (katman açılınca çubuklar zaten döner). Bağlanmamış düğme yok.
+    halkaAyar = document.createElement("button");
+    halkaAyar.type = "button";
+    halkaAyar.className = "uyg-halka uyg-halka--ayar";
+    halkaAyar.hidden = true;
+    halkaAyar.innerHTML = svg("kebab", 20);
+    document.body.appendChild(halkaAyar);
+    halkaAyar.addEventListener("click", function () { if (ayarDugme) ayarDugme.click(); });
   }
   var cekik = false, cSonY = window.scrollY, cBirikim = 0;
   function cekikUygun() {
@@ -1233,6 +1244,7 @@
     daha.setAttribute("aria-label", t(V2 ? ETIKET.ayarlar : ETIKET.daha));
     if (ayarDugme) { ayarDugme.setAttribute("aria-label", t(ETIKET.ayarlarAc)); ayarDugme.title = t(ETIKET.ayarlarAc); }
     if (halkaCek) { halkaCek.setAttribute("aria-label", t(ETIKET.kabukGoster)); halkaCek.title = t(ETIKET.kabukGoster); }
+    if (halkaAyar) { halkaAyar.setAttribute("aria-label", t(ETIKET.ayarlarAc)); halkaAyar.title = t(ETIKET.ayarlarAc); }
     if (v2Acik() && cekmeceEl && !cekmeceEl.hidden) seciciCiz(false);
     if (acikSayfa === daha) dahaCiz();
     if (acikSayfa === okuma) kitaplariCiz();
