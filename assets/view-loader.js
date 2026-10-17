@@ -83,6 +83,7 @@
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-Z4OKs4ZZx37/k64o+kokEX9QEDCfz7ttOrahTg9j/3+C/s5tuVUbanlA5seQXle5" },
+    "geri-bildirim": { src: "assets/geri-bildirim.js", integrity: "sha384-3S1Oj5Et3xHCDE7EZdH3iTZC9QBADEmdIK8c05DpiyCZyYkEIZAnRe90J5RPbIx0" },
   };
 
   // Üçüncü taraf kitaplıklar (2026-10-10): yalnız gerektiği yerde iner.
@@ -224,6 +225,38 @@
   function kipHatasi(ad, err) {
     console.error("view-loader: " + ad + " kipi yüklenemedi --", err);
   }
+
+  // Geliştirici modu (2026-10-17, "Sorun bildir"): localStorage["dost-gelistirici"]
+  // === "1". Açılış: adreste ?gelistirici=1 (kapatma: =0) ya da ⋮ Ayarlar
+  // sayfasındaki sürüm satırına 7 dokunuş (uygulama-kabugu.js, degistir()).
+  // Mod KAPALIYKEN yalnız bu satırlar çalışır: betik inmez, dinleyici yok, ağ yok.
+  // Açıkken assets/geri-bildirim.js (olay tamponu + rapor sayfası) iner.
+  var GEL = "dost-gelistirici", gelBellek = false;
+  function gelAcikMi() { try { return localStorage.getItem(GEL) === "1"; } catch (e) { return gelBellek; } }
+  function gelYaz(ac) {
+    gelBellek = ac;
+    try { if (ac) localStorage.setItem(GEL, "1"); else localStorage.removeItem(GEL); } catch (e) { /* depo kapalı: oturumluk */ }
+  }
+  function gelYukle() {
+    return kipYukle("geri-bildirim").then(function () {
+      if (window.__dostGeriBildirim) window.__dostGeriBildirim.baslat();
+    }, function (e) { kipHatasi("geri-bildirim", e); });
+  }
+  window.__dostGelistirici = {
+    acikMi: gelAcikMi,
+    yukle: gelYukle,
+    degistir: function () {
+      var ac = !gelAcikMi();
+      gelYaz(ac);
+      if (ac) gelYukle(); else if (window.__dostGeriBildirim) window.__dostGeriBildirim.durdur();
+      return ac;
+    },
+  };
+  (function () {
+    var m = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
+    if (m) gelYaz(m[1] === "1");
+    if (gelAcikMi()) gelYukle();
+  })();
 
   // @revise önceki oturumda açık bırakıldıysa (edit-mode.js sayfayı
   // yeniden yükleyerek kipi korur) kip betikleri hemen iner; gövde sınıfı

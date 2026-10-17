@@ -67,6 +67,14 @@
  *  - Alt çubukta konum her zaman yanık: harita grubu Harita, külliyat Okuma,
  *    kalan gruplar Bölümler.
  *  - Yatayda alt çubuk sol ray (56 px), başlık 44 px, Bölümler yan sayfa.
+ *
+ * 2026-10-17 -- GELİŞTİRİCİ MODU ("Sorun bildir"; docs/rapor-bicimi.md).
+ * Ayarlar sayfasının altında sürüm/künye satırı (herkese görünür): ona 7 art
+ * arda dokunuş modu açar/kapatır (window.__dostGelistirici, view-loader.js;
+ * bu sayfanın var olan tek tıklama dinleyicisi işler -- mod kapalıyken ek
+ * dinleyici yok). Mod açıkken Ayarlar'da "Sorun bildir" satırı belirir; sayfa
+ * (assets/geri-bildirim.js, tembel) __dostKabukDisKatman ile Ara/Defterim gibi
+ * bir dış katman olur: geri tuşu, Esc, ✕ aynı tek adım.
  */
 (function () {
   "use strict";
@@ -152,6 +160,11 @@
     grup: { tr: "Grup", en: "Group", pt: "Grupo" },
     burada: { tr: "Buradasın", en: "You are here", pt: "Você está aqui" },
     ayarlarAc: { tr: "Ayarlar", en: "Settings", pt: "Configurações" },
+    // Geliştirici modu (2026-10-17): sürüm satırı + "Sorun bildir" (yalnız mod açıkken).
+    surum: { tr: "sürüm", en: "version", pt: "versão" },
+    rapor: { tr: "Sorun bildir", en: "Report a problem", pt: "Relatar um problema" },
+    gelAcildi: { tr: "Geliştirici modu açıldı", en: "Developer mode on", pt: "Modo de desenvolvedor ativado" },
+    gelKapandi: { tr: "Geliştirici modu kapandı", en: "Developer mode off", pt: "Modo de desenvolvedor desativado" },
   };
 
   // --- Alt gezinme -----------------------------------------------------------
@@ -241,6 +254,49 @@
     }
   }
 
+  // Sürüm satırı: sitenin hizmet işçisi sürümü (önbellek adı "dost-sw-<özet>")
+  // cihazın kendi önbellek listesinden okunur -- ağ isteği yok. Önbellek yoksa
+  // (ilk ziyaret, özel pencere) satır "dostarabi.com" olarak kalır.
+  function surumYaz() {
+    try {
+      if (!window.caches || !caches.keys) return;
+      caches.keys().then(function (adlar) {
+        var a = adlar.filter(function (x) { return /^dost-sw-[0-9a-f]+$/.test(x); })[0];
+        var el = $(".uyg-surum", daha);
+        if (a && el) el.textContent = "Dost Arabî · " + t(ETIKET.surum) + " " + a.slice(8, 16);
+      }).catch(function () { /* önbellek erişilemez */ });
+    } catch (e) { /* önbellek API'si yok */ }
+  }
+  // Kısa bildirim (role=status, 2,6 sn): yeni bir görünürlük sözleşmesi icat
+  // etmez -- yalnız "oldu" demek için; kendiliğinden kalkar.
+  var bildirimEl = null, bildirimZaman = null;
+  function bildir(metin) {
+    if (!bildirimEl) {
+      bildirimEl = document.createElement("div");
+      bildirimEl.className = "uyg-bildirim";
+      bildirimEl.setAttribute("role", "status");
+      document.body.appendChild(bildirimEl);
+    }
+    bildirimEl.textContent = metin;
+    bildirimEl.hidden = false;
+    clearTimeout(bildirimZaman);
+    bildirimZaman = setTimeout(function () { bildirimEl.hidden = true; }, 2600);
+  }
+  // Sürüm satırına art arda 7 dokunuş (her biri öncekinden en geç 1,5 sn sonra).
+  var surumSay = 0, surumSon = 0;
+  function surumDokunus() {
+    var simdi = Date.now();
+    surumSay = simdi - surumSon < 1500 ? surumSay + 1 : 1;
+    surumSon = simdi;
+    if (surumSay < 7) return;
+    surumSay = 0;
+    var gel = window.__dostGelistirici;
+    if (!gel) return;
+    var ac = gel.degistir();
+    bildir(t(ac ? ETIKET.gelAcildi : ETIKET.gelKapandi));
+    dahaCiz();
+  }
+
   // Bölümler akordeon (K16, 2026-10-15): çekmecenin gruplarıyla aynı model --
   // etkin bölümün grubu açık, ötekiler kapalı (başlıkta kaç bölüm olduğu
   // yazar). Açık/kapalı durumu sayfa her açılışta etkin gruptan yeniden
@@ -278,6 +334,13 @@
       + (sm ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sessiz) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-anahtar" data-eylem="sessiz" aria-label="' + t(ETIKET.sessiz) + '" aria-pressed="' + (sm.getAttribute("aria-pressed") === "true") + '"><span class="uyg-anahtar__iz"><span class="uyg-anahtar__top"></span></span></button></span></div>' : "")
       + (su ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sasirt) + '<small class="uyg-ayar__alt">' + t(ETIKET.sasirtAlt) + '</small></span><span class="uyg-ayar__denetim"><button type="button" class="uyg-daire" data-eylem="sasirt" aria-label="' + t(ETIKET.sasirt) + '">' + su.innerHTML + "</button></span></div>" : "");
     if (gizlilik) dahaBolum.insertAdjacentHTML("beforeend", '<a class="uyg-baglanti" href="' + gizlilik.getAttribute("href") + '"><span>' + t(ETIKET.gizlilik) + "</span>" + svg("sag", 18) + "</a>");
+    // Geliştirici modu açıksa "Sorun bildir"; sürüm/künye satırı herkese görünür
+    // (7 art arda dokunuş modu açar/kapatır -- bu sayfanın var olan tek tıklama
+    // dinleyicisi işler, mod kapalıyken ek dinleyici yok).
+    var gel = window.__dostGelistirici;
+    if (gel && gel.acikMi()) dahaBolum.insertAdjacentHTML("beforeend", '<button type="button" class="uyg-baglanti uyg-baglanti--rapor" data-eylem="rapor"><span>' + t(ETIKET.rapor) + "</span>" + svg("sag", 18) + "</button>");
+    dahaBolum.insertAdjacentHTML("beforeend", '<p class="uyg-surum">Dost Arabî · dostarabi.com</p>');
+    surumYaz();
     if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons($('[data-eylem="kucult"]', daha), $('[data-eylem="buyut"]', daha));
   }
 
@@ -514,6 +577,15 @@
       if (d.el) new MutationObserver(function () { disDegisti(d); }).observe(d.el, { attributes: true, attributeFilter: ["hidden"] });
     });
   }
+  // Geliştirici modu (assets/geri-bildirim.js, tembel): "Sorun bildir" sayfası
+  // kendi katmanını buradan ekler ve Ara/Defterim gibi bir dış katman olur --
+  // tarih girdisi, Esc, geri tuşu ve ✕ aynı tek adımdır. Mod kapalıyken çağrılmaz.
+  window.__dostKabukDisKatman = function (d) {
+    if (disBul(d.ad)) return;
+    DIS.push(d);
+    disBagla();
+    guncelle();
+  };
   // Geri tuşunun kapattığı katman: yığından hemen düşer (gözcü eşzamansız),
   // gözcü de onu "kendi kapanışı" saymaz (disSessiz).
   function disKapat(ad) {
@@ -714,6 +786,7 @@
   });
   okuma.addEventListener("click", function (e) { var b = e.target.closest("[data-kapi]"); if (b) kapiAc(b.dataset.kapi); });
   daha.addEventListener("click", function (e) {
+    if (e.target.closest(".uyg-surum")) { surumDokunus(); return; }
     var b = e.target.closest("button");
     if (!b || cevrimYuva.contains(b)) return; // çevrimdışı satırı kendi dinleyicileriyle
     if (b.dataset.grup !== undefined) {
@@ -744,6 +817,11 @@
     }
     else if (e2 === "sessiz") kapiAc("sessiz-mod-toggle");
     else if (e2 === "sasirt") kapiAc("surprise-toggle");
+    else if (e2 === "rapor") {
+      // Sayfa kapanır, "Sorun bildir" katmanı (tembel betik) onun yerine açılır.
+      var gel2 = window.__dostGelistirici;
+      if (gel2) eylemleKapat(function () { gel2.yukle().then(function () { if (window.__dostGeriBildirim) window.__dostGeriBildirim.ac(); }); });
+    }
   });
   perde.addEventListener("click", function () {
     if (disYigin.length && disSimdi()) { history.back(); return; } // Defterim sayfası: perdeye dokunmak geri dairesiyle aynı adım
