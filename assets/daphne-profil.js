@@ -486,22 +486,55 @@
       <ol class="daphne-soru-liste">${rows}</ol></div>`;
   }
 
-  function dostHtml(a) {
+  // Dost'un dünyasıyla örtüşen / ayrışan noktalar (2026-10-18, kullanıcı isteği:
+  // "taranan yazıların çözümlemelerine Dost'un dünyasıyla benzeşen ya da zıt
+  // düşen tespitleri de maddeler hâlinde ekleyelim"). Maddeler
+  // data/daphne-dost-baglari.json'da (Bağlar Haritası sekmesiyle aynı veri;
+  // yazıya url ile eşlenir) ve ilk açılışta tembel çekilir -- yazı listesi
+  // bu dosyaya bağlı değil. Kavram adları ontology.json/felsefi-terimler.json'dan.
+  let baglarSozu = null;
+  function baglariGetir() {
+    if (baglarSozu) return baglarSozu;
+    const fj = (y) => window.DostGraphUtils.fetchJson(y);
+    baglarSozu = Promise.all([
+      fj("data/daphne-dost-baglari.json"),
+      fj("data/ibn-arabi/ontology.json"),
+      fj("data/ibn-arabi/felsefi-terimler.json"),
+    ]).then(([baglar, ontoloji, terimler]) => {
+      const bagMap = new Map((baglar.yazilar || []).map((y) => [y.url, y.dost || []]));
+      const adlar = new Map();
+      (ontoloji.nodes || []).forEach((n) => adlar.set("ontoloji:" + n.id, n.name));
+      Object.keys(terimler.terms || {}).forEach((k) => adlar.set("terimler:" + terimler.terms[k].id, terimler.terms[k].title));
+      return { bagMap, adlar };
+    }).catch((err) => { baglarSozu = null; throw err; });
+    return baglarSozu;
+  }
+
+  const BAG_SIRASI = { ortusme: 0, fark: 1, soru: 2 };
+  function dostHtml(a, adlar) {
     if (!a.dost || !a.dost.length) return "";
     const base = window.__dostRouteBase || "";
-    const rows = a.dost.map((b) => {
+    const adFor = (b) => {
+      const ad = adlar && adlar.get(b.view + ":" + b.id);
+      if (ad) return tt(ad);
+      const m = b.view === "futuhat" && /^c(\d+)k(\d+)$/.exec(b.id);
+      return m ? tt({ tr: `Fütûhât, ${m[1]}. cilt ${m[2]}. kısım`, en: `Futuhat, vol. ${m[1]}, part ${m[2]}`, pt: `Futuhat, vol. ${m[1]}, parte ${m[2]}` }) : b.id;
+    };
+    const sirali = a.dost.slice().sort((x, y) => (BAG_SIRASI[x.tur] ?? 0) - (BAG_SIRASI[y.tur] ?? 0));
+    const rows = sirali.map((b) => {
       const gorunum = DOST_GORUNUM[b.view] ? tt(DOST_GORUNUM[b.view]) : b.view;
       const tur = BAG_TURU[b.tur] ? tt(BAG_TURU[b.tur]) : "";
+      const yol = window.DostMeta && window.DostMeta.anchorPath ? window.DostMeta.anchorPath(b.view, b.id) : `/${b.view}/${b.id}`;
       return `<li class="daphne-bag daphne-bag--dost daphne-bag--${b.tur || "ortusme"}">
-        <a class="daphne-bag__ad" href="${base}/${b.view}/${b.id}">${gorunum} › ${b.id}</a>
+        <a class="daphne-bag__ad" href="${base}${yol}">${gorunum} › ${adFor(b)}</a>
         ${tur ? `<span class="daphne-bag__tur">${tur}</span>` : ""}
         <span class="daphne-bag__neden">${tt(b.neden)}</span></li>`;
     }).join("");
     return `<div class="daphne-baglar daphne-baglar--dost">
       <p class="daphne-baglar__baslik">${tt({
-        tr: "Dost'un hangi kavramına dokunuyor",
-        en: "Which of the Friend's concepts it touches",
-        pt: "Quais conceitos do Amigo ele toca" })}</p>
+        tr: "Dost'un dünyasıyla örtüşen ve ayrışan noktalar",
+        en: "Where it overlaps with and departs from the Friend's world",
+        pt: "Onde se sobrepõe e se afasta do mundo do Amigo" })}</p>
       <p class="daphne-baglar__not">${tt({
         tr: "Bu bağları biz kurduk. Bir örtüşme ile bir fark aynı şey değil; farkı örtüşme gibi göstermemek için türünü de yazıyoruz.",
         en: "We made these links ourselves. An overlap and a difference are not the same thing; we name the kind so a difference is not shown as agreement.",
@@ -651,9 +684,18 @@
           <h2 class="daphne-okuma__baslik" id="daphne-okuma-baslik">${a.title}</h2>
           ${a.date ? `<p class="daphne-okuma__tarih">${a.date}</p>` : ""}
           ${note}${ozet}${bos}
-          ${eksenlerHtml(a, pageData)}${dostHtml(a)}${sorularHtml(a)}
+          ${eksenlerHtml(a, pageData)}<div class="daphne-dost-yuva">${dostHtml(a)}</div>${sorularHtml(a)}
         </article>
       </div>`;
+    if (!(a.dost || []).length) {
+      // Bağlar ayrı dosyada: gelince yuvaya yazılır; yazı bu arada kapanmış ya da
+      // başka yazıya geçilmişse (yuva artık belgede değil) hiçbir şey yapılmaz.
+      const yuva = el.querySelector(".daphne-dost-yuva");
+      baglariGetir().then(({ bagMap, adlar }) => {
+        const dost = bagMap.get(a.url) || [];
+        if (yuva && yuva.isConnected && dost.length) yuva.innerHTML = dostHtml({ dost }, adlar);
+      }).catch(() => { /* bağlar gelmezse kart bağsız kalır; özet ve sorular yerinde */ });
+    }
     el.hidden = false;
     document.body.classList.add("daphne-okuma-acik");
     const kapat = el.querySelector(".daphne-okuma__kapat");
