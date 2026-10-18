@@ -678,6 +678,10 @@
       <div class="daphne-okuma__ic">
         <div class="daphne-okuma__ust">
           <button class="daphne-okuma__kapat" type="button">← ${tt({ tr: "Geri", en: "Back", pt: "Voltar" })}</button>
+          <span class="daphne-okuma__yazi">
+            <button class="typography-btn" id="daphne-okuma-font-decrease" type="button" title="Yazı boyutunu küçült / Decrease font size / Diminuir tamanho da fonte" aria-label="A−">A−</button>
+            <button class="typography-btn" id="daphne-okuma-font-increase" type="button" title="Yazı boyutunu büyült / Increase font size / Aumentar tamanho da fonte" aria-label="A+">A+</button>
+          </span>
           <a class="daphne-okuma__kaynak" href="${a.url}" target="_blank" rel="noopener">${tt({ tr: "kaynağı aç", en: "open source", pt: "abrir a fonte" })} ↗</a>
         </div>
         <article class="daphne-okuma__govde" data-dost-dosya="data/daphne-profile.json" data-dost-kaynak="${a.url}">
@@ -696,6 +700,8 @@
         if (yuva && yuva.isConnected && dost.length) yuva.innerHTML = dostHtml({ dost }, adlar);
       }).catch(() => { /* bağlar gelmezse kart bağsız kalır; özet ve sorular yerinde */ });
     }
+    if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons(
+      el.querySelector("#daphne-okuma-font-decrease"), el.querySelector("#daphne-okuma-font-increase"));
     el.hidden = false;
     document.body.classList.add("daphne-okuma-acik");
     const kapat = el.querySelector(".daphne-okuma__kapat");

@@ -19,6 +19,12 @@
   window.DostGraphUtils.setupLegendToggles();
   window.DostGraphUtils.setupDetailPanelFocus();
 
+  // Yazı boyutu (2026-10-18, kullanıcı isteği): Daphne sayfalarının kendi
+  // A−/A+ çifti -- detay panelindeki (reading-mode.js) ve yazı okumasındakiyle
+  // aynı ortak ölçeği (assets/font-scale.js) kullanır.
+  if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons(
+    document.getElementById("daphne-font-decrease"), document.getElementById("daphne-font-increase"));
+
   // Sekmeler. "Daphne'nin Profili" ile "Taranan Yazılar" 2026-07-27'ye
   // kadar ayrı bir sayfaydı (daphne-profil.html, "understand" yazınca
   // açılıyordu); o sayfa silindi, içeriği buraya sekme olarak taşındı.
