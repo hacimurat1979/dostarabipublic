@@ -1129,9 +1129,9 @@
     sorular: {
       title: { tr: "Sorular", en: "Questions", pt: "Perguntas" },
       desc: {
-        tr: "İbn Arabî'yi okurken biriken, henüz kapanmamış soruların toplandığı bölüm.",
-        en: "A section gathering the still-open questions that accumulate while reading Ibn Arabi.",
-        pt: "Uma seção que reúne as perguntas ainda em aberto que se acumulam ao ler Ibn Arabi.",
+        tr: "Dokuz başlık altında toplanan sorular ve kısa cevapları; her cevap, konuyu işleyen kavram düğümüne bağlanır.",
+        en: "Questions gathered under nine headings, with short answers; each answer links to the concept node that treats the subject.",
+        pt: "Perguntas reunidas em nove títulos, com respostas breves; cada resposta remete ao nó de conceito que trata o assunto.",
       },
     },
     futuhat: {
