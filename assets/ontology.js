@@ -352,6 +352,7 @@
       window.__vahdetApp && window.__vahdetApp.onLangChange();
       window.__okumaYollariApp && window.__okumaYollariApp.onLangChange();
       window.__neredenBaslamaliApp && window.__neredenBaslamaliApp.onLangChange();
+      window.__girisApp && window.__girisApp.onLangChange();
     }
     else if (currentMainView === "kavram") window.__kavramApp && window.__kavramApp.onLangChange();
     else if (currentMainView === "yolculuk") window.__yolculukApp && window.__yolculukApp.onLangChange();
@@ -732,6 +733,10 @@
   const hakkindaSubVahdetBtn = document.getElementById("hakkinda-sub-vahdet-btn");
   const hakkindaSubOkumaYollariBtn = document.getElementById("hakkinda-sub-okuma-yollari-btn");
   const hakkindaSubNeredenBaslamaliBtn = document.getElementById("hakkinda-sub-nereden-baslamali-btn");
+  const hakkindaSubNasilOkunurBtn = document.getElementById("hakkinda-sub-nasil-okunur-btn");
+  const hakkindaSubSozlukBtn = document.getElementById("hakkinda-sub-sozluk-btn");
+  const hakkindaSubKapsamBtn = document.getElementById("hakkinda-sub-kapsam-btn");
+  const hakkindaSubKaynakcaBtn = document.getElementById("hakkinda-sub-kaynakca-btn");
   const okumaYollariBtn = document.getElementById("okuma-yollari-btn");
   const kavramBtn = document.getElementById("kavram-btn");
   const ayethadisBtn = document.getElementById("ayethadis-btn");
@@ -959,6 +964,10 @@
     [hakkindaSubVahdetBtn, "hakkinda", "vahdet"],
     [hakkindaSubOkumaYollariBtn, "hakkinda", "okuma-yollari"],
     [hakkindaSubNeredenBaslamaliBtn, "hakkinda", "nereden-baslamali"],
+    [hakkindaSubNasilOkunurBtn, "hakkinda", "nasil-okunur"],
+    [hakkindaSubSozlukBtn, "hakkinda", "sozluk"],
+    [hakkindaSubKapsamBtn, "hakkinda", "kapsam"],
+    [hakkindaSubKaynakcaBtn, "hakkinda", "kaynakca"],
   ];
   // Rota adı -> setMainView'in iç adı (ikisi çoğunlukla aynı).
   const IC_GORUNUM = {
@@ -1212,6 +1221,38 @@
         tr: "Konu konu, kaynak kartlarına bağlı okuma yolları: nereden başlamalı, hangi sırayla.",
         en: "Topic-by-topic reading paths tied to source cards: where to start, in what order.",
         pt: "Caminhos de leitura por tema, ligados aos cartões de fontes: por onde começar, em que ordem.",
+      },
+    },
+    "nasil-okunur": {
+      title: { tr: "Nasıl Okunur", en: "How to Read", pt: "Como Ler" },
+      desc: {
+        tr: "Beş hareket, her görünümde aynı anlamda: yaklaşmak, geri çekilmek, bir adım geri, değinmek, seçmek.",
+        en: "Five gestures with the same meaning in every view: drawing near, stepping back, one step back, touching lightly, choosing.",
+        pt: "Cinco gestos com o mesmo sentido em todas as visões: aproximar-se, recuar, um passo atrás, tocar de leve, escolher.",
+      },
+    },
+    sozluk: {
+      title: { tr: "Sözlük", en: "Glossary", pt: "Glossário" },
+      desc: {
+        tr: "Terimler, Esmâ, Hâller ve Ontoloji kayıtları tek A–Z listede; her girdi kendi kaydına bağlanır.",
+        en: "The records of Terms, Names, States and Ontology in one A–Z list; each entry links to its own record.",
+        pt: "Os registros de Termos, Nomes, Estados e Ontologia em uma lista A–Z; cada entrada leva ao seu registro.",
+      },
+    },
+    kapsam: {
+      title: { tr: "Kapsam", en: "Scope", pt: "Abrangência" },
+      desc: {
+        tr: "Neredeyiz: Fütûhât'ın 18 cildinde özetin kaynak metne oranı, okuma durumu ve sitedeki kayıt sayıları.",
+        en: "Where we are: the ratio of summary to source text across the Futuhat's 18 volumes, reading status and record counts.",
+        pt: "Onde estamos: a razão entre resumo e texto-fonte nos 18 volumes do Futuhat, o estado da leitura e o número de registros.",
+      },
+    },
+    kaynakca: {
+      title: { tr: "Kaynakça", en: "Bibliography", pt: "Bibliografia" },
+      desc: {
+        tr: "Sitede adı geçen ve okumada kullanılan kaynakların künyeleri: yazar, başlık, yıl, yayıncı; hangi bölümde anıldığı.",
+        en: "Bibliographic details of the sources named on the site and used in the readings: author, title, year, publisher, and where cited.",
+        pt: "Dados bibliográficos das fontes citadas no site e usadas nas leituras: autor, título, ano, editora e onde são citadas.",
       },
     },
     "nereden-baslamali": {

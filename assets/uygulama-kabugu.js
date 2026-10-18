@@ -355,7 +355,7 @@
   var cekmeceEv = cekmeceEl && cekmeceEl.parentNode;
   var cekmeceSonraki = cekmeceEl && cekmeceEl.nextSibling;
   var ATLA_KAPI = "hakkinda-sub-okuma-yollari-btn";
-  var ALT_SEKME = { "siirler": "hakkinda-sub-siirler-btn", "vahdet": "hakkinda-sub-vahdet-btn", "okuma-yollari": "okuma-yollari-btn", "nereden-baslamali": "hakkinda-sub-nereden-baslamali-btn" };
+  var ALT_SEKME = { "siirler": "hakkinda-sub-siirler-btn", "vahdet": "hakkinda-sub-vahdet-btn", "okuma-yollari": "okuma-yollari-btn", "nereden-baslamali": "hakkinda-sub-nereden-baslamali-btn", "nasil-okunur": "hakkinda-sub-nasil-okunur-btn", "sozluk": "hakkinda-sub-sozluk-btn", "kapsam": "hakkinda-sub-kapsam-btn", "kaynakca": "hakkinda-sub-kaynakca-btn" };
   var secGrup = 0, seciciEl = null;
   function v2Acik() { return V2 && HTML.classList.contains("uyg-v2"); }
   // Çekmece başlığın içinde (z-index:50 bağlamı) duruyor; başlık çekilirken

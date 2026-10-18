@@ -245,6 +245,10 @@
       vahdet: { btn: document.getElementById("hakkinda-subtab-vahdet"), panel: document.getElementById("vahdet-panel") },
       "okuma-yollari": { btn: document.getElementById("hakkinda-subtab-okuma-yollari"), panel: document.getElementById("okuma-yollari-panel") },
       "nereden-baslamali": { btn: document.getElementById("hakkinda-subtab-nereden-baslamali"), panel: document.getElementById("nereden-baslamali-panel") },
+      "nasil-okunur": { btn: document.getElementById("hakkinda-subtab-nasil-okunur"), panel: document.getElementById("nasil-okunur-panel") },
+      "sozluk": { btn: document.getElementById("hakkinda-subtab-sozluk"), panel: document.getElementById("sozluk-panel") },
+      "kapsam": { btn: document.getElementById("hakkinda-subtab-kapsam"), panel: document.getElementById("kapsam-panel") },
+      "kaynakca": { btn: document.getElementById("hakkinda-subtab-kaynakca"), panel: document.getElementById("kaynakca-panel") },
     };
     const keys = Object.keys(tabs);
     if (keys.some((k) => !tabs[k].btn || !tabs[k].panel)) return;
@@ -267,6 +271,7 @@
       if (which === "vahdet") window.__vahdetApp && window.__vahdetApp.activate();
       if (which === "okuma-yollari") window.__okumaYollariApp && window.__okumaYollariApp.activate();
       if (which === "nereden-baslamali") window.__neredenBaslamaliApp && window.__neredenBaslamaliApp.activate();
+      if (which === "kapsam" || which === "kaynakca" || which === "nasil-okunur" || which === "sozluk") window.__girisApp && window.__girisApp.activate(which);
     }
     switchToTab = switchTo;
 

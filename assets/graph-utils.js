@@ -1976,7 +1976,7 @@ window.DostGraphUtils = (function () {
 //   - görünüm: https://dostarabi.com/<view>/ (dil kopyası: /en/<view>/)
 //     + dörtlü hreflang bloğu (tr/en/pt-BR/x-default)
 //   - statik rotası olan kayıt (futuhat|fusus|miskat/<id>,
-//     kavram/<view>/<id>, hakkinda/okuma-yollari|nereden-baslamali):
+//     kavram/<view>/<id>, hakkinda/okuma-yollari|nereden-baslamali|nasil-okunur|sozluk|kapsam|kaynakca):
 //     https://dostarabi.com/<view>/<id>/ -- dil kopyası yok, hreflang yok
 //   - statik rotası OLMAYAN kayıt (esma/cemil gibi; doğrudan istek GitHub
 //     Pages'te 404 döner): görünümün canonical'ı -- 404 veren bir adresi
@@ -1992,7 +1992,7 @@ window.DostMeta = (function () {
   // Yeni bir görünüm eklenirse buraya da yazılır -- meta-testi.js /en/
   // kopyalarının hepsini sınadığı için unutulursa test kırılır.
   const DIL_KOPYALI = new Set(["ontoloji", "esma", "hal", "terimler", "cizimler", "sirlar", "sorular", "bilmiyoruz", "elestiri-arkeolojisi", "hocalar", "eser-agi", "seyahat-atlasi", "yolculuk", "kuran-dokusu", "menziller", "tasiyicilar", "futuhat", "fusus", "miskat", "hakkinda", "kavram", "ayethadis"]);
-  const ROTALI_KAYIT = /^(?:(?:futuhat|fusus|miskat)\/[A-Za-z0-9_-]+|kavram\/[a-z-]+\/[A-Za-z0-9_-]+|hakkinda\/(?:okuma-yollari|nereden-baslamali))$/;
+  const ROTALI_KAYIT = /^(?:(?:futuhat|fusus|miskat)\/[A-Za-z0-9_-]+|kavram\/[a-z-]+\/[A-Za-z0-9_-]+|hakkinda\/(?:okuma-yollari|nereden-baslamali|nasil-okunur|sozluk|kapsam|kaynakca))$/;
   const TAG_RE = /<[^>]+>/g;
 
   function routeBase() { return window.__dostRouteBase || ""; }
