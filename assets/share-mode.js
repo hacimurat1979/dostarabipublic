@@ -2797,6 +2797,7 @@
     // o tembel indiriyor, 2026-10-09); burada yalnız yükleyicisiz sayfalar
     // için.
     if (window.__dostKipYukleyici) return;
+    try { if (localStorage.getItem("dost-gelistirici") !== "1") return; } catch (err) { return; }
     if (!e.key || e.key.length !== 1) return;
     if (e.metaKey) return;
     // AltGr (Ctrl+Alt) Türkçe klavyede "@" üretiyor -- bkz. edit-mode.js.

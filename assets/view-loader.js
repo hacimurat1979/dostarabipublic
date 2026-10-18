@@ -82,7 +82,7 @@
     "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
-    "share-mode": { src: "assets/share-mode.js", integrity: "sha384-Z4OKs4ZZx37/k64o+kokEX9QEDCfz7ttOrahTg9j/3+C/s5tuVUbanlA5seQXle5" },
+    "share-mode": { src: "assets/share-mode.js", integrity: "sha384-OetL6ZzUApIaeF6LIXNsT9ezDbL94Q7Tt+ydLwgqtlJ2X4i+cA9RJrD/suJKs/+o" },
     "geri-bildirim": { src: "assets/geri-bildirim.js", integrity: "sha384-3S1Oj5Et3xHCDE7EZdH3iTZC9QBADEmdIK8c05DpiyCZyYkEIZAnRe90J5RPbIx0" },
   };
 
@@ -233,9 +233,13 @@
   // Açıkken assets/geri-bildirim.js (olay tamponu + rapor sayfası) iner.
   var GEL = "dost-gelistirici", gelBellek = false;
   function gelAcikMi() { try { return localStorage.getItem(GEL) === "1"; } catch (e) { return gelBellek; } }
+  // html.dost-gel: yalnız geliştirici modunda görünen düğmelerin (Yazdır,
+  // Görsel kart) CSS kapısı; ilk boyamadan önce index.html başındaki betik de koyar.
+  function gelSinif() { document.documentElement.classList.toggle("dost-gel", gelAcikMi()); }
   function gelYaz(ac) {
     gelBellek = ac;
     try { if (ac) localStorage.setItem(GEL, "1"); else localStorage.removeItem(GEL); } catch (e) { /* depo kapalı: oturumluk */ }
+    gelSinif();
   }
   function gelYukle() {
     return kipYukle("geri-bildirim").then(function () {
@@ -255,6 +259,7 @@
   (function () {
     var m = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
     if (m) gelYaz(m[1] === "1");
+    gelSinif();
     if (gelAcikMi()) gelYukle();
   })();
 
@@ -339,7 +344,8 @@
       }).catch(function (err) { kipHatasi("@revise", err); });
     } else if (tampon.slice(-6) === "@share" && !(t && t.isContentEditable)) {
       tampon = "";
-      window.__dostShare.toggle();
+      // @share yalnız geliştirici modunda (2026-10-18, kullanıcı notu #4).
+      if (gelAcikMi()) window.__dostShare.toggle();
     }
   });
 
