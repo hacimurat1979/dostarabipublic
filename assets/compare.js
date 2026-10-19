@@ -18,6 +18,7 @@
     if (window.__dostDaphneProfileApp) window.__dostDaphneProfileApp.render();
     if (window.__dostDaphneBagHaritasiApp) window.__dostDaphneBagHaritasiApp.render();
     if (window.__dostDaphneBaglarApp) window.__dostDaphneBaglarApp.render();
+    if (window.__dostDaphneSeyirApp) window.__dostDaphneSeyirApp.render();
     if (window.__dostDaphneOkuma) window.__dostDaphneOkuma.yenile();
     I18n.applyStatic();
     I18n.renderLangSwitcher(dilKap, dilDegisti);
@@ -49,6 +50,7 @@
       profil: document.getElementById("intro-text-profile"),
       bagharita: document.getElementById("intro-text-bagharita"),
       baglar: document.getElementById("intro-text-baglar"),
+      seyir: document.getElementById("intro-text-seyir"),
     };
     const uygulamalar = {
       temalar: () => window.__dostOrtakTemalarApp,
@@ -56,6 +58,7 @@
       yazilar: () => window.__dostDaphneProfileApp,
       bagharita: () => window.__dostDaphneBagHaritasiApp,
       baglar: () => window.__dostDaphneBaglarApp,
+      seyir: () => window.__dostDaphneSeyirApp,
     };
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
