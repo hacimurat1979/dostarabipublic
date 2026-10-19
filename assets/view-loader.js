@@ -68,7 +68,7 @@
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-UwsMvtMG+q7ctTqLSp1JUAn6RLhfYQ5KEj4SqpbQJo1qoC9Jcd37DNDy9At+XXbH", wrap: "kuran-dokusu-wrap" },
     __esmaApp: { src: "assets/esma.js", integrity: "sha384-FJ/zWpVvn5GYoHzsm6X5mFn1InLSdOfx8uy+k2vHue8/eI/sbNb07v4JPsF4RFfR", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-gtASrea8ie31lnjO24iCIJdaj1BONhxkDJfKciRK+2+r9rgKpct8SyN3rNuGi9MW", wrap: "hal-wrap" },
-    __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-pMcEZ0fqgycVxOXlq9LIRuKSsgldmmC7uMqhFR/kMQocWAk+kDMEyYyZ2JpbRSBe", wrap: "terimler-wrap" },
+    __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-CJnjbSwU8iz6Fj5ASDmbnzIk6aw7Z+q5jmVDL7ADf/agerwX22Dx8yQ0jKkO5dtg", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-PR4lTvb0ECieUAJ8fvDRgV/d8+1ZFd6oGZKkCe/Scbef08KkGUrW4F7agX3KQyUu", wrap: "menziller-wrap" },
     __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-+cEeGLn77bG5FcQGPN/IZd3bZUtIVP36hwovJAj8WiuHlh/OLWhRNglxbsEsf+vB", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },

@@ -27,6 +27,7 @@
     "acik-sorular": { tr: "Açık Sorular", en: "Open Questions", pt: "Perguntas em Aberto" },
     bilmiyoruz: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" },
     ayethadis: { tr: "Âyet & Hadis", en: "Verses & Hadith", pt: "Versículos e Hadith" },
+    hakkinda: { tr: "Hakkında", en: "About", pt: "Sobre" },
   };
 
   // Sonuç gruplarının başında, hangi görünüme ait olduğunu tek bakışta
@@ -54,7 +55,19 @@
     "acik-sorular": "--series-theme",
     bilmiyoruz: "--series-theme",
     ayethadis: "--series-theme",
+    hakkinda: "--series-theme",
   };
+
+  const HAKKINDA_SAYFALARI = [
+    { id: "siirler", ad: { tr: "Şiirleri", en: "Poems", pt: "Poemas" }, sub: { tr: "Tercümânü'l-Eşvâk ve Fütûhât içindeki şiirler", en: "Poems from the Tarjuman al-Ashwaq and the Futuhat", pt: "Poemas do Tarjuman al-Ashwaq e do Futuhat" } },
+    { id: "vahdet", ad: { tr: "Eleştiriler", en: "Criticisms", pt: "Críticas" }, sub: { tr: "Vahdet-i vücûd eleştirileri", en: "Criticisms of the unity of being", pt: "Críticas à unidade do ser" } },
+    { id: "okuma-yollari", ad: { tr: "Okuma Yolları", en: "Reading Paths", pt: "Caminhos de Leitura" }, sub: { tr: "Konu konu okuma yolları", en: "Topic-by-topic reading paths", pt: "Caminhos de leitura por tema" } },
+    { id: "nereden-baslamali", ad: { tr: "Nereden Başlamalı", en: "Where to Begin", pt: "Por Onde Começar" }, sub: { tr: "Sitenin kendi haritası", en: "The site's own map", pt: "O mapa do próprio site" } },
+    { id: "nasil-okunur", ad: { tr: "Nasıl Okunur", en: "How to Read", pt: "Como Ler" }, sub: { tr: "Beş hareket, her görünümde aynı anlamda", en: "Five gestures with the same meaning everywhere", pt: "Cinco gestos com o mesmo sentido em toda parte" } },
+    { id: "sozluk", ad: { tr: "Sözlük", en: "Glossary", pt: "Glossário" }, sub: { tr: "Terimler, Esmâ, Hâller ve Ontoloji tek A–Z listede", en: "Terms, Names, States and Ontology in one A–Z list", pt: "Termos, Nomes, Estados e Ontologia em uma lista A–Z" } },
+    { id: "kapsam", ad: { tr: "Kapsam", en: "Scope", pt: "Abrangência" }, sub: { tr: "Neredeyiz: okuma durumu ve oranlar", en: "Where we are: reading status and ratios", pt: "Onde estamos: estado da leitura e razões" } },
+    { id: "kaynakca", ad: { tr: "Kaynakça", en: "Bibliography", pt: "Bibliografia" }, sub: { tr: "Sitede adı geçen kaynakların künyeleri", en: "Bibliographic details of the sources named on the site", pt: "Dados bibliográficos das fontes citadas no site" } },
+  ];
 
   let index = [];
   let indexLoaded = false;
@@ -239,6 +252,25 @@
           index.push({
             view: "bilmiyoruz", id: m.id, label: m.baslik, sub: null,
             searchText: allLangText(m.baslik) + " " + allLangText(m.aciklama),
+          });
+        });
+      }),
+      // 2026-10-19 (Dalga 4c): Hakkında'nın alt sayfaları (Şiirleri, Eleştiriler,
+      // Okuma Yolları, Nereden Başlamalı ve dört giriş sayfası) ve Şiirler
+      // aranamıyordu. Sayfa adları sabit, şiirler siirler.json'dan.
+      Promise.resolve().then(() => {
+        HAKKINDA_SAYFALARI.forEach((h) => {
+          index.push({ view: "hakkinda", id: h.id, label: h.ad, sub: h.sub, searchText: allLangText(h.ad) + " " + allLangText(h.sub) });
+        });
+      }),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/siirler.json").then((d) => {
+        (d.siirler || []).forEach((p) => {
+          const metin = p.metin || {};
+          const ilk = (x) => (x ? String(x).split("\n")[0] : "");
+          index.push({
+            view: "hakkinda", id: "siirler", label: p.kaynak_ref || { tr: p.id },
+            sub: { tr: ilk(metin.tr), en: ilk(metin.en || metin.tr), pt: ilk(metin.pt || metin.tr) },
+            searchText: allLangText(p.kaynak_ref) + " " + allLangText(metin),
           });
         });
       }),
@@ -572,10 +604,18 @@
     input.removeAttribute("aria-activedescendant");
     if (!items.length && !input.value) { renderRecents(); return; }
     if (!items.length) {
+      // Boş sonuçta çıkmaz sokak yok (2026-10-19): metin içi sonuç gelebilir
+      // (aşağıda ayrı grup olarak eklenir); ayrıca Sözlük, Terimler ve Dizin'e
+      // giden gerçek düğmeler.
       results.innerHTML = input.value
-        ? `<div class="search-panel__empty" data-tr="Bu terimi haritada henüz bulamadık" data-en="We haven't found this term on the map yet" data-pt="Ainda não encontramos este termo no mapa">...</div>`
+        ? `<div class="search-panel__empty">${escapeHtml(tt({ tr: "Bu terimi başlıklarda bulamadık.", en: "We found no title matching this term.", pt: "Não encontramos título correspondente a este termo." }))}</div>
+           <div class="search-panel__group"><div class="search-panel__group-label">${escapeHtml(tt({ tr: "Buralara bakılabilir", en: "You could try", pt: "Você pode tentar" }))}</div>
+             <button class="search-result" role="option" data-view="hakkinda" data-id="sozluk"><span class="search-result__label">${escapeHtml(tt(HAKKINDA_SAYFALARI[5].ad))}</span><span class="search-result__sub">${escapeHtml(tt(HAKKINDA_SAYFALARI[5].sub))}</span></button>
+             <button class="search-result" role="option" data-view="terimler"><span class="search-result__label">${escapeHtml(tt(CATEGORY_LABEL.terimler))}</span></button>
+             <button class="search-result" role="option" data-href="${escapeAttr((window.__dostRouteBase || "") + "/dizin/")}"><span class="search-result__label">${escapeHtml(tt({ tr: "Dizin", en: "Index", pt: "Índice" }))}</span><span class="search-result__sub">${escapeHtml(tt({ tr: "Bütün sayfaların düz listesi", en: "A plain list of every page", pt: "Lista simples de todas as páginas" }))}</span></button>
+           </div>`
         : "";
-      if (input.value) I18n.applyStatic(results);
+      if (input.value) rewireResultButtons();
       return;
     }
     const byView = {};

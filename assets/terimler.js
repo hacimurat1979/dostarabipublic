@@ -110,7 +110,7 @@
     ).join("");
     return `<div class="ceviri-kaybi">
       <p class="detail-eyebrow detail-eyebrow--section">${tt({
-        tr: "Çevrilirken ne düştü", en: "What fell away in translation", pt: "O que se perdeu na tradução" })}</p>
+        tr: "Arapça kök ve çeviri karşılıkları", en: "Arabic root and renderings", pt: "Raiz árabe e traduções" })}</p>
       <p class="ceviri-kaybi__kok"><span class="ceviri-kaybi__harf" dir="rtl" lang="ar">${kayit.kok.harf}</span>
         <span class="ceviri-kaybi__translit">${kayit.kok.translit}</span></p>
       ${window.DostGraphUtils.has3(kayit.kok.anlam) ? `<p class="ceviri-kaybi__kok-anlam">${tt(kayit.kok.anlam)}</p>` : ""}

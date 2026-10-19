@@ -1223,6 +1223,22 @@
         pt: "Caminhos de leitura por tema, ligados aos cartões de fontes: por onde começar, em que ordem.",
       },
     },
+    siirler: {
+      title: { tr: "Şiirleri", en: "Poems", pt: "Poemas" },
+      desc: {
+        tr: "Dost'un şiirleri: Tercümânü'l-Eşvâk kasideleri ve okuduğumuz bölümlerde karşılaştığımız şiirler; kaynakları ve temalarıyla.",
+        en: "Dost's poems: odes from the Tarjuman al-Ashwaq and poems met in the sections we have read, with their sources and themes.",
+        pt: "Os poemas de Dost: odes do Tarjuman al-Ashwaq e poemas encontrados nas secções lidas, com suas fontes e temas.",
+      },
+    },
+    vahdet: {
+      title: { tr: "Eleştiriler", en: "Criticisms", pt: "Críticas" },
+      desc: {
+        tr: "Vahdet-i vücûd başlığı altında Dost'a yöneltilen en merkezî beş eleştiri, akademik kaynaklardan ve Dost'un kendi metninden yan yana.",
+        en: "The five most central criticisms made of Dost under the label wahdat al-wujud, from academic sources, set beside Dost's own text.",
+        pt: "As cinco críticas mais centrais feitas a Dost sob o rótulo wahdat al-wujud, de fontes acadêmicas, ao lado do próprio texto de Dost.",
+      },
+    },
     "nasil-okunur": {
       title: { tr: "Nasıl Okunur", en: "How to Read", pt: "Como Ler" },
       desc: {
@@ -1577,6 +1593,52 @@
   // fromPop: geri/ileri tuşu. Aynı görünümde kalınıp kayıt adresten
   // düşmüşse (/esma/cemil/ -> /esma/) açık panel/seçim görünümün KENDİ
   // geri adımıyla kapatılır.
+
+  // Görünür "bulunamadı" (2026-10-19): tanınmayan adres sessizce köke
+  // düşüyordu, okuyucu neden haritada olduğunu bilmiyordu. Adres (kırpılmış)
+  // ve gerçek çıkış bağlantıları gösterilir; kapatılabilir, kendiliğinden
+  // gitmez. HTTP durumu değişmez (GitHub Pages 404.html -> ?p= yönlendirmesi).
+  function yolBulunamadi(yol) {
+    const tt = I18n.pick3;
+    let el = document.getElementById("yol-bulunamadi");
+    if (el) el.remove();
+    el = document.createElement("div");
+    el.id = "yol-bulunamadi";
+    el.className = "yol-bulunamadi";
+    el.setAttribute("role", "status");
+    const metin = document.createElement("p");
+    metin.textContent = tt({ tr: "Aradığın sayfa bulunamadı: ", en: "We couldn't find the page: ", pt: "Não encontramos a página: " }) + String(yol).slice(0, 60);
+    el.appendChild(metin);
+    const bag = (etiket, view, id) => {
+      const a = document.createElement("a");
+      a.className = "yol-bulunamadi__bag";
+      a.href = ROUTE_BASE + window.DostMeta.anchorPath(view, id);
+      a.textContent = etiket;
+      a.addEventListener("click", (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        el.remove();
+        window.__dostNav.goTo(view, id);
+      });
+      el.appendChild(a);
+    };
+    bag(tt({ tr: "Nereden Başlamalı", en: "Where to Begin", pt: "Por Onde Começar" }), "hakkinda", "nereden-baslamali");
+    bag(tt({ tr: "Sözlük", en: "Glossary", pt: "Glossário" }), "hakkinda", "sozluk");
+    const dizin = document.createElement("a");
+    dizin.className = "yol-bulunamadi__bag";
+    dizin.href = ROUTE_BASE + "/dizin/";
+    dizin.textContent = tt({ tr: "Dizin", en: "Index", pt: "Índice" });
+    el.appendChild(dizin);
+    const kapat = document.createElement("button");
+    kapat.type = "button";
+    kapat.className = "yol-bulunamadi__kapat";
+    kapat.setAttribute("aria-label", tt({ tr: "Kapat", en: "Close", pt: "Fechar" }));
+    kapat.textContent = "✕";
+    kapat.addEventListener("click", () => el.remove());
+    el.appendChild(kapat);
+    document.body.appendChild(el);
+  }
+
   function parseHashAndGo(fromPop) {
     let rawPath = location.pathname.slice(ROUTE_BASE.length) || "/";
     // SEO-03/04 (uzman paneli denetimi 2026-08-17): /en/ ve /pt/ önekli
@@ -1594,6 +1656,7 @@
       // bozuk adres çubukta kalıyordu (2026-10-08 taraması) -- köke çekilir.
       if (rawPath !== "/" && rawPath !== "/index.html") {
         try { history.replaceState(null, "", ROUTE_BASE + "/"); } catch (e) { /* eski tarayıcı */ }
+        yolBulunamadi(rawPath);
       }
       return;
     }

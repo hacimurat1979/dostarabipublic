@@ -1992,7 +1992,7 @@ window.DostMeta = (function () {
   // Yeni bir görünüm eklenirse buraya da yazılır -- meta-testi.js /en/
   // kopyalarının hepsini sınadığı için unutulursa test kırılır.
   const DIL_KOPYALI = new Set(["ontoloji", "esma", "hal", "terimler", "cizimler", "sirlar", "sorular", "bilmiyoruz", "elestiri-arkeolojisi", "hocalar", "eser-agi", "seyahat-atlasi", "yolculuk", "kuran-dokusu", "menziller", "tasiyicilar", "futuhat", "fusus", "miskat", "hakkinda", "kavram", "ayethadis"]);
-  const ROTALI_KAYIT = /^(?:(?:futuhat|fusus|miskat)\/[A-Za-z0-9_-]+|kavram\/[a-z-]+\/[A-Za-z0-9_-]+|hakkinda\/(?:okuma-yollari|nereden-baslamali|nasil-okunur|sozluk|kapsam|kaynakca))$/;
+  const ROTALI_KAYIT = /^(?:(?:futuhat|fusus|miskat)\/[A-Za-z0-9_-]+|kavram\/[a-z-]+\/[A-Za-z0-9_-]+|hakkinda\/(?:okuma-yollari|nereden-baslamali|nasil-okunur|sozluk|kapsam|kaynakca|siirler|vahdet))$/;
   const TAG_RE = /<[^>]+>/g;
 
   function routeBase() { return window.__dostRouteBase || ""; }
