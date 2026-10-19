@@ -7,7 +7,7 @@ ve `scripts/sync-to-live.py` ile buraya kopyalanır.
 Burada yapılan bir değişiklik bir sonraki senkronda kaybolur.
 
 Kuralların tam ve güncel hâli özel repodaki `CLAUDE.md`'dedir.
-Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-10).
+Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-19).
 
 ## Geçerli temel kurallar
 
@@ -28,6 +28,11 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-10).
   kullanıcı kararı):** bizim kurduğumuz köprüleri gösterir; 2026-10-05
   öncesindeki dolu hâliyle geri getirildi. İstisna bu içerikle sınırlı;
   yeni tema/bağ önce kullanıcıyla karara bağlanır.
+- **Daphne Eksen Seyri sekmesi (2026-10-19, kullanıcı kararı):** Eksen
+  İplikleri'nin sayıya dökülmüş okuması (dört dilimde eksen sayıları,
+  eksen başına üç alıntı özeti, birlikte geçen eksenler). Eksen
+  etiketlemesini biz yaptık; sayfa yazıların ardındaki hayata, duyguya ya
+  da kişiliğe dair hiçbir çıkarım yapmaz. İstisna bu sekmeyle sınırlı.
 - **Mişkâtü'l-Envâr'da** her sayfa hadisin kendi Türkçe metniyle açılır.
 - **Üç dil (TR/EN/PT) birlikte güncellenir.**
 - **Yaptığımız işi olduğundan farklı göstermeyiz:**
