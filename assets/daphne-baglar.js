@@ -493,7 +493,7 @@
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${esc(tt({ tr: "Yazı", en: "Piece", pt: "Texto" }))} · ${esc(a.date || "")}</p>
       <h2 class="detail-title">${esc(a.title)}</h2>
-      ${a.ozet ? `<div class="detail-block detail-block--daphne"><p>${esc(tt(a.ozet))}</p></div>` : ""}
+      ${a.ozet ? `<div class="detail-block detail-block--daphne">${window.DostGraphUtils.zenginParagraflar(tt(a.ozet))}</div>` : ""}
       ${eks ? `<p class="detail-eyebrow detail-eyebrow--section">${esc(tt({
         tr: "Bu yazının taşıdığı eksenler", en: "Axes this piece carries", pt: "Eixos que este texto traz",
       }))}</p><ul class="daphne-bag-liste">${eks}</ul>` : ""}

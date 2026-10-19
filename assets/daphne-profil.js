@@ -583,7 +583,7 @@
             </span>`
           : "";
         const note = a.note_tr ? `<p class="daphne-profile-card__note">${tt({ tr: a.note_tr, en: a.note_en, pt: a.note_pt })}</p>` : "";
-        const ozet = a.ozet ? `<p class="daphne-profile-card__note">${tt(a.ozet)}</p>` : "";
+        const ozet = a.ozet ? `<p class="daphne-profile-card__note">${window.DostGraphUtils.escapeHtml(window.DostGraphUtils.zenginDuz(tt(a.ozet)))}</p>` : "";
         const tarih = a.date ? `<span class="daphne-profile-card__tarih">${a.date}</span>` : "";
         // 2026-08-28 (kullanıcı isteği): kart artık yerinde açılan bir
         // <details> değil, TAM SAYFA bir okumaya açılıyor. Sebebi ölçülür:
@@ -662,14 +662,30 @@
     return okuma;
   }
 
+  // Açık okumanın indeksi (dil değişince aynı yazı yeniden çizilir).
+  let okumaIndeks = -1;
+
   function okumaAc(i, acanOge) {
     const a = siraliYazilar[i];
     if (!a || !pageData) return;
     const el = okumaKur();
     okumaAcanOge = acanOge || null;
+    okumaCiz(i);
+    el.hidden = false;
+    document.body.classList.add("daphne-okuma-acik");
+    const kapat = el.querySelector(".daphne-okuma__kapat");
+    if (kapat) kapat.focus();
+    if (okumaKatman) okumaKatman.ac();
+  }
+
+  function okumaCiz(i) {
+    const a = siraliYazilar[i];
+    if (!a || !pageData) return;
+    okumaIndeks = i;
+    const el = okumaKur();
     const islendi = !!(a.ozet || (a.eksenler || []).length || (a.dost || []).length);
     const note = a.note_tr ? `<p class="daphne-profile-card__note">${tt({ tr: a.note_tr, en: a.note_en, pt: a.note_pt })}</p>` : "";
-    const ozet = a.ozet ? `<p class="daphne-okuma__ozet" data-dost-alan="ozet">${tt(a.ozet)}</p>` : "";
+    const ozet = a.ozet ? `<div class="daphne-okuma__ozet" data-dost-alan="ozet">${window.DostGraphUtils.zenginParagraflar(tt(a.ozet))}</div>` : "";
     const bos = islendi ? "" : `<p class="daphne-okuma__bos">${tt({
       tr: "Bu yazı korpüste var ama henüz profile işlenmedi. Kaynağı açıp okuyabilirsin.",
       en: "This piece is in the corpus but has not yet been worked into the profile. You can open the source and read it.",
@@ -678,6 +694,7 @@
       <div class="daphne-okuma__ic">
         <div class="daphne-okuma__ust">
           <button class="daphne-okuma__kapat" type="button">← ${tt({ tr: "Geri", en: "Back", pt: "Voltar" })}</button>
+          <span class="lang-switch daphne-okuma__dil" id="daphne-okuma-dil" role="group" aria-label="${tt({ tr: "Dil", en: "Language", pt: "Idioma" })}"></span>
           <span class="daphne-okuma__yazi">
             <button class="typography-btn" id="daphne-okuma-font-decrease" type="button" title="Yazı boyutunu küçült / Decrease font size / Diminuir tamanho da fonte" aria-label="A−">A−</button>
             <button class="typography-btn" id="daphne-okuma-font-increase" type="button" title="Yazı boyutunu büyült / Increase font size / Aumentar tamanho da fonte" aria-label="A+">A+</button>
@@ -702,16 +719,34 @@
     }
     if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons(
       el.querySelector("#daphne-okuma-font-decrease"), el.querySelector("#daphne-okuma-font-increase"));
-    el.hidden = false;
-    document.body.classList.add("daphne-okuma-acik");
-    const kapat = el.querySelector(".daphne-okuma__kapat");
-    if (kapat) kapat.focus();
-    if (okumaKatman) okumaKatman.ac();
+    // Dil seçici (2026-10-19, kullanıcı isteği): okuma sayfanın başlığını örttüğü
+    // için oradaki seçiciye ulaşılamıyordu. Seçim compare.js'in tek dil kapısından
+    // geçer (iki seçici de, sayfanın bütün sekmeleri de, açık okuma da güncellenir).
+    const dilKap = el.querySelector("#daphne-okuma-dil");
+    if (dilKap) I18n.renderLangSwitcher(dilKap, () => {
+      if (window.__dostDilDegisti) window.__dostDilDegisti();
+      else okumaYenile();
+    });
   }
+
+  // Açık okumayı geçerli dille yeniden çizer: kaydırma konumu ve odak korunur.
+  function okumaYenile() {
+    if (!okuma || okuma.hidden || okumaIndeks < 0) return;
+    const konum = okuma.scrollTop;
+    const odakDil = okuma.contains(document.activeElement) && document.activeElement.classList.contains("lang-btn");
+    okumaCiz(okumaIndeks);
+    okuma.scrollTop = konum;
+    if (odakDil) {
+      const b = okuma.querySelector(".daphne-okuma__dil .lang-btn--active");
+      if (b) b.focus();
+    }
+  }
+  window.__dostDaphneOkuma = { yenile: okumaYenile };
 
   function okumaKapat() {
     if (!okuma || okuma.hidden) return false;
     okuma.hidden = true;
+    okumaIndeks = -1;
     document.body.classList.remove("daphne-okuma-acik");
     if (okumaKatman) okumaKatman.bitti();
     if (okumaAcanOge && document.contains(okumaAcanOge)) okumaAcanOge.focus();

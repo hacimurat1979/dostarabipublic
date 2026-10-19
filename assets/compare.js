@@ -10,12 +10,20 @@
   I18n.applyStatic();
   // Dil değişince İKİ graf da yeniden çizilmeli: Daphne profili artık ayrı
   // bir sayfa değil, bu sayfanın bir sekmesi (2026-07-27).
-  I18n.renderLangSwitcher(document.getElementById("lang-switch"), () => {
+  // Tek dil kapısı (2026-10-19): sayfa başlığındaki seçici ve yazı okumasının
+  // kendi seçicisi aynı işlevi çağırır; ikisi de güncel dili gösterir.
+  const dilKap = document.getElementById("lang-switch");
+  function dilDegisti() {
     if (window.__dostOrtakTemalarApp) window.__dostOrtakTemalarApp.render();
     if (window.__dostDaphneProfileApp) window.__dostDaphneProfileApp.render();
     if (window.__dostDaphneBagHaritasiApp) window.__dostDaphneBagHaritasiApp.render();
     if (window.__dostDaphneBaglarApp) window.__dostDaphneBaglarApp.render();
-  });
+    if (window.__dostDaphneOkuma) window.__dostDaphneOkuma.yenile();
+    I18n.applyStatic();
+    I18n.renderLangSwitcher(dilKap, dilDegisti);
+  }
+  window.__dostDilDegisti = dilDegisti;
+  I18n.renderLangSwitcher(dilKap, dilDegisti);
   window.DostGraphUtils.setupLegendToggles();
   window.DostGraphUtils.setupDetailPanelFocus();
 
