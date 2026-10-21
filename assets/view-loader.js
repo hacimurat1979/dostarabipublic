@@ -66,16 +66,16 @@
     __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-naxpaqzSHvlq69BO9wXNK378xl4zM6GK21TIfEf2TulWWIf3GBQLu8+TDAs/TPRe", wrap: "seyahat-atlasi-wrap" },
     __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-ZJ+W1ohrpGr6oRBiWuYNvtug8ma1vSqcm8S/s7UZ83Ua8u4in5a261v1PgA3SJrc", wrap: "yolculuk-wrap" },
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-CoZpRwRQUq5t8vD6vdY8Iz75+K6kIGsEesJAj3rK+hBbCjTcH4D2xXhPyrBCqwOM", wrap: "kuran-dokusu-wrap" },
-    __esmaApp: { src: "assets/esma.js", integrity: "sha384-UJakr+vm0kLOxRAl07/eLcrRngiWxnIUgh7HAdN3N+SpqzE3L4ehlV7QZ5mg7HnS", wrap: "esma-wrap" },
+    __esmaApp: { src: "assets/esma.js", integrity: "sha384-afMzp2+TgdrZfTWY25ONJxn5sopMzhxR3BajRUq0R8aQ9dvMNZ1ZMzWhwrqAdQpA", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-gtASrea8ie31lnjO24iCIJdaj1BONhxkDJfKciRK+2+r9rgKpct8SyN3rNuGi9MW", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-CJnjbSwU8iz6Fj5ASDmbnzIk6aw7Z+q5jmVDL7ADf/agerwX22Dx8yQ0jKkO5dtg", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-PR4lTvb0ECieUAJ8fvDRgV/d8+1ZFd6oGZKkCe/Scbef08KkGUrW4F7agX3KQyUu", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-+cEeGLn77bG5FcQGPN/IZd3bZUtIVP36hwovJAj8WiuHlh/OLWhRNglxbsEsf+vB", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-k9T3xcX1Fp+sG/Igu7L51OAU4T4j/CzR2+E1OqPR74qhZXnmiHnJsrURjx81RCU4", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-IQ7K0IISJsBMVesN04dYrya4qWcT22iqRYCUTo7k/o5s12LJCZYHU1Wc7GPs2RUX", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-AOP5aDLS2dC8w8sffn6nZaVsbeevPni77ovb5yWgoca5rRLKlPwYZV6ELOvWjuHE", wrap: "tasiyicilar-wrap" },
-    __fususApp: { src: "assets/fusus.js", integrity: "sha384-PM2sxwPPWLpk2wGRbxEZXuy+9HvS6qnB9uHeQkSH/2nf82TNRsm+JDbqkeVb8xmy", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
-    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-idwHvrQlSn4MmQ2lp4iB2IfsyF2QAWJhqcPa2V2SDFXwB9+qQ5jpblPux9YR6q3b", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
+    __fususApp: { src: "assets/fusus.js", integrity: "sha384-0mNky+sPAtu3sRVxIPvKp1CIYaXa4D3omFQgcaY7ZSScYUFeopebFXDAiHNWRxHK", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
+    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-7U0yTfTg5QApy8uLwBgBjL6iPT/GF9lD3Td1ndbzz5nkORKolZ3jlaTGm7eglRor", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
   };
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
@@ -105,7 +105,7 @@
   // (VIEWS[...].once) -- görünümler çizimini bitirince ona haber verir
   // (okuma yeri, "Bu metinde" sayfası, Defterim yıldızı, çubukların çekilmesi).
   var ONCE = {
-    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-NQ/RbalHbW8oZxeK7xRekJQHMx7YMYGih+8xwmtgg+UjouTlpv76EGjoYnNLnKqt" },
+    "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-O+K7LiZCV45fF5RjpvbrrSrQgstUVgvx9Od+/bvwRUZXgeq7np0FjKpY23YmzxmO" },
   };
 
   var loadingPromises = {};

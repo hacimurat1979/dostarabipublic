@@ -647,7 +647,9 @@
           if (currentMainView !== "ontology" || currentDetailNode || currentDetailEdge) { birthFn = null; secimiAc(secim); return; }
           const f = birthFn;
           birthFn = null;
-          if (!f(() => secimiAc(secim))) secimiAc(secim);
+          // İlk nefes (F01, 2026-10-21, kullanıcı onayı): çember doğduktan sonra, cihaz başına
+          // bir kez, rücû kenarında bir ışık akar. Karşılamada uç seçildiyse hiç oynamaz.
+          if (!f(() => { secimiAc(secim); if (!secim) ilkNefes(); })) { secimiAc(secim); if (!secim) ilkNefes(); }
         }
         const welcomeEl = document.getElementById("welcome-screen");
         if (welcomeEl && !welcomeEl.hidden && !window.__dostKarsilamaGitti) {
@@ -4094,7 +4096,7 @@
 
   // Kenar boyunca ilerleyen bir ışık. Yolun kendi geometrisini
   // (getPointAtLength) izliyor -- düz bir çizgi değil, kenarın gerçek yayı.
-  function kivilcim(pathNode, gecikme, sure, ters) {
+  function kivilcim(pathNode, gecikme, sure, ters, iptal) {
     const uzunluk = pathNode.getTotalLength ? pathNode.getTotalLength() : 0;
     if (!uzunluk) return;
     const parent = pathNode.parentNode;
@@ -4106,6 +4108,7 @@
     const bas = performance.now() + gecikme;
     function adim(t) {
       const p = (t - bas) / sure;
+      if (iptal && iptal()) { c.remove(); return; }
       if (p < 0) { requestAnimationFrame(adim); return; }
       if (p >= 1) { c.remove(); return; }
       const nokta = pathNode.getPointAtLength((ters ? 1 - p : p) * uzunluk);
@@ -4132,6 +4135,33 @@
 
   function pathFor(l) {
     return pathSel.nodes().find((n) => d3.select(n).datum() === l);
+  }
+
+  // İlk nefes (F01): ilk açılışta, yalnız bir kez, mevcut rücû kenarı (Kalp -> Zât) boyunca
+  // 2,4 sn'lik bir ışık akıp söner ve Kalp bir kez parlar. Yeni anlam yok: dugumDavranisi'nde
+  // "kalp -> rucu" ile aynı yol, aynı ışık. Yolun Zât'ın gövdesini ışıtması yok: ışık yalnız
+  // kenarın üzerinden geçer. Hareket azaltma: akış yok, Kalp'in çevresinde 4 sn statik hâle.
+  // İlk dokunuş akışı keser; hiçbir şey kapanmaz.
+  function ilkNefes() {
+    try { if (localStorage.getItem("dost-ilk-nefes")) return; } catch (e) { /* depolama yok */ }
+    if (!pathSel || !nodeSel || !window.__ontologyApp) return;
+    const kenar = (window.__ontologyApp.links || []).find((l) => l.source.id === "kalp" && l.target.id === "dhat");
+    const kalpEl = nodeSel.nodes().find((n) => d3.select(n).datum().id === "kalp");
+    if (!kenar || !kalpEl) return;
+    try { localStorage.setItem("dost-ilk-nefes", String(Date.now())); } catch (e) { /* depolama yok */ }
+    if (reduceMotion) {
+      kalpEl.classList.add("node--isik");
+      setTimeout(() => kalpEl.classList.remove("node--isik"), 4000);
+      return;
+    }
+    let kesildi = false;
+    const kes = () => { kesildi = true; kalpEl.classList.remove("node--isik"); document.removeEventListener("pointerdown", kes, true); };
+    document.addEventListener("pointerdown", kes, { capture: true, once: true });
+    kalpEl.classList.add("node--isik");
+    setTimeout(() => kalpEl.classList.remove("node--isik"), 700);
+    const p = pathFor(kenar);
+    if (p) kivilcim(p, 250, 2400, false, () => kesildi);
+    setTimeout(() => document.removeEventListener("pointerdown", kes, true), 3200);
   }
 
   // Kaynaktan dalga dalga yayılma. `tur`:

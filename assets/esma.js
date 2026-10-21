@@ -691,6 +691,19 @@
   // bir kümeye "haritada göster" denince kurulur. `selectedId` gibi bağımsız
   // bir kip: nodeOpacity() ikisini çarparak birleştirir, aynı anda çalışabilirler.
   let clusterFocus = null;
+  // F05: Defterim haritada -- graph-utils defterOdagi olayı; yalnız Esmâ için gelen küme.
+  let defterOdak = null;
+  document.addEventListener("dost:defter-odak", (e) => {
+    const d = e.detail || {};
+    defterOdak = d.view === "esma" && d.ids && d.ids.size ? d.ids : null;
+    if (!built) return;
+    if (defterOdak) {
+      let maxLevel = 0;
+      defterOdak.forEach((id) => { const n = byId.get(id); if (n && n.level > maxLevel) maxLevel = n.level; });
+      if (maxLevel > revealLevel) setRevealLevel(maxLevel);
+    }
+    ensureFrame();
+  });
   function relationSets(id) {
     const first = new Set([id]);
     chainToAllah(id).forEach((x) => first.add(x));
@@ -886,6 +899,8 @@
     function nodeOpacity(n) {
       let o = n.vis;
       if (o < 0.01) return 0;
+      // Defterim odağı (F05): Defterim'deki kayıtlar zuhûr eder, kalanı perdelenir.
+      if (defterOdak) o *= defterOdak.has(n.id) ? 1 : 0.15;
       // Küme odağı: üyeler tam zuhûr eder, geri kalanı perdelenir (görsel
       // gramerdeki ışık=zuhûr / opaklık=perdelenme eşleşmesinin doğrudan
       // uygulanması -- yeni bir kural icat edilmedi).

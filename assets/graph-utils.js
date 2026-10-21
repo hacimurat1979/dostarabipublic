@@ -965,6 +965,87 @@ window.DostGraphUtils = (function () {
   // reduced-motion'da hiç çalışmaz — atlanır, taklit edilmez. Doğrudan bir
   // adrese gelindiğinde de çağrılmaz (çağıran taraf karar verir):
   // gelinmemiş bir yerden çıkış animasyonu yalan olurdu.
+  // Daire açılışı (F09, 2026-10-21, kullanıcı onayı): kabuktaki adı konmuş kapılarda (Bölümler
+  // satırı, Ara ve Defterim halkaları) hedef sahne, dokunulan dairenin merkezinden ≤ 220 ms açılır.
+  // Tek bir clip-path geçişi; video/GIF, matlık ya da bulanıklık yok (onlar perdelenme/bilgisizlik
+  // anlamı taşır). Hareket azaltma, düşük bellek (deviceMemory < 4) ve ölçülemeyen kaynakta kesme.
+  // Sahne önce değişir (fn), sonra açılış çalınır: hedef sahne dairenin içinden belirir.
+  function daireAcilis(rect, fn) {
+    const ana = document.getElementById("main-content");
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dusuk = navigator.deviceMemory && navigator.deviceMemory < 4;
+    if (!ana || !ana.animate || !rect || !rect.width || reduce || dusuk) { fn(); return; }
+    const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
+    fn();
+    const kutu = ana.getBoundingClientRect();
+    const cx = x - kutu.left, cy = y - kutu.top;
+    const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    try {
+      ana.animate(
+        [
+          { clipPath: `circle(${Math.min(rect.width, rect.height) / 2}px at ${cx}px ${cy}px)` },
+          { clipPath: `circle(${r}px at ${cx}px ${cy}px)` },
+        ],
+        { duration: 220, easing: "cubic-bezier(.2,0,.2,1)" }
+      );
+    } catch (e) { /* animasyon yok: kesme kalır */ }
+  }
+
+  // Yürünen yol (F03, 2026-10-21, kullanıcı onayı): bir kısım/fass/metin açıldığında yalnız bu
+  // cihazda tutulan küme (`dost-gezilen`: {kitap: {n: sitede yayımlanan sayı, k: [kimlikler]}}).
+  // Sıra, yüzde, seri ya da puan yoktur; okuma katmanındaki kitap dairesi bunu tek yay olarak
+  // gösterir ve payda her zaman sitede yayımlanan birim sayısıdır (kitabın tamamı değil).
+  function gezildi(kitap, id, toplam) {
+    try {
+      const o = JSON.parse(localStorage.getItem("dost-gezilen") || "{}") || {};
+      const k = o[kitap] && Array.isArray(o[kitap].k) ? o[kitap] : (o[kitap] = { n: 0, k: [] });
+      let degisti = false;
+      if (toplam && k.n !== toplam) { k.n = toplam; degisti = true; }
+      if (id && k.k.indexOf(id) < 0) { k.k.push(id); degisti = true; }
+      if (degisti) localStorage.setItem("dost-gezilen", JSON.stringify(o));
+    } catch (e) { /* özel pencere ya da bozuk kayıt */ }
+  }
+
+  // Defterim haritada (F05, 2026-10-21, kullanıcı onayı): Defterim'deki kayıtlar görünen haritada
+  // "zuhûr eder", kalan düğümler perdelenir (Esmâ küme odağının aynı deseni: ×0,15). Durum
+  // yalnız bellektedir; yeni anahtar yok. İlk aşama: Ontoloji, Hâller (SVG düğümleri bu
+  // dosyada işaretlenir) ve Esmâ (kendi çizimi `dost:defter-odak` olayını dinler).
+  const defterOdak = { view: null, ids: null };
+  const DEFTER_SVG = { ontoloji: "#ontology-wrap g.node", hal: "#hal-wrap g.hal-node" };
+  function defterOdakSvg() {
+    Object.keys(DEFTER_SVG).forEach((v) => {
+      document.querySelectorAll(DEFTER_SVG[v]).forEach((g) => {
+        const on = defterOdak.view === v && defterOdak.ids;
+        const d = g.__data__;
+        const uye = !!(on && d && defterOdak.ids.has(d.id));
+        g.classList.toggle("defter-odak-ici", uye);
+        g.classList.toggle("defter-odak-disi", !!on && !uye);
+        const eski = g.querySelector(":scope > .defter-yildiz");
+        if (uye && !eski) {
+          const c = g.querySelector("circle");
+          const r = c ? (parseFloat(c.getAttribute("r")) || 10) : 10;
+          const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          t.setAttribute("class", "defter-yildiz");
+          t.setAttribute("text-anchor", "middle");
+          t.setAttribute("y", String(-(r + 5)));
+          t.setAttribute("aria-hidden", "true");
+          t.textContent = "★";
+          g.appendChild(t);
+        } else if (!uye && eski) eski.remove();
+      });
+    });
+    document.documentElement.classList.toggle("defter-odakta", !!defterOdak.ids);
+  }
+  function defterOdagi(view, ids) {
+    const bos = !view || !ids || !ids.size;
+    defterOdak.view = bos ? null : view;
+    defterOdak.ids = bos ? null : ids;
+    defterOdakSvg();
+    document.dispatchEvent(new CustomEvent("dost:defter-odak", { detail: { view: defterOdak.view, ids: defterOdak.ids } }));
+  }
+  defterOdagi.durum = () => defterOdak;
+  defterOdagi.yenile = defterOdakSvg;
+
   function gateTransition(opts, onSwitch) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const kaynak = opts.fromRect;
@@ -2053,7 +2134,7 @@ window.DostGraphUtils = (function () {
     return String(s == null ? "" : s).replace(/<\/?(?:em|strong)>/g, "").replace(/\n\n/g, " ");
   }
 
-  return { zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, daireAcilis, gezildi, defterOdagi, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

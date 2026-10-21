@@ -572,16 +572,21 @@
   }
 
   const FULLTEXT_MAX = 6;
+  const SARMAL_ORNEK = 30;   // sarmalın sayımı: pagefind'ın ilk bu kadar sonucu (F06)
   let fullTextToken = 0;
   function runFullText(query) {
     const token = ++fullTextToken;
     const q = query.trim();
-    if (q.length < 3) { renderFullText([], token); return; }
+    if (q.length < 3) { renderFullText([], token); renderSarmal([], token); return; }
     loadPagefind().then((pf) => {
       if (!pf || token !== fullTextToken) return;
       return pf.search(q).then((r) =>
-        Promise.all(r.results.slice(0, FULLTEXT_MAX * 2).map((x) => x.data()))
-      ).then((rows) => renderFullText(rows.filter((row) => gercekEslesme(row, q)).slice(0, FULLTEXT_MAX), token));
+        Promise.all(r.results.slice(0, SARMAL_ORNEK).map((x) => x.data()))
+      ).then((rows) => {
+        const gercek = rows.filter((row) => gercekEslesme(row, q));
+        renderFullText(gercek.slice(0, FULLTEXT_MAX), token);
+        renderSarmal(gercek, token);
+      });
     }).catch(() => {});
   }
 
@@ -606,6 +611,7 @@
   }
 
   function renderResults(items) {
+    sarmalTemizle();
     resultButtons = [];
     activeIndex = -1;
     input.removeAttribute("aria-activedescendant");
@@ -698,7 +704,11 @@
     if (halka) {
       e.preventDefault();
       closePanel();
-      if (window.__dostNav && window.__dostNav.goTo) window.__dostNav.goTo(halka.dataset.view);
+      if (window.__dostNav && window.__dostNav.goTo) {
+        const gec = () => window.__dostNav.goTo(halka.dataset.view);
+        if (window.DostGraphUtils && window.DostGraphUtils.daireAcilis) window.DostGraphUtils.daireAcilis(halka.getBoundingClientRect(), gec);
+        else gec();
+      }
       return;
     }
     const ara = e.target.closest(".uyg-son__ara");
@@ -740,6 +750,68 @@
     div.innerHTML = `<div class="search-panel__group-label">${label}</div>${html}`;
     results.appendChild(div);
     rewireResultButtons();
+  }
+
+  // Aramanın sarmaldaki izi (F06, 2026-10-21, kullanıcı onayı): sorgunun Fütûhât'ta geçtiği
+  // kısımlar, kavram sayfasındaki sarmalın küçük kopyasında parlar (helix.js kisimSarmali,
+  // parlaklik = o kısımdaki eşleşme sayısı). Bu bir sayımdır ve yalnız pagefind'ın döndürdüğü
+  // ilk SARMAL_ORNEK sonuç içindedir -- altındaki cümle bunu söyler. Bir noktayı seçmek o
+  // kısmı açar. İki ve daha az kısım varsa sarmal gösterilmez (bir dağılım değil, bir liste).
+  let aramaSarmal = null;
+  let yogunlukVerisi = null;
+  function sarmalTemizle() {
+    if (aramaSarmal) { try { aramaSarmal.destroy(); } catch (e) { /* zaten yok */ } aramaSarmal = null; }
+    const eski = results.querySelector(".search-sarmal");
+    if (eski) eski.remove();
+  }
+  function renderSarmal(rows, token) {
+    if (token !== fullTextToken) return;
+    sarmalTemizle();
+    if (!window.DostHelix || !window.DostHelix.kisimSarmali) return;
+    const dag = {};
+    rows.forEach((r) => {
+      const url = (r.meta && r.meta.url) || r.url || "";
+      const m = /\/futuhat\/(c\d+k\d+)\/?/.exec(url);
+      if (m) dag[m[1]] = (dag[m[1]] || 0) + Math.max(1, (r.locations && r.locations.length) || 1);
+    });
+    if (Object.keys(dag).length < 3) return;
+    const kur = (yog) => {
+      if (token !== fullTextToken || !yog || !(yog.ciltler || []).length) return;
+      sarmalTemizle();
+      const yayin = new Map();
+      Object.keys(yog.kisimlar || {}).forEach((id) => {
+        const k = /^c\d+k(\d+)$/.exec(id);
+        if (k) yayin.set(+k[1], { id, baslik: null });
+      });
+      const kutu = document.createElement("div");
+      kutu.className = "search-sarmal";
+      kutu.innerHTML = `<div class="search-panel__group-label">${escapeHtml(tt({ tr: "Fütûhât içinde geçtiği kısımlar", en: "Parts of the Futuhat where it occurs", pt: "Partes do Futuhat em que ocorre" }))}</div>`
+        + `<div class="search-sarmal__sahne"></div>`
+        + `<p class="search-sarmal__not">${escapeHtml(tt({
+          tr: `Bir sayımdır: aramanın ilk ${SARMAL_ORNEK} sonucu içinde, bir kısımda kaç yerde geçtiği. Bir noktayı seçmek o kısmı açar.`,
+          en: `A count only: within the first ${SARMAL_ORNEK} results, how many times it occurs in each part. Selecting a dot opens that part.`,
+          pt: `Apenas uma contagem: nos primeiros ${SARMAL_ORNEK} resultados, quantas vezes ocorre em cada parte. Selecionar um ponto abre essa parte.`,
+        }))}</p>`;
+      results.insertBefore(kutu, results.firstChild);
+      aramaSarmal = window.DostHelix.kisimSarmali(kutu.querySelector(".search-sarmal__sahne"), {
+        ciltler: yog.ciltler,
+        parca: (no) => yayin.get(no) || null,
+        parlaklik: dag,
+        birim: "×",
+        kucuk: true,
+        baslik: {
+          tr: "Fütûhât'ın kısımları: her cilt bir tur; aranan sözün geçtiği kısımlar parlar. Ok tuşlarıyla dolaş, Enter o kısmı açar.",
+          en: "The parts of the Futuhat: each volume one turn; parts where the searched word occurs glow. Move with the arrow keys; Enter opens that part.",
+          pt: "As partes do Futuhat: cada volta é um volume; as partes em que a palavra ocorre brilham. Navegue com as setas; Enter abre essa parte.",
+        },
+        onSec: (id) => {
+          closePanel();
+          if (window.__dostNav && window.__dostNav.goTo) window.__dostNav.goTo("futuhat", id);
+        },
+      });
+    };
+    if (yogunlukVerisi) { kur(yogunlukVerisi); return; }
+    window.DostGraphUtils.fetchJson("data/ibn-arabi/okuma-yogunlugu.json").then((y) => { yogunlukVerisi = y; kur(y); }).catch(() => {});
   }
 
   // Ürün denetimi D1 (2026-09-02): ortak yardımcıya taşındı, bkz.

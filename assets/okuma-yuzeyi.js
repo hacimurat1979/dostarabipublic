@@ -48,6 +48,15 @@
     defterEklendi: { tr: "Defterim'e eklendi", en: "Added to Notebook", pt: "Adicionado ao Caderno" },
     defterCikti: { tr: "Defterim'den çıkarıldı", en: "Removed from Notebook", pt: "Removido do Caderno" },
     kapat: { tr: "Kapat", en: "Close", pt: "Fechar" },
+    onceki: { tr: "Önceki yerim", en: "Where I was", pt: "Onde eu estava" },
+    baslikAd: { tr: "başlık", en: "heading", pt: "título" },
+    ayarlar: { tr: "Ayarlar", en: "Settings", pt: "Configurações" },
+    kitapta: { tr: "Kitapta", en: "In the book", pt: "No livro" },
+    kitapLejant: {
+      tr: "Her tur bir cilt. Işık: açık kısım · bulanık: henüz okunmadı · kuşak: sifr",
+      en: "Each turn is a volume. Light: open part · blurred: not yet read · band: sifr",
+      pt: "Cada volta é um volume. Luz: parte aberta · desfocado: ainda não lido · faixa: sifr",
+    },
   };
 
   var GORUNUMLER = {
@@ -197,6 +206,30 @@
     document.body.appendChild(hap);
     hapZaman = setTimeout(hapKapat, 6500);
   }
+  // "Önceki yerim" (F07b, 2026-10-21, kullanıcı onayı): "Bu metinde" sayfasından bir başlığa,
+  // başa ya da başka kısma sıçrayınca 6 sn boyunca eski yer bir daire olarak durur;
+  // dokununca eski kaydırma yerine dönülür. Esc dairenin söner (bir adım).
+  var oncekiYer = null, oncekiZaman = null;
+  function oncekiKapat() {
+    clearTimeout(oncekiZaman);
+    if (oncekiYer) { oncekiYer.remove(); oncekiYer = null; }
+  }
+  function oncekiGoster(y, baslikNo) {
+    oncekiKapat();
+    if (Math.abs(window.scrollY - y) < 120) return;
+    oncekiYer = document.createElement("button");
+    oncekiYer.type = "button";
+    oncekiYer.className = "okuma-yeri-hap okuma-yeri-hap--onceki";
+    oncekiYer.innerHTML = '<span class="okuma-yeri-hap__nokta" aria-hidden="true"></span><span class="okuma-yeri-hap__ad"></span>';
+    $(".okuma-yeri-hap__ad", oncekiYer).textContent = t(ETIKET.onceki) + (baslikNo > 0 ? " · " + baslikNo + ". " + t(ETIKET.baslikAd) : "");
+    oncekiYer.addEventListener("click", function () {
+      window.scrollTo({ top: Math.max(0, y), behavior: "instant" });
+      oncekiKapat();
+    });
+    document.body.appendChild(oncekiYer);
+    oncekiZaman = setTimeout(oncekiKapat, 6000);
+  }
+  if (GU && GU.registerStepBack) GU.registerStepBack(null, function () { if (!oncekiYer) return false; oncekiKapat(); return true; });
   function makaleBasi(anlik) {
     var a = durum.makale;
     if (!a) return;
@@ -334,7 +367,9 @@
   }
 
   var sayfa = null, perde = null, katman = null, oncekiOdak = null;
+  var kitapSarmal = null;
   function sayfaKapatGorunum() {
+    if (kitapSarmal) { try { kitapSarmal.destroy(); } catch (e) { /* zaten yok */ } kitapSarmal = null; }
     if (sayfa) { sayfa.remove(); sayfa = null; }
     if (perde) { perde.remove(); perde = null; }
     if (oncekiOdak && oncekiOdak.isConnected) { try { oncekiOdak.focus({ preventScroll: true }); } catch (e) { /* odaklanamaz */ } }
@@ -370,9 +405,19 @@
     sayfa.setAttribute("aria-modal", "true");
     sayfa.setAttribute("aria-label", t(ETIKET.bumetin));
     var onceki = $(".okuma-gezinti__btn--onceki", a), sonraki = $(".okuma-gezinti__btn--sonraki", a);
+    var ayarDugmesi = document.querySelector(".uyg-ayar-dugme");
     var parcalar = $("#futuhat-parts") && durum.gorunum === "futuhat" ? $("#futuhat-parts") : null;
     var h = '<div class="okuma-sayfa__tutamak" aria-hidden="true"></div>'
       + '<header class="okuma-sayfa__bas"><h2 class="okuma-sayfa__baslik"></h2><span class="okuma-sayfa__yuzde"></span></header>';
+    // F02 (2026-10-21, kullanıcı onayı): Fütûhât'ta sayfa iki bölmeli -- "Bu metinde | Kitapta".
+    // "Kitapta" kitabın kısım sarmalıdır (futuhat.js sarmalKur); çip listesi yedek olarak
+    // "Başka kısım seç" ile durur.
+    var seritVar = window.matchMedia && window.matchMedia("(min-width: 640px) and (max-width: 900px) and (min-height: 600px)").matches;   // F08: tablette sarmal zaten yan şeritte
+    var kitapVar = !!(durum.gorunum === "futuhat" && window.DostFutuhatSarmal && !seritVar);
+    if (kitapVar) h += '<div class="okuma-sekmeler" role="tablist">'
+      + '<button type="button" role="tab" class="okuma-sekme is-simdi" id="okuma-sekme-metin" aria-selected="true" aria-controls="okuma-panel-metin" data-sekme="metin"></button>'
+      + '<button type="button" role="tab" class="okuma-sekme" id="okuma-sekme-kitap" aria-selected="false" aria-controls="okuma-panel-kitap" tabindex="-1" data-sekme="kitap"></button></div>'
+      + '<div id="okuma-panel-metin" role="tabpanel" aria-labelledby="okuma-sekme-metin">';
     if (basliklar.length) h += '<ol class="okuma-sayfa__liste">' + basliklar.map(function (_, i) {
       return '<li><button type="button" class="okuma-sat' + (i === simdi ? " is-simdi" : i < simdi ? " is-oku" : "") + '" data-i="' + i + '"'
         + (i === simdi ? ' aria-current="location"' : "") + '><span class="okuma-sat__d">' + (i + 1) + '</span><span class="okuma-sat__ad"></span></button></li>';
@@ -382,24 +427,60 @@
       + (parcalar ? '<button type="button" class="okuma-eylem" data-e="kisim"><span class="okuma-eylem__d" aria-hidden="true"></span><span class="okuma-eylem__ad"></span></button>' : "")
       + (onceki ? '<button type="button" class="okuma-eylem" data-e="onceki"><span class="okuma-eylem__d" aria-hidden="true"></span><span class="okuma-eylem__ad"></span></button>' : "")
       + (sonraki ? '<button type="button" class="okuma-eylem" data-e="sonraki"><span class="okuma-eylem__d" aria-hidden="true"></span><span class="okuma-eylem__ad"></span></button>' : "")
+      + (ayarDugmesi ? '<button type="button" class="okuma-eylem" data-e="ayarlar"><span class="okuma-eylem__d" aria-hidden="true"></span><span class="okuma-eylem__ad"></span></button>' : "")
       + "</div>";
+    if (kitapVar) h += '</div><div id="okuma-panel-kitap" role="tabpanel" aria-labelledby="okuma-sekme-kitap" hidden></div>';
     sayfa.innerHTML = h;
     $(".okuma-sayfa__baslik", sayfa).textContent = t(ETIKET.bumetin);
     $(".okuma-sayfa__yuzde", sayfa).textContent = "%" + yuzde + (basliklar.length ? " · " + basliklar.length + " " + t(ETIKET.bolum) : "");
+    if (kitapVar) {
+      $("#okuma-sekme-metin", sayfa).textContent = t(ETIKET.bumetin);
+      $("#okuma-sekme-kitap", sayfa).textContent = t(ETIKET.kitapta);
+    }
     sayfa.querySelectorAll(".okuma-sat").forEach(function (b) { $(".okuma-sat__ad", b).textContent = basliklar[+b.dataset.i].textContent.trim(); });
     function eylemAd(e, metin) { var b = $('[data-e="' + e + '"] .okuma-eylem__ad', sayfa); if (b) b.textContent = metin; }
     eylemAd("basa", t(ETIKET.basa));
     eylemAd("kisim", t(ETIKET.kisimSec));
+    eylemAd("ayarlar", t(ETIKET.ayarlar));
     function nav(b) { var y = $(".okuma-gezinti__yon", b), ti = $(".okuma-gezinti__baslik", b); return (y ? y.textContent.trim() : "") + (ti && ti.textContent.trim() ? " — " + ti.textContent.trim() : ""); }
     if (onceki) eylemAd("onceki", nav(onceki));
     if (sonraki) eylemAd("sonraki", nav(sonraki));
     document.body.appendChild(perde);
     document.body.appendChild(sayfa);
     perde.addEventListener("click", sayfaKapat);
+    function sekmeSec(ad, odakla) {
+      if (!kitapVar) return;
+      var kitap = ad === "kitap";
+      $("#okuma-panel-metin", sayfa).hidden = kitap;
+      $("#okuma-panel-kitap", sayfa).hidden = !kitap;
+      ["metin", "kitap"].forEach(function (x) {
+        var d = $("#okuma-sekme-" + x, sayfa), ac = x === ad;
+        d.setAttribute("aria-selected", ac ? "true" : "false");
+        d.tabIndex = ac ? 0 : -1;
+        d.classList.toggle("is-simdi", ac);
+        if (ac && odakla) { try { d.focus({ preventScroll: true }); } catch (er) { /* odaklanamaz */ } }
+      });
+      if (kitap && !kitapSarmal) {
+        var kap = $("#okuma-panel-kitap", sayfa);
+        kap.innerHTML = '<div class="okuma-kitap__sarmal"></div><p class="okuma-kitap__lejant"></p>';
+        $(".okuma-kitap__lejant", kap).textContent = t(ETIKET.kitapLejant);
+        kitapSarmal = window.DostFutuhatSarmal.kur($(".okuma-kitap__sarmal", kap), function () {
+          // Seçilen kısım kısım sarmalının kendi onSec'i ile açılır; sayfa kapanır.
+          sayfaKapat();
+        });
+        if (!kitapSarmal) { kap.hidden = true; sekmeSec("metin"); }
+      }
+      if (sayfa.scrollHeight > sayfa.clientHeight) sayfa.scrollTop = 0;
+    }
+    $(".okuma-sekmeler", sayfa) && $(".okuma-sekmeler", sayfa).addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      sekmeSec(e.target.dataset.sekme === "metin" ? "kitap" : "metin", true);
+    });
     // Basit odak tuzağı: Tab sayfanın dışına (arkadaki metne) kaçmasın.
     sayfa.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var f = sayfa.querySelectorAll("button");
+      var f = Array.prototype.filter.call(sayfa.querySelectorAll('button, [tabindex="0"]'), function (x) { return x.offsetParent !== null; });
       if (!f.length) return;
       var ilkB = f[0], sonB = f[f.length - 1];
       if (e.shiftKey && document.activeElement === ilkB) { e.preventDefault(); sonB.focus(); }
@@ -408,18 +489,21 @@
     sayfa.addEventListener("click", function (e) {
       var b = e.target.closest("button");
       if (!b) return;
+      if (b.dataset.sekme) { sekmeSec(b.dataset.sekme, true); return; }
+      var y0 = window.scrollY;
       if (b.dataset.i != null) {
         var hedef = basliklar[+b.dataset.i];
         sayfaKapat();
-        if (hedef) baslikHedef(hedef);
+        if (hedef) { baslikHedef(hedef); oncekiGoster(y0, simdi + 1); }
         return;
       }
       var ey = b.dataset.e;
       sayfaKapat();
-      if (ey === "basa") makaleBasi();
-      else if (ey === "kisim" && parcalar) baslikHedef(parcalar);
+      if (ey === "basa") { makaleBasi(); oncekiGoster(y0, simdi + 1); }
+      else if (ey === "kisim" && parcalar) { baslikHedef(parcalar); oncekiGoster(y0, simdi + 1); }
       else if (ey === "onceki" && onceki) onceki.click();
       else if (ey === "sonraki" && sonraki) sonraki.click();
+      else if (ey === "ayarlar" && ayarDugmesi) ayarDugmesi.click();
     });
     if (!katman && GU && GU.yuzeyKatmani) katman = GU.yuzeyKatmani("bu-metinde", sayfaKapatGorunum);
     if (katman) katman.ac();

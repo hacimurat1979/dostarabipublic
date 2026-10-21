@@ -451,6 +451,7 @@
       isDefaultLanding = !id && !loadLastHadis();
       activeId = h.id;
       saveLastHadis(h.id);
+      if (!otomatik) window.DostGraphUtils.gezildi("miskat", h.id, data.hadisler.length);
       // Sarmal yeniden kuruluyor: odak haritadaysa (klavyeyle seçim) eski
       // düğümle birlikte <body>'ye düşüyordu -- yeni sahnenin odaktaki
       // düğümüne geri veriliyor (2026-10-07 taraması).

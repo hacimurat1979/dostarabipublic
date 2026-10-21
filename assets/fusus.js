@@ -544,6 +544,7 @@
       isDefaultLanding = !id && !loadLastFass();
       activeId = f.id;
       saveLastFass(f.id);
+      if (!otomatik) window.DostGraphUtils.gezildi("fusus", f.id, data.fasses.length);
       // Sarmal yeniden kuruluyor: odak haritadaysa (klavyeyle seçim) eski
       // düğümle birlikte <body>'ye düşüyordu -- yeni sahnenin odaktaki
       // düğümüne geri veriliyor (2026-10-07 taraması).

@@ -107,6 +107,67 @@
     renderPanelList();
   }
 
+  // Defterim haritada (F05, 2026-10-21, kullanıcı onayı): açık harita Ontoloji, Hâller ya da Esmâ ise
+  // ve Defterim'de o haritadan kayıt varsa listenin başında "Haritada göster" hapı çıkar; basınca
+  // kayıtlar haritada yıldızlı ışık olur, kalan düğümler perdelenir (GU.defterOdagi). Panel kapanır,
+  // altta "Kaldır" hapı kalır; Esc de odağı bir adımda kaldırır. Durum yalnız bellektedir.
+  var ODAK_GORUNUM = { ontoloji: 1, hal: 1, esma: 1 };
+  function haritaYolu(href) {
+    try {
+      var seg = new URL(href, location.href).pathname.split("/").filter(Boolean);
+      if (seg[0] === "en" || seg[0] === "pt") seg.shift();
+      return seg;
+    } catch (e) { return []; }
+  }
+  function acikHarita() {
+    var seg = haritaYolu(location.href);
+    if (!seg.length) return "ontoloji";
+    return ODAK_GORUNUM[seg[0]] ? seg[0] : null;
+  }
+  function odakKimlikleri(entries, view) {
+    var ids = new Set();
+    entries.forEach(function (e) {
+      var seg = haritaYolu(e.href);
+      if (seg[0] === view && seg[1] && seg[1].indexOf("edge") !== 0) ids.add(decodeURIComponent(seg[1]));
+    });
+    return ids;
+  }
+  var odakHap = null;
+  function odakKaldir() {
+    if (window.DostGraphUtils && window.DostGraphUtils.defterOdagi) window.DostGraphUtils.defterOdagi(null, null);
+    if (odakHap) { odakHap.remove(); odakHap = null; }
+  }
+  function odakKur(view, ids) {
+    window.DostGraphUtils.defterOdagi(view, ids);
+    setPanelOpen(false);
+    if (odakHap) odakHap.remove();
+    odakHap = document.createElement("button");
+    odakHap.type = "button";
+    odakHap.className = "defter-odak-hap";
+    odakHap.innerHTML = '<span class="defter-odak-hap__yildiz" aria-hidden="true">★</span><span></span>';
+    odakHap.lastChild.textContent = tr3("Defterim haritada · Kaldır", "Notebook on the map · Remove", "Caderno no mapa · Remover");
+    odakHap.addEventListener("click", odakKaldir);
+    document.body.appendChild(odakHap);
+    var ilk = view;
+    var izle = setInterval(function () {
+      if (!odakHap) { clearInterval(izle); return; }
+      if (acikHarita() !== ilk) { clearInterval(izle); odakKaldir(); }
+    }, 600);
+  }
+  function haritadaGoster(entries) {
+    var view = acikHarita();
+    if (!view || !window.DostGraphUtils || !window.DostGraphUtils.defterOdagi) return;
+    var ids = odakKimlikleri(entries, view);
+    if (!ids.size) return;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "defter-panel__haritada";
+    b.innerHTML = '<span aria-hidden="true">★</span><span></span>';
+    b.lastChild.textContent = tr3("Haritada göster", "Show on the map", "Mostrar no mapa") + " · " + ids.size;
+    b.addEventListener("click", function () { odakKur(view, ids); });
+    listEl.appendChild(b);
+  }
+
   function renderPanelList() {
     if (!listEl) return;
     var entries = loadEntries();
@@ -129,12 +190,18 @@
         ) + "</p></div>";
       listEl.querySelectorAll(".uyg-halka-bos__daire").forEach(function (el) {
         el.addEventListener("click", function (ev) {
-          if (window.__dostNav && window.__dostNav.goTo) { ev.preventDefault(); window.__dostNav.goTo(el.dataset.view); }
+          if (window.__dostNav && window.__dostNav.goTo) {
+            ev.preventDefault();
+            var gec = function () { window.__dostNav.goTo(el.dataset.view); };
+            if (window.DostGraphUtils && window.DostGraphUtils.daireAcilis) window.DostGraphUtils.daireAcilis(el.getBoundingClientRect(), gec);
+            else gec();
+          }
         });
       });
       return;
     }
     listEl.innerHTML = "";
+    haritadaGoster(entries);
     entries.forEach(function (entry, i) {
       var item = document.createElement("div");
       item.className = "defter-panel__item";
@@ -236,7 +303,8 @@
     // Escape artık burada değil, GU.registerStepBack'in merkezi sırasında --
     // iki katman aynı anda açıkken tek Escape'in hepsini kapatmaması için.
     if (window.DostGraphUtils) {
-      window.DostGraphUtils.registerStepBack("defter-panel", function () { setPanelOpen(false); return true; });
+      window.DostGraphUtils.registerStepBack(null, function () { if (panel.hidden) return false; setPanelOpen(false); return true; });
+      window.DostGraphUtils.registerStepBack(null, function () { if (!odakHap) return false; odakKaldir(); return true; }, { oncelikli: true });
     }
   }
 

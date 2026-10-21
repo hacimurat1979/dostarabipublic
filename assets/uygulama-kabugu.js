@@ -163,6 +163,7 @@
     // Geliştirici modu (2026-10-17): sürüm satırı + "Sorun bildir" (yalnız mod açıkken).
     surum: { tr: "sürüm", en: "version", pt: "versão" },
     rapor: { tr: "Sorun bildir", en: "Report a problem", pt: "Relatar um problema" },
+    cevrimdisiSen: { tr: "Çevrimdışısın", en: "You are offline", pt: "Você está offline" },
     gorus: { tr: "Görüş ve öneri gönder", en: "Send feedback", pt: "Enviar sugestão" },
     gorusKonu: { tr: "Dost Arabî — görüş", en: "Dost Arabî — feedback", pt: "Dost Arabî — sugestão" },
     gorusYaz: { tr: "Buraya yazın:", en: "Write here:", pt: "Escreva aqui:" },
@@ -218,17 +219,120 @@
     if (kapi === "miskat-btn" && (m = /^h(\d+)$/.exec(id))) return t({ tr: "Metin " + m[1], en: "Text " + m[1], pt: "Texto " + m[1] });
     return "";
   }
+  // Bağ halkası (F10, 2026-10-21, kullanıcı onayı): çevrimdışıyken ⋮ kesik halka alır ve
+  // cihazda olmayan bölümlerin daireleri kesik çizilir (kesik çizgi = "henüz bu cihazda
+  // değil"). navigator.onLine Android'de tam güvenilir değildir; yalnız bir ipucudur --
+  // sayfalar yine açılmayı dener. Varlık sorgusu hizmet işçisinin önbelleğinden okunur.
+  function cevrimdisiMi() { return typeof navigator !== "undefined" && navigator.onLine === false; }
+  function cihazdaIsaretle(kok, sel) {
+    if (!window.caches || !caches.match || !cevrimdisiMi()) return;
+    kok.querySelectorAll(sel).forEach(function (b) {
+      var a = document.getElementById(b.dataset.kapi);
+      if (!a || !a.href) return;
+      caches.match(a.href, { ignoreSearch: true }).then(function (r) { b.classList.toggle("is-yok", !r); }).catch(function () { /* önbellek yok */ });
+    });
+  }
+  function cevrimdisiGuncelle() {
+    var off = cevrimdisiMi();
+    HTML.classList.toggle("uyg-cevrimdisi", off);
+    if (ayarDugme) {
+      var ad = t(ETIKET.ayarlarAc) + (off ? " · " + t(ETIKET.cevrimdisiSen) : "");
+      ayarDugme.setAttribute("aria-label", ad); ayarDugme.title = ad;
+    }
+    if (acikSayfa === okuma) cihazdaIsaretle(okuma, ".uyg-kitap");
+    if (seciciEl && cekmeceEl && !cekmeceEl.hidden) cihazdaIsaretle(seciciEl, ".uyg-secici__oge");
+  }
+  window.addEventListener("offline", cevrimdisiGuncelle);
+  window.addEventListener("online", cevrimdisiGuncelle);
+  // Yürünen yol (F03, 2026-10-21, kullanıcı onayı): kitap dairesinde tek yay -- bu cihazda açılan
+  // birim / sitede yayımlanan birim. Yüzde yazısı, seri, rozet ya da "tamamla" yok; yay sıra değil
+  // küme gösterir (Dost'un düşüncesi çizgisel değildir). Payda kitabın tamamı değil, sitede
+  // yayımlanan sayıdır; ipucu bunu söyler. Veri: `dost-gezilen` (graph-utils gezildi), yalnız cihazda.
+  var YOL_BIRIM = {
+    "futuhat-btn": { id: "futuhat", tr: "kısım", en: "parts", pt: "partes" },
+    "fusus-btn": { id: "fusus", tr: "fass", en: "bezels", pt: "engastes" },
+    "miskat-btn": { id: "miskat", tr: "metin", en: "texts", pt: "textos" },
+  };
+  function yolBilgisi(kapi) {
+    var b = YOL_BIRIM[kapi], o = null;
+    try { o = JSON.parse(localStorage.getItem("dost-gezilen") || "null"); } catch (e) { /* özel pencere */ }
+    var g = o && b && o[b.id];
+    if (!g || !Array.isArray(g.k) || !g.k.length || !(g.n > 0)) return null;
+    var k = Math.min(g.k.length, g.n);
+    return {
+      k: k, n: g.n,
+      ipucu: t({
+        tr: "Sitede yayımlanan " + g.n + " " + b.tr + " içinde " + k + " tanesi bu cihazda açıldı",
+        en: k + " of the " + g.n + " " + b.en + " published on the site were opened on this device",
+        pt: k + " das " + g.n + " " + b.pt + " publicados no site foram abertos neste aparelho",
+      }),
+    };
+  }
+  function yolYay(y) {
+    if (!y) return "";
+    var r = 31.25, c = 2 * Math.PI * r, oran = Math.max(0.02, y.k / y.n);
+    return '<svg class="uyg-kitap__yay" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="' + r + '" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="'
+      + (c * oran).toFixed(1) + " " + c.toFixed(1) + '" transform="rotate(-90 32 32)"/></svg>';
+  }
   function kitaplariCiz() {
     $(".uyg-kitaplar", okuma).innerHTML = KITAPLAR.map(function (k) {
       var a = document.getElementById(k[0]);
       if (!a) return "";
       var yer = sonYer(k[0]);
-      return '<button type="button" class="uyg-kitap" data-kapi="' + k[0] + '"><span class="uyg-kitap__daire">' + k[1] + "</span>"
+      var y = yolBilgisi(k[0]);
+      return '<button type="button" class="uyg-kitap" data-kapi="' + k[0] + '"' + (y ? ' title="' + esc(y.ipucu) + '" aria-description="' + esc(y.ipucu) + '"' : "") + '><span class="uyg-kitap__daire">' + k[1] + yolYay(y) + "</span>"
         + '<span class="uyg-kitap__metin"><span class="uyg-kitap__ad">' + a.textContent.trim() + "</span>"
         + (yer ? '<span class="uyg-kitap__yer">' + t(ETIKET.kaldigin) + ": " + yer + "</span>" : "") + "</span>"
         + (yer ? '<span class="uyg-kitap__devam"><i aria-hidden="true"></i>' + t(ETIKET.devam) + "</span>" : "") + "</button>";
     }).join("");
+    cihazdaIsaretle(okuma, ".uyg-kitap");
   }
+
+  // Devam kapısı (F04, 2026-10-21, kullanıcı onayı): kaydı olan okuyucuya haritanın
+  // altında adı yazılı tek daire -- "Fütûhât · Cilt I · Kısım X ›". Okuma sayfasındaki
+  // "Devam" ile aynı kapıdır (kapiAc); ilk harita dokunuşunda söner. Hangi kitabın
+  // son okunduğunu kabuk görünümü izlerken yazar (`dost-son-kitap`, yalnız cihazda);
+  // kayıt yoksa kaydı olan ilk kitap alınır. Karşılama ritüeli, kök dışı adres,
+  // açık sayfa/katman/panel varken görünmez.
+  var SON_KITAP = "dost-son-kitap";
+  var WRAP_KAPI = { "futuhat-wrap": "futuhat-btn", "fusus-wrap": "fusus-btn", "miskat-wrap": "miskat-btn" };
+  var devamEl = null, devamKapali = false;
+  function sonKitapYaz(v) {
+    var k = WRAP_KAPI[v];
+    if (!k) return;
+    try { if (localStorage.getItem(SON_KITAP) !== k) localStorage.setItem(SON_KITAP, k); } catch (e) { /* özel pencere */ }
+  }
+  function devamKitabi() {
+    var k = null;
+    try { k = localStorage.getItem(SON_KITAP); } catch (e) { /* özel pencere */ }
+    if (k && sonYer(k)) return k;
+    for (var i = 0; i < KITAPLAR.length; i++) if (sonYer(KITAPLAR[i][0])) return KITAPLAR[i][0];
+    return null;
+  }
+  function devamGuncelle() {
+    var v = (document.querySelector("main > section:not([hidden]):not(.detail-panel)") || {}).id || "";
+    var kapi = devamKitabi();
+    var goster = !!kapi && acikMi() && !devamKapali && v === "ontology-wrap" && /^\/(?:en\/|pt\/)?$/.test(location.pathname)
+      && !acikSayfa && !ustKatman() && !panelAcik() && !HTML.classList.contains("karsilama-acik") && !HTML.classList.contains("uyg-dis-katman");
+    if (!goster) { if (devamEl) devamEl.hidden = true; return; }
+    if (!devamEl) {
+      devamEl = document.createElement("button");
+      devamEl.type = "button";
+      devamEl.className = "uyg-devam";
+      devamEl.addEventListener("click", function () { var k = devamEl.dataset.kapi; devamKapali = true; devamEl.hidden = true; if (k) kapiAc(k); });
+      document.body.appendChild(devamEl);
+      document.addEventListener("pointerdown", function (e) {
+        if (devamEl && !devamEl.hidden && !devamEl.contains(e.target) && e.target.closest && e.target.closest("#ontology-wrap")) { devamKapali = true; devamEl.hidden = true; }
+      }, true);
+    }
+    var a = document.getElementById(kapi), yer = sonYer(kapi), harf = "";
+    KITAPLAR.forEach(function (k) { if (k[0] === kapi) harf = k[1]; });
+    devamEl.dataset.kapi = kapi;
+    devamEl.innerHTML = '<span class="uyg-devam__daire" aria-hidden="true">' + harf + '</span><span class="uyg-devam__ad">'
+      + esc((a ? a.textContent.trim() : "") + " · " + yer) + '</span>' + svg("sag", 16);
+    devamEl.hidden = false;
+  }
+  new MutationObserver(devamGuncelle).observe(HTML, { attributes: true, attributeFilter: ["class"] });
 
   // --- Daha sayfası (ayarlar + çevrimdışı + bölümler) ------------------------
   var daha = document.createElement("section");
@@ -432,6 +536,7 @@
       d.setAttribute("aria-pressed", String(on));
     });
     seciciEl.querySelectorAll(".uyg-dugum-ad").forEach(function (s) { s.classList.toggle("is-aktif", +s.dataset.grup === secGrup); });
+    cihazdaIsaretle(seciciEl, ".uyg-secici__oge");
   }
   // Altı grup düğümü bir iplik üzerinde zikzak (dikeyde yatay iplik, yatay
   // tutulmuş telefonda dikey iplik). Düğümler daire, aralarında halka yok;
@@ -479,10 +584,39 @@
       });
       yay.innerHTML = h;
     }
+    boncukYaz(sifirla);
     seciciListeYaz(gr);
+  }
+  // İlk yol boncuğu (F11, 2026-10-21, kullanıcı onayı): ilk üç açılışta Bölümler
+  // ipliğinin başında altın bir boncuk -- yeni okuyucuyu "Nereden Başlamalı" sayfasına
+  // götüren adı konmuş kapı. Sayfaya girilince ya da üç açılıştan sonra kalkar.
+  var BONCUK_ANAHTAR = "dost-yol-boncugu", BONCUK_AZAMI = 3, BONCUK_HEDEF = "hakkinda-sub-nereden-baslamali-btn";
+  function boncukSay(artir) {
+    var n = 0;
+    try { n = parseInt(localStorage.getItem(BONCUK_ANAHTAR), 10) || 0; if (artir) { n += 1; localStorage.setItem(BONCUK_ANAHTAR, String(n)); } } catch (e) { /* özel pencere */ }
+    return n;
+  }
+  function boncukYaz(acilis) {
+    var eski = $(".uyg-boncuk", seciciEl);
+    if (eski) eski.remove();
+    var hedef = document.getElementById(BONCUK_HEDEF);
+    if (!hedef) return;
+    var n = boncukSay(acilis === true);
+    if (n > BONCUK_AZAMI || n === 0 && !acilis) return;
+    var yay = $(".uyg-yay", seciciEl);
+    if (!yay) return;
+    yay.insertAdjacentHTML("beforebegin", '<button type="button" class="uyg-boncuk" data-kapi="' + BONCUK_HEDEF + '"><span class="uyg-boncuk__nokta" aria-hidden="true"></span><span class="uyg-boncuk__ad">'
+      + esc(hedef.textContent.trim()) + "</span>" + svg("sag", 16) + "</button>");
   }
   function seciciTikla(e) {
     if (!v2Acik()) return;
+    var bn = e.target.closest(".uyg-boncuk");
+    if (bn) {
+      e.stopPropagation();
+      try { localStorage.setItem(BONCUK_ANAHTAR, String(BONCUK_AZAMI + 1)); } catch (x) { /* özel pencere */ }
+      tikla(bn.dataset.kapi);
+      return;
+    }
     var d = e.target.closest(".uyg-dugum");
     if (d) {
       // Düğüm yerinde kalır (yeniden çizilmez): dokunuşun çekmece dinleyicileri
@@ -496,7 +630,9 @@
       // Gerçek bağlantıya bas; çekmecenin kendi dinleyicileri kapatır ve
       // ontology.js yeni adresi açar (eski ☰ yoluyla aynı yol).
       e.stopPropagation();
-      tikla(o.dataset.kapi);
+      var kapi = o.dataset.kapi;
+      if (window.DostGraphUtils && window.DostGraphUtils.daireAcilis) window.DostGraphUtils.daireAcilis(o.getBoundingClientRect(), function () { tikla(kapi); });
+      else tikla(kapi);
     }
   }
   function seciciAcildi() {
@@ -1000,7 +1136,6 @@
     if (baslik) baslik.inert = gizli;
     nokta.hidden = v2Acik() || !gizli;
     if (halkaCek) { halkaCek.hidden = !(v2Acik() && gizli); halkaIlerle(); }
-    if (halkaAyar) halkaAyar.hidden = !(v2Acik() && gizli);
   }
   nokta.addEventListener("click", function () {
     if (window.DostOkuma && window.DostOkuma.cubuklariGetir) window.DostOkuma.cubuklariGetir();
@@ -1019,7 +1154,7 @@
   // dokununca döner. Sınıf adı (okuma-cekik) eski kabukla aynı kalır: yatay
   // kural, testler ve CSS tek sınıfı izler. Halka da bir düğmedir (bağlanmamış
   // düğme yok): dokununca çubuklar döner; yayı kaydırma ilerlemesini gösterir.
-  var halkaCek = null, halkaAyar = null;
+  var halkaCek = null;
   if (V2) {
     halkaCek = document.createElement("button");
     halkaCek.type = "button";
@@ -1028,16 +1163,9 @@
     halkaCek.innerHTML = '<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><circle class="uyg-ilerleme__iz" cx="14" cy="14" r="11"/><circle class="uyg-ilerleme__dolu" cx="14" cy="14" r="11"/></svg>';
     document.body.appendChild(halkaCek);
     halkaCek.addEventListener("click", function () { cekikAyarla(false); cBirikim = 0; });
-    // Çubuklar çekikken ⋮ Ayarlar da ekranda kalır (2026-10-17, kullanıcı notu: "ayarlara
-    // ulaştığım sağ üstteki kısım kayboldu"): halkanın yanında, aynı koşulda görünür; dokununca
-    // Ayarlar açılır (katman açılınca çubuklar zaten döner). Bağlanmamış düğme yok.
-    halkaAyar = document.createElement("button");
-    halkaAyar.type = "button";
-    halkaAyar.className = "uyg-halka uyg-halka--ayar";
-    halkaAyar.hidden = true;
-    halkaAyar.innerHTML = svg("kebab", 20);
-    document.body.appendChild(halkaAyar);
-    halkaAyar.addEventListener("click", function () { if (ayarDugme) ayarDugme.click(); });
+    // F07(a) (2026-10-21, kullanıcı onayı): yüzen ⋮ kaldırıldı -- satır başlarını ve tablo
+    // başlıklarını örtüyordu. Ayarlar, çubuklar dönünce başlıkta; okuma metinlerinde ayrıca
+    // "Bu metinde" sayfasında bir satırdır. Yüzen tek halka kalır.
   }
   var cekik = false, cSonY = window.scrollY, cBirikim = 0;
   function cekikUygun() {
@@ -1284,12 +1412,12 @@
     halka.setAttribute("aria-label", t(ETIKET.ilerleme));
     okuma.setAttribute("aria-label", t(ETIKET.kitaplar));
     daha.setAttribute("aria-label", t(V2 ? ETIKET.ayarlar : ETIKET.daha));
-    if (ayarDugme) { ayarDugme.setAttribute("aria-label", t(ETIKET.ayarlarAc)); ayarDugme.title = t(ETIKET.ayarlarAc); }
+    if (ayarDugme) { ayarDugme.setAttribute("aria-label", t(ETIKET.ayarlarAc)); ayarDugme.title = t(ETIKET.ayarlarAc); cevrimdisiGuncelle(); }
     if (halkaCek) { halkaCek.setAttribute("aria-label", t(ETIKET.kabukGoster)); halkaCek.title = t(ETIKET.kabukGoster); }
-    if (halkaAyar) { halkaAyar.setAttribute("aria-label", t(ETIKET.ayarlarAc)); halkaAyar.title = t(ETIKET.ayarlarAc); }
     if (v2Acik() && cekmeceEl && !cekmeceEl.hidden) seciciCiz(false);
     if (acikSayfa === daha) dahaCiz();
     if (acikSayfa === okuma) kitaplariCiz();
+    devamGuncelle();
     guncellemeYaz();
     // Dil değişti: "Geri: <ad>" ve bölüm rozetleri yeni dilde yeniden yazılır.
     if (typeof ADLAR === "object" && ADLAR) { for (var k in ADLAR) delete ADLAR[k]; setTimeout(function () { rozetle(); donusYaz(); }, 0); }
@@ -1301,6 +1429,7 @@
     var v = (document.querySelector("main > section:not([hidden]):not(.detail-panel)") || {}).id || "";
     // Açık katman sekmesini yakar (K11/K13: Ara ve Defterim açıkken eskiden
     // alttaki Harita yanık kalıyordu).
+    sonKitapYaz(v);
     var kat = ustKatman();
     var etkin;
     if (v2Acik()) {
@@ -1342,6 +1471,7 @@
     aaYaz();
     cekikGuncelle();
     kabukDenetle();
+    devamGuncelle();
   }
   // Tutamak yalnız haritadaki panelde bir düğmedir (büyüt / küçült); başka
   // yerde süs olarak kalır, odaklanmaz (bağlanmamış düğme olmasın).
@@ -1587,4 +1717,5 @@
   (mq.addEventListener ? mq.addEventListener("change", uygula) : mq.addListener(uygula));
   etiketle();
   uygula();
+  cevrimdisiGuncelle();
 })();

@@ -821,6 +821,7 @@
  *     parlaklik: {"c1k3": 1.2, ...},      // (ops.) kavram kipi: yoğunluk
  *     onSec: function (id) {},            // seçilince
  *     kucuk: false,                       // kavram sayfasındaki küçük kopya
+ *     birim: "‰",                         // (ops.) parlaklık değerinin birimi
  *     baslik: {tr,en,pt},                 // erişilebilir ad
  *   });
  *   s.setAktif(id); s.setLang(); s.destroy();
@@ -855,6 +856,7 @@
     var id = "ks" + (++uid);
     var kucuk = !!o.kucuk;
     var kavramKipi = !!o.parlaklik;
+    var birim = o.birim != null ? o.birim : "‰";   // değerin birimi: kavramda binde, aramada geçiş sayısı (×)
 
     // --- yuvalar: her cildin her kısmı, okunmuş ya da okunmamış ----------
     var ciltler = o.ciltler.slice().sort(function (a, b) { return a.k0 - b.k0; });
@@ -1116,14 +1118,14 @@
       if (a.bas) ad.appendChild(b);
       if (kavramKipi && y.deger > 0) {
         var v = document.createElement("span"); v.className = "kisim-sarmali__ad-deger";
-        v.textContent = String(y.deger).replace(".", pick({ tr: ",", en: ".", pt: "," })) + "‰";
+        v.textContent = String(y.deger).replace(".", pick({ tr: ",", en: ".", pt: "," })) + birim;
         ad.appendChild(v);
       }
     }
     function ariaYaz() {
       svg.setAttribute("aria-label", pick(o.baslik) || pick({ tr: "Kısım sarmalı", en: "Spiral of parts", pt: "Espiral das partes" }));
       secenekler.forEach(function (y) {
-        y.g.setAttribute("aria-label", yuvaAdi(y, true) + (kavramKipi ? " · " + y.deger + "‰" : ""));
+        y.g.setAttribute("aria-label", yuvaAdi(y, true) + (kavramKipi ? " · " + y.deger + birim : ""));
         y.g.setAttribute("aria-selected", st.aktif === y ? "true" : "false");
       });
       if (st.deg && st.deg.g.id) svg.setAttribute("aria-activedescendant", st.deg.g.id);

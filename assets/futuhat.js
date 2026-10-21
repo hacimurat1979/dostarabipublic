@@ -268,6 +268,13 @@
   function saveLastPart(id) {
     try { localStorage.setItem(LAST_PART_KEY, id); } catch (_) {}
   }
+  // F03: bu cihazda açılan kısımlar (graph-utils gezildi) -- çipte küçük bir ziyaret noktası.
+  function gezilenKumesi() {
+    try {
+      const o = JSON.parse(localStorage.getItem("dost-gezilen") || "null");
+      return new Set(o && o.futuhat && Array.isArray(o.futuhat.k) ? o.futuhat.k : []);
+    } catch (_) { return new Set(); }
+  }
   function loadLastPart() {
     try { return localStorage.getItem(LAST_PART_KEY); } catch (_) { return null; }
   }
@@ -1181,7 +1188,6 @@
     }
     if (sarmal) sarmal.destroy();
     sarmalAnahtar = anahtar;
-    const byKisim = new Map(futuhatData.parts.map((p) => [p.kisim, p]));
     mapEl.innerHTML = `
       <p class="futuhat-map__label">${tt({ tr: "Neredeyim", en: "Where am I", pt: "Onde estou" })}</p>
       <div class="futuhat-map__sarmal"></div>
@@ -1191,7 +1197,21 @@
         pt: "Cada volta é um volume. Luz: parte aberta · desfocado: ainda não lido · faixa: sifr",
       })}</p>
     `;
-    sarmal = window.DostHelix.kisimSarmali(mapEl.querySelector(".futuhat-map__sarmal"), {
+    sarmal = sarmalKur(mapEl.querySelector(".futuhat-map__sarmal"), (id) => {
+      window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: id, kaynak: "sarmal" });
+      activatePart(id);
+    });
+  }
+
+  // Aynı sarmal, başka bir kapta da kurulur ("Bu metinde" sayfasının "Kitapta" bölmesi,
+  // okuma-yuzeyi.js; F02, 2026-10-21): sayfa kapanınca çağıran destroy eder.
+  function sarmalKur(kap, onSec) {
+    if (!kap || !futuhatData || !window.DostHelix || !window.DostHelix.kisimSarmali) return null;
+    const cilts = futuhatData.book.cilts || [];
+    if (!cilts.length) return null;
+    const sifirHazir = !!(yogunlukData && yogunlukData.sifirAraliklari);
+    const byKisim = new Map(futuhatData.parts.map((p) => [p.kisim, p]));
+    return window.DostHelix.kisimSarmali(kap, {
       ciltler: cilts.map((c) => ({ cilt: c.cilt, k0: c.kisimStart, k1: c.kisimEnd })),
       parca: (k) => {
         const p = byKisim.get(k);
@@ -1204,12 +1224,16 @@
         en: "The parts of the Futuhat: each volume one turn. Move with the arrow keys, open with Enter.",
         pt: "As partes do Futuhat: cada volume uma volta. Navegue com as setas, abra com Enter.",
       },
-      onSec: (id) => {
-        window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: id, kaynak: "sarmal" });
-        activatePart(id);
-      },
+      onSec,
     });
   }
+  window.DostFutuhatSarmal = {
+    kur: (kap, sonra) => sarmalKur(kap, (id) => {
+      window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: id, kaynak: "sarmal-sayfa" });
+      activatePart(id);
+      if (sonra) sonra(id);
+    }),
+  };
 
   function renderParts() {
     if (!partsEl) return;
@@ -1241,7 +1265,7 @@
               // --current şablonda da basılıyor: yoğunluk verisi gelince
               // liste yeniden çiziliyor ve vurgu yalnız activatePart()'ta
               // eklendiği için kayboluyordu.
-              const cur = part.id === activePartId ? " futuhat-part-chip--current" : "";
+              const cur = (part.id === activePartId ? " futuhat-part-chip--current" : "") + (gezilenKumesi().has(part.id) ? " futuhat-part-chip--gezildi" : "");
               return `<button class="futuhat-part-chip futuhat-part-chip--active${cur}" type="button" data-id="${part.id}">${tt({ tr: "Kısım " + roman(no), en: "Part " + roman(no), pt: "Parte " + roman(no) })}</button>`;
             }
             return `<span class="futuhat-part-chip futuhat-part-chip--soon" title="${tt({ tr: "Yakında", en: "Coming soon", pt: "Em breve" })}">${roman(no)}</span>`;
@@ -2119,6 +2143,11 @@
     if (!otomatik) { kisimAdreste = true; makaleBasinaGit = true; }
     activePartId = id;
     saveLastPart(id);
+    if (!otomatik || window.DostGraphUtils.isViewActive(wrapEl)) {
+      window.DostGraphUtils.gezildi("futuhat", id, futuhatData.parts.length);
+      const ck = partsEl && partsEl.querySelector(`.futuhat-part-chip[data-id="${id}"]`);
+      if (ck) ck.classList.add("futuhat-part-chip--gezildi");
+    }
     if (partsEl) {
       partsEl.querySelectorAll(".futuhat-part-chip").forEach((chip) => {
         chip.classList.toggle("futuhat-part-chip--current", chip.dataset.id === id);
