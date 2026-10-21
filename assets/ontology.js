@@ -1956,9 +1956,19 @@
     //   dh 0.54 -> %64, 29 px      <- seçilen
     //   dh 0.60 -> %59, 27 px
     // Etiketin düğümünün altında durması, tuvali doldurmaktan önce geliyor.
-    const ringR3d = Math.max(120, Math.min(width * 0.40, height * 0.95));
-    const dropH = Math.max(240, height * 0.54);
-    let tilt = 0, tiltTarget = 0, tiltFrom = 0, tiltAnimStart = 0;
+    //
+    // Dik telefon (Y1, 2026-10-21, kullanıcı onayı): genişlik dar, yükseklik
+    // bol; halka ekranın yaklaşık %40'ını kaplıyordu. Burada sarmal AÇILIŞ
+    // hâli olur ve ekran boyunca yükselir: yarıçap genişlikten (etiketler
+    // için pay bırakarak), iniş boyu yükseklikten okunur. "Mertebe eksenine
+    // eğ" düğmesi halkaya geri döndürür; yatay telefon, tablet ve masaüstü
+    // bugünkü gibi halkayla açılır.
+    const DIK_TELEFON = width < 560 && height > width * 1.3;
+    const ringR3d = DIK_TELEFON
+      ? Math.max(70, Math.min(width * 0.27, height * 0.34))
+      : Math.max(120, Math.min(width * 0.40, height * 0.95));
+    const dropH = DIK_TELEFON ? Math.max(300, height * 0.72) : Math.max(240, height * 0.54);
+    let tilt = DIK_TELEFON ? 1 : 0, tiltTarget = tilt, tiltFrom = tilt, tiltAnimStart = 0;
     // Sahnenin yavaş salınımı (bkz. aşağıdaki spinFrame/SWAY_DEG) burada da
     // biliniyor olmalı: yerleşim hep salınımın ortasında (0°) hesaplanırsa,
     // ucunda sınırdaki etiket çiftleri yeniden çakışıyordu (2026-08-06
@@ -3009,7 +3019,8 @@
     const tiltBtn = document.getElementById("ontology-3d-toggle");
     if (tiltBtn && !tiltBtn.dataset.wiredOnto3d) {
       tiltBtn.dataset.wiredOnto3d = "1";
-      tiltBtn.setAttribute("aria-pressed", "false");
+      tiltBtn.classList.toggle("is-on", tiltTarget > 0.5);
+      tiltBtn.setAttribute("aria-pressed", tiltTarget > 0.5 ? "true" : "false");
       tiltBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         const to = tiltTarget > 0.5 ? 0 : 1;
