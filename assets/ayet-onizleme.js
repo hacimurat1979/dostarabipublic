@@ -60,6 +60,15 @@
     ? window.DostGraphUtils.yuzeyKatmani("ayet-tip", () => gizle())
     : null;
 
+  // 2026-10-21 (tasarım önerisi 1, kullanıcı onayı): dar ekranda (telefon, APK)
+  // künye kutusu metnin üstüne yüzen bir balon yerine alt sayfa olarak açılır:
+  // Arapça büyür, uzun meal kutuya sığar, metin arkada solar (matlık =
+  // perdelenme). Tutamak düğmesi, Esc ve Android geri tuşu kapatır. Geniş
+  // ekranda yüzen kutu aynen kalır.
+  const darMq = window.matchMedia ? window.matchMedia("(max-width: 640px)") : null;
+  function altSayfa() { return !!(darMq && darMq.matches); }
+  let perde = null, surukle = null;
+
   function base() { return window.__dostRouteBase || ""; }
   // graph-utils.js script sırasında bu dosyadan hep önce geliyor (index.html),
   // yani window.DostGraphUtils burada her zaman tanımlı -- eskiden buradaki
@@ -123,6 +132,24 @@
     return `<p class="ayet-tip__digerleri-baslik">${esc(baslik)}</p>${linkler}`;
   }
 
+  function ensurePerde() {
+    if (perde) return perde;
+    perde = document.createElement("div");
+    perde.className = "ayet-perde";
+    perde.setAttribute("aria-hidden", "true");
+    document.body.appendChild(perde);
+    return perde;
+  }
+
+  // İçeriği yazar; alt sayfa kipinde başa tutamak düğmesi ekler.
+  function icerigiYaz(t, html) {
+    const sheet = altSayfa();
+    t.classList.toggle("ayet-tip--sheet", sheet);
+    t.style.transform = "";
+    const kapat = I18n ? I18n.pick3({ tr: "Kapat", en: "Close", pt: "Fechar" }) : "Kapat";
+    t.innerHTML = (sheet ? `<button type="button" class="ayet-tip__tutamak" aria-label="${esc(kapat)}"></button>` : "") + html;
+  }
+
   function ensureTip() {
     if (tip) return tip;
     tip = document.createElement("div");
@@ -131,11 +158,41 @@
     tip.setAttribute("role", "tooltip");
     tip.hidden = true;
     document.body.appendChild(tip);
+    // Tutamak: dokununca kapatır; aşağı çekilince alt sayfa kayarak kapanır.
+    tip.addEventListener("click", (e) => {
+      if (e.target.closest && e.target.closest(".ayet-tip__tutamak")) { e.stopPropagation(); const geri = acanEl; gizle(); if (geri && geri.focus) geri.focus(); }
+    });
+    tip.addEventListener("pointerdown", (e) => {
+      const tut = e.target.closest && e.target.closest(".ayet-tip__tutamak");
+      if (!tut || !tip.classList.contains("ayet-tip--sheet")) return;
+      surukle = { y0: e.clientY, dy: 0, id: e.pointerId };
+      try { tut.setPointerCapture(e.pointerId); } catch (_) {}
+      tip.style.transition = "none";
+    });
+    tip.addEventListener("pointermove", (e) => {
+      if (!surukle || e.pointerId !== surukle.id) return;
+      surukle.dy = Math.max(0, e.clientY - surukle.y0);
+      tip.style.transform = `translateY(${surukle.dy}px)`;
+    });
+    const biraktir = (e) => {
+      if (!surukle || (e && e.pointerId !== surukle.id)) return;
+      const dy = surukle.dy; surukle = null;
+      tip.style.transition = "";
+      if (dy > 70) { const geri = acanEl; gizle(); if (geri && geri.focus) geri.focus(); }
+      else tip.style.transform = "";
+    };
+    tip.addEventListener("pointerup", biraktir);
+    tip.addEventListener("pointercancel", biraktir);
     return tip;
   }
 
   function konumla(el) {
     if (!tip || tip.hidden) return;
+    if (tip.classList.contains("ayet-tip--sheet")) {
+      // Alt sayfa CSS ile yerleşir (sol/sağ/alt 0); yüzen kutudan kalan satır içi değerler temizlenir.
+      tip.style.left = ""; tip.style.top = ""; tip.style.maxHeight = "";
+      return;
+    }
     const r = el.getBoundingClientRect();
     tip.style.maxHeight = "";
     let k = tip.getBoundingClientRect();
@@ -159,6 +216,16 @@
   // Ortak kaçış (2026-10-09): graph-utils.js escapeHtml ile birebir aynı
   // davranıştaki yerel kopyanın yerine (& < > " ; null -> "").
   function esc(s) { return window.DostGraphUtils.escapeHtml(s); }
+
+  // Kur'ân Dokusu'ndaki sûre düğümüne bağlantı (yalnız o sûre dokuda varsa; dizin gelince eklenir).
+  function dokusuHtml(sureNo) {
+    if (!dizin) return "";
+    const var_ = Object.keys(dizin).some((k) => parseInt(k.split(":")[0], 10) === sureNo);
+    if (!var_) return "";
+    const href = window.__dostNav ? window.__dostNav.href("kuran-dokusu", String(sureNo)) : (base() + "/kuran-dokusu/" + sureNo + "/");
+    const ad = I18n.pick3({ tr: "Kur'ân Dokusu'nda gör", en: "See in Quran Weave", pt: "Ver na Trama do Alcorão" });
+    return `<p class="ayet-tip__dokusu-sar"><a class="cross-link ayet-tip__dokusu ayet-tip__digeri" href="${esc(href)}" data-view="kuran-dokusu" data-id="${sureNo}">${esc(ad)}</a></p>`;
+  }
 
   function icerik(ref) {
     const a = veri && veri.ayetler && veri.ayetler[ref];
@@ -190,6 +257,7 @@
       <p class="ayet-tip__ar" dir="rtl" lang="ar">${esc(a.ar || "")}</p>
       <p class="ayet-tip__meal">${esc(govde)}</p>
       <p class="ayet-tip__kaynak">${esc(ad)} ${esc(ref)}${not ? " " + esc(not) : ""}</p>
+      ${dokusuHtml(sureNo)}
       ${digerYerlerHtml((dizin && dizin[ref]) || [], {
         tr: "Bu âyet burada da geçiyor", en: "This verse also appears here", pt: "Este versículo também aparece aqui",
       })}`;
@@ -211,8 +279,9 @@
   }
 
   function ac(t, html, el) {
-    t.innerHTML = html;
+    icerigiYaz(t, html);
     t.hidden = false;
+    if (t.classList.contains("ayet-tip--sheet")) { ensurePerde().classList.add("ayet-perde--acik"); }
     acilisT = Date.now();
     acanEl = el;
     el.setAttribute("aria-describedby", "ayet-tip");
@@ -236,7 +305,7 @@
         if (!dizin) yukleDizin().then(() => {
           if (acikRef !== ref || acikTur !== "ayet" || !tip || tip.hidden) return;
           const yeni = icerik(ref);
-          if (yeni) { tip.innerHTML = yeni; konumla(el); }
+          if (yeni) { icerigiYaz(tip, yeni); konumla(el); }
         });
       });
     } else if (hadis) {
@@ -262,7 +331,9 @@
     if (gizleZamanlayici) { clearTimeout(gizleZamanlayici); gizleZamanlayici = null; }
     acikRef = null; acikTur = null;
     if (acanEl) { acanEl.removeAttribute("aria-describedby"); }
-    if (tip) tip.hidden = true;
+    if (tip) { tip.hidden = true; tip.style.transform = ""; }
+    if (perde) perde.classList.remove("ayet-perde--acik");
+    surukle = null;
     if (katman) katman.bitti();
   }
   // Kutu artık tıklanabilir bağlantı taşıyabiliyor (A1: "burada da geçiyor").
@@ -321,6 +392,22 @@
       } else gizle();
       return;
     }
+    // ←/→/Home/End: aynı paragraftaki künyeler arasında gezin (tek Tab durağı).
+    if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key) && !e.altKey && !e.ctrlKey && !e.metaKey) {
+      const k = e.target.closest && (e.target.closest(".ayet-ref") || e.target.closest(".hadis-ref"));
+      if (k && k === e.target && k.getAttribute("role") === "button") {
+        const grup = kunyeGrubu(k);
+        const uyeler = grup ? kunyeUyeleri(grup) : [];
+        if (uyeler.length > 1) {
+          const i = uyeler.indexOf(k);
+          const yeni = e.key === "ArrowRight" ? Math.min(i + 1, uyeler.length - 1)
+            : e.key === "ArrowLeft" ? Math.max(i - 1, 0) : e.key === "Home" ? 0 : uyeler.length - 1;
+          e.preventDefault();
+          if (yeni !== i) { durakYaz(grup, uyeler[yeni]); uyeler[yeni].focus(); }
+          return;
+        }
+      }
+    }
     // ↓: odaktaki künyenin kutusundaki ilk "burada da geçiyor" bağlantısına geç.
     if (e.key === "ArrowDown" && tip && !tip.hidden && isaretEl(e.target)) {
       const ilk = tip.querySelector(".ayet-tip__digeri");
@@ -331,6 +418,7 @@
   document.addEventListener("focusin", (e) => {
     if (e.target.closest && e.target.closest(".ayet-tip")) return;   // kutunun içinde gezinirken kapatma
     const el = isaretEl(e.target);
+    if (el && el.getAttribute("role") === "button") { const g = kunyeGrubu(el); if (g && kgAktif.get(g) !== el) durakYaz(g, el); }
     if (el) {
       // Fare/dokunuşla gelen odakta kutuyu click açar: mousedown'da açılan kutu
       // dokunulan noktanın üstüne biniyor ve click'i yutuyordu (2026-10-20, M-01).
@@ -354,17 +442,40 @@
   // Künyeleri klavyeyle ulaşılabilir yap (2026-10-20: Füsûs/Mişkât'ta ~1.800
   // künye tabindex'siz geliyordu; Fütûhât'ta zaten vardı). Veri değişmez:
   // çalışma anında, render edilen künyelere tabindex=0 + role=button eklenir.
+  //
+  // 2026-10-21 (tasarım önerisi 7, kullanıcı onayı) KÜNYE GEZGİNİ: Füsûs
+  // kısımlarında 100'den fazla künye var; hepsi ayrı Tab durağı olunca sayfayı
+  // klavyeyle geçmek yüzlerce Tab demekti. Artık aynı paragraftaki künyeler TEK
+  // durak: içinde ←/→ (Home/End) gezinir, Tab paragraftan çıkar (roving tabindex).
   let hazirlaZamanlayici = null;
+  const kgAktif = new WeakMap();   // grup öğesi -> o gruptaki durak künye
+  function kunyeGrubu(el) {
+    return el.closest("p, li, blockquote, td, dd, figcaption") || el.parentElement;
+  }
+  function kunyeUyeleri(grup) {
+    return [...grup.querySelectorAll(".ayet-ref[role='button'], .hadis-ref[role='button'], .ayet-ref[tabindex], .hadis-ref[tabindex]")]
+      .filter((x) => kunyeGrubu(x) === grup);
+  }
+  function durakYaz(grup, aktif) {
+    const uyeler = kunyeUyeleri(grup);
+    if (!uyeler.length) return;
+    const hedef = uyeler.includes(aktif) ? aktif : (uyeler.includes(kgAktif.get(grup)) ? kgAktif.get(grup) : uyeler[0]);
+    kgAktif.set(grup, hedef);
+    uyeler.forEach((u) => u.setAttribute("tabindex", u === hedef ? "0" : "-1"));
+  }
   function kunyeleriHazirla() {
     hazirlaZamanlayici = null;
-    document.querySelectorAll(".ayet-ref:not([tabindex]), .hadis-ref:not([tabindex])").forEach((el) => {
+    const gruplar = new Set();
+    document.querySelectorAll(".ayet-ref, .hadis-ref").forEach((el) => {
       // İçinde bağlantı/düğme olan künye iç içe etkileşimli öğe olurdu (axe
       // nested-interactive): odak içerideki bağlantıda kalır, künye fareyle açılır.
       if (el.querySelector("a, button, [tabindex]")) return;
-      el.setAttribute("tabindex", "0");
       if (!el.hasAttribute("role")) el.setAttribute("role", "button");
       el.setAttribute("aria-haspopup", "true");
+      if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
+      gruplar.add(kunyeGrubu(el));
     });
+    gruplar.forEach((g) => { if (g) durakYaz(g, null); });
   }
   function hazirlaPlanla() {
     if (hazirlaZamanlayici) return;

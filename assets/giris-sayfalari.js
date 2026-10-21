@@ -59,6 +59,15 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
 .gp-halka__etiket{font:600 9px/1 inherit;fill:var(--text-muted)}
 .gp-halka__buyuk{font:600 17px/1 inherit;fill:var(--text-primary)}
 .gp-halka__kucuk{font:400 10px/1 inherit;fill:var(--text-muted)}
+.gp-sarmal-kap{max-width:300px;margin:6px auto 4px}
+.gp-sarmal{display:block;width:100%;height:auto;overflow:visible}
+.gp-sarmal__bag{outline:none}
+.gp-sarmal__nokta{fill:var(--series-ibnarabi);transition:transform .18s ease;transform-box:fill-box;transform-origin:center}
+.gp-sarmal__bag:hover .gp-sarmal__nokta,.gp-sarmal__bag:focus-visible .gp-sarmal__nokta{transform:scale(1.5);stroke:var(--accent-interactive);stroke-width:2}
+.gp-sarmal__bag:focus-visible .gp-sarmal__nokta{filter:drop-shadow(0 0 4px var(--odak-hale,rgba(237,161,0,.6))) drop-shadow(0 0 11px var(--odak-hale,rgba(237,161,0,.6)))}
+.gp-sarmal__ad{font:600 11px/1 inherit;fill:var(--text-primary);opacity:0;transition:opacity .15s;pointer-events:none}
+.gp-sarmal__bag:hover .gp-sarmal__ad,.gp-sarmal__bag:focus-visible .gp-sarmal__ad{opacity:1}
+@media (prefers-reduced-motion:reduce){.gp-sarmal__nokta,.gp-sarmal__ad{transition:none}}
 .gp-tablo-kap{overflow-x:auto;background:linear-gradient(to right,var(--surface-1) 30%,transparent) left/36px 100% no-repeat local,linear-gradient(to left,var(--surface-1) 30%,transparent) right/36px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.22),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.22),transparent) right/12px 100% no-repeat scroll}
 .gp-tablo{width:100%;border-collapse:collapse;font-size:calc(.86rem * var(--detail-font-scale,1))}
 .gp-tablo th,.gp-tablo td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
@@ -136,6 +145,14 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
       pt: "Os 18 volumes do Futuhat em um anel. Cada círculo é um volume; seu tamanho e brilho mostram a razão entre o texto turco do site e o texto-fonte daquele volume.",
     },
     halkaAd: { tr: "Fütûhât'ın 18 cildinde özetin kaynak metne oranı", en: "Ratio of summary to source text across the 18 volumes of the Futuhat", pt: "Razão entre resumo e texto-fonte nos 18 volumes do Futuhat" },
+    sarmalBaslik: { tr: "Füsûs: yirmi yedi fass", en: "The Fusus: twenty-seven chapters", pt: "O Fusus: vinte e sete capítulos" },
+    sarmalGiris: {
+      tr: "Kitabın yirmi yedi fassı kendi sırasıyla bir sarmalda. Her düğüm bir fass; yakın olan öndedir, uzak olan solgun. Bir düğüme gelince sıra numarası görünür, açınca o fass okunur.",
+      en: "The book's twenty-seven chapters, in the book's own order, on a spiral. Each node is a chapter; the nearer is in front, the farther is faded. Hovering a node shows its number; opening it reads that chapter.",
+      pt: "Os vinte e sete capítulos do livro, na ordem do próprio livro, numa espiral. Cada nó é um capítulo; o mais próximo está à frente, o mais distante esmaecido. Ao passar sobre um nó vê-se o seu número; abri-lo leva à leitura do capítulo.",
+    },
+    sarmalAd: { tr: "Füsûs'un yirmi yedi fassı bir sarmalda", en: "The twenty-seven chapters of the Fusus on a spiral", pt: "Os vinte e sete capítulos do Fusus numa espiral" },
+    sarmalFass: { tr: "fass", en: "chapter", pt: "capítulo" },
     merkezOkundu: { tr: "kısım okundu", en: "parts read", pt: "partes lidas" },
     merkezOrtalama: { tr: "ortalama oran", en: "average ratio", pt: "razão média" },
     ciltAralik: {
@@ -348,6 +365,39 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
     </svg>`;
   }
 
+  // Tasarım önerisi 8 (2026-10-21, kullanıcı onayı): Füsûs'un fassları bir sarmalda.
+  // Sarmal ilkesi (CLAUDE.md): halka yerine üç boyutlu sarmal. Derinlik atmosferik
+  // puslanmayla (yakın = dolgun, uzak = soluk) kurulur; sahte 3B yok. Düğümler yalnız
+  // sıra numarasını taşır; fass sırası kitabın kendi sırasıdır.
+  function sarmalHtml(d) {
+    const n = d.okuma.fusus.toplam, okunan = d.okuma.fusus.okunan;
+    const dugumler = [];
+    for (let i = 0; i < n; i++) {
+      const t = (i / Math.max(1, n - 1)) * Math.PI * 4.2;
+      const z = Math.cos(t);                       // 1 yakın … -1 uzak
+      dugumler.push({
+        i, z,
+        x: 110 + 62 * Math.sin(t),
+        y: 24 + i * (252 / Math.max(1, n - 1)),
+        r: 4.4 + (z + 1) * 2.1,
+        op: 0.34 + (z + 1) * 0.33,
+      });
+    }
+    // Uzaktan yakına çiz: yakın düğüm üstte kalır.
+    const g = dugumler.slice().sort((p, q) => p.z - q.z).map((p) => {
+      const ad = `${p.i + 1}. ${s("sarmalFass")}`;
+      const tutar = Math.min(Math.max(p.x, 24), 196);
+      const yon = p.x > 110 ? "end" : "start";
+      const lx = p.x + (p.x > 110 ? -(p.r + 6) : p.r + 6);
+      return baglanti("fusus", "fs" + (p.i + 1),
+        `<circle class="gp-sarmal__nokta" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r.toFixed(1)}" opacity="${(p.i < okunan ? p.op : p.op * 0.4).toFixed(2)}"/>`
+        + `<text class="gp-sarmal__ad" x="${lx.toFixed(1)}" y="${(p.y + 4).toFixed(1)}" text-anchor="${yon}">${esc(ad)}</text>`
+        + `<title>${esc(ad)}</title>`,
+        "gp-sarmal__bag", ` aria-label="${esc(ad)}"`);
+    }).join("");
+    return `<svg class="gp-sarmal" viewBox="0 0 220 300" role="group" aria-label="${esc(s("sarmalAd"))}">${g}</svg>`;
+  }
+
   const SAYIM_BOLUM = {
     kisim: ["futuhat"], fass: ["fusus"], hadis: ["miskat"], kavram: ["kavram"], terim: ["terimler"],
     esma: ["esma"], hal: ["hal"], ontoloji: ["ontoloji"], sir: ["sirlar"], soru: ["sorular"],
@@ -378,6 +428,9 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
         <div class="gp-tablo-kap"><table class="gp-tablo">
           <thead><tr><th scope="col">${esc(s("tabloCilt"))}</th><th scope="col" class="gp-say">${esc(s("tabloKisim"))}</th><th scope="col" class="gp-say">${esc(s("tabloOzet"))}</th><th scope="col" class="gp-say">${esc(s("tabloHam"))}</th><th scope="col" class="gp-say">${esc(s("tabloOran"))}</th></tr></thead>
           <tbody>${satirlar}</tbody></table></div>
+        <h3 class="gp-alt">${esc(s("sarmalBaslik"))}</h3>
+        <p class="gp-not">${esc(s("sarmalGiris"))}</p>
+        <div class="gp-sarmal-kap">${sarmalHtml(d)}</div>
         <h3 class="gp-alt">${esc(s("eserBaslik"))}</h3>
         <div class="gp-tablo-kap"><table class="gp-tablo gp-tablo--eser">
           <thead><tr><th scope="col">${esc(s("eserEser"))}</th><th scope="col">${esc(s("eserOkunan"))}</th><th scope="col">${esc(s("eserOlcum"))}</th></tr></thead>

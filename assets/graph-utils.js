@@ -430,6 +430,14 @@ window.DostGraphUtils = (function () {
         const collapsed = legend.classList.toggle("legend--collapsed");
         toggle.setAttribute("aria-expanded", String(!collapsed));
       });
+      // Esc = bir adım geri (ETKILESIM_DILI): odak lejanttayken açık lejantı halkaya katlar.
+      legend.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape" || legend.classList.contains("legend--collapsed")) return;
+        e.stopPropagation();
+        legend.classList.add("legend--collapsed");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
+      });
     });
   }
 

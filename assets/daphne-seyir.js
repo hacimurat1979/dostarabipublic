@@ -5,14 +5,14 @@
   //
   // Eksen İplikleri grafiğinin sayıya dökülmüş hâli: yazılar yayın tarihine
   // göre dört eşit dilime bölünür, her eksenin her dilimde kaç yazıda
-  // geçtiği çubuklarla gösterilir; her eksen için üç yazıdan kısa bir
+  // geçtiği dilim gülüyle gösterilir; her eksen için üç yazıdan kısa bir
   // alıntı özeti (data/daphne-eksen-seyri.json) ve en sık birlikte geçen
   // eksen çiftleri. Hangi yazının hangi ekseni taşıdığını biz işaretledik;
   // bu sekme o etiketlemenin SAYIMIDIR. Daphne'nin kendi modeli değildir ve
   // yazıların ardındaki hayata, duyguya ya da kişiliğe dair hiçbir çıkarım
   // yapmaz (CLAUDE.md, "Daphne Eksen Seyri" notu). Sayılar çalışma anında
   // data/daphne-profile.json'dan hesaplanır; yeni yazı eklenince sayfa
-  // kendiliğinden güncellenir. Grafik değil, okuma sayfası: çubuklar
+  // kendiliğinden güncellenir. Grafik değil, okuma sayfası: dilimler
   // yalnız sayıyı gösterir, bağlanmamış düğme yoktur.
 
   const I18n = window.DostI18n;
@@ -103,10 +103,27 @@
       en: "Pieces per period: {liste}",
       pt: "Textos por período: {liste}",
     }), { liste: e.say.map((s, i) => `${i + 1}: ${s}`).join(", ") });
-    const cubuklar = e.say.map((s, i) =>
-      `<div class="seyir-cubuk"><span class="seyir-dolgu" style="height:${s === 0 ? 0 : Math.max(3, Math.round((s / h.dilimBoyu) * 100))}%"></span>`
-      + `<b>${s}</b><i>${i + 1}</i></div>`).join("");
-    return `<div class="seyir-cubuklar" role="img" aria-label="${esc(alt)}">${cubuklar}</div>`;
+    // Tasarım önerisi 2 (2026-10-21, kullanıcı onayı): dört çubuk yerine dilim gülü.
+    // Tek daire dört eşit dilime bölünür (1. dilim sağ üst, saat yönünde 4'e); bir
+    // dilimin uzaklığı o dilimdeki yazı sayısıdır. Ölçek bütün eksenlerde aynı
+    // (h.dilimBoyu), yani gülleri birbiriyle kıyaslamak mümkün. Sayım betimleyicidir.
+    const R0 = 9, RMAX = 52, MERKEZ = 0;
+    const nokta = (r, a) => `${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`;
+    const parcalar = e.say.map((sayi, i) => {
+      const a0 = -Math.PI / 2 + i * Math.PI / 2 + 0.05, a1 = a0 + Math.PI / 2 - 0.1, am = (a0 + a1) / 2;
+      const r = R0 + (sayi / h.dilimBoyu) * (RMAX - R0);
+      const yol = sayi === 0 ? "" :
+        `<path class="seyir-gul__dilim" d="M${nokta(R0, a0)} L${nokta(r, a0)} A${r.toFixed(2)},${r.toFixed(2)} 0 0 1 ${nokta(r, a1)} L${nokta(R0, a1)} A${R0},${R0} 0 0 0 ${nokta(R0, a0)}Z">`
+        + `<title>${esc(`${i + 1}. ${tt({ tr: "dilim", en: "period", pt: "período" })}: ${sayi}`)}</title></path>`;
+      const rt = Math.max(r, R0 + 5) + 8;
+      const ty = (rt * Math.sin(am) + 3).toFixed(2);
+      return yol + `<text class="seyir-gul__sayi" x="${(rt * Math.cos(am)).toFixed(2)}" y="${ty}" text-anchor="middle">${sayi}</text>`;
+    }).join("");
+    const gul = `<svg class="seyir-gul" viewBox="-70 -70 140 140" aria-hidden="true" focusable="false">`
+      + `<line class="seyir-gul__eksen" x1="${MERKEZ}" y1="-${RMAX + 4}" x2="${MERKEZ}" y2="${RMAX + 4}"/>`
+      + `<line class="seyir-gul__eksen" x1="-${RMAX + 4}" y1="${MERKEZ}" x2="${RMAX + 4}" y2="${MERKEZ}"/>`
+      + `<circle class="seyir-gul__merkez" r="${R0}"/>${parcalar}</svg>`;
+    return `<div class="seyir-cubuklar" role="img" aria-label="${esc(alt)}">${gul}</div>`;
   }
 
   function parcaHtml(p) {
@@ -172,9 +189,9 @@
 
       <h2>${esc(tt({ tr: "Zaman içinde: dört dilim", en: "Over time: four periods", pt: "Ao longo do tempo: quatro períodos" }))}</h2>
       <p class="seyir-giris">${esc(T({
-        tr: "{n} yazı ({ilk} – {son}) yayın tarihine göre dört eşit dilime bölündü (dilim başına yaklaşık {boy} yazı). Her eksen için çubuklar, o eksenin dilimlerdeki yazı sayısıdır. Dilim başına bu kadar yazı küçük bir örneklemdir; 1–3 yazılık farklar bu sayımdan anlamlı sayılamaz.",
-        en: "The {n} pieces ({ilk} – {son}) are split by publication date into four equal periods (about {boy} pieces each). For each axis, the bars are the number of its pieces in each period. About this many pieces per period is a small sample; differences of 1–3 pieces cannot be read as meaningful from this count.",
-        pt: "Os {n} textos ({ilk} – {son}) foram divididos pela data de publicação em quatro períodos iguais (cerca de {boy} textos cada). Para cada eixo, as barras são o número dos seus textos em cada período. Cerca deste número de textos por período é uma amostra pequena; diferenças de 1–3 textos não podem ser lidas como significativas a partir desta contagem.",
+        tr: "{n} yazı ({ilk} – {son}) yayın tarihine göre dört eşit dilime bölündü (dilim başına yaklaşık {boy} yazı). Her eksen için tek daire dört dilime ayrılır (1. dilim sağ üstte, saat yönünde 4. dilime); bir dilimin uzaklığı o eksenin o dilimdeki yazı sayısıdır. Dilim başına bu kadar yazı küçük bir örneklemdir; 1–3 yazılık farklar bu sayımdan anlamlı sayılamaz.",
+        en: "The {n} pieces ({ilk} – {son}) are split by publication date into four equal periods (about {boy} pieces each). For each axis, one circle is divided into four wedges (period 1 at upper right, clockwise to period 4); the length of a wedge is the number of that axis's pieces in that period. About this many pieces per period is a small sample; differences of 1–3 pieces cannot be read as meaningful from this count.",
+        pt: "Os {n} textos ({ilk} – {son}) foram divididos pela data de publicação em quatro períodos iguais (cerca de {boy} textos cada). Para cada eixo, um círculo é dividido em quatro fatias (período 1 no canto superior direito, em sentido horário até o 4); o comprimento de uma fatia é o número de textos desse eixo nesse período. Cerca deste número de textos por período é uma amostra pequena; diferenças de 1–3 textos não podem ser lidas como significativas a partir desta contagem.",
       }))}</p>
       ${dilimEtiketleri(h)}
       ${h.eksenler.map((e) => eksenHtml(e, h)).join("")}

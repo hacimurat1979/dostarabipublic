@@ -197,6 +197,21 @@ window.__seyahatAtlasiApp = (function () {
     g.selectAll("path.seyahat-rota-parca").classed("seyahat-rota-parca--gelecek", (d) => d.b.yil_baslangic > sliderYear);
   }
 
+  // Tasarım önerisi 4 (2026-10-21, kullanıcı onayı): dar ekranda adlar yalnız seçili
+  // durakta ve güzergâh komşularında (önceki/sonraki) açık okunur; kalan duraklar
+  // perdede kalır (matlık = perdelenme). Geniş ekranda yalnız perde etkisiz (CSS).
+  function secimIsaretle(d) {
+    if (!g) return;
+    const idx = d ? duraklar.indexOf(d) : -1;
+    const komsu = new Set();
+    if (idx > 0) komsu.add(duraklar[idx - 1].id);
+    if (idx >= 0 && idx < duraklar.length - 1) komsu.add(duraklar[idx + 1].id);
+    g.classed("seyahat-durak-g--secimli", idx >= 0);
+    g.selectAll("g.seyahat-durak")
+      .classed("seyahat-durak--secili", (x) => idx >= 0 && x === d)
+      .classed("seyahat-durak--komsu", (x) => komsu.has(x.id));
+  }
+
   function vurgula(id, on) {
     if (!g) return;
     g.selectAll("g.seyahat-durak").classed("seyahat-durak--deginiliyor", (d) => on && d.id === id);
@@ -264,6 +279,7 @@ window.__seyahatAtlasiApp = (function () {
       ${eserlerHtml(d)}`;
     detailPanel.hidden = false;
     vurgula(d.id, true);
+    secimIsaretle(d);
     kayirPanelinDisina();
     wireIzAdimlari();
   }
@@ -306,6 +322,7 @@ window.__seyahatAtlasiApp = (function () {
 
   function girisPaneli() {
     focusId = null;
+    secimIsaretle(null);
     detailContent.innerHTML = `
       <p class="detail-eyebrow">${tt({ tr: "Seyahat Atlası", en: "Travel Atlas", pt: "Atlas de Viagem" })}</p>
       <h2 class="detail-title">${duraklar.length} ${tt({ tr: "durak", en: "stops", pt: "paragens" })}</h2>
@@ -423,6 +440,11 @@ window.__seyahatAtlasiApp = (function () {
     baglandi = true;
     GU.wireRecenter("seyahat-atlasi-recenter", () => ortala(true));
     if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
+    // Panel başka yolla (kapat düğmesi) gizlenirse seçim perdesi de kalkar.
+    if (window.MutationObserver) {
+      new MutationObserver(() => { if (detailPanel.hidden) secimIsaretle(null); })
+        .observe(detailPanel, { attributes: true, attributeFilter: ["hidden"] });
+    }
     GU.registerStepBack("seyahat-atlasi-wrap", () => {
       if (focusId) {
         // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).

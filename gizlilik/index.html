@@ -10,7 +10,7 @@
      sitemap'e scripts/sitemap-uret.py STATIK_SAYFALAR ile, canlıya
      _sync_common.py SYNCED_DIRS ile gider. Metin olgusaldır: sitenin bugün
      yüklediği araçlar ve tarayıcıda tuttuğu anahtarlar (assets/*.js). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <title>Gizlilik — Dost Arabî</title>
 <meta name="description" content="Dost Arabî web sitesinin ve Android uygulamasının gizlilik bilgisi: hangi ölçüm araçlarının hangi koşulda yüklendiği, cihazda neyin tutulduğu.">
 <link rel="canonical" href="https://dostarabi.com/gizlilik/">
@@ -56,6 +56,24 @@
   ul { padding-left: 1.2em; }
   li + li { margin-top: 6px; }
   code { font-size: 0.92em; color: var(--text-secondary); }
+  h3 { font-family: "Fraunces Dost", Georgia, serif; font-weight: 600; font-size: 1.02rem; margin: 18px 0 8px; }
+  .olcum[hidden] { display: none; }
+  .olcum__satir { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  /* Tasarım önerisi 9 (2026-10-21, kullanıcı onayı): ölçüm tercihi halka düğmesi.
+     Açıkken halka ışıkla dolar (ışık = açık olan); durum metni de yazılıdır, yalnız renge bağlı değil. */
+  .olcum__hal {
+    width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--text-muted);
+    background: transparent; color: var(--text-primary); font: inherit; font-size: 0.85rem; cursor: pointer;
+    transition: box-shadow .25s, background .25s, border-color .25s;
+  }
+  .olcum__hal[aria-pressed="true"] {
+    border-color: var(--accent-interactive);
+    background: radial-gradient(circle, rgba(237, 161, 0, .42), transparent 72%);
+    box-shadow: 0 0 0 3px var(--page-plane), 0 0 0 4.5px var(--accent-interactive);
+  }
+  .olcum__hal:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 4px; }
+  .olcum__durum { flex: 1 1 14em; min-width: 0; color: var(--text-secondary); font-size: 0.95rem; }
+  @media (prefers-reduced-motion: reduce) { .olcum__hal { transition: none; } }
 </style>
 </head>
 <body>
@@ -71,11 +89,19 @@
 
   <section id="tr" lang="tr">
     <h1>Gizlilik</h1>
-    <p class="tarih">Son güncelleme: 10 Ekim 2026</p>
+    <p class="tarih">Son güncelleme: 21 Ekim 2026</p>
 
     <h2>Web sitesi (dostarabi.com)</h2>
     <p>Sitede iki ziyaret ölçüm aracı var: Google Analytics ve Microsoft Clarity. İkisi de yalnız onayınla yüklenir. İlk ziyarette bir onam bandı görünür; “Kabul et” dersen bu iki araç yüklenir, “Reddet” dersen hiçbiri yüklenmez. Kararın tarayıcında saklanır ve bant bir daha sorulmaz. Bu araçların topladığı veri, <a href="https://policies.google.com/privacy">Google</a> ve <a href="https://privacy.microsoft.com/privacystatement">Microsoft</a> gizlilik bildirimlerine tabidir.</p>
     <p>Sitede üyelik, giriş, form ya da yorum yok. Site GitHub Pages üzerinde barındırılan statik dosyalardan oluşur; sunucu kayıtları <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub gizlilik bildirimi</a> çerçevesinde GitHub tarafından tutulur.</p>
+
+    <div class="olcum" data-olcum hidden>
+      <h3>Ölçüm tercihi</h3>
+      <div class="olcum__satir">
+        <button type="button" class="olcum__hal" aria-pressed="false" data-ac="Açık: Google Analytics ve Clarity sayfalar açılırken yüklenir." data-kapat="Kapalı: hiçbir ölçüm aracı yüklenmiyor." data-not="Tercih bu tarayıcıda kayıtlı; değişiklik bir sonraki sayfa açılışında geçerli olur.">Ölçüm</button>
+        <span class="olcum__durum" role="status"></span>
+      </div>
+    </div>
 
     <h2>Android uygulaması (Dost Arabî)</h2>
     <p>Uygulama dostarabi.com sayfalarını gösterir. Uygulama içinde hiçbir ölçüm aracı yüklenmez ve onam bandı gösterilmez. Uygulama kişisel veri toplamaz, kimseyle paylaşmaz.</p>
@@ -98,11 +124,19 @@
 
   <section id="en" lang="en">
     <h1>Privacy</h1>
-    <p class="tarih">Last updated: 10 October 2026</p>
+    <p class="tarih">Last updated: 21 October 2026</p>
 
     <h2>Website (dostarabi.com)</h2>
     <p>The site has two visit measurement tools: Google Analytics and Microsoft Clarity. Both load only with your consent. On your first visit a consent banner appears; if you choose “Accept” these two tools load, if you choose “Decline” neither loads. Your choice is stored in your browser and the banner does not ask again. The data these tools collect is subject to the <a href="https://policies.google.com/privacy">Google</a> and <a href="https://privacy.microsoft.com/privacystatement">Microsoft</a> privacy statements.</p>
     <p>The site has no accounts, sign-in, forms or comments. It consists of static files hosted on GitHub Pages; server logs are kept by GitHub under the <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub privacy statement</a>.</p>
+
+    <div class="olcum" data-olcum hidden>
+      <h3>Measurement preference</h3>
+      <div class="olcum__satir">
+        <button type="button" class="olcum__hal" aria-pressed="false" data-ac="On: Google Analytics and Clarity load when pages open." data-kapat="Off: no measurement tool loads." data-not="The choice is stored in this browser; a change applies from the next page load.">Measure</button>
+        <span class="olcum__durum" role="status"></span>
+      </div>
+    </div>
 
     <h2>Android app (Dost Arabi)</h2>
     <p>The app shows the pages of dostarabi.com. No measurement tool loads inside the app and no consent banner is shown. The app collects no personal data and shares nothing with anyone.</p>
@@ -125,11 +159,19 @@
 
   <section id="pt" lang="pt">
     <h1>Privacidade</h1>
-    <p class="tarih">Última atualização: 10 de outubro de 2026</p>
+    <p class="tarih">Última atualização: 21 de outubro de 2026</p>
 
     <h2>Site (dostarabi.com)</h2>
     <p>O site tem duas ferramentas de medição de visitas: Google Analytics e Microsoft Clarity. Ambas só carregam com o seu consentimento. Na primeira visita aparece uma faixa de consentimento; se escolher “Aceitar”, estas duas ferramentas carregam; se escolher “Recusar”, nenhuma carrega. A sua escolha fica guardada no navegador e a faixa não volta a perguntar. Os dados que estas ferramentas recolhem estão sujeitos às declarações de privacidade da <a href="https://policies.google.com/privacy">Google</a> e da <a href="https://privacy.microsoft.com/privacystatement">Microsoft</a>.</p>
     <p>O site não tem contas, início de sessão, formulários nem comentários. É composto por ficheiros estáticos alojados no GitHub Pages; os registos do servidor são mantidos pelo GitHub nos termos da <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">declaração de privacidade do GitHub</a>.</p>
+
+    <div class="olcum" data-olcum hidden>
+      <h3>Preferência de medição</h3>
+      <div class="olcum__satir">
+        <button type="button" class="olcum__hal" aria-pressed="false" data-ac="Ativada: o Google Analytics e o Clarity carregam quando as páginas abrem." data-kapat="Desativada: nenhuma ferramenta de medição carrega." data-not="A escolha fica guardada neste navegador; a alteração vale a partir do próximo carregamento de página.">Medir</button>
+        <span class="olcum__durum" role="status"></span>
+      </div>
+    </div>
 
     <h2>Aplicação Android (Dost Arabi)</h2>
     <p>A aplicação mostra as páginas de dostarabi.com. Nenhuma ferramenta de medição carrega dentro da aplicação e nenhuma faixa de consentimento é mostrada. A aplicação não recolhe dados pessoais e não partilha nada com ninguém.</p>
@@ -150,5 +192,6 @@
     <p>Para perguntas, contacte o proprietário do site através da ligação de contacto no rodapé da página inicial.</p>
   </section>
 </main>
+<script src="/assets/gizlilik-olcum.js" defer></script>
 </body>
 </html>

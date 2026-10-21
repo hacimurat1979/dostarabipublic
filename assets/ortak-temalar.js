@@ -376,7 +376,7 @@
   function highlight(d) {
     if (!d) {
       linkSel.classed("link--highlight", false);
-      nodeSel.style("opacity", 1);
+      nodeSel.style("opacity", 1).classed("node--bagli", false);
       return;
     }
     const connectedNodes = new Set([d.id]);
@@ -412,7 +412,8 @@
       });
     }
     linkSel.classed("link--highlight", (l) => connectedLinks.has(l));
-    nodeSel.style("opacity", (n) => (connectedNodes.has(n.id) ? 1 : 0.25));
+    nodeSel.style("opacity", (n) => (connectedNodes.has(n.id) ? 1 : 0.25))
+      .classed("node--bagli", (n) => connectedNodes.has(n.id));   // dar ekranda adı yalnız bağlı düğümler açar (CSS)
   }
 
   let currentDetailTheme = null;
