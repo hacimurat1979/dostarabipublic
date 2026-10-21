@@ -53,4 +53,6 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
 `scripts/sync-to-live.py` çalıştırılır,
 bu repoda commit edilip `main`'e gönderilir; onay beklenmez,
 ne yapıldığı kullanıcıya bildirilir.
-Asla force-push ya da amend yapılmaz.
+Asla force-push ya da amend yapılmaz
+(tek istisna: 2026-10-21'de kullanıcı onayıyla Daphne düz metnini
+geçmişten silmek için yapılan bir defalık force-push).
