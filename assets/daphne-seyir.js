@@ -102,28 +102,79 @@
       tr: "Dilimlere göre yazı sayısı: {liste}",
       en: "Pieces per period: {liste}",
       pt: "Textos por período: {liste}",
-    }), { liste: e.say.map((s, i) => `${i + 1}: ${s}`).join(", ") });
+    }), { liste: e.say.map((s, i) => {
+      const d = h.dilimler[i];
+      return `${i + 1}. ${tt({ tr: "dilim", en: "period", pt: "período" })} (${tarihYaz(d.ilk)} – ${tarihYaz(d.son)}): ${s}`;
+    }).join("; ") });
     // Tasarım önerisi 2 (2026-10-21, kullanıcı onayı): dört çubuk yerine dilim gülü.
     // Tek daire dört eşit dilime bölünür (1. dilim sağ üst, saat yönünde 4'e); bir
     // dilimin uzaklığı o dilimdeki yazı sayısıdır. Ölçek bütün eksenlerde aynı
     // (h.dilimBoyu), yani gülleri birbiriyle kıyaslamak mümkün. Sayım betimleyicidir.
     const R0 = 9, RMAX = 52, MERKEZ = 0;
     const nokta = (r, a) => `${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`;
+    const dilimAd = tt({ tr: "dilim", en: "period", pt: "período" });
+    const yaziAd = tt({ tr: "yazı", en: "pieces", pt: "textos" });
+    // Y4 (2026-10-21, kullanıcı onayı): her dilim odaklanabilir/seçilebilir; dilim numarası gülün
+    // dış kenarında; seçilince diğer üçü matlaşır (matlık = perdelenme) ve altındaki satırda
+    // o dilimin tarih aralığı yazılır. Yalnız sayım; yorum yok.
     const parcalar = e.say.map((sayi, i) => {
       const a0 = -Math.PI / 2 + i * Math.PI / 2 + 0.05, a1 = a0 + Math.PI / 2 - 0.1, am = (a0 + a1) / 2;
       const r = R0 + (sayi / h.dilimBoyu) * (RMAX - R0);
-      const yol = sayi === 0 ? "" :
-        `<path class="seyir-gul__dilim" d="M${nokta(R0, a0)} L${nokta(r, a0)} A${r.toFixed(2)},${r.toFixed(2)} 0 0 1 ${nokta(r, a1)} L${nokta(R0, a1)} A${R0},${R0} 0 0 0 ${nokta(R0, a0)}Z">`
-        + `<title>${esc(`${i + 1}. ${tt({ tr: "dilim", en: "period", pt: "período" })}: ${sayi}`)}</title></path>`;
+      const d = h.dilimler[i];
+      const etiket = `${i + 1}. ${dilimAd} (${tarihYaz(d.ilk)} – ${tarihYaz(d.son)}): ${sayi} ${yaziAd}`;
+      const yay = (rr) => `M${nokta(R0, a0)} L${nokta(rr, a0)} A${rr.toFixed(2)},${rr.toFixed(2)} 0 0 1 ${nokta(rr, a1)} L${nokta(R0, a1)} A${R0},${R0} 0 0 0 ${nokta(R0, a0)}Z`;
+      const yol = sayi === 0 ? "" : `<path class="seyir-gul__dilim" d="${yay(r)}"/>`;
       const rt = Math.max(r, R0 + 5) + 8;
-      const ty = (rt * Math.sin(am) + 3).toFixed(2);
-      return yol + `<text class="seyir-gul__sayi" x="${(rt * Math.cos(am)).toFixed(2)}" y="${ty}" text-anchor="middle">${sayi}</text>`;
+      const sayiYazi = `<text class="seyir-gul__sayi" x="${(rt * Math.cos(am)).toFixed(2)}" y="${(rt * Math.sin(am) + 3).toFixed(2)}" text-anchor="middle">${sayi}</text>`;
+      const no = `<text class="seyir-gul__no" x="${(67 * Math.cos(am)).toFixed(2)}" y="${(67 * Math.sin(am) + 2.5).toFixed(2)}" text-anchor="middle">${i + 1}</text>`;
+      return `<g class="seyir-gul__d" tabindex="0" role="button" aria-pressed="false" aria-label="${esc(etiket)}" data-i="${i}" data-bilgi="${esc(`${i + 1}. ${dilimAd} · ${tarihYaz(d.ilk)} – ${tarihYaz(d.son)} · ${sayi} ${yaziAd}`)}">`
+        + `<path class="seyir-gul__hit" d="${yay(RMAX)}"/>${yol}${sayiYazi}${no}</g>`;
     }).join("");
-    const gul = `<svg class="seyir-gul" viewBox="-70 -70 140 140" aria-hidden="true" focusable="false">`
+    const ipucu = tt({ tr: "Bir dilime dokunun: tarih aralığı burada yazılır.", en: "Touch a period: its date range is shown here.", pt: "Toque num período: o intervalo de datas aparece aqui." });
+    const gul = `<svg class="seyir-gul" viewBox="-74 -74 148 148" role="group" aria-label="${esc(alt)}">`
       + `<line class="seyir-gul__eksen" x1="${MERKEZ}" y1="-${RMAX + 4}" x2="${MERKEZ}" y2="${RMAX + 4}"/>`
       + `<line class="seyir-gul__eksen" x1="-${RMAX + 4}" y1="${MERKEZ}" x2="${RMAX + 4}" y2="${MERKEZ}"/>`
       + `<circle class="seyir-gul__merkez" r="${R0}"/>${parcalar}</svg>`;
-    return `<div class="seyir-cubuklar" role="img" aria-label="${esc(alt)}">${gul}</div>`;
+    return `<div class="seyir-cubuklar">${gul}<div class="seyir-gul__bilgi" aria-live="polite" data-ipucu="${esc(ipucu)}">${esc(ipucu)}</div></div>`;
+  }
+
+  // Gül etkileşimi (kök üzerinde tek dinleyici): tıklama/Enter/Boşluk seçer ya da bırakır,
+  // üzerine gelince/odaklanınca önizler, Esc seçimi bırakır (bir adım geri).
+  function gulEtkilesimiBagla(kok0) {
+    if (kok0.dataset.gulBagli) return;
+    kok0.dataset.gulBagli = "1";
+    function uygula(svg, i, kalici) {
+      const sec = kalici != null ? kalici : (svg.dataset.sec === undefined || svg.dataset.sec === "" ? -1 : +svg.dataset.sec);
+      const gosterilen = i != null ? i : sec;
+      svg.classList.toggle("seyir-gul--secimli", gosterilen >= 0);
+      svg.querySelectorAll(".seyir-gul__d").forEach((g) => {
+        const k = +g.dataset.i;
+        g.classList.toggle("seyir-gul__d--sec", k === gosterilen);
+        g.setAttribute("aria-pressed", String(k === sec));
+      });
+      const bilgi = svg.parentNode.querySelector(".seyir-gul__bilgi");
+      const g = gosterilen >= 0 ? svg.querySelector('.seyir-gul__d[data-i="' + gosterilen + '"]') : null;
+      bilgi.textContent = g ? g.dataset.bilgi : bilgi.dataset.ipucu;
+    }
+    function dilim(ev) { return ev.target.closest && ev.target.closest(".seyir-gul__d"); }
+    kok0.addEventListener("click", (ev) => {
+      const g = dilim(ev); if (!g) return;
+      const svg = g.closest("svg"); const i = +g.dataset.i;
+      const yeni = svg.dataset.sec !== undefined && svg.dataset.sec !== "" && +svg.dataset.sec === i ? -1 : i;
+      svg.dataset.sec = String(yeni); uygula(svg, null, yeni);
+    });
+    kok0.addEventListener("keydown", (ev) => {
+      const g = dilim(ev); if (!g) return;
+      const svg = g.closest("svg");
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); g.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+      else if (ev.key === "Escape" && svg.dataset.sec !== undefined && svg.dataset.sec !== "" && +svg.dataset.sec >= 0) {
+        ev.stopPropagation(); svg.dataset.sec = "-1"; uygula(svg, null, -1);
+      }
+    }, true);
+    kok0.addEventListener("mouseover", (ev) => { const g = dilim(ev); if (g) uygula(g.closest("svg"), +g.dataset.i); });
+    kok0.addEventListener("mouseout", (ev) => { const g = dilim(ev); if (g) uygula(g.closest("svg"), null); });
+    kok0.addEventListener("focusin", (ev) => { const g = dilim(ev); if (g) uygula(g.closest("svg"), +g.dataset.i); });
+    kok0.addEventListener("focusout", (ev) => { const g = dilim(ev); if (g) uygula(g.closest("svg"), null); });
   }
 
   function parcaHtml(p) {
@@ -168,6 +219,7 @@
   function render() {
     if (!profil) return;
     if (!profil.articles || !profil.articles.length) { kok.innerHTML = ""; return; }
+    gulEtkilesimiBagla(kok);
     hesap = hesapla();
     const h = hesap;
     const ilkTarih = h.yazilar[0].date, sonTarih = h.yazilar[h.n - 1].date;

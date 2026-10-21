@@ -91,7 +91,7 @@
   // gövde rengini taşıyor (GU.ZAT_FILL, beyaz) -- kullanıcı isteği
   // 2026-07-28. Önceki --text-secondary gri, düğümü çevresindeki temalardan
   // ayırmıyordu; merkez olduğu belli olmuyordu.
-  function rootColor() { return GU.ZAT_FILL; }
+  function rootColor() { return GU.zatFill(); }
 
   // --- Düğüm yarıçapları (#1): güçlü hiyerarşi. (root 70 / kategori 48 /
   //     leaf 10 px çap → yarıçap). Veride ara-kategori yok, üç kademe.

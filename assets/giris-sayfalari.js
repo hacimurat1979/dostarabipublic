@@ -35,7 +35,11 @@ window.__girisApp = (function () {
   function lang() { return I18n.getLang(); }
   function loc() { const l = lang(); return l === "tr" ? "tr-TR" : l === "pt" ? "pt-BR" : "en-US"; }
   function sayi(n) { return Number(n).toLocaleString(loc()); }
-  function yuzde(p) { return "%" .concat((p * 100).toLocaleString(loc(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })); }
+  function yuzde(p) {
+    // TR'de "%11,3" (önde), EN/PT'de "11.3%" / "11,3%" (sonda): dile göre yüzde biçimi.
+    const n = (p * 100).toLocaleString(loc(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    return lang() === "tr" ? "%" + n : n + "%";
+  }
   function s(k) { return tt(S[k]); }
 
   // ── biçem ─────────────────────────────────────────────────────────────
@@ -62,11 +66,20 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
 .gp-sarmal-kap{max-width:300px;margin:6px auto 4px}
 .gp-sarmal{display:block;width:100%;height:auto;overflow:visible}
 .gp-sarmal__bag{outline:none}
+.gp-sarmal__yakala{pointer-events:all}
+.gp-sarmal__bag{cursor:pointer}
+.gp-sarmal--secimli .gp-sarmal__bag:not(.gp-sarmal__bag--sec) .gp-sarmal__nokta{opacity:.3}
+.gp-sarmal__hale{fill:var(--odak-hale,rgba(237,161,0,.55));opacity:.55;pointer-events:none}
+.gp-sarmal__bag:focus-visible .gp-sarmal__yakala{stroke:var(--accent-interactive);stroke-width:1.6}
+.gp-sarmal__ac{outline:none}
+.gp-sarmal__ac-daire{fill:var(--surface-1,#fff);stroke:var(--accent-interactive);stroke-width:2}
+.gp-sarmal__ac-yazi{font:600 11px/1 inherit;fill:var(--accent-interactive)}
+.gp-sarmal__ac:focus-visible .gp-sarmal__ac-daire{stroke-width:3.4}
 .gp-sarmal__nokta{fill:var(--series-ibnarabi);transition:transform .18s ease;transform-box:fill-box;transform-origin:center}
 .gp-sarmal__bag:hover .gp-sarmal__nokta,.gp-sarmal__bag:focus-visible .gp-sarmal__nokta{transform:scale(1.5);stroke:var(--accent-interactive);stroke-width:2}
 .gp-sarmal__bag:focus-visible .gp-sarmal__nokta{filter:drop-shadow(0 0 4px var(--odak-hale,rgba(237,161,0,.6))) drop-shadow(0 0 11px var(--odak-hale,rgba(237,161,0,.6)))}
 .gp-sarmal__ad{font:600 11px/1 inherit;fill:var(--text-primary);opacity:0;transition:opacity .15s;pointer-events:none}
-.gp-sarmal__bag:hover .gp-sarmal__ad,.gp-sarmal__bag:focus-visible .gp-sarmal__ad{opacity:1}
+.gp-sarmal__bag:hover .gp-sarmal__ad,.gp-sarmal__bag:focus-visible .gp-sarmal__ad,.gp-sarmal__bag--sec .gp-sarmal__ad{opacity:1}
 @media (prefers-reduced-motion:reduce){.gp-sarmal__nokta,.gp-sarmal__ad{transition:none}}
 .gp-tablo-kap{overflow-x:auto;background:linear-gradient(to right,var(--surface-1) 30%,transparent) left/36px 100% no-repeat local,linear-gradient(to left,var(--surface-1) 30%,transparent) right/36px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.22),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.22),transparent) right/12px 100% no-repeat scroll}
 .gp-tablo{width:100%;border-collapse:collapse;font-size:calc(.86rem * var(--detail-font-scale,1))}
@@ -147,12 +160,13 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
     halkaAd: { tr: "Fütûhât'ın 18 cildinde özetin kaynak metne oranı", en: "Ratio of summary to source text across the 18 volumes of the Futuhat", pt: "Razão entre resumo e texto-fonte nos 18 volumes do Futuhat" },
     sarmalBaslik: { tr: "Füsûs: yirmi yedi fass", en: "The Fusus: twenty-seven chapters", pt: "O Fusus: vinte e sete capítulos" },
     sarmalGiris: {
-      tr: "Kitabın yirmi yedi fassı kendi sırasıyla bir sarmalda. Her düğüm bir fass; yakın olan öndedir, uzak olan solgun. Bir düğüme gelince sıra numarası görünür, açınca o fass okunur.",
-      en: "The book's twenty-seven chapters, in the book's own order, on a spiral. Each node is a chapter; the nearer is in front, the farther is faded. Hovering a node shows its number; opening it reads that chapter.",
-      pt: "Os vinte e sete capítulos do livro, na ordem do próprio livro, numa espiral. Cada nó é um capítulo; o mais próximo está à frente, o mais distante esmaecido. Ao passar sobre um nó vê-se o seu número; abri-lo leva à leitura do capítulo.",
+      tr: "Kitabın yirmi yedi fassı kendi sırasıyla bir sarmalda. Her düğüm bir fass; yakın olan öndedir, uzak olan solgun. Bir düğüme dokununca yanar ve sıra numarası görünür; “Aç” halkası o fassı açar. Klavyede ok tuşları numara sırasıyla gezer.",
+      en: "The book's twenty-seven chapters, in the book's own order, on a spiral. Each node is a chapter; the nearer is in front, the farther is faded. Touching a node lights it and shows its number; the “Open” ring opens that chapter. On a keyboard the arrow keys move in number order.",
+      pt: "Os vinte e sete capítulos do livro, na ordem do próprio livro, numa espiral. Cada nó é um capítulo; o mais próximo está à frente, o mais distante esmaecido. Ao tocar num nó, ele acende e mostra o seu número; o anel “Abrir” abre esse capítulo. No teclado, as setas percorrem os nós por ordem de número.",
     },
     sarmalAd: { tr: "Füsûs'un yirmi yedi fassı bir sarmalda", en: "The twenty-seven chapters of the Fusus on a spiral", pt: "Os vinte e sete capítulos do Fusus numa espiral" },
     sarmalFass: { tr: "fass", en: "chapter", pt: "capítulo" },
+    sarmalAc: { tr: "Aç", en: "Open", pt: "Abrir" },
     merkezOkundu: { tr: "kısım okundu", en: "parts read", pt: "partes lidas" },
     merkezOrtalama: { tr: "ortalama oran", en: "average ratio", pt: "razão média" },
     ciltAralik: {
@@ -383,19 +397,71 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
         op: 0.34 + (z + 1) * 0.33,
       });
     }
-    // Uzaktan yakına çiz: yakın düğüm üstte kalır.
-    const g = dugumler.slice().sort((p, q) => p.z - q.z).map((p) => {
+    // Düğümler NUMARA sırasıyla dizilir (Tab ve ekran okuyucu sırası 1→27); derinlik yalnız
+    // opaklık/yarıçap ile okunur. Y2 (2026-10-21, kullanıcı onayı): iki aşamalı dokunuş --
+    // ilk dokunuş düğümü seçer (yanar, adı çıkar, "Aç" halkası belirir), "Aç" bağlantısı fassa
+    // götürür (adı konmuş kapı). Sarmal tek Tab durağıdır; ←/→/↑/↓ numara sırasıyla gezer, Esc seçimi
+    // bırakır. Her düğümün çevresinde saydam geniş yakalama dairesi var (hedef ≥24 px, WCAG 2.5.8).
+    const g = dugumler.map((p) => {
       const ad = `${p.i + 1}. ${s("sarmalFass")}`;
-      const tutar = Math.min(Math.max(p.x, 24), 196);
-      const yon = p.x > 110 ? "end" : "start";
-      const lx = p.x + (p.x > 110 ? -(p.r + 6) : p.r + 6);
-      return baglanti("fusus", "fs" + (p.i + 1),
-        `<circle class="gp-sarmal__nokta" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r.toFixed(1)}" opacity="${(p.i < okunan ? p.op : p.op * 0.4).toFixed(2)}"/>`
-        + `<text class="gp-sarmal__ad" x="${lx.toFixed(1)}" y="${(p.y + 4).toFixed(1)}" text-anchor="${yon}">${esc(ad)}</text>`
-        + `<title>${esc(ad)}</title>`,
-        "gp-sarmal__bag", ` aria-label="${esc(ad)}"`);
+      const op = Math.max(0.55, p.op);
+      return `<g class="gp-sarmal__bag" role="button" tabindex="${p.i === 0 ? 0 : -1}" aria-pressed="false" aria-label="${esc(ad)}" data-i="${p.i}" data-x="${p.x.toFixed(1)}" data-y="${p.y.toFixed(1)}" data-r="${p.r.toFixed(1)}">`
+        + `<circle class="gp-sarmal__yakala" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="12" fill="transparent"/>`
+        + `<circle class="gp-sarmal__nokta" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r.toFixed(1)}" opacity="${(p.i < okunan ? op : op * 0.5).toFixed(2)}" data-op="${(p.i < okunan ? op : op * 0.5).toFixed(2)}"/>`
+        + `<title>${esc(ad)}</title></g>`;
     }).join("");
     return `<svg class="gp-sarmal" viewBox="0 0 220 300" role="group" aria-label="${esc(s("sarmalAd"))}">${g}</svg>`;
+  }
+
+  // Sarmal etkileşimi (kapsam kökü üzerinde delegasyon; render sonrası bir kez).
+  function sarmalBagla(kap) {
+    const svg = kap.querySelector(".gp-sarmal");
+    if (!svg || svg.dataset.bagli) return;
+    svg.dataset.bagli = "1";
+    const dugumler = [...svg.querySelectorAll(".gp-sarmal__bag")];
+    let sec = -1;
+    function ciz() {
+      svg.querySelectorAll(".gp-sarmal__sec, .gp-sarmal__ac").forEach((e) => e.remove());
+      svg.classList.toggle("gp-sarmal--secimli", sec >= 0);
+      dugumler.forEach((g, i) => {
+        g.setAttribute("aria-pressed", String(i === sec));
+        g.classList.toggle("gp-sarmal__bag--sec", i === sec);
+      });
+      if (sec < 0) return;
+      const g = dugumler[sec], x = +g.dataset.x, y = +g.dataset.y, r = +g.dataset.r;
+      const sag = x > 110;
+      const ad = `${sec + 1}. ${s("sarmalFass")}`;
+      const lx = x + (sag ? -(r + 12) : r + 12);
+      g.insertAdjacentHTML("beforeend",
+        `<circle class="gp-sarmal__sec gp-sarmal__hale" cx="${x}" cy="${y}" r="${(r + 7).toFixed(1)}"/>`
+        + `<text class="gp-sarmal__sec gp-sarmal__ad" x="${lx.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${sag ? "end" : "start"}">${esc(ad)}</text>`);
+      const bx = Math.min(Math.max(x + (sag ? -58 : 58), 28), 192), by = Math.min(Math.max(y + 30, 28), 272);
+      svg.insertAdjacentHTML("beforeend", baglanti("fusus", "fs" + (sec + 1),
+        `<circle class="gp-sarmal__ac-daire" cx="${bx}" cy="${by}" r="22"/><text class="gp-sarmal__ac-yazi" x="${bx}" y="${by + 4}" text-anchor="middle">${esc(s("sarmalAc"))}</text>`,
+        "gp-sarmal__ac", ` aria-label="${esc(ad + ": " + s("sarmalAc"))}"`));
+    }
+    function sec_(i, odak) {
+      sec = i; dugumler.forEach((g, k) => g.setAttribute("tabindex", k === (i < 0 ? 0 : i) ? "0" : "-1"));
+      ciz(); if (odak && i >= 0) dugumler[i].focus();
+    }
+    svg.addEventListener("click", (e) => {
+      const g = e.target.closest && e.target.closest(".gp-sarmal__bag");
+      if (!g) return;
+      e.preventDefault();
+      const i = +g.dataset.i;
+      sec_(sec === i ? -1 : i, false);
+    });
+    svg.addEventListener("keydown", (e) => {
+      const g = e.target.closest && e.target.closest(".gp-sarmal__bag");
+      if (e.key === "Escape" && sec >= 0) { e.stopPropagation(); const k = sec; sec_(-1, false); dugumler[k].focus(); return; }
+      if (!g) return;
+      const i = +g.dataset.i, n = dugumler.length;
+      const yeni = (e.key === "ArrowRight" || e.key === "ArrowDown") ? Math.min(i + 1, n - 1)
+        : (e.key === "ArrowLeft" || e.key === "ArrowUp") ? Math.max(i - 1, 0)
+        : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+      if (yeni >= 0) { e.preventDefault(); dugumler.forEach((d, k) => d.setAttribute("tabindex", k === yeni ? "0" : "-1")); dugumler[yeni].focus(); if (sec >= 0) sec_(yeni, true); return; }
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sec_(sec === i ? -1 : i, true); }
+    });
   }
 
   const SAYIM_BOLUM = {
@@ -442,6 +508,7 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
         <ul class="gp-notlar"><li>${esc(s("notOkundu"))}</li><li>${esc(s("notOran"))}</li><li>${esc(s("notYayin"))}</li><li>${esc(s("notFusus"))}</li></ul>
       </div>`;
     baglantilariBagla(el("kapsam"));
+    sarmalBagla(el("kapsam"));
   }
 
   // ── Kaynakça ──────────────────────────────────────────────────────────

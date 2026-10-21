@@ -7,7 +7,7 @@ ve `scripts/sync-to-live.py` ile buraya kopyalanır.
 Burada yapılan bir değişiklik bir sonraki senkronda kaybolur.
 
 Kuralların tam ve güncel hâli özel repodaki `CLAUDE.md`'dedir.
-Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-19).
+Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
 
 ## Geçerli temel kurallar
 
@@ -35,6 +35,10 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-19).
   da kişiliğe dair hiçbir çıkarım yapmaz. İstisna bu sekmeyle sınırlı.
   Her taranan Daphne yazısında güncellenir: yazının eksenleri işaretlenir,
   sayılar profilden otomatik hesaplanır, alıntılar gözden geçirilir.
+- **Daphne verisi canlıda şifrelidir (2026-10-21, kullanıcı kararı):**
+  `data/gizli/*.enc` (AES-GCM; parola kullanıcıda, depoda yok). Düz metin
+  Daphne dosyaları buraya konmaz; özel repodaki sync betiği şifreler.
+  Burada Daphne verisi düz metin olarak asla eklenmez.
 - **Mişkâtü'l-Envâr'da** her sayfa hadisin kendi Türkçe metniyle açılır.
 - **Üç dil (TR/EN/PT) birlikte güncellenir.**
 - **Yaptığımız işi olduğundan farklı göstermeyiz:**

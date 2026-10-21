@@ -113,6 +113,13 @@ window.DostI18n = (function () {
       const v = el.dataset[lang + "Title"] || el.dataset.enTitle || el.dataset.trTitle;
       if (v) { el.setAttribute("title", v); el.setAttribute("aria-label", v); }
     });
+    // Dile göre adres: <a href="gizlilik/" data-href-en="gizlilik/en/" data-href-pt="gizlilik/pt/">
+    // (2026-10-21: gizlilik sayfası dil başına ayrı adres). Tr için href'in kendisi.
+    scope.querySelectorAll("[data-href-en], [data-href-pt]").forEach((el) => {
+      if (!el.dataset.hrefTr) el.dataset.hrefTr = el.getAttribute("href");
+      const v = (lang === "en" ? el.dataset.hrefEn : lang === "pt" ? el.dataset.hrefPt : null) || el.dataset.hrefTr;
+      if (v) el.setAttribute("href", v);
+    });
     document.documentElement.lang = lang;
   }
 

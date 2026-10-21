@@ -22,9 +22,21 @@ window.DostGraphUtils = (function () {
     // aynı dosyayı iki kez indirip ayrıştırıyordu (2026-10-07 taraması).
     try { url = new URL(url, document.baseURI).href; } catch (e) {}
     if (jsonCache.has(url)) return jsonCache.get(url);
-    const p = fetch(url).then((r) => {
+    const duz = () => fetch(url).then((r) => {
       if (!r.ok) throw new Error(`fetchJson: ${url} -> HTTP ${r.status}`);
       return r.json();
+    });
+    // Daphne verisi canlıda şifreli (assets/gizli-veri.js); kapı yoksa (geliştirme) null döner, düz okunur.
+    // Kapı betiği o sayfada yüklü değilse (sahibin araçları, index.html) yalnız Daphne dosyası istenirken
+    // tembel yüklenir.
+    const gizliAdres = /\/data\/(daphne-profile|daphne-dost-baglari|daphne-eksen-seyri|themes)\.json(\?|$)/.test(url);
+    const gizliHazir = gizliAdres && !window.DostGizli ? new Promise((res) => {
+      const sc = document.createElement("script"); sc.src = new URL("assets/gizli-veri.js", document.baseURI).href;
+      sc.onload = () => res(); sc.onerror = () => res(); document.head.appendChild(sc);
+    }) : Promise.resolve();
+    const p = gizliHazir.then(() => {
+      const G = window.DostGizli;
+      return G && G.kapsar(url) ? G.cozJson(url).then((d) => (d !== null ? d : duz())) : duz();
     }).catch((e) => { jsonCache.delete(url); throw e; });
     jsonCache.set(url, p);
     return p;
@@ -381,6 +393,14 @@ window.DostGraphUtils = (function () {
   // GORSEL_DIL.md güncellemesi CLAUDE.md'de not edilmiştir, kod burada o
   // kararı yansıtıyor: kendi rengi bilinemez, yalnız ışımasıyla bilinir.
   const ZAT_FILL = "#ffffff";
+  // Y5 (2026-10-21, kullanıcı onayı): KARANLIK temada Zât dolu beyaz bir disk olarak parlıyordu
+  // (GORSEL_DIL: "Zât parlak cisim değildir"). Karanlıkta dolgu zeminin kendi rengi, çevresi ince
+  // açık çizgi (CSS) -- bir cisim değil bir boşluk; altın nefes alan hâle aynen duruyor. Açık temada
+  // beyaz dolgu değişmedi. Geri almak için bu işlevin karanlık dalını silmek yeter.
+  function zatFill() {
+    if (!isDark()) return ZAT_FILL;
+    try { return getVar("--page-plane") || "#0d0d0d"; } catch (e) { return "#0d0d0d"; }
+  }
 
   // "Ne kadar eminiz?" katmanının sözlüğü (B1, ontology.js'te doğdu,
   // 2026-09-13'te sorular.js de aynı deseni kullanacağı için buraya
@@ -417,11 +437,29 @@ window.DostGraphUtils = (function () {
   // fully-expanded legend can otherwise sit on top of the graph and hide
   // nodes behind it.
   function setupLegendToggles() {
+    // 2026-10-21: geniş değil ama alçak/orta ekranlarda (≤1100 px, ör. 1024x768) varsayılan
+    // açık lejant alanın ~%22'sini tutuyordu (revizyon taraması #24): halka olarak başlar.
     const collapseByDefault = window.matchMedia("(max-height: 700px)").matches
-      || window.matchMedia("(pointer: coarse)").matches;
+      || window.matchMedia("(pointer: coarse)").matches
+      || window.matchMedia("(max-width: 1100px)").matches;
     document.querySelectorAll(".legend").forEach((legend) => {
       const toggle = legend.querySelector(".legend__toggle");
       if (!toggle) return;
+      // Kapalı halkanın dört noktası o görünümün KENDİ lejantından gelir (renk tek anlam:
+      // başka görünümün seri renklerini söylemesin). Lejantta renkli nokta yoksa CSS varsayılanı.
+      try {
+        const renkler = [];
+        legend.querySelectorAll(".legend__dot, .legend__line").forEach((e) => {
+          const cs = getComputedStyle(e);
+          const c = e.classList.contains("legend__dot") ? cs.backgroundColor : cs.borderTopColor || cs.backgroundColor;
+          const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(c || "");
+          if (!m || (m[4] !== undefined && +m[4] < 0.4)) return;
+          const ort = (+m[1] + +m[2] + +m[3]) / 3;
+          if (ort > 235 || ort < 25) return;          // zeminle karışan (beyaz/siyah) renk halkada görünmez
+          if (renkler.indexOf(c) < 0) renkler.push(c);
+        });
+        renkler.slice(0, 4).forEach((c, i) => legend.style.setProperty("--lej-" + (i + 1), c));
+      } catch (e) { /* varsayılan seri renkleri */ }
       if (collapseByDefault) {
         legend.classList.add("legend--collapsed");
         toggle.setAttribute("aria-expanded", "false");
@@ -2016,7 +2054,7 @@ window.DostGraphUtils = (function () {
     return String(s == null ? "" : s).replace(/<\/?(?:em|strong)>/g, "").replace(/\n\n/g, " ");
   }
 
-  return { zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

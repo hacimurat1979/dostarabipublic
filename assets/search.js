@@ -649,9 +649,37 @@
     rewireResultButtons();
   }
 
+  // Y3 (2026-10-21, kullanıcı onayı): Ara, yazmadan önce boş beyaz alan yerine bölümlerin halkası
+  // (Bölümler ekranıyla aynı daire dili). Her daire gerçek bir bağlantıdır: dokununca arama kapanır,
+  // o bölüm açılır. Yalnız yönlendirme; içerik yorumu yok.
+  const BOLUMLER = [
+    ["futuhat", { tr: "Fütûhât", en: "Futûhât", pt: "Futûhât" }],
+    ["fusus", { tr: "Füsûs", en: "Fusûs", pt: "Fusûs" }],
+    ["miskat", { tr: "Mişkât", en: "Mishkat", pt: "Mishkat" }],
+    ["kavram", { tr: "Kavramlar", en: "Concepts", pt: "Conceitos" }],
+    ["hal", { tr: "Hâller", en: "States", pt: "Estados" }],
+    ["esma", { tr: "Esmâ", en: "Names", pt: "Nomes" }],
+  ];
+  const HALKA_YAZI = {
+    baslik: { tr: "Bir bölümden başla", en: "Start from a section", pt: "Comece por uma seção" },
+    ipucu: { tr: "Ya da yukarıya yaz.", en: "Or type above.", pt: "Ou digite acima." },
+  };
+  function bolumHalkasi() {
+    const n = BOLUMLER.length;
+    const daireler = BOLUMLER.map((b, i) => {
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const x = 50 + 36 * Math.cos(a), y = 50 + 36 * Math.sin(a);
+      const href = window.__dostNav ? window.__dostNav.href(b[0]) : "/" + b[0] + "/";
+      return `<a class="uyg-halka-bos__daire" href="${escapeAttr(href)}" data-view="${b[0]}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%">${escapeHtml(tt(b[1]))}</a>`;
+    }).join("");
+    return `<div class="uyg-halka-bos"><p class="uyg-halka-bos__baslik">${escapeHtml(tt(HALKA_YAZI.baslik))}</p>`
+      + `<div class="uyg-halka-bos__halka">${daireler}<span class="uyg-halka-bos__merkez" aria-hidden="true"></span></div>`
+      + `<p class="uyg-halka-bos__ipucu">${escapeHtml(tt(HALKA_YAZI.ipucu))}</p></div>`;
+  }
+
   function renderRecents() {
     const a = uygulamaMi() ? sonlariOku() : [];
-    if (!a.length) { results.innerHTML = ""; return; }
+    if (!a.length) { results.innerHTML = uygulamaMi() ? bolumHalkasi() : ""; return; }
     const x = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
     results.innerHTML = `<div class="uyg-son"><div class="uyg-son__bas"><span>${escapeHtml(tt(SON_YAZI.baslik))}</span><button type="button" class="uyg-son__temizle">${escapeHtml(tt(SON_YAZI.temizle))}</button></div>`
       + a.map((q, i) => `<div class="uyg-son__satir"><button type="button" class="uyg-son__ara" data-q="${escapeAttr(q)}">${escapeHtml(q)}</button>`
@@ -659,6 +687,13 @@
       + "</div>";
   }
   results.addEventListener("click", (e) => {
+    const halka = e.target.closest(".uyg-halka-bos__daire");
+    if (halka) {
+      e.preventDefault();
+      closePanel();
+      if (window.__dostNav && window.__dostNav.goTo) window.__dostNav.goTo(halka.dataset.view);
+      return;
+    }
     const ara = e.target.closest(".uyg-son__ara");
     if (ara) { input.value = ara.dataset.q; input.dispatchEvent(new Event("input")); input.focus(); return; }
     const sil = e.target.closest(".uyg-son__sil");

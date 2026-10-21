@@ -809,7 +809,7 @@
   }
 
   function colorForNode(n, pal) {
-    if (n.kind === "zat") return GU.ZAT_FILL;
+    if (n.kind === "zat") return GU.zatFill();
     if (n.kind === "allah") return pal.theme;
     if (n.pole === "celal") return pal.celal;
     if (n.pole === "cemal") return pal.cemal;
@@ -1590,7 +1590,7 @@
     return `<span class="pole-badge" style="background:color-mix(in srgb, ${bg} 72%, black)">${tt(label)}</span>`;
   }
   function colorForRaw(raw) {
-    if (raw.id === "zat") return GU.ZAT_FILL;
+    if (raw.id === "zat") return GU.zatFill();
     if (raw.id === "allah") return getVar("--series-theme");
     if (raw.pole === "celal") return getVar("--series-celal");
     if (raw.pole === "cemal") return getVar("--series-cemal");

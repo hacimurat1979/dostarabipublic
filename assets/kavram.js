@@ -61,9 +61,8 @@ window.__kavramApp = (function () {
     kemal: "var(--series-kemal)",
     neutral: "var(--series-esma-neutral)",
     allah: "var(--series-theme)",
-    zat: GU.ZAT_FILL,
   };
-  function esmaRenk(pole) { return ESMA_RENK[pole] || ESMA_RENK.neutral; }
+  function esmaRenk(pole) { return pole === "zat" ? GU.zatFill() : (ESMA_RENK[pole] || ESMA_RENK.neutral); }
   function birlikteEsmaSvg(k) {
     const items = k.birlikteEsma;
     if (!items.length) return "";

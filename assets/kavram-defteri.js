@@ -112,11 +112,26 @@
     var entries = loadEntries();
     undoYaz();
     if (!entries.length) {
-      listEl.innerHTML = '<p class="defter-panel__empty">' + tr3(
-        "Defterin şimdilik boş. Bir terime, bir bölüme ya da okuduğun bir metne bakarken yıldız düğmesine basarak buraya ekleyebilirsin.",
-        "Your notebook is empty for now. While viewing a term, a section or a text you are reading, tap the star button to add it here.",
-        "Seu caderno está vazio por enquanto. Ao ver um termo, uma seção ou um texto que está lendo, toque no botão de estrela para adicioná-lo aqui."
-      ) + "</p>";
+      // Y3 (2026-10-21, kullanıcı onayı): boş durumda yalnız metin değil, merkezde yıldız ve çevresinde
+      // üç bölüm dairesi (yıldız düğmesinin bulunduğu yerler); dairelere dokununca o bölüm açılır.
+      var bol = [["terimler", tr3("Terimler", "Terms", "Termos")], ["esma", tr3("Esmâ", "Names", "Nomes")], ["kavram", tr3("Kavramlar", "Concepts", "Conceitos")]];
+      var dairel = bol.map(function (b, i) {
+        var a = (i / bol.length) * Math.PI * 2 - Math.PI / 2;
+        var href = window.__dostNav ? window.__dostNav.href(b[0]) : "/" + b[0] + "/";
+        return '<a class="uyg-halka-bos__daire uyg-halka-bos__daire--defter" href="' + href + '" data-view="' + b[0] + '" style="left:' + (50 + 34 * Math.cos(a)).toFixed(1) + '%;top:' + (50 + 34 * Math.sin(a)).toFixed(1) + '%">' + b[1] + "</a>";
+      }).join("");
+      listEl.innerHTML = '<div class="uyg-halka-bos"><div class="uyg-halka-bos__halka">' + dairel
+        + '<span class="uyg-halka-bos__merkez uyg-halka-bos__merkez--yildiz" aria-hidden="true">★</span></div>'
+        + '<p class="defter-panel__empty">' + tr3(
+          "Defterin şimdilik boş. Bir terime, bir bölüme ya da okuduğun bir metne bakarken yıldız düğmesine basarak buraya ekleyebilirsin.",
+          "Your notebook is empty for now. While viewing a term, a section or a text you are reading, tap the star button to add it here.",
+          "Seu caderno está vazio por enquanto. Ao ver um termo, uma seção ou um texto que está lendo, toque no botão de estrela para adicioná-lo aqui."
+        ) + "</p></div>";
+      listEl.querySelectorAll(".uyg-halka-bos__daire").forEach(function (el) {
+        el.addEventListener("click", function (ev) {
+          if (window.__dostNav && window.__dostNav.goTo) { ev.preventDefault(); window.__dostNav.goTo(el.dataset.view); }
+        });
+      });
       return;
     }
     listEl.innerHTML = "";

@@ -408,10 +408,40 @@
         }
       }
     }
-    // ↓: odaktaki künyenin kutusundaki ilk "burada da geçiyor" bağlantısına geç.
-    if (e.key === "ArrowDown" && tip && !tip.hidden && isaretEl(e.target)) {
-      const ilk = tip.querySelector(".ayet-tip__digeri");
-      if (ilk) { e.preventDefault(); ilk.focus(); }
+    // Künye klavyeyle: Enter/Boşluk kutuyu açar/kapatır, ↓ açar (açıksa ilk bağlantıya geçer).
+    // 2026-10-21 revizyon taraması: odakla kutu AÇILMAZ (←/→ gezinmesinde her adımda kutu
+    // paragrafı örtüyordu; Esc sonrası da yeniden açılıyordu); açma açık bir eylemdir.
+    const kun = e.target.closest && e.target.closest(".ayet-ref, .hadis-ref");
+    if (kun && kun === e.target && kun.getAttribute("role") === "button") {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        const acik = tip && !tip.hidden && acikRef === isaretAnahtari(kun);
+        acik ? gizle() : goster(kun);
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const acik = tip && !tip.hidden && acikRef === isaretAnahtari(kun);
+        if (!acik) { goster(kun); return; }
+        const ilk = tip.querySelector(".ayet-tip__digeri");
+        if (ilk) ilk.focus();
+        return;
+      }
+      // Kutu açıkken Tab odağı kutudaki ilk bağlantıya taşır (kutu DOM'un sonunda).
+      if (e.key === "Tab" && !e.shiftKey && tip && !tip.hidden && acikRef === isaretAnahtari(kun)) {
+        const ilk = tip.querySelector(".ayet-tip__digeri");
+        if (ilk) { e.preventDefault(); ilk.focus(); return; }
+      }
+    }
+    // Kutunun içinden Tab ile çıkış: son bağlantıdan ileri / ilkinden geri → odak künyeye döner
+    // ve kutu kapanır (eskiden odak BODY'ye düşüyordu).
+    if (e.key === "Tab" && tip && !tip.hidden && tip.contains(document.activeElement)) {
+      const lis = [...tip.querySelectorAll("a[href], button")].filter((x) => x.getClientRects().length);
+      const son = lis[lis.length - 1], ilk0 = lis[0];
+      if ((!e.shiftKey && document.activeElement === son) || (e.shiftKey && document.activeElement === ilk0)) {
+        const geri = acanEl;
+        if (geri && geri.focus) { e.preventDefault(); gizle(); geri.focus(); }
+      }
     }
   }, true);
   document.addEventListener("mousedown", () => { sonPointer = Date.now(); }, true);
@@ -420,10 +450,10 @@
     const el = isaretEl(e.target);
     if (el && el.getAttribute("role") === "button") { const g = kunyeGrubu(el); if (g && kgAktif.get(g) !== el) durakYaz(g, el); }
     if (el) {
-      // Fare/dokunuşla gelen odakta kutuyu click açar: mousedown'da açılan kutu
-      // dokunulan noktanın üstüne biniyor ve click'i yutuyordu (2026-10-20, M-01).
-      if (Date.now() - sonPointer < 600) return;
-      goster(el);
+      // Odak kutuyu AÇMAZ (2026-10-21): fare/dokunuşta click, klavyede Enter/Boşluk/↓ açar.
+      // Başka bir künyeye geçilirse önceki kutu kapanır.
+      if (tip && !tip.hidden && acanEl && acanEl !== el) gizle();
+      return;
     } else gizle();
   });
   // Kaydırma kutuyu kapatır; ama kutunun KENDİ iç kaydırması kapatmaz (kutu artık
@@ -472,6 +502,7 @@
       if (el.querySelector("a, button, [tabindex]")) return;
       if (!el.hasAttribute("role")) el.setAttribute("role", "button");
       el.setAttribute("aria-haspopup", "true");
+      el.setAttribute("aria-keyshortcuts", "Enter ArrowDown");
       if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
       gruplar.add(kunyeGrubu(el));
     });

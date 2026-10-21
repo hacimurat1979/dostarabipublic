@@ -8,6 +8,50 @@
   const detailClose = document.getElementById("detail-close");
 
   I18n.applyStatic();
+
+  // Y7 (2026-10-21, kullanıcı onayı), Daphne haritalarına telefon sözleşmesinin dokunma ilkesi:
+  // düğümler ~7 px görünüyordu; dar ekranda her düğümün çevresine, ekran pikselinde sabit (ölçekten
+  // bağımsız) ~40 px'lik görünmez yakalama halkası eklenir (görünür nokta küçük kalsa da hedef
+  // parmak boyunda). Grafik yeniden çizilince (dil/sekme) halka yeniden eklenir. Kip hapı ve yarım
+  // panel bu sayfada yok: Daphne ayrı belge (uygulama kabuğu dışında), motor yalnız kabukta çalışır.
+  (function dokunmaHedefleri() {
+    if (!window.matchMedia) return;
+    const dar = window.matchMedia("(max-width: 640px), (pointer: coarse)");
+    const KOKLER = ["#graph", "#profile-graph", "#bagharita-graph", "#baglar-graph"];
+    function ekle(svg) {
+      if (!dar.matches) return;
+      svg.querySelectorAll("g.node, g.daphne-leaf-node").forEach((g) => {
+        if (g.querySelector(":scope > .node-hit")) return;
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("class", "node-hit"); c.setAttribute("r", "4"); c.setAttribute("aria-hidden", "true");
+        g.insertBefore(c, g.firstChild);
+      });
+    }
+    let t = null;
+    function planla(svg) { clearTimeout(t); t = setTimeout(() => ekle(svg), 120); }
+    KOKLER.forEach((sel) => {
+      const svg = document.querySelector(sel);
+      if (!svg || !window.MutationObserver) return;
+      new MutationObserver(() => planla(svg)).observe(svg, { childList: true, subtree: true });
+      ekle(svg);
+    });
+  })();
+
+  // 2026-10-21 (tasarım revizyonu #19): geniş ekranda A−/A+ başlık şeridinin denetimlerine
+  // taşınır (üst bölge tek satıra yaklaşır); telefonda eski yerinde kalır (şerit dar).
+  (function yaziCubuguYerlestir() {
+    const bar = document.querySelector(".daphne-yazi-cubugu");
+    const kontrol = document.querySelector(".app-header__controls");
+    if (!bar || !kontrol || !window.matchMedia) return;
+    const ana = bar.parentNode, sonraki = bar.nextElementSibling;
+    const mq = window.matchMedia("(min-width: 641px)");
+    function uygula() {
+      if (mq.matches) { if (bar.parentNode !== kontrol) kontrol.insertBefore(bar, kontrol.firstChild); bar.classList.add("daphne-yazi-cubugu--ust"); }
+      else if (bar.parentNode !== ana) { ana.insertBefore(bar, sonraki); bar.classList.remove("daphne-yazi-cubugu--ust"); }
+    }
+    uygula();
+    if (mq.addEventListener) mq.addEventListener("change", uygula);
+  })();
   // Dil değişince İKİ graf da yeniden çizilmeli: Daphne profili artık ayrı
   // bir sayfa değil, bu sayfanın bir sekmesi (2026-07-27).
   // Tek dil kapısı (2026-10-19): sayfa başlığındaki seçici ve yazı okumasının

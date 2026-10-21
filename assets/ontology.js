@@ -566,9 +566,20 @@
     if (!btn || hakkindaScrollTopWired) return;
     hakkindaScrollTopWired = true;
     btn.hidden = false;
+    // 2026-10-21 (tasarım önerisi Y6): telefonda düğme yalnız YUKARI kaydırırken belirir ve
+    // ~2,8 sn sonra çekilir; sürekli durup tablo hücrelerini örtmez. Geniş ekranda eskisi gibi.
+    const dar = window.matchMedia ? window.matchMedia("(max-width: 640px)") : { matches: false };
+    let sonY = window.scrollY, gizleT = null, yukariAktif = false;
     const onScroll = () => {
       if (hakkindaWrap.hidden) return;
-      const gorunur = window.scrollY > 480;
+      const y = window.scrollY;
+      let gorunur = y > 480;
+      if (gorunur && dar.matches) {
+        if (y < sonY - 6) { yukariAktif = true; clearTimeout(gizleT); gizleT = setTimeout(() => { yukariAktif = false; onScroll(); }, 2800); }
+        else if (y > sonY + 6) { yukariAktif = false; clearTimeout(gizleT); }
+        gorunur = yukariAktif;
+      }
+      sonY = y;
       btn.classList.toggle("is-visible", gorunur);
       // Görünmezken (opacity 0, pointer-events none) Tab sırasında
       // kalmasın -- klavye görünmeyen bir düğmeye düşüyordu (2026-10-08).
@@ -3887,7 +3898,7 @@
   }
 
   function colorFor(d) {
-    if (d.id === "dhat") return window.DostGraphUtils.ZAT_FILL;
+    if (d.id === "dhat") return window.DostGraphUtils.zatFill();
     if (d.id === "insan-i-kamil") return getVar("--series-daphne");
     if (d.id === "kalp") return getVar("--series-theme");
     const ramp = isDark() ? LAYER_COLOR_DARK : LAYER_COLOR;

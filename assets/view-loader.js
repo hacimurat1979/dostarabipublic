@@ -51,14 +51,14 @@
   "use strict";
 
   var VIEWS = {
-    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-ouXCB20X7JWo/2boAYHLVDCguX9hmKhH90G74+2LJ6BvajKaE0Aqs5vubHCVACJJ", wrap: "sirlar-wrap" },
-    __kavramApp: { src: "assets/kavram.js", integrity: "sha384-rICtEh3YCCAH6wqbpP9XzMc8gkbtkfH/yY9XB2lYUVsRFNdO0JI+qf9C0NQso0R8", wrap: "kavram-wrap" },
+    __sirlarGraphApp: { src: "assets/sirlar-graph.js", integrity: "sha384-PIj0m7bI4ZC6QkBrms4s7rjY2tRnBapj7qjlsEIqqk2nuAkAwATq6KIL5m8PlRJP", wrap: "sirlar-wrap" },
+    __kavramApp: { src: "assets/kavram.js", integrity: "sha384-yJUGvyYwN6Hw/4NXXm2oxAc0yGsvGIfrB4Cwt+S9fOM8949bi1/FMQEGSLAdkgKE", wrap: "kavram-wrap" },
     __ayetHadisApp: { src: "assets/ayet-hadis.js", integrity: "sha384-gxa8ETsDLw+c2bAgrzbtiNLtw3pJ0OS08OoxoetbUTkAVvKdsNCY5VkkW7ekRT+O", wrap: "ayethadis-wrap" },
     __siirlerApp: { src: "assets/siirler.js", integrity: "sha384-QGD4/eAVmXFOtP8531heWaJMPVV5jEY2oOSskZ+uElAR/ZiAs2/ryFRy6AhjaB19", wrap: "hakkinda-wrap" },
     __vahdetApp: { src: "assets/vahdet.js", integrity: "sha384-yarcIFCWxztTdI7cuGp6KTGIBXdgoBjlkJdf1bfDOLV7iK3a7F6sHp38S4dHWTUa", wrap: "hakkinda-wrap" },
     __okumaYollariApp: { src: "assets/okuma-yollari.js", integrity: "sha384-qryq0WX/wOmcZPu3dyE52OPfqiQJPg0QyPyE6XSnp+oNZl3BWZcf/SeRoxml4s0Q", wrap: "hakkinda-wrap" },
     __neredenBaslamaliApp: { src: "assets/nereden-baslamali.js", integrity: "sha384-vPqdC+rvSMPZhymGwgfZ+Mx2Cf2vNGy6WryflpMGSpQCCGJAne1n9cuRMB3mrbBc", wrap: "hakkinda-wrap" },
-    __girisApp: { src: "assets/giris-sayfalari.js", integrity: "sha384-3+GrCEAKUGRHSrIwSPKkT0Lle1TWhYRV50AMkfM7Iab5ujJ7qDMP1gFFOZ+i6GS7", wrap: "hakkinda-wrap" },
+    __girisApp: { src: "assets/giris-sayfalari.js", integrity: "sha384-Z1Rk4TZnUw/Is6nAxIPX6jWjNqdqWLESf5jyQlZxJ7kZ2Wz+s9BFSvLAk//tv57w", wrap: "hakkinda-wrap" },
     __bilmiyoruzApp: { src: "assets/bilmiyoruz.js", integrity: "sha384-IfXzWmZ82kpEjWSpiMCCHQ+RvBk80Ci6ynN4oSVcUQvUSicIZPNN/njiz/RJzhi9", wrap: "bilmiyoruz-wrap" },
     __elestiriArkeolojisiApp: { src: "assets/elestiri-arkeolojisi.js", integrity: "sha384-eWgxrR7QCVqOIlpcwbUHQo139efYuzlBYFRf4a0JtA5r2WhV/ILLR901C5VZUhMD", wrap: "elestiri-arkeolojisi-wrap" },
     __hocalarApp: { src: "assets/hocalar.js", integrity: "sha384-ZUg09P+CQfGKPQFH6sLcYbo8cMe41Kh3XqhNu1etnLJpM3LWSB5IMPg4DchLhQ+T", wrap: "hocalar-wrap" },
@@ -66,7 +66,7 @@
     __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-kSm91eorZkNz/pCybUtqldHhgowobNs+soPx9E8vovFnoSIeJH4w6wzYBZQE9hv9", wrap: "seyahat-atlasi-wrap" },
     __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-ZJ+W1ohrpGr6oRBiWuYNvtug8ma1vSqcm8S/s7UZ83Ua8u4in5a261v1PgA3SJrc", wrap: "yolculuk-wrap" },
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-8Bb/1hv9XNViMOrANW2zKA6VsjJn3O8vZlqlMB4NJvcKf309svRpC2faxaWcHaK3", wrap: "kuran-dokusu-wrap" },
-    __esmaApp: { src: "assets/esma.js", integrity: "sha384-FJ/zWpVvn5GYoHzsm6X5mFn1InLSdOfx8uy+k2vHue8/eI/sbNb07v4JPsF4RFfR", wrap: "esma-wrap" },
+    __esmaApp: { src: "assets/esma.js", integrity: "sha384-CCp27XoZdXok2g5K5iZ77NjC9F6Eg6g6FILLltR+C/SAz1BjUhh69xERhqi7/332", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-gtASrea8ie31lnjO24iCIJdaj1BONhxkDJfKciRK+2+r9rgKpct8SyN3rNuGi9MW", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-CJnjbSwU8iz6Fj5ASDmbnzIk6aw7Z+q5jmVDL7ADf/agerwX22Dx8yQ0jKkO5dtg", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
