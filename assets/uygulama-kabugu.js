@@ -163,6 +163,10 @@
     // Geliştirici modu (2026-10-17): sürüm satırı + "Sorun bildir" (yalnız mod açıkken).
     surum: { tr: "sürüm", en: "version", pt: "versão" },
     rapor: { tr: "Sorun bildir", en: "Report a problem", pt: "Relatar um problema" },
+    gorus: { tr: "Görüş ve öneri gönder", en: "Send feedback", pt: "Enviar sugestão" },
+    gorusKonu: { tr: "Dost Arabî — görüş", en: "Dost Arabî — feedback", pt: "Dost Arabî — sugestão" },
+    gorusYaz: { tr: "Buraya yazın:", en: "Write here:", pt: "Escreva aqui:" },
+    degerlendir: { tr: "Uygulamayı değerlendir", en: "Rate the app", pt: "Avaliar o aplicativo" },
     gelAcildi: { tr: "Geliştirici modu açıldı", en: "Developer mode on", pt: "Modo de desenvolvedor ativado" },
     gelKapandi: { tr: "Geliştirici modu kapandı", en: "Developer mode off", pt: "Modo de desenvolvedor desativado" },
   };
@@ -257,6 +261,8 @@
   // Sürüm satırı: sitenin hizmet işçisi sürümü (önbellek adı "dost-sw-<özet>")
   // cihazın kendi önbellek listesinden okunur -- ağ isteği yok. Önbellek yoksa
   // (ilk ziyaret, özel pencere) satır "dostarabi.com" olarak kalır.
+  // Play'deki üretim yayını tamamen açılınca true yapılır (kademeli yayın bitince).
+  var DEGERLENDIR_ACIK = false;
   function surumYaz() {
     try {
       if (!window.caches || !caches.keys) return;
@@ -337,6 +343,20 @@
     // Geliştirici modu açıksa "Sorun bildir"; sürüm/künye satırı herkese görünür
     // (7 art arda dokunuş modu açar/kapatır -- bu sayfanın var olan tek tıklama
     // dinleyicisi işler, mod kapalıyken ek dinleyici yok).
+    // Görüş ve öneri (2026-10-21, kullanıcı onayı): sunucusuz -- kullanıcının kendi
+    // e-posta uygulamasını açar; alıcı sitedeki iletişim adresi, konu hazır, gövdeye
+    // yalnız dil/kaynak/Android sürümü satırı konur (kişisel veri, konum, okunan metin yok).
+    // "Uygulamayı değerlendir" yalnız Play'den kurulan uygulamada ve yayın tamamen açılınca
+    // (DEGERLENDIR_ACIK) görünür.
+    var posta = document.querySelector('.app-footer a[href^="mailto:"]');
+    var adres = posta ? posta.getAttribute("href").replace(/^mailto:/, "") : "";
+    if (adres) {
+      var and = /Android\s+([0-9.]+)/.exec(navigator.userAgent || "");
+      var bilgi = "dil: " + dil + " · " + (window.__dostUygulama === true ? "uygulama" : "site") + (and ? " · Android " + and[1] : "");
+      var govde = t(ETIKET.gorusYaz) + "\n\n\n--\n" + bilgi;
+      dahaBolum.insertAdjacentHTML("beforeend", '<a class="uyg-baglanti" data-eylem="gorus" href="mailto:' + adres + "?subject=" + encodeURIComponent(t(ETIKET.gorusKonu)) + "&body=" + encodeURIComponent(govde) + '"><span>' + t(ETIKET.gorus) + "</span>" + svg("sag", 18) + "</a>");
+    }
+    if (DEGERLENDIR_ACIK && window.__dostUygulama === true) dahaBolum.insertAdjacentHTML("beforeend", '<a class="uyg-baglanti" data-eylem="degerlendir" href="https://play.google.com/store/apps/details?id=com.dostarabi.app"><span>' + t(ETIKET.degerlendir) + "</span>" + svg("sag", 18) + "</a>");
     var gel = window.__dostGelistirici;
     if (gel && gel.acikMi()) dahaBolum.insertAdjacentHTML("beforeend", '<button type="button" class="uyg-baglanti uyg-baglanti--rapor" data-eylem="rapor"><span>' + t(ETIKET.rapor) + "</span>" + svg("sag", 18) + "</button>");
     dahaBolum.insertAdjacentHTML("beforeend", '<p class="uyg-surum">Dost Arabî · dostarabi.com</p>');
