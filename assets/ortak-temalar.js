@@ -296,6 +296,7 @@
         .scale(k);
     }
     function sigdir(animate) {
+      if (!svg.node().clientWidth) return;   // sekme gizliyken sığdırma NaN üretir
       const t = sigdirTransform();
       (animate ? svg.transition().duration(420) : svg).call(zoomBehavior.transform, t);
     }
@@ -355,7 +356,7 @@
   }
 
   function labelFor(d) {
-    if (d.type === "hub-ibnarabi") return "İbn Arabî";
+    if (d.type === "hub-ibnarabi") return I18n.getLang() === "tr" ? "İbn Arabî" : "Ibn Arabî";   // EN/PT'de noktalı İ kalmasın (2026-10-20 taraması F35)
     if (d.type === "hub-daphne") return "Daphne";
     if (d.type === "theme") return I18n.pick(d.theme, "title");
     if (d.type === "concept") return I18n.pick(d.concept, "name");

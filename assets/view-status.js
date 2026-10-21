@@ -49,7 +49,13 @@ window.DostViewStatus = (function () {
       // 2026-10-15 (K18): eski metin "bağlantını kontrol et" diyordu; sorun
       // bağlantı değil de açık kalmış eski bir sürümse tekrar denemek işe
       // yaramıyordu. Artık iki yol: tekrar dene, ya da sayfayı yenile.
-      text.textContent = pick3({
+      // Çevrimdışıyken sorun bağlantıdır: doğrusunu söyle ve çıkış yolunu göster
+      // (2026-10-20 taraması P13: önbelleksiz fass boş kalıyordu).
+      text.textContent = (typeof navigator !== "undefined" && navigator.onLine === false) ? pick3({
+        tr: "Çevrimdışısın ve bu sayfa cihaza indirilmemiş. Bağlantı gelince yeniden dene; ya da bağlıyken Ayarlar'dan \"Bütün içeriği indir\" ile cihaza indir.",
+        en: "You're offline and this page isn't saved on your device. Try again when you're connected, or download everything from Settings while online.",
+        pt: "Está offline e esta página não foi guardada no dispositivo. Tente de novo quando houver ligação, ou descarregue tudo nas Configurações quando estiver online.",
+      }) : pick3({
         tr: "Bu sayfa şu an açılamadı. Tekrar deneyebilir ya da sayfayı yenileyebilirsin.",
         en: "This page couldn't open right now. You can try again or reload the page.",
         pt: "Esta página não pôde abrir agora. Pode tentar de novo ou recarregar a página.",

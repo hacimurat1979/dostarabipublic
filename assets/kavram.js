@@ -797,8 +797,8 @@ window.__kavramApp = (function () {
       // tooltip sistemine (.ayet-ref/data-ayet, .hadis-ref/data-hadis)
       // bağlanıyoruz, yeni bir JS mekanizması gerekmiyor.
       const chips = [
-        ...k.ilgiliAyet.map((r) => `<span class="kavram-chip kavram-chip--static ayet-ref" data-ayet="${r}" tabindex="0">${r}</span>`),
-        ...k.ilgiliHadis.map((r) => `<span class="kavram-chip kavram-chip--static hadis-ref" data-hadis="${r}" tabindex="0">${r}</span>`),
+        ...k.ilgiliAyet.map((r) => `<span class="kavram-chip kavram-chip--static ayet-ref" data-ayet="${escapeHtmlKavram(r)}" tabindex="0">${escapeHtmlKavram(r)}</span>`),
+        ...k.ilgiliHadis.map((r) => `<span class="kavram-chip kavram-chip--static hadis-ref" data-hadis="${escapeHtmlKavram(r)}" tabindex="0">${escapeHtmlKavram(r)}</span>`),
       ].join("");
       parts.push(
         `<div class="kavram-related"><h3>${tt({ tr: "Birlikte anılan âyet/hadis", en: "Verses/hadiths cited alongside", pt: "Versículos/hadiths citados junto" })}</h3><div class="kavram-related__chips">${chips}</div></div>`

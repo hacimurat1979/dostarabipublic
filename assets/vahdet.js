@@ -61,7 +61,7 @@ window.__vahdetApp = (function () {
   const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
 
   function esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function fetchData() {
@@ -121,7 +121,7 @@ window.__vahdetApp = (function () {
       : "";
     return (
       `<article class="vahdet-madde">` +
-      `<h3 class="vahdet-madde__baslik">${esc(tt(m.baslik))}</h3>` +
+      `<h2 class="vahdet-madde__baslik">${esc(tt(m.baslik))}</h2>` +
       `<div class="vahdet-pair">` +
       `<div class="vahdet-card vahdet-card--elestiri">` +
       `<span class="vahdet-card__label">${esc(tt({ tr: "Eleştiri", en: "The Criticism", pt: "A Crítica" }))}</span>` +

@@ -769,7 +769,7 @@
     if (q.length >= 2) {
       clearTimeout(searchTrackTimer);
       searchTrackTimer = setTimeout(() => {
-        window.dostTrack && window.dostTrack("arama_yapildi", { query: q });
+        window.dostTrack && window.dostTrack("arama_yapildi", { uzunluk: q.length });   // sorgu metni gönderilmez (gizlilik: kod taraması #9)
       }, 600);
     }
   });

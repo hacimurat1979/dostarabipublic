@@ -28,7 +28,7 @@
      üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
      bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
      domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-pSkSqfl7snuNnDsXCRWSi0ESGG17Z1rW0p6vW8+xL/o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-RcKapkaMgabUfZG5f3Xwtf6RJSH0Prz+o5xpwr5RzAE=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-dAmqadp4ChLBZwemdXH30TD1omwXI5gup/qxNSn/Goo=' 'sha256-pSkSqfl7snuNnDsXCRWSi0ESGG17Z1rW0p6vW8+xL/o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
      köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
      her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
@@ -37,6 +37,7 @@
      satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
 <base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Dost Arabî — Kaçan Arkadaşlarına Rağmen Dönen</title>
 <meta name="description" content="Rabbiniz Tebareke ve Teala kendi yolunda savaşan, arkadaşları hezimete uğrayıp kaçmalarına ve kendisi de hezimeti bilmesine rağmen dönüp savaşmaya devam eden,…">
 <link rel="canonical" href="https://dostarabi.com/miskat/h82/">
@@ -141,7 +142,11 @@
       return false;
     })();
     window.__dostLoadAnalytics = function () {
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama) return;
+      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
+      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
+      var tek = false;
+      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
+      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek) return;
       window.__dostAnalyticsLoaded = true;
       var ga = document.createElement("script");
       ga.async = true;
@@ -781,7 +786,7 @@
       <button class="graph-recenter" id="kuran-dokusu-recenter" type="button" data-tr-title="Görünümü ortala" data-en-title="Recenter view" data-pt-title="Recentralizar vista" title="Görünümü ortala" aria-label="Görünümü ortala">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
       </button>
-      <button class="graph-hint" type="button" data-tr-title="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 35'inde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir." data-en-title="The lower arc is sûrahs (Mushaf order), the upper arc is chapters of the Futûhât/Fusûs. Touch a sûrah and paths of light appear toward the chapters that cite it; path thickness is citation count. The sûrahs are spaced evenly — the spacing carries no information. We found citations in 35 of the 114 sûrahs. Click a sûrah or a chapter; arrow keys move along an arc." data-pt-title="O arco inferior são as suratas (ordem do Mushaf), o arco superior são os capítulos das Futûhât/Fusûs. Toque numa surata e surgem caminhos de luz até aos capítulos que a citam; a espessura é o número de citações. As suratas estão espaçadas por igual — o espaçamento não transmite informação. Encontrámos citações em 35 das 114 suratas. Clique numa surata ou num capítulo; as setas percorrem um arco." title="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 35'inde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir." aria-label="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 35'inde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir.">
+      <button class="graph-hint" type="button" data-tr-title="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 77'sinde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir." data-en-title="The lower arc is sûrahs (Mushaf order), the upper arc is chapters of the Futûhât/Fusûs. Touch a sûrah and paths of light appear toward the chapters that cite it; path thickness is citation count. The sûrahs are spaced evenly — the spacing carries no information. We found citations in 35 of the 114 sûrahs. Click a sûrah or a chapter; arrow keys move along an arc." data-pt-title="O arco inferior são as suratas (ordem do Mushaf), o arco superior são os capítulos das Futûhât/Fusûs. Toque numa surata e surgem caminhos de luz até aos capítulos que a citam; a espessura é o número de citações. As suratas estão espaçadas por igual — o espaçamento não transmite informação. Encontrámos citações em 77 das 114 suratas. Clique numa surata ou num capítulo; as setas percorrem um arco." title="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 77'sinde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir." aria-label="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 77'sinde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir.">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg>
       </button>
       <!-- 2026-08-10 denetim (G27): iki halkanın ne olduğu ilk bakışta okunmuyordu. Lejant ipucundakinin özeti. 2026-10-09: halkalar karşılıklı iki yay oldu. -->
@@ -794,7 +799,7 @@
           <div class="legend__item"><span class="legend__dot legend__dot--kd-sure"></span><span data-tr="Alt yay: sûre (Mushaf sırası)" data-en="Lower arc: sûrah (Mushaf order)" data-pt="Arco inferior: surata (ordem do Mushaf)">Alt yay: sûre (Mushaf sırası)</span></div>
           <div class="legend__item"><span class="legend__dot legend__dot--kd-bap"></span><span data-tr="Üst yay: Fütûhât / Füsûs bölümü" data-en="Upper arc: chapter of the Futûhât / Fusûs" data-pt="Arco superior: capítulo das Futûhât / Fusûs">Üst yay: Fütûhât / Füsûs bölümü</span></div>
           <div class="legend__item"><span class="legend__dot legend__dot--kd-isik"></span><span data-tr="Işık yolu: değindiğiniz sûreyi anan bölüme (kalınlık: atıf sayısı)" data-en="Path of light: to a chapter citing the sûrah you touch (thickness: citation count)" data-pt="Caminho de luz: até um capítulo que cita a surata que toca (espessura: número de citações)">Işık yolu: değindiğiniz sûreyi anan bölüme</span></div>
-          <p class="legend__note" data-tr="Aralık bilgi taşımıyor — sûreler Mushaf sırasında ama eşit aralıkla dizildi. 114 sûrenin 35'inde atıf bulduk." data-en="Spacing carries no information — sûrahs follow Mushaf order but are evenly spaced. We found citations in 35 of 114 sûrahs." data-pt="O espaçamento não transmite informação — as suratas seguem a ordem do Mushaf mas estão espaçadas por igual. Encontrámos citações em 35 das 114 suratas.">Aralık bilgi taşımıyor — sûreler Mushaf sırasında ama eşit aralıkla dizildi. 114 sûrenin 35'inde atıf bulduk.</p>
+          <p class="legend__note" data-tr="Aralık bilgi taşımıyor — sûreler Mushaf sırasında ama eşit aralıkla dizildi. 114 sûrenin 77'sinde atıf bulduk." data-en="Spacing carries no information — sûrahs follow Mushaf order but are evenly spaced. We found citations in 77 of 114 sûrahs." data-pt="O espaçamento não transmite informação — as suratas seguem a ordem do Mushaf mas estão espaçadas por igual. Encontrámos citações em 77 das 114 suratas.">Aralık bilgi taşımıyor — sûreler Mushaf sırasında ama eşit aralıkla dizildi. 114 sûrenin 77'sinde atıf bulduk.</p>
         </div>
       </div>
     </section>
@@ -1099,9 +1104,9 @@
         </div>
         <div class="hakkinda-content__section">
           <h3 data-tr="Bu Sitenin Zemininde Kim Var" data-en="Who Stands Beneath This Site" data-pt="Quem Sustenta Este Site">Bu Sitenin Zemininde Kim Var</h3>
-          <p data-tr="Sitenin şu an ana omurgasını taşıyan 'Ontoloji' görünümünün dörtlü yapısı (vahdet-i vücûd, sudur nazariyesi, insan-ı kâmil, tasavvufî bilgi) yeni bir şey değil — A. E. Affifi'nin 1939 Cambridge doktora tezi bu dört temayı bir arada, ilk kez, sistematik olarak kurdu. Bizim yaptığımız — 90 yıl sonra — o çerçeveyi ayrı ayrı okuyup yeniden görselleştirmeye çalışmak. Nicholson (1911, Tercümânü'l-Eşvâk çevirisi) → Affifi (1939, dörtlü ana tema) → Chittick (1989, Vahdet-i Vücûd tanımı) hattı, İbn Arabî'nin bize günümüzde ulaşan modern akademik zeminidir. Kaynakçamızın bu hattaki halkaları docs/kaynaklar/'da tek tek işlenmiştir."
-             data-en="The four-fold spine of the 'Ontology' view that carries this site today (unity of being, emanationism, the perfect human, mystical knowledge) is not a new frame — A. E. Affifi's 1939 Cambridge doctorate laid out these four themes together, systematically, for the first time. What we are doing — ninety years later — is reading that frame one thread at a time and trying to render it visible again. The lineage Nicholson (1911, translation of Tarjuman al-Ashwaq) → Affifi (1939, the four-fold main theme) → Chittick (1989, definition of the Unity of Being) is the modern academic ground on which Ibn Arabi reaches us today. Each link along this lineage is documented one by one in our docs/kaynaklar/."
-             data-pt="A espinha quádrupla da vista 'Ontologia' que sustenta este site hoje (unidade do ser, emanacionismo, o Ser Humano perfeito, conhecimento místico) não é um quadro novo — o doutoramento de A. E. Affifi em Cambridge, em 1939, apresentou estes quatro temas em conjunto, sistematicamente, pela primeira vez. O que estamos a fazer — noventa anos depois — é ler esse quadro fio a fio e tentar torná-lo visível de novo. A linhagem Nicholson (1911, tradução de Tarjuman al-Ashwaq) → Affifi (1939, os quatro temas principais) → Chittick (1989, definição da Unidade do Ser) é o solo académico moderno sobre o qual Ibn Arabi nos chega hoje. Cada elo desta linhagem está documentado um a um no nosso docs/kaynaklar/.">Sitenin şu an ana omurgasını taşıyan 'Ontoloji' görünümünün dörtlü yapısı (vahdet-i vücûd, sudur nazariyesi, insan-ı kâmil, tasavvufî bilgi) yeni bir şey değil — A. E. Affifi'nin 1939 Cambridge doktora tezi bu dört temayı bir arada, ilk kez, sistematik olarak kurdu. Bizim yaptığımız — 90 yıl sonra — o çerçeveyi ayrı ayrı okuyup yeniden görselleştirmeye çalışmak.</p>
+          <p data-tr="Sitenin şu an ana omurgasını taşıyan 'Ontoloji' görünümünün dörtlü yapısı (vahdet-i vücûd, sudur nazariyesi, insan-ı kâmil, tasavvufî bilgi) yeni bir şey değil — A. E. Affifi'nin 1939 Cambridge doktora tezi bu dört temayı bir arada, ilk kez, sistematik olarak kurdu. Bizim yaptığımız — 90 yıl sonra — o çerçeveyi ayrı ayrı okuyup yeniden görselleştirmeye çalışmak. Nicholson (1911, Tercümânü'l-Eşvâk çevirisi) → Affifi (1939, dörtlü ana tema) → Chittick (1989, Vahdet-i Vücûd tanımı) hattı, İbn Arabî'nin bize günümüzde ulaşan modern akademik zeminidir. Bu hattaki halkalar Kaynakça sayfasında tek tek yer alır."
+             data-en="The four-fold spine of the 'Ontology' view that carries this site today (unity of being, emanationism, the perfect human, mystical knowledge) is not a new frame — A. E. Affifi's 1939 Cambridge doctorate laid out these four themes together, systematically, for the first time. What we are doing — ninety years later — is reading that frame one thread at a time and trying to render it visible again. The lineage Nicholson (1911, translation of Tarjuman al-Ashwaq) → Affifi (1939, the four-fold main theme) → Chittick (1989, definition of the Unity of Being) is the modern academic ground on which Ibn Arabi reaches us today. Each link along this lineage is listed one by one on the Bibliography page."
+             data-pt="A espinha quádrupla da vista 'Ontologia' que sustenta este site hoje (unidade do ser, emanacionismo, o Ser Humano perfeito, conhecimento místico) não é um quadro novo — o doutoramento de A. E. Affifi em Cambridge, em 1939, apresentou estes quatro temas em conjunto, sistematicamente, pela primeira vez. O que estamos a fazer — noventa anos depois — é ler esse quadro fio a fio e tentar torná-lo visível de novo. A linhagem Nicholson (1911, tradução de Tarjuman al-Ashwaq) → Affifi (1939, os quatro temas principais) → Chittick (1989, definição da Unidade do Ser) é o solo académico moderno sobre o qual Ibn Arabi nos chega hoje. Cada elo desta linhagem consta, um a um, na página Bibliografia.">Sitenin şu an ana omurgasını taşıyan 'Ontoloji' görünümünün dörtlü yapısı (vahdet-i vücûd, sudur nazariyesi, insan-ı kâmil, tasavvufî bilgi) yeni bir şey değil — A. E. Affifi'nin 1939 Cambridge doktora tezi bu dört temayı bir arada, ilk kez, sistematik olarak kurdu. Bizim yaptığımız — 90 yıl sonra — o çerçeveyi ayrı ayrı okuyup yeniden görselleştirmeye çalışmak.</p>
         </div>
         <div class="hakkinda-content__section">
           <h3 data-tr="Bir Şiirinden" data-en="From One of His Poems" data-pt="De Um de Seus Poemas">Bir Şiirinden</h3>
@@ -1370,10 +1375,10 @@ mesmo antes que o assombro exista."></blockquote>
       </button>
     </section>
 
-    <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-panel-title" hidden>
+    <div class="detail-panel" id="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-panel-title" hidden>
       <div class="detail-breadcrumb" id="detail-breadcrumb" hidden></div>
       <div id="detail-content"></div>
-    </aside>
+    </div>
     <button class="detail-panel__print" id="detail-print" type="button" title="Yazdır / Print / Imprimir" aria-label="Yazdır / Print / Imprimir">
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="6" y="3" width="12" height="6" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="9" width="16" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="7" y="14" width="10" height="7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
     </button>
@@ -1399,9 +1404,9 @@ mesmo antes que o assombro exista."></blockquote>
   </main>
 
   <footer class="app-footer">
-    <p data-tr="Kaynak: Fütûhât-ı Mekkiyye ve Füsûsu'l-Hikem okumalarımızın özeti."
-       data-en="Source: summaries of our readings of the Futuhat al-Makkiyya and the Fusus al-Hikam."
-       data-pt="Fonte: resumos das nossas leituras do Futuhat al-Makkiyya e do Fusus al-Hikam.">
+    <p data-tr="Kaynak: Fütûhât-ı Mekkiyye, Füsûsu'l-Hikem ve Mişkâtü'l-Envâr okumalarımızın özeti."
+       data-en="Source: summaries of our readings of the Futuhat al-Makkiyya, the Fusus al-Hikam and the Mishkat al-Anwar."
+       data-pt="Fonte: resumos das nossas leituras do Futuhat al-Makkiyya, do Fusus al-Hikam e do Mishkat al-Anwar.">
     </p>
     <p data-tr="Metin içindeki altı çizili sözcükler, o kavramın haritadaki başka bir düğümüne bağlanır."
        data-en="Underlined words within the text link to that concept's own node elsewhere on the map."
@@ -1472,8 +1477,8 @@ mesmo antes que o assombro exista."></blockquote>
   <script src="assets/theme.js" defer integrity="sha384-ru8k45ohz7bvm8E6wN7IlX+qdOzM89NXsAWRVFt6G9Kt855dyJNRUim62MQMnrnW"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-wJjXOjqathRvpklI0/9bosjU2rBLeJ3bWZOZ19r/+VxFiJ10sJHenP6LN1UIlTf+"></script>
-  <script src="assets/view-status.js" defer integrity="sha384-+NknhVFU+RuEvYa/p523VIhjTv3E71nqJj0L5528oA28WPGgj2JPDdUgdnCYrm3j"></script>
-  <script src="assets/graph-utils.js" defer integrity="sha384-jYOtAvQPhURxPvUPEIhE8Z16l759YJa9B/x4WjPKJWyn3Z5+hMp12JoJ3/zfJIgB"></script>
+  <script src="assets/view-status.js" defer integrity="sha384-DDXKCZB1xLBDpoXNk/g9thUBTZOaXV5sL3PIsG7svxxV0FVmaj9r2oalaLQfsD0w"></script>
+  <script src="assets/graph-utils.js" defer integrity="sha384-w4DTddKGTAIHXfClfuOkhG/QlrCIiJs+FJBhAF+N4Juyr4WI2Eh9v75dqx+si6+N"></script>
   <!-- nav-drawer.js graph-utils.js'ten SONRA gelmeli (2026-08-15): artık
        açılışta GU.registerStepBack çağırıyor. -->
   <script src="assets/nav-drawer.js" defer integrity="sha384-wobZDrODD83ZEo1QDfmjtHpNBRHPefsI9ceB+FgXjV1iZMGD5+5wsGFpN87sW6nO"></script>
@@ -1484,7 +1489,7 @@ mesmo antes que o assombro exista."></blockquote>
        tembel-yükleme listesine değil buraya konuyor: ontology.js sır
        detayını çizerken window.__dostKademe hazır olmalı. -->
   <script src="assets/kademe.js" defer integrity="sha384-qstXPmVEy5j/ElqnV6hvOfNFBOxlrwj8IhlrgYL2vtn8VzXUESTxdpuBfDN2uZM9"></script>
-  <script src="assets/search.js" defer integrity="sha384-AU9FjdEB0oJ15FFhPTWKeDlId7oJD3tRxKei6DfwadXbWWmrGnnohkN6KJ5jGeYR"></script>
+  <script src="assets/search.js" defer integrity="sha384-rpQ8MoJmrstJNnqmCvG5Syib4O+74I7pXhW/2Mf52l/PIepFqkzRfOZlCSAhaT0u"></script>
   <script src="assets/uygulama-kabugu.js" defer integrity="sha384-5fHR2WiVTKmGhhVQEn3LFOB1MqLXSdo/os85dtirKR8VwyXKj+lI3Q+JGdYGhOBj"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-pptqqmGNxso09k5o3wT0I5nvlVbpPA4CJJ/VB1WKwOwKEMo7iE8ALEpu6m1klg3c"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
@@ -1497,10 +1502,10 @@ mesmo antes que o assombro exista."></blockquote>
        ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
        (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
        static <script> etiketi yok. -->
-  <script src="assets/view-loader.js" defer integrity="sha384-OnJvcyvKHwQTrsfwFyMTmpDP3iioz8h63d2C6Lb5qAJc7J1JeBxx3dX7fkOZlGPX"></script>
-  <script src="assets/ontology.js" defer integrity="sha384-gkEfKziO9O4gR3cMnxBqmplJmgbjmzCbuyKu4fOA2U/BI+Ge67M0SWa5hgvL1miX"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-ZsjUGZcCATpY1SEfC8zqYIiJFc9Vc6iIn8QIHErLfRpMv+OSg5Se6VuMhphm5Rnj"></script>
+  <script src="assets/ontology.js" defer integrity="sha384-vuoVjEadj+TnaKEVDC9JBEzv8oNPcEyYGi9UbxVCMZ6kfMnPQ/5Mp2mQAtecWqFg"></script>
   <script src="assets/crosslink-preview.js" defer integrity="sha384-Ql+mJC8qoRFExWxkLBHP+85sCuCXqJwVTmYYk1Bk+EWaRK8amiurfak5/gDhaQg+"></script>
-  <script src="assets/ayet-onizleme.js" defer integrity="sha384-dRjrG5LDGutq6k8N5qimc3vad2avxLsVwHlAkj3zO4pYqFgOAhpJT6nO3juyamkf"></script>
+  <script src="assets/ayet-onizleme.js" defer integrity="sha384-Aq9DY0jzZ3RhzpdkqgBfqCRQbGQrjV+fyzZsdN/YGA1soiQXecKsKkk+HBtKs3qw"></script>
   <script src="assets/start-hint.js" defer integrity="sha384-vtQnEinwGN6wZtbYZxihvIMKZX4X7Ctms+6OneV/OhKe8FSg03UkBmjfm+kzfv//"></script>
   <!-- 2026-08-10 denetim (G57 + rapor 16-A): mobil için grafik yerine liste. -->
   <script src="assets/ontoloji-mobil-liste.js" defer integrity="sha384-S+ePsSK9MaYLjjIasSUL8wkzgtlOLDVIaYbjGb1iouA/Z9Oa9QPaaSUoNnMZ0Sur"></script>

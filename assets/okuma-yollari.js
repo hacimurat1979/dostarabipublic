@@ -29,7 +29,7 @@ window.__okumaYollariApp = (function () {
 
   const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
   function esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   const KADEME_ETIKET = {
@@ -108,7 +108,7 @@ window.__okumaYollariApp = (function () {
 
   function yolHtml(y) {
     return `<article class="okuma-yolu">
-      <h3 class="okuma-yolu__konu">${esc(tt(y.konu))}</h3>
+      <h2 class="okuma-yolu__konu">${esc(tt(y.konu))}</h2>
       <div class="okuma-yolu__kademeler">
         ${y.uc_kademe.map((b, i) => kademeHtml(b, i)).join('<span class="okuma-yolu__ok" aria-hidden="true"><span>→</span></span>')}
       </div>

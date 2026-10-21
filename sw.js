@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-1ae6e250ac1e";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-5bdc5f5815ed";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
@@ -21,6 +21,11 @@ const SHELL_URLS = [
   "./data/ibn-arabi/ontology.json",
   "./assets/vendor/use-gesture.min.js",
   "./assets/telefon-haritasi.js",
+  "./assets/fonts/Fraunces-Italic-static.woff2",
+  "./assets/fonts/Fraunces-Regular-static.woff2",
+  "./assets/fonts/SourceSans3-Italic-static.woff2",
+  "./assets/fonts/SourceSans3-Medium-static.woff2",
+  "./assets/fonts/SourceSans3-SemiBold-static.woff2",
   "./assets/welcome.js",
   "./assets/theme.js",
   "./assets/vendor/d3-custom.min.js",
@@ -200,7 +205,7 @@ self.addEventListener("fetch", (event) => {
       caches.open(CACHE_VERSION).then((cache) =>
         cache.match(req).then((cached) => {
           const network = fetch(req)
-            .then((resp) => { if (resp.ok) cache.put(req, resp.clone()); return resp; })
+            .then((resp) => { if (resp.ok) cache.put(req, resp.clone()).catch(() => {}); return resp; })
             .catch(() => cached || cevrimdisiKaynak(req));
           return cached || network;
         })
@@ -233,7 +238,7 @@ self.addEventListener("fetch", (event) => {
           // önbelleği asla tazelenmiyor, "yeni sürüm görünmüyor" şikâyetinin
           // asıl kaynağı satır 62'deki ctrl+shift+r notundan FARKLI bir kusurmuş.
           const toCache = resp.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(req, toCache));
+          caches.open(CACHE_VERSION).then((cache) => cache.put(req, toCache)).catch(() => {});
         }
         if (req.mode === "navigate" && resp.status === 404) return yumusat404(resp);
         return resp;

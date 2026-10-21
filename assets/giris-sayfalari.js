@@ -59,7 +59,7 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
 .gp-halka__etiket{font:600 9px/1 inherit;fill:var(--text-muted)}
 .gp-halka__buyuk{font:600 17px/1 inherit;fill:var(--text-primary)}
 .gp-halka__kucuk{font:400 10px/1 inherit;fill:var(--text-muted)}
-.gp-tablo-kap{overflow-x:auto}
+.gp-tablo-kap{overflow-x:auto;background:linear-gradient(to right,var(--surface-1) 30%,transparent) left/36px 100% no-repeat local,linear-gradient(to left,var(--surface-1) 30%,transparent) right/36px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.22),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.22),transparent) right/12px 100% no-repeat scroll}
 .gp-tablo{width:100%;border-collapse:collapse;font-size:calc(.86rem * var(--detail-font-scale,1))}
 .gp-tablo th,.gp-tablo td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
 .gp-tablo thead th{color:var(--text-muted);font-weight:600;font-size:calc(.74rem * var(--detail-font-scale,1));letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}

@@ -30,7 +30,7 @@ window.__neredenBaslamaliApp = (function () {
   let fetchPromise = null;
 
   function esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   // Bölüm adları. Rota sözlüğünün TAMAMI değil, yalnız bu sayfada geçenler
@@ -96,7 +96,7 @@ window.__neredenBaslamaliApp = (function () {
       tr: n + " durak", en: n + (n === 1 ? " stop" : " stops"), pt: n + (n === 1 ? " parada" : " paradas"),
     });
     return `<section class="nb-yol">
-      <h3 class="nb-yol__baslik">${esc(tt(y.baslik))}</h3>
+      <h2 class="nb-yol__baslik">${esc(tt(y.baslik))}</h2>
       <p class="nb-yol__olcu">${esc(durakSayisi)}</p>
       <p class="nb-yol__kim">${esc(tt(y.kim))}</p>
       <ol class="nb-durak-liste">${(y.duraklar || []).map((d, i) => durakHtml(d, i + 1)).join("")}</ol>

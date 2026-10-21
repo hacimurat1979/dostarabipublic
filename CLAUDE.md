@@ -33,6 +33,8 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-19).
   eksen başına üç alıntı özeti, birlikte geçen eksenler). Eksen
   etiketlemesini biz yaptık; sayfa yazıların ardındaki hayata, duyguya ya
   da kişiliğe dair hiçbir çıkarım yapmaz. İstisna bu sekmeyle sınırlı.
+  Her taranan Daphne yazısında güncellenir: yazının eksenleri işaretlenir,
+  sayılar profilden otomatik hesaplanır, alıntılar gözden geçirilir.
 - **Mişkâtü'l-Envâr'da** her sayfa hadisin kendi Türkçe metniyle açılır.
 - **Üç dil (TR/EN/PT) birlikte güncellenir.**
 - **Yaptığımız işi olduğundan farklı göstermeyiz:**

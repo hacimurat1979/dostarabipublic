@@ -810,6 +810,11 @@
     });
   } catch (e) { /* yoksay */ }
 
+  // Derin bağlantı (2026-10-20 taraması P2): /fusus/fs1/ açılınca setMainView
+  // id'siz activate() çağırıp ÖNCE varsayılan/son fassı (fs27: 97 KB gzip) indiriyor,
+  // sonra hedef fassı ayrıca indiriyordu. goTo* hedef id'yi buraya bırakır;
+  // setMainView aynı activate çağrısında hedefi iletir.
+  let bekleyenId = null;
   function setMainView(view) {
     if (currentMainView === view) return;
     if (view === "kavram" || view === "ayethadis" || view === "miskat") markNavYeniSeen(view);
@@ -924,13 +929,13 @@
       window.__tasiyicilarApp && window.__tasiyicilarApp.activate();
     } else if (view === "futuhat") {
       currentDetailView = null;
-      window.__futuhatApp && window.__futuhatApp.activate();
+      window.__futuhatApp && window.__futuhatApp.activate(bekleyenId || undefined);
     } else if (view === "fusus") {
       currentDetailView = null;
-      window.__fususApp && window.__fususApp.activate();
+      window.__fususApp && window.__fususApp.activate(bekleyenId || undefined);
     } else if (view === "miskat") {
       currentDetailView = null;
-      window.__miskatApp && window.__miskatApp.activate();
+      window.__miskatApp && window.__miskatApp.activate(bekleyenId || undefined);
     } else if (view === "kavram") {
       currentDetailView = "kavram";
       window.__kavramApp && window.__kavramApp.activate();
@@ -1540,7 +1545,10 @@
   }
 
   function goToFutuhat(id) {
+    const degisecek = currentMainView !== "futuhat";
+    bekleyenId = id || null;
     setMainView("futuhat");
+    bekleyenId = null;
     // 2026-08 kod taraması: id yokken burada da activate() çağırmak,
     // setMainView'in kendi iç dalının (view değişince tetiklenen)
     // activate()'iyle art arda iki kez çalışıyordu -- ikinci çağrı,
@@ -1549,17 +1557,23 @@
     // okuyucuyu yanlışlıkla "zaten bir yeri var" sanıyordu (bkz.
     // isDefaultLanding / futuhat-start-hint). Kavram'daki gibi yalnız id
     // doluyken tekrar çağırıyoruz.
-    if (id) window.__futuhatApp && window.__futuhatApp.activate(id);
+    if (id && !degisecek) window.__futuhatApp && window.__futuhatApp.activate(id);
   }
 
   function goToFusus(id) {
+    const degisecek = currentMainView !== "fusus";
+    bekleyenId = id || null;
     setMainView("fusus");
-    if (id) window.__fususApp && window.__fususApp.activate(id);
+    bekleyenId = null;
+    if (id && !degisecek) window.__fususApp && window.__fususApp.activate(id);
   }
 
   function goToMiskat(id) {
+    const degisecek = currentMainView !== "miskat";
+    bekleyenId = id || null;
     setMainView("miskat");
-    if (id) window.__miskatApp && window.__miskatApp.activate(id);
+    bekleyenId = null;
+    if (id && !degisecek) window.__miskatApp && window.__miskatApp.activate(id);
   }
 
   function goToHakkinda(sub) {

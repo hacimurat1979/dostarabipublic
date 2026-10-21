@@ -318,8 +318,20 @@ window.DostGraphUtils = (function () {
   function moveTooltip(tooltip, wrapEl, event) {
     if (!tooltip || tooltip.hidden || !wrapEl) return;
     const rect = wrapEl.getBoundingClientRect();
-    let x = event.clientX - rect.left;
-    let y = event.clientY - rect.top;
+    // Klavye odağında (focus olayı) clientX/Y yoktur: NaN, kutuyu ekranın
+    // solunda 94-121 px kırpık açıyordu (2026-10-20 taraması F01). Odaklanan
+    // öğenin üst-orta noktasına göre konumla.
+    let cx = event.clientX, cy = event.clientY;
+    if (!isFinite(cx) || !isFinite(cy)) {
+      const el = (event.currentTarget && event.currentTarget.getBoundingClientRect) ? event.currentTarget : event.target;
+      if (el && el.getBoundingClientRect) {
+        const b = el.getBoundingClientRect();
+        cx = b.left + b.width / 2;
+        cy = b.top;
+      } else { cx = rect.left + rect.width / 2; cy = rect.top + rect.height / 2; }
+    }
+    let x = cx - rect.left;
+    let y = cy - rect.top;
     x = Math.max(60, Math.min(rect.width - 60, x));
     y = Math.max(50, y);
     tooltip.style.left = x + "px";
@@ -459,7 +471,14 @@ window.DostGraphUtils = (function () {
         }
         return extraFilter ? extraFilter(event) : true;
       })
-      .on("zoom", (event) => zoomLayer.attr("transform", event.transform));
+      .on("zoom", (event) => {
+        // Gizli (clientWidth 0) bir SVG'de animasyonlu sığdırma NaN dönüşümü
+        // üretiyordu: konsola "translate(NaN,NaN) scale(NaN)" düşüyordu
+        // (2026-10-20 taraması: Ortak Temalar / Taranan Yazılar sekmeleri).
+        const t = event.transform;
+        if (!t || !isFinite(t.x) || !isFinite(t.y) || !isFinite(t.k)) return;
+        zoomLayer.attr("transform", t);
+      });
     svg.call(zoomBehavior).on("dblclick.zoom", null);
     return zoomBehavior;
   }
@@ -549,18 +568,28 @@ window.DostGraphUtils = (function () {
     });
     observer.observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 
-    // Basit odak-tuzağı: panel açıkken Tab, arkadaki sayfaya kaçmasın.
-    panel.addEventListener("keydown", (e) => {
-      if (e.key !== "Tab") return;
+    // Odak tuzağı: panel açıkken Tab, arkadaki sayfaya kaçmasın. Kapatma/yazdır/
+    // paylaş/defter düğmeleri panelin DIŞINDA (sabit konumlu kardeşler) olduğu
+    // için tuzak eskiden onlarda işlemiyordu: odak kapatma düğmesine gidince Tab
+    // arka sayfaya kaçıyor, panel içeriğine ileri Tab ile ulaşılmıyordu
+    // (2026-10-20 taraması A4). Artık panel içeriği + dış düğmeler tek döngü.
+    const DIS = ["#detail-close", ".detail-panel__print", ".detail-panel__share",
+      ".detail-panel__notebook", ".detail-panel__share-visual"];
+    function gorunur(n) { return !n.hidden && n.offsetParent !== null; }
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab" || panel.hidden) return;
+      const dis = DIS.map((q) => document.querySelector(q)).filter((n) => n && gorunur(n));
+      const ae = document.activeElement;
+      if (!(panel.contains(ae) || dis.indexOf(ae) >= 0)) return;
       const focusable = Array.from(panel.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])'))
-        .filter((n) => !n.hidden && n.offsetParent !== null);
+        .filter(gorunur).concat(dis);
       if (!focusable.length) return;
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
+      if (e.shiftKey && ae === first) {
         e.preventDefault();
         last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
+      } else if (!e.shiftKey && ae === last) {
         e.preventDefault();
         first.focus();
       }

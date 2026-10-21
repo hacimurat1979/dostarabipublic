@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <!-- bkz. index.html'deki aynı etiketin yorumu -- aynı gerekçe, aynı politika. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-srpnmuRi5EgaHReLWtg0TgVrmZd3uB2wntVIR/FB+aE=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-RcKapkaMgabUfZG5f3Xwtf6RJSH0Prz+o5xpwr5RzAE=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex, nofollow">
 <title>Dost — Daphne: Yazılar ve Eksenler</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
@@ -37,7 +38,11 @@
       return false;
     })();
     window.__dostLoadAnalytics = function () {
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama) return;
+      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
+      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
+      var tek = false;
+      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
+      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek) return;
       window.__dostAnalyticsLoaded = true;
       var ga = document.createElement("script");
       ga.async = true;
@@ -140,6 +145,7 @@
       } catch (e) {}
     })();
   </script>
+  <a class="skip-link" href="#compare-tabs" data-tr="Sekmelere atla" data-en="Skip to tabs" data-pt="Pular para as abas">Sekmelere atla</a>
   <header class="app-header">
     <button class="app-header__back" id="header-back" type="button"
             title="Dost'a dön / Back to Dost / Voltar ao Dost"
@@ -147,7 +153,7 @@
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="app-header__title">
-      <h1>Dost</h1>
+      <h1>Dost<span class="sr-only"> — Daphne</span></h1>
       <p class="app-header__subtitle"
          data-tr="Daphne (thelivingfractal) — taranan yazıların özetleri ve eksenleri"
          data-en="Daphne (thelivingfractal) — summaries and axes of the surveyed pieces"
@@ -179,9 +185,9 @@
     </section>
 
     <section class="intro" id="intro-text-bagharita" hidden>
-      <p data-tr="Taradığımız her yazıda, Dost'un hangi kavramına dokunduğunu elle işaretledik; burası o bağların hepsinin bir arada durduğu yer. Bağları ve gerekçelerini biz yazdık; 5 Ekim 2026'dan sonra eklenen yazılarda bağ işaretlenmedi. Merkezde Daphne var; bir kavram ne kadar çok yazıda dönüyorsa merkeze o kadar yakın duruyor. Bu bir puan değil, bir sayım: neyin tekrar ettiğini gösteriyor, ne anlama geldiğini değil. Bir düğüme tıklayın."
-         data-en="For each piece we surveyed, we marked by hand which of Dost's concepts it touches; this is where all those links stand together. We wrote the links and their reasons ourselves; pieces added after 5 October 2026 carry no marked links. Daphne is at the center; the more essays return to a concept, the closer it sits. This is not a score but a count: it shows what recurs, not what it means. Click a node."
-         data-pt="Em cada texto que analisámos, marcámos à mão quais conceitos de Dost ele toca; aqui é onde todos esses vínculos se encontram. Fomos nós que escrevemos os vínculos e as suas razões; os textos acrescentados depois de 5 de outubro de 2026 não têm vínculos marcados. Daphne está no centro; quanto mais ensaios retornam a um conceito, mais perto ele fica. Isto não é uma pontuação, mas uma contagem: mostra o que se repete, não o que significa. Clique num nó.">
+      <p data-tr="Taradığımız her yazıda, Dost'un hangi kavramına dokunduğunu elle işaretledik; burası o bağların hepsinin bir arada durduğu yer. Bağları ve gerekçelerini biz yazdık; bağ işaretlenmemiş yazılar da vardır. Merkezde Daphne var; bir kavram ne kadar çok yazıda dönüyorsa merkeze o kadar yakın duruyor. Bu bir puan değil, bir sayım: neyin tekrar ettiğini gösteriyor, ne anlama geldiğini değil. Bir düğüme tıklayın."
+         data-en="For each piece we surveyed, we marked by hand which of Dost's concepts it touches; this is where all those links stand together. We wrote the links and their reasons ourselves; some pieces carry no marked links. Daphne is at the center; the more essays return to a concept, the closer it sits. This is not a score but a count: it shows what recurs, not what it means. Click a node."
+         data-pt="Em cada texto que analisámos, marcámos à mão quais conceitos de Dost ele toca; aqui é onde todos esses vínculos se encontram. Fomos nós que escrevemos os vínculos e as suas razões; alguns textos não têm vínculos marcados. Daphne está no centro; quanto mais ensaios retornam a um conceito, mais perto ele fica. Isto não é uma pontuação, mas uma contagem: mostra o que se repete, não o que significa. Clique num nó.">
       </p>
       <p class="intro__olcu" id="bagharita-olcu"></p>
     </section>
@@ -322,9 +328,9 @@
       <div id="articles-list" class="daphne-profile-articles-grid"></div>
     </section>
 
-    <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="true" hidden>
+    <div class="detail-panel" id="detail-panel" role="dialog" aria-modal="true" hidden>
       <div id="detail-content"></div>
-    </aside>
+    </div>
     <button class="detail-panel__close" id="detail-close" aria-label="Kapat / Close / Fechar">×</button>
   </main>
 
@@ -335,7 +341,7 @@
     </p>
   </footer>
 
-  <div class="consent-banner" id="consent-banner" role="dialog" aria-live="polite" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
+  <div class="consent-banner" id="consent-banner" role="region" aria-live="polite" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p data-tr="Bu site ziyaret verisini yalnız onayınla ölçer (Google Analytics, Microsoft Clarity). Reddedersen hiçbir ölçüm scripti yüklenmez."
        data-en="This site measures visits only with your consent (Google Analytics, Microsoft Clarity). If you decline, no measurement script loads."
        data-pt="Este site mede visitas apenas com seu consentimento (Google Analytics, Microsoft Clarity). Se recusar, nenhum script de medição é carregado.">
@@ -368,17 +374,17 @@
   <script src="assets/vendor/d3-custom.min.js" integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/theme.js" integrity="sha384-ru8k45ohz7bvm8E6wN7IlX+qdOzM89NXsAWRVFt6G9Kt855dyJNRUim62MQMnrnW"></script>
   <script src="assets/i18n.js" integrity="sha384-wJjXOjqathRvpklI0/9bosjU2rBLeJ3bWZOZ19r/+VxFiJ10sJHenP6LN1UIlTf+"></script>
-  <script src="assets/view-status.js" integrity="sha384-+NknhVFU+RuEvYa/p523VIhjTv3E71nqJj0L5528oA28WPGgj2JPDdUgdnCYrm3j"></script>
-  <script src="assets/graph-utils.js" integrity="sha384-jYOtAvQPhURxPvUPEIhE8Z16l759YJa9B/x4WjPKJWyn3Z5+hMp12JoJ3/zfJIgB"></script>
+  <script src="assets/view-status.js" integrity="sha384-DDXKCZB1xLBDpoXNk/g9thUBTZOaXV5sL3PIsG7svxxV0FVmaj9r2oalaLQfsD0w"></script>
+  <script src="assets/graph-utils.js" integrity="sha384-w4DTddKGTAIHXfClfuOkhG/QlrCIiJs+FJBhAF+N4Juyr4WI2Eh9v75dqx+si6+N"></script>
   <script src="assets/font-scale.js" integrity="sha384-pptqqmGNxso09k5o3wT0I5nvlVbpPA4CJJ/VB1WKwOwKEMo7iE8ALEpu6m1klg3c"></script>
   <script src="assets/reading-mode.js" integrity="sha384-V3B/R/gAjqiTfiirDWjOzGJwzG4NoVRU+0y1nwMKrw563FvkVPfnhbCHGSo1ABPD"></script>
   <script src="assets/honorifics.js" integrity="sha384-IwA4Fe1Lz4RekuTCKaeamOx5H2VogRQH66+kK99tc5SRCQL7ezB4EK8jbMw/uOhm"></script>
   <script src="assets/daphne-profil.js" integrity="sha384-PHsH7rveToNZVd2ZK9X6aQYRevj3Ul5oepvIVR5vyL+6T1U1datkS/JcgnNXPFsA"></script>
   <script src="assets/daphne-baglar.js" integrity="sha384-ytGSQKrotWZy/zCPlRvFFFVKtVPBwXggraEfWBzh8G+fZHEBU7+j8zV6Wyhmp/yA"></script>
-  <script src="assets/daphne-seyir.js" integrity="sha384-DBBgnX6gSGxWROetZICQ7gIBZ3i7J/fSEHrnKo5ARY68pr3ArvUYpklg5E17yZgI"></script>
-  <script src="assets/ortak-temalar.js" integrity="sha384-jhJRlTHERCuoKLtS/cYmObEpAWMwGBhCof4RE8ztnpbbxL0gUmDg9MvVLqTO+2F3"></script>
+  <script src="assets/daphne-seyir.js" integrity="sha384-L4SSfS1cbtm2MycxG1AVa2mtKc61fpyy/vkIyjA2OaLBVRcvhOz6BEu4ogPgsqKL"></script>
+  <script src="assets/ortak-temalar.js" integrity="sha384-+jy1bfgFbLmAEhtgDB9XmTvK+/wnMSbEwG4g2+hpzkduYgH2H1hL6Af1ArSdHeT6"></script>
   <script src="assets/daphne-bag-haritasi.js" integrity="sha384-IKWE80rLM8cXBcLKrZ852A7oIHEFOrZeZwVTGi+AI5+u+9+Y2TeHjZWA6A++/hQX"></script>
-  <script src="assets/compare.js" integrity="sha384-UmPjCrYjU0lJDv+W9zHhnEha6OmGyXpRLq7HMmTdBMlo8bfJTrqVTosDMAD8pVVk"></script>
+  <script src="assets/compare.js" integrity="sha384-BJ6ym48D4krwuhCAa8lHyYQd2P7y5mcgU98n5k9h1oGYB5alFT6aeGYKSnmTWosi"></script>
   <script src="assets/edit-mode.js" integrity="sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ"></script>
   <!-- @revise kipinin taramaları (2026-10-09): ana sayfadaki gibi Daphne
        bölümünde de aynı çipten açılıyor. -->

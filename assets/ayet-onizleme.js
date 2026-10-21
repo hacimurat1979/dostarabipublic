@@ -10,7 +10,9 @@
 // Bu modül ikisini birleştiriyor: künyeye gelince (ya da dokununca) âyetin
 // Arapça aslı ve meali çıkıyor. Veri TEMBEL yükleniyor — sayfada hiç künye
 // yoksa ya da kimse künyeye dokunmadıysa `kuran.json` hiç indirilmiyor.
-// Dosya 73 KB; site açılışına eklenmemesi için bu şart.
+// Dosya 408 KB (423 âyet; 2026-10-20'de 65'ten büyüdü); site açılışına
+// eklenmemesi için bu şart. Kutu önce yalnız bu dosyayla açılır; "burada da
+// geçiyor" dizini (ayet-dizini.json) arkadan gelip kutuyu tamamlar.
 //
 // DURUŞ NOTU: kutuda gösterilen şey Kur'ân'ın kendisi ve bir meal; bizim
 // yorumumuz değil. O yüzden kutuda hiçbir açıklama/çıkarım yok, yalnız metin
@@ -44,6 +46,19 @@
   let veri = null, sozu = null, tip = null, acikRef = null, acikTur = null;
   let dizin = null, dizinSozu = null;
   let hadisDizin = null, hadisDizinSozu = null;
+  // 2026-10-20 taraması (mobil M-01..03, kod #4/#5, masaüstü F40/F02):
+  //  - dokunmatik: tarayıcının dokunuştan ürettiği taklit `mouseover` kutuyu
+  //    açıp hemen ardından gelen `click` kapatıyordu -> son dokunuştan sonraki
+  //    1,2 sn'de mouseover yok sayılır; click'in kapatması da kutu yeni
+  //    açıldıysa (450 ms) engellenir;
+  //  - Android geri tuşu kutuyu kapatır (GU.yuzeyKatmani), sayfadan çıkarmaz;
+  //  - klavye: künyeler odaklanabilir (tabindex=0 + role=button), kutu
+  //    role=tooltip ve aria-describedby ile bağlanır, ↓ kutudaki bağlantıya
+  //    geçer, Esc yalnız kutuyu kapatıp odağı künyeye döndürür.
+  let sonDokunma = 0, sonPointer = 0, acilisT = 0, acanEl = null, goster0 = 0;
+  const katman = window.DostGraphUtils && window.DostGraphUtils.yuzeyKatmani
+    ? window.DostGraphUtils.yuzeyKatmani("ayet-tip", () => gizle())
+    : null;
 
   function base() { return window.__dostRouteBase || ""; }
   // graph-utils.js script sırasında bu dosyadan hep önce geliyor (index.html),
@@ -112,6 +127,8 @@
     if (tip) return tip;
     tip = document.createElement("div");
     tip.className = "node-hover-tip node-hover-tip--fixed ayet-tip";
+    tip.id = "ayet-tip";
+    tip.setAttribute("role", "tooltip");
     tip.hidden = true;
     document.body.appendChild(tip);
     return tip;
@@ -120,15 +137,19 @@
   function konumla(el) {
     if (!tip || tip.hidden) return;
     const r = el.getBoundingClientRect();
-    const k = tip.getBoundingClientRect();
+    tip.style.maxHeight = "";
+    let k = tip.getBoundingClientRect();
     // Künyenin ÜSTÜNE koyuyoruz; üstte yer yoksa altına düşüyor. İkisi de
-    // dikeyde ekran dışına taşabiliyordu (2026-08-02 kullanıcı bildirimi:
-    // özellikle çok künyeli sayfalarda -- /ayethadis, kavram sayfaları --
-    // künye ekranın alt kenarına yakınken alta düşen kutu taşıyordu) --
-    // şimdi hem üst hem alt kenara clamp uygulanıyor, yatay ile aynı mantık.
+    // dikeyde ekran dışına taşabiliyordu (2026-08-02 kullanıcı bildirimi);
+    // şimdi hem üst hem alt kenara clamp uygulanıyor. 2026-10-20: yer yetmeyen
+    // yönde kutu o yöndeki boşlukla sınırlanır (iç kaydırma) -- uzun kutu
+    // künyenin ÜSTÜNE binip dokunmayı yutmasın (mobil taraması M-03).
+    const ust = r.top - 12, alt = window.innerHeight - r.bottom - 12;
+    const yon = ust >= k.height ? "ust" : (alt >= k.height ? "alt" : (ust > alt ? "ust" : "alt"));
+    const bos = Math.max(96, yon === "ust" ? ust : alt);
+    if (k.height > bos) { tip.style.maxHeight = bos + "px"; k = tip.getBoundingClientRect(); }
     let x = Math.min(Math.max(8, r.left + r.width / 2 - k.width / 2), window.innerWidth - k.width - 8);
-    let y = r.top - k.height - 8;
-    if (y < 8) y = r.bottom + 8;
+    let y = yon === "ust" ? r.top - k.height - 8 : r.bottom + 8;
     y = Math.min(y, window.innerHeight - k.height - 8);
     y = Math.max(y, 8);
     tip.style.left = x + "px";
@@ -189,19 +210,34 @@
     return `<p class="hadis-tip__baslik">${esc(baslik)}</p>${digerHtml}`;
   }
 
+  function ac(t, html, el) {
+    t.innerHTML = html;
+    t.hidden = false;
+    acilisT = Date.now();
+    acanEl = el;
+    el.setAttribute("aria-describedby", "ayet-tip");
+    konumla(el);
+    if (katman) katman.ac();
+  }
+
   function goster(el) {
+    goster0 = Date.now();
     const ref = el.getAttribute("data-ayet");
     const hadis = el.getAttribute("data-hadis");
     if (ref) {
       acikRef = ref; acikTur = "ayet";
-      Promise.all([yukle(), yukleDizin()]).then(() => {
+      // Önce yalnız kuran.json (Arapça + meal); "burada da geçiyor" dizini
+      // arkadan gelip kutuyu tamamlar (zayıf bağlantıda ilk dokunuş boş kalmasın).
+      yukle().then(() => {
         if (acikRef !== ref || acikTur !== "ayet") return;   // bu arada başka bir künyeye geçildi
         const html = icerik(ref);
         if (!html) return;
-        const t = ensureTip();
-        t.innerHTML = html;
-        t.hidden = false;
-        konumla(el);
+        ac(ensureTip(), html, el);
+        if (!dizin) yukleDizin().then(() => {
+          if (acikRef !== ref || acikTur !== "ayet" || !tip || tip.hidden) return;
+          const yeni = icerik(ref);
+          if (yeni) { tip.innerHTML = yeni; konumla(el); }
+        });
       });
     } else if (hadis) {
       acikRef = hadis; acikTur = "hadis";
@@ -209,10 +245,7 @@
         if (acikRef !== hadis || acikTur !== "hadis") return;
         const html = hadisIcerik(hadis);
         if (!html) return;
-        const t = ensureTip();
-        t.innerHTML = html;
-        t.hidden = false;
-        konumla(el);
+        ac(ensureTip(), html, el);
       });
     }
   }
@@ -228,7 +261,9 @@
   function gizle() {
     if (gizleZamanlayici) { clearTimeout(gizleZamanlayici); gizleZamanlayici = null; }
     acikRef = null; acikTur = null;
+    if (acanEl) { acanEl.removeAttribute("aria-describedby"); }
     if (tip) tip.hidden = true;
+    if (katman) katman.bitti();
   }
   // Kutu artık tıklanabilir bağlantı taşıyabiliyor (A1: "burada da geçiyor").
   // Fareyi künyeden kutuya doğru hareket ettirirken önce künyeden AYRILMAK
@@ -243,7 +278,11 @@
   // Fare + klavye + dokunma. Künyeler/işaretler metin akışının içinde
   // olduğu için delegasyonla bağlanıyor: yeni bir kısım render edildiğinde
   // tekrar bağlanmaya gerek kalmıyor.
+  document.addEventListener("touchstart", () => { sonDokunma = Date.now(); }, { passive: true, capture: true });
   document.addEventListener("mouseover", (e) => {
+    // Dokunuştan sonra tarayıcının ürettiği taklit mouseover'ı yok say: aksi
+    // hâlde kutu açılıp hemen ardından gelen click'le kapanıyor (M-01).
+    if (Date.now() - sonDokunma < 1200) return;
     const el = isaretEl(e.target);
     if (el) { if (gizleZamanlayici) { clearTimeout(gizleZamanlayici); gizleZamanlayici = null; } goster(el); }
     else if (tip && e.target.closest && e.target.closest(".ayet-tip")) {
@@ -251,6 +290,7 @@
     }
   });
   document.addEventListener("mouseout", (e) => {
+    if (Date.now() - sonDokunma < 1200) return;
     const el = isaretEl(e.target);
     const kutu = e.target.closest && e.target.closest(".ayet-tip");
     if (el || kutu) gizlemeyiErtele();
@@ -259,21 +299,86 @@
     const el = isaretEl(e.target);
     if (el) {
       e.preventDefault();
-      // Fare tıklaması önce focusin'i tetikler (el odaklanılabilir), o da
-      // goster()'ı çağırıp acikRef'i SENKRON olarak ayarlar -- kutu içerik
-      // gelmeden (asenkron) henüz görünür olmadan. Burada yalnız acikRef'e
-      // bakılsaydı, focusin'in az önce açtığı kutuyu click hemen kapatırdı
-      // (kutu hiç görünür olmadan) -- dokunmatik cihazlarda özellik hiç
-      // çalışmıyordu. Yalnız kutu GERÇEKTEN görünürse "kapat" sayılıyor.
-      const acik = tip && !tip.hidden && acikRef === isaretAnahtari(el);
+      // Fare/dokunma tıklaması önce focusin'i tetikler (el odaklanılabilir), o
+      // da goster()'ı çağırıp kutuyu açar. Yalnız kutu GERÇEKTEN görünürse VE
+      // az önce açılmadıysa "kapat" sayılır: yeni açılan kutuyu aynı
+      // dokunuşun click'i kapatmasın (dokunmatikte özellik hiç çalışmıyordu).
+      const acik = tip && !tip.hidden && acikRef === isaretAnahtari(el) && Date.now() - acilisT > 450;
       acik ? gizle() : goster(el);
     }
-    else gizle();
+    else if (!(e.target.closest && e.target.closest(".ayet-tip")) || e.target.closest("a")) gizle();
   });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") gizle(); });
+  // Esc: kutu açıksa YALNIZ kutuyu kapatır (bir adım geri); odak kutunun
+  // içindeyse künyeye döner. Capture: arkadaki panel/okuma ayrıca kapanmasın.
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (tip && !tip.hidden) {
+        const iceride = tip.contains(document.activeElement);
+        const geri = acanEl;
+        gizle();
+        if (iceride && geri && geri.focus) geri.focus();
+        e.stopPropagation();
+      } else gizle();
+      return;
+    }
+    // ↓: odaktaki künyenin kutusundaki ilk "burada da geçiyor" bağlantısına geç.
+    if (e.key === "ArrowDown" && tip && !tip.hidden && isaretEl(e.target)) {
+      const ilk = tip.querySelector(".ayet-tip__digeri");
+      if (ilk) { e.preventDefault(); ilk.focus(); }
+    }
+  }, true);
+  document.addEventListener("mousedown", () => { sonPointer = Date.now(); }, true);
   document.addEventListener("focusin", (e) => {
+    if (e.target.closest && e.target.closest(".ayet-tip")) return;   // kutunun içinde gezinirken kapatma
     const el = isaretEl(e.target);
-    if (el) goster(el); else gizle();
+    if (el) {
+      // Fare/dokunuşla gelen odakta kutuyu click açar: mousedown'da açılan kutu
+      // dokunulan noktanın üstüne biniyor ve click'i yutuyordu (2026-10-20, M-01).
+      if (Date.now() - sonPointer < 600) return;
+      goster(el);
+    } else gizle();
   });
-  window.addEventListener("scroll", gizle, { passive: true });
+  // Kaydırma kutuyu kapatır; ama kutunun KENDİ iç kaydırması kapatmaz (kutu artık
+  // max-height + overflow taşıyor). Capture: iç kaydırma kapları da yakalanır.
+  window.addEventListener("scroll", (e) => {
+    if (tip && e.target && e.target.nodeType === 1 && tip.contains(e.target)) return;
+    // Klavye odağı künyeyi görünüme kaydırır (scroll olayı odaktan SONRA gelir):
+    // yeni açılan kutuyu o kaydırma kapatmasın, yalnız yeniden konumlansın.
+    if (Date.now() - goster0 < 400) {
+      if (tip && !tip.hidden && acanEl) konumla(acanEl);
+      return;
+    }
+    gizle();
+  }, { passive: true, capture: true });
+
+  // Künyeleri klavyeyle ulaşılabilir yap (2026-10-20: Füsûs/Mişkât'ta ~1.800
+  // künye tabindex'siz geliyordu; Fütûhât'ta zaten vardı). Veri değişmez:
+  // çalışma anında, render edilen künyelere tabindex=0 + role=button eklenir.
+  let hazirlaZamanlayici = null;
+  function kunyeleriHazirla() {
+    hazirlaZamanlayici = null;
+    document.querySelectorAll(".ayet-ref:not([tabindex]), .hadis-ref:not([tabindex])").forEach((el) => {
+      // İçinde bağlantı/düğme olan künye iç içe etkileşimli öğe olurdu (axe
+      // nested-interactive): odak içerideki bağlantıda kalır, künye fareyle açılır.
+      if (el.querySelector("a, button, [tabindex]")) return;
+      el.setAttribute("tabindex", "0");
+      if (!el.hasAttribute("role")) el.setAttribute("role", "button");
+      el.setAttribute("aria-haspopup", "true");
+    });
+  }
+  function hazirlaPlanla() {
+    if (hazirlaZamanlayici) return;
+    hazirlaZamanlayici = setTimeout(kunyeleriHazirla, 150);
+  }
+  if (typeof MutationObserver !== "undefined") {
+    new MutationObserver((kayitlar) => {
+      for (const k of kayitlar) {
+        for (const n of k.addedNodes) {
+          if (n.nodeType === 1 && (n.matches && (n.matches(".ayet-ref, .hadis-ref") || n.querySelector(".ayet-ref, .hadis-ref")))) { hazirlaPlanla(); return; }
+        }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", hazirlaPlanla);
+  else hazirlaPlanla();
 })();

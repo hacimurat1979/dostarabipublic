@@ -21,9 +21,19 @@
     if (window.__dostDaphneSeyirApp) window.__dostDaphneSeyirApp.render();
     if (window.__dostDaphneOkuma) window.__dostDaphneOkuma.yenile();
     I18n.applyStatic();
+    baslikGuncelle();
     I18n.renderLangSwitcher(dilKap, dilDegisti);
   }
   window.__dostDilDegisti = dilDegisti;
+  // Belge başlığı dile göre (2026-10-20 taraması F11: statik Türkçe kalıyordu).
+  function baslikGuncelle() {
+    document.title = I18n.pick3({
+      tr: "Dost — Daphne: Yazılar ve Eksenler",
+      en: "Dost — Daphne: Writings and Axes",
+      pt: "Dost — Daphne: Textos e Eixos",
+    });
+  }
+  baslikGuncelle();
   I18n.renderLangSwitcher(dilKap, dilDegisti);
   window.DostGraphUtils.setupLegendToggles();
   window.DostGraphUtils.setupDetailPanelFocus();
@@ -60,12 +70,40 @@
       baglar: () => window.__dostDaphneBaglarApp,
       seyir: () => window.__dostDaphneSeyirApp,
     };
+    // ARIA sekme deseni (2026-10-20 taraması A7/F13): aria-controls +
+    // role=tabpanel/aria-labelledby, roving tabindex, ←/→/Home/End.
+    const panelBul = (tab) => document.querySelector('[data-tab-panel="' + tab + '"]');
+    tabButtons.forEach((b) => {
+      const tab = b.dataset.tab;
+      const panel = panelBul(tab);
+      b.id = b.id || ("tab-" + tab);
+      if (panel) {
+        panel.id = panel.id || ("panel-" + tab);
+        b.setAttribute("aria-controls", panel.id);
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", b.id);
+      }
+      b.setAttribute("tabindex", b.classList.contains("bookmap-tab--active") ? "0" : "-1");
+      b.addEventListener("keydown", (e) => {
+        const i = Array.prototype.indexOf.call(tabButtons, b);
+        let j = -1;
+        if (e.key === "ArrowRight") j = (i + 1) % tabButtons.length;
+        else if (e.key === "ArrowLeft") j = (i - 1 + tabButtons.length) % tabButtons.length;
+        else if (e.key === "Home") j = 0;
+        else if (e.key === "End") j = tabButtons.length - 1;
+        if (j < 0) return;
+        e.preventDefault();
+        tabButtons[j].focus();
+        tabButtons[j].click();
+      });
+    });
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const tab = btn.dataset.tab;
         tabButtons.forEach((b) => {
           b.classList.toggle("bookmap-tab--active", b === btn);
           b.setAttribute("aria-selected", String(b === btn));
+          b.setAttribute("tabindex", b === btn ? "0" : "-1");
         });
         tabPanels.forEach((p) => { p.hidden = p.dataset.tabPanel !== tab; });
         Object.keys(intros).forEach((k) => { if (intros[k]) intros[k].hidden = tab !== k; });

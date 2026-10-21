@@ -98,7 +98,7 @@ window.__kuranDokusuApp = (function () {
     const m = /^c(\d+)k(\d+)$/.exec(b.id);
     if (b.view === "futuhat" && m) return [0, +m[1], +m[2]];
     const f = /(\d+)/.exec(b.id);
-    return [1, 0, f ? +f[1] : 0];
+    return [b.view === "miskat" ? 2 : 1, 0, f ? +f[1] : 0];
   }
 
   // YERLEŞİM (2026-10-09, gorsel-gramer). Eskiden iki eşmerkezli nokta
@@ -382,7 +382,7 @@ window.__kuranDokusuApp = (function () {
   }
 
   function ayetListHtml(ayetler) {
-    return ayetler.map((a) => `<span class="ayet-ref" data-ayet="${a}" tabindex="0">${a}</span>`).join(" ");
+    return ayetler.map((a) => `<span class="ayet-ref" data-ayet="${window.DostGraphUtils.escapeHtml(a)}" tabindex="0">${window.DostGraphUtils.escapeHtml(a)}</span>`).join(" ");
   }
 
   function sureIpucu(ev, d) {
@@ -455,7 +455,7 @@ window.__kuranDokusuApp = (function () {
       </div>`;
     }).join("");
     detailContent.innerHTML = `
-      <p class="detail-eyebrow">${d.view === "futuhat" ? tt({ tr: "Fütûhât", en: "Futûhât", pt: "Futûhât" }) : tt({ tr: "Füsûs", en: "Fusûs", pt: "Fusûs" })}</p>
+      <p class="detail-eyebrow">${d.view === "futuhat" ? tt({ tr: "Fütûhât", en: "Futûhât", pt: "Futûhât" }) : d.view === "miskat" ? tt({ tr: "Mişkâtü'l-Envâr", en: "Mishkat al-Anwar", pt: "Mishkat al-Anwar" }) : tt({ tr: "Füsûs", en: "Fusûs", pt: "Fusûs" })}</p>
       <h2 class="detail-title">${tt(d.title)}</h2>
       <div class="kuran-dokusu-satirlar">${satirlar}</div>
       <button type="button" class="kuran-dokusu-git">${tt({ tr: "Bu bölüme git →", en: "Go to this part →", pt: "Ir para esta parte →" })}</button>`;

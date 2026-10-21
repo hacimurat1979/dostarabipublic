@@ -278,10 +278,11 @@ window.__ayetHadisApp = (function () {
     const hadisItems = Object.keys(hadisDizin).map((ref) => ({ tip: "hadis", ref, list: hadisDizin[ref] }));
     const all = ayetItems.concat(hadisItems).sort((a, b) => b.list.length - a.list.length);
 
+    const na = ayetItems.length, nh = hadisItems.length;
     const intro = tt({
-      tr: `Fütûhât ve Füsûs okuması boyunca sitede alıntılanan ${ayetItems.length} âyet ve ${hadisItems.length} kutsî hadisin, en çok tekrarladıkları yerden başlayarak sıralanmış bir dizini.`,
-      en: `An index of the ${ayetItems.length} verses and ${hadisItems.length} sacred sayings quoted across the site's reading of the Futuhat and the Fusus, ordered by how often each recurs.`,
-      pt: `Um índice dos ${ayetItems.length} versículos e ${hadisItems.length} ditos sagrados citados ao longo da leitura do Futuhat e do Fusus no site, ordenados por quantas vezes cada um recorre.`,
+      tr: `Fütûhât, Füsûs ve Mişkât okuması boyunca sitede alıntılanan ${na} âyet ve ${nh} kutsî hadisin, en çok tekrarladıkları yerden başlayarak sıralanmış bir dizini.`,
+      en: `An index of the ${na} ${na === 1 ? "verse" : "verses"} and ${nh} ${nh === 1 ? "sacred saying" : "sacred sayings"} quoted across the site's reading of the Futuhat, the Fusus and the Mishkat, ordered by how often each recurs.`,
+      pt: `Um índice dos ${na} ${na === 1 ? "versículo" : "versículos"} e ${nh} ${nh === 1 ? "dito sagrado" : "ditos sagrados"} citados ao longo da leitura do Futuhat, do Fusus e do Mishkat no site, ordenados por quantas vezes cada um recorre.`,
     });
 
     const rows = all

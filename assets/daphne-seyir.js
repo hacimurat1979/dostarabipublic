@@ -23,7 +23,9 @@
   const tt = I18n.pick3;
   const esc = GU.escapeHtml;
   const DILIM = 4;
-  const LOCALE = { tr: "tr-TR", en: "en-GB", pt: "pt-PT" };
+  // PT için pt-BR: pt-PT kısa biçimi "3/02" (ay adı yok, gün/ay belirsiz) veriyordu;
+  // sitenin hreflang'ı da pt-BR (2026-10-20 taraması F20).
+  const LOCALE = { tr: "tr-TR", en: "en-GB", pt: "pt-BR" };
 
   let profil = null;
   let parcalar = null;
@@ -31,6 +33,7 @@
   let hesap = null;
 
   function tarihYaz(iso, yil) {
+    if (!iso) return "";
     const d = new Date(iso + "T00:00:00Z");
     const o = { day: "numeric", month: "short", timeZone: "UTC" };
     if (yil) o.year = "numeric";
@@ -85,7 +88,8 @@
       .filter((x) => x.fark !== 0);
     const artan = kayma.filter((x) => x.fark > 0).sort((a, b) => b.fark - a.fark).slice(0, 3);
     const azalan = kayma.filter((x) => x.fark < 0).sort((a, b) => a.fark - b.fark).slice(0, 3);
-    return { yazilar, n, dilimler, dilimBoyu, eksenler, etiket, ciftler, artan, azalan };
+    const etiketsiz = yazilar.filter((a) => !(a.eksenler || []).length).length;
+    return { yazilar, n, dilimler, dilimBoyu, eksenler, etiket, ciftler, artan, azalan, etiketsiz };
   }
 
   function dilimEtiketleri(h) {
@@ -100,7 +104,7 @@
       pt: "Textos por período: {liste}",
     }), { liste: e.say.map((s, i) => `${i + 1}: ${s}`).join(", ") });
     const cubuklar = e.say.map((s, i) =>
-      `<div class="seyir-cubuk"><span class="seyir-dolgu" style="height:${Math.max(3, Math.round((s / h.dilimBoyu) * 100))}%"></span>`
+      `<div class="seyir-cubuk"><span class="seyir-dolgu" style="height:${s === 0 ? 0 : Math.max(3, Math.round((s / h.dilimBoyu) * 100))}%"></span>`
       + `<b>${s}</b><i>${i + 1}</i></div>`).join("");
     return `<div class="seyir-cubuklar" role="img" aria-label="${esc(alt)}">${cubuklar}</div>`;
   }
@@ -109,7 +113,7 @@
     const a = profil.articles.find((x) => x.url === p.url);
     if (!a) return "";
     return `<li><span class="seyir-tarih">${esc(tarihYaz(a.date))}</span> `
-      + `<a class="seyir-baslik" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(a.title)}</a>`
+      + `<a class="seyir-baslik" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(a.title)}<span class="sr-only"> ${esc(tt({ tr: "(yeni sekmede açılır)", en: "(opens in a new tab)", pt: "(abre em nova aba)" }))}</span></a>`
       + `<p>${esc(tt(p))}</p></li>`;
   }
 
@@ -119,7 +123,9 @@
       en: "{n} pieces · first {ilk} · last {son}",
       pt: "{n} textos · primeiro {ilk} · último {son}",
     });
-    const meta = doldur(metaTpl, { n: e.toplam, ilk: tarihYaz(e.ilk), son: tarihYaz(e.son) });
+    const meta = e.toplam
+      ? doldur(metaTpl, { n: e.toplam, ilk: tarihYaz(e.ilk), son: tarihYaz(e.son) })
+      : doldur(tt({ tr: "{n} yazı", en: "{n} pieces", pt: "{n} textos" }), { n: 0 });
     const liste = ((parcalar && parcalar[e.id]) || []).map(parcaHtml).join("");
     return `<section class="seyir-eksen"><div class="seyir-eksen__ust"><h3>${esc(tt(e.label))}</h3>`
       + `<div class="seyir-meta">${esc(meta)}</div></div>${cubukHtml(e, h)}`
@@ -144,6 +150,7 @@
 
   function render() {
     if (!profil) return;
+    if (!profil.articles || !profil.articles.length) { kok.innerHTML = ""; return; }
     hesap = hesapla();
     const h = hesap;
     const ilkTarih = h.yazilar[0].date, sonTarih = h.yazilar[h.n - 1].date;
@@ -151,6 +158,7 @@
     const v = {
       n: h.n, k: h.eksenler.length, boy: h.dilimBoyu,
       ilk: tarihYaz(ilkTarih, true), son: tarihYaz(sonTarih, true),
+      e: h.etiketsiz,
       a: enSik ? tt(h.etiket[enSik.ids[0]]) : "", b: enSik ? tt(h.etiket[enSik.ids[1]]) : "", c: enSik ? enSik.n : 0,
     };
     const T = (o) => doldur(tt(o), v);
@@ -203,9 +211,21 @@
         }))}</li>
       </ul>
       <p class="seyir-son">${esc(T({
-        tr: "Kaynak: data/daphne-profile.json ({n} yazı, {k} eksen). Sayfa, betimleyici sayımdan öteye geçmemek için bilerek yorum içermiyor.",
-        en: "Source: data/daphne-profile.json ({n} pieces, {k} axes). The page deliberately carries no interpretation, to stay with descriptive counting.",
-        pt: "Fonte: data/daphne-profile.json ({n} textos, {k} eixos). A página deliberadamente não contém interpretação, para ficar na contagem descritiva.",
+        tr: "Kaynak: Daphne'nin yayımladığı {n} yazı, {k} eksen.",
+        en: "Source: the {n} pieces Daphne has published, {k} axes.",
+        pt: "Fonte: os {n} textos que Daphne publicou, {k} eixos.",
+      }))}${h.etiketsiz ? " " + esc(T(h.etiketsiz === 1 ? {
+        tr: "{e} yazıda eksen işareti yok, bu yüzden eksen sayılarına girmiyor.",
+        en: "{e} of them carries no axis mark, so it is not part of the axis counts.",
+        pt: "{e} deles não tem marca de eixo, por isso não entra nas contagens dos eixos.",
+      } : {
+        tr: "{e} yazıda eksen işareti yok, bu yüzden eksen sayılarına girmiyor.",
+        en: "{e} of them carry no axis mark, so they are not part of the axis counts.",
+        pt: "{e} deles não têm marca de eixo, por isso não entram nas contagens dos eixos.",
+      })) : ""} ${esc(tt({
+        tr: "Sayfa, betimleyici sayımdan öteye geçmemek için bilerek yorum içermiyor.",
+        en: "The page deliberately carries no interpretation, to stay with descriptive counting.",
+        pt: "A página deliberadamente não contém interpretação, para ficar na contagem descritiva.",
       }))}</p>`;
   }
 
