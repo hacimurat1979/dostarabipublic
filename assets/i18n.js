@@ -137,6 +137,9 @@ window.DostI18n = (function () {
         setLang(l);
         applyStatic();
         renderLangSwitcher(container, onChange);
+        // Düğmeler yeniden kurulduğu için odak body'ye düşerdi (E-05): seçili dile ver.
+        const yeni = container.querySelector(".lang-btn--active");
+        if (yeni) { try { yeni.focus({ preventScroll: true }); } catch (e) { /* odaklanamaz */ } }
         if (onChange) onChange(l);
       });
       container.appendChild(b);

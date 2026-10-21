@@ -621,24 +621,23 @@ window.DostGraphUtils = (function () {
     // (2026-10-20 taraması A4). Artık panel içeriği + dış düğmeler tek döngü.
     const DIS = ["#detail-close", ".detail-panel__print", ".detail-panel__share",
       ".detail-panel__notebook", ".detail-panel__share-visual"];
-    function gorunur(n) { return !n.hidden && n.offsetParent !== null; }
+    // position:fixed düğmelerde offsetParent hep null olur (kapat/paylaş/defter bu
+    // yüzden tuzağın dışında kalıyordu, 2026-10-21 taraması E-01); görünürlük kutudan okunur.
+    function gorunur(n) { return !n.hidden && n.getClientRects().length > 0 && getComputedStyle(n).visibility !== "hidden"; }
     document.addEventListener("keydown", (e) => {
       if (e.key !== "Tab" || panel.hidden) return;
       const dis = DIS.map((q) => document.querySelector(q)).filter((n) => n && gorunur(n));
       const ae = document.activeElement;
       if (!(panel.contains(ae) || dis.indexOf(ae) >= 0)) return;
-      const focusable = Array.from(panel.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])'))
-        .filter(gorunur).concat(dis);
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && ae === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && ae === last) {
-        e.preventDefault();
-        first.focus();
-      }
+      // Döngü sırası: önce dış düğmeler (kapat ilk), sonra panel içeriği. Sıra
+      // DOM'a bırakılırsa panelin son öğesinden sonra Tab arkadaki sayfaya
+      // (Sessiz mod, Defter...) kaçıyordu (2026-10-21 taraması E-01).
+      const sira = dis.concat(Array.from(panel.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')).filter(gorunur));
+      if (!sira.length) return;
+      const i = sira.indexOf(ae);
+      const j = i < 0 ? 0 : (i + (e.shiftKey ? -1 : 1) + sira.length) % sira.length;
+      e.preventDefault();
+      sira[j].focus();
     });
   }
 

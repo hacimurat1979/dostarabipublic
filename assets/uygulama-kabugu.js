@@ -190,6 +190,7 @@
   okuma.className = "uyg-sayfa uyg-sayfa--okuma";
   okuma.hidden = true;
   okuma.setAttribute("role", "dialog");
+  okuma.setAttribute("aria-modal", "true");
   okuma.innerHTML = '<div class="uyg-tutamak" aria-hidden="true"></div><h2 class="uyg-sayfa__baslik" data-etiket="kitaplar"></h2><div class="uyg-kitaplar"></div>';
   document.body.appendChild(okuma);
   var KITAPLAR = [["futuhat-btn", "F"], ["fusus-btn", "Fs"], ["miskat-btn", "M"]];
@@ -234,6 +235,7 @@
   daha.className = "uyg-sayfa uyg-sayfa--daha";
   daha.hidden = true;
   daha.setAttribute("role", "dialog");
+  daha.setAttribute("aria-modal", "true");
   daha.innerHTML = '<div class="uyg-tutamak" aria-hidden="true"></div><div class="uyg-daha__ayar"></div>'
     + '<div class="uyg-ayar uyg-ayar--cevrim" hidden><span class="uyg-ayar__ad" data-etiket="cevrim"></span><div class="uyg-cevrim-yuva"></div></div>'
     + '<div class="uyg-daha__bolum"></div>';
@@ -309,6 +311,9 @@
   // kurulur; sayfa açıkken dil/tema değişince yeniden çizim onu korur.
   var grupAcik = null;
   function dahaCiz() {
+    // Dil/tema düğmesi odaktayken sayfa yeniden çizilirse odak body'ye düşmesin (E-05).
+    var oa = document.activeElement, odakDil = oa && oa.dataset && daha.contains(oa) ? oa.dataset.dil : null,
+      odakEylem = oa && oa.dataset && daha.contains(oa) ? oa.dataset.eylem : null;
     var gruplar = Array.prototype.map.call(document.querySelectorAll("#nav-drawer .nav-drawer__group"), function (g) {
       var bas = g.querySelector(".nav-drawer__heading");
       var oge = Array.prototype.slice.call(g.querySelectorAll("a.btn-ghost[id]"));
@@ -362,6 +367,8 @@
     dahaBolum.insertAdjacentHTML("beforeend", '<p class="uyg-surum">Dost Arabî · dostarabi.com</p>');
     surumYaz();
     if (window.DostFontScale) window.DostFontScale.bindFontScaleButtons($('[data-eylem="kucult"]', daha), $('[data-eylem="buyut"]', daha));
+    var odakGeri = odakDil ? $('[data-dil="' + odakDil + '"]', daha) : odakEylem ? $('[data-eylem="' + odakEylem + '"]', daha) : null;
+    if (odakGeri) odakGeri.focus({ preventScroll: true });
   }
 
   // --- Kabuk V2: Bölümler katmanı (#nav-drawer'ın telefondaki yüzü) --------------
@@ -683,6 +690,13 @@
     try { history.replaceState(history.state, "", katmanYolu); } catch (e) { /* eski tarayıcı */ }
     return true;
   }
+  // Alt sayfa (Ayarlar/Okuma) açıkken arkadaki sayfa klavye ve ekran okuyucudan
+  // saklanır (inert); sayfalar, başlık ve alt çubuk body'nin çocuğu olduğundan
+  // kapatma denetimleri etkin kalır (2026-10-21 taraması E-03).
+  function arkaPlaniKilitle(ac) {
+    var ana = document.getElementById("main-content");
+    if (ana) { try { ana.inert = !!ac; } catch (e) { /* inert yok */ } }
+  }
   function sayfaAc(el, tarihsiz) {
     if (acikSayfa && acikSayfa !== el) gizle(acikSayfa, true);
     if (el === daha) { if (acikSayfa !== daha) grupAcik = null; dahaCiz(); cevrimTasi(true); }
@@ -691,6 +705,7 @@
     el.hidden = false;
     el.style.transform = "";
     acikSayfa = el;
+    arkaPlaniKilitle(true);
     if (!tarihsiz) {
       try {
         // Önceki girdi az önce kapanan bir dış katmansa (Ara -> Okuma) onun yerine yazılır.
@@ -713,7 +728,7 @@
     el.hidden = true;
     el.style.transform = "";
     if (el === daha) cevrimTasi(false);
-    if (acikSayfa === el) acikSayfa = null;
+    if (acikSayfa === el) { acikSayfa = null; arkaPlaniKilitle(false); }
     guncelle();
     if (!sessiz && oncekiOdak && oncekiOdak.isConnected && el.contains(document.activeElement)) {
       try { oncekiOdak.focus({ preventScroll: true }); } catch (e) { /* odaklanamaz */ }
@@ -926,9 +941,16 @@
     window.DostFontScale.bindFontScaleButtons(k, b);
     [k, b].forEach(function (x) { x.addEventListener("click", aaSinir); });
   }
-  aa.addEventListener("click", function () {
+  aa.addEventListener("click", function (e) {
+    var odakPanelde = aaPop.contains(document.activeElement);
     aaPop.hidden = !aaPop.hidden;
-    if (!aaPop.hidden) { aaBagla(); aaSinir(); }
+    if (!aaPop.hidden) {
+      aaBagla(); aaSinir();
+      // Klavye ya da ekran okuyucuyla açıldıysa (e.detail 0) odak A−'ya girer;
+      // panel body'nin sonunda durduğu için Tab sırası onu ancak sayfanın sonunda bulurdu (E-10).
+      var k0 = $('[data-aa="kucult"]', aaPop);
+      if (k0 && e && e.detail === 0) k0.focus({ preventScroll: true });
+    } else if (odakPanelde) aa.focus({ preventScroll: true });
     aa.setAttribute("aria-expanded", String(!aaPop.hidden));
   });
   document.addEventListener("pointerdown", function (e) {

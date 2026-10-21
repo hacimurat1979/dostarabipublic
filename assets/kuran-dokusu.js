@@ -72,16 +72,24 @@ window.__kuranDokusuApp = (function () {
   // ekrana sığmaya yetmiyor: en uzun sûre adı dışarı taşıyor. En uzun
   // etiketi ÖLÇÜP yayı ona göre daraltıyoruz -- dil değişince de doğru
   // kalsın diye (İngilizce sûre adları Türkçelerden belirgin uzun).
+  // Ölçüm tuvalle yapılır: her etiket için getComputedTextLength() zorunlu yerleşim
+  // demekti (açılışta 269 yerleşim, 4x yavaş CPU'da ≈1,3 sn donma; 2026-10-21 taraması P1-1).
+  // Yazı tipi, etiketin kendi sınıfından bir kez okunur.
+  function etiketOlcer() {
+    const dugum = svg.append("text").attr("class", "kuran-dokusu-sure__etiket").attr("visibility", "hidden");
+    const cs = getComputedStyle(dugum.node());
+    const font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const aralik = parseFloat(cs.letterSpacing) || 0;
+    dugum.remove();
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx || !cs.fontSize) return () => 0;
+    ctx.font = font;
+    return (metin) => ctx.measureText(metin).width + aralik * metin.length;
+  }
   function enUzunEtiketGenisligi() {
-    const olcu = svg.append("text")
-      .attr("class", "kuran-dokusu-sure__etiket")
-      .attr("visibility", "hidden");
+    const olc = etiketOlcer();
     let en = 0;
-    sureler.forEach((s) => {
-      olcu.text(tt(s.ad));
-      en = Math.max(en, olcu.node().getComputedTextLength() || 0);
-    });
-    olcu.remove();
+    sureler.forEach((s) => { en = Math.max(en, olc(tt(s.ad)) || 0); });
     // Görünüm henüz gizliyken ölçüm 0 dönebiliyor; o durumda karakter
     // başına kaba bir tahmine düşüyoruz. Kırpılmaktansa fazladan daralsın.
     if (!en) en = sureler.reduce((a, s) => Math.max(a, tt(s.ad).length), 0) * 6;
@@ -254,9 +262,8 @@ window.__kuranDokusuApp = (function () {
     // Tek bir gizli ölçüm düğümü: 35 etiketi tek tek düğüm yaratmadan
     // ölçüyoruz. getComputedTextLength görünmeyen bir SVG'de 0 döner --
     // o durumda kısaltma da yapmıyoruz (yanlış kısaltmaktansa kısaltmamak).
-    const olcu = svg.append("text")
-      .attr("class", "kuran-dokusu-sure__etiket").attr("visibility", "hidden");
-    const genislik = (s) => { olcu.text(s); return olcu.node().getComputedTextLength() || 0; };
+    const olc2 = etiketOlcer();
+    const genislik = (s) => olc2(s) || 0;
     function sigdir(metin) {
       const tam = genislik(metin);
       if (!tam || tam <= etiketAlani) return metin;
@@ -281,7 +288,6 @@ window.__kuranDokusuApp = (function () {
       .attr("text-anchor", (d) => (Math.cos(d.aci) < 0 ? "end" : "start"))
       .attr("dy", "0.32em")
       .text((d) => sigdir(tt(d.ad)));
-    olcu.remove();
 
     sureSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(d.no, null, true); sureIpucu(ev, d); })
       .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))

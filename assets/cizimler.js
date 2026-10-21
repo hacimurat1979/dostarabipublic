@@ -282,7 +282,7 @@
         <p class="cizim-card__ref">${refMetni(item.source_ref)}</p>
         <h2 class="cizim-card__name">${tt(item.name)}</h2>
         <div class="cizim-card__svg-wrap" data-cizim-id="${item.id}" role="button" tabindex="0"
-             aria-label="${tt({ tr: "Büyüt", en: "Enlarge", pt: "Ampliar" })}">${svg}</div>
+             aria-label="${tt({ tr: "Büyüt", en: "Enlarge", pt: "Ampliar" })}: ${String(tt(item.name)).replace(/<[^>]*>/g, "").replace(/"/g, "&quot;")}">${svg}</div>
         <p class="cizim-card__desc">${linkify(tt(item.description), item.id)}</p>
       </article>
     `;

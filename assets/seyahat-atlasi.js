@@ -371,7 +371,7 @@ window.__seyahatAtlasiApp = (function () {
   function setStop(i) {
     stopIndex = Math.max(0, Math.min(duraklar.length - 1, i));
     sliderYear = duraklar[stopIndex].yil_baslangic;
-    if (slider) slider.value = String(stopIndex);
+    if (slider) { slider.value = String(stopIndex); slider.setAttribute("aria-valuetext", String(sliderYear)); }
     if (sliderEtiket) sliderEtiket.textContent = String(sliderYear);
     uygulaZamanFiltresi();
   }
@@ -383,6 +383,7 @@ window.__seyahatAtlasiApp = (function () {
     stopIndex = duraklar.length - 1;
     slider.value = String(stopIndex);
     sliderYear = duraklar[stopIndex].yil_baslangic;
+    slider.setAttribute("aria-valuetext", String(sliderYear));
     if (sliderEtiket) sliderEtiket.textContent = String(sliderYear);
     slider.addEventListener("input", () => {
       oynatDurdur();

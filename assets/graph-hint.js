@@ -20,6 +20,24 @@
     return parts[idx] || parts[0];
   }
 
+  // Telefon kabuğunda fare/klavye ipuçları dokunmaya çevrilir (2026-10-21 taraması MB-05:
+  // ⓘ kartları telefonda "Ctrl (⌘) + tekerlek" diyordu). Metnin geri kalanı değişmez.
+  const TELEFON_DEGIS = [
+    [/Ctrl \(⌘\) \+ tekerlek ya da iki parmakla yakınlaştırın/g, "iki parmakla yakınlaştırın"],
+    [/Ctrl \(⌘\) \+ tekerlek ile yakınlaştırın/g, "iki parmakla yakınlaştırın"],
+    [/Ctrl \(⌘\) \+ scroll or pinch with two fingers to zoom/g, "pinch with two fingers to zoom"],
+    [/Ctrl \(⌘\) \+ scroll to zoom/g, "pinch with two fingers to zoom"],
+    [/Ctrl \(⌘\) \+ rolagem ou dois dedos para ampliar/g, "dois dedos para ampliar"],
+    [/Ctrl \(⌘\) \+ rolagem para ampliar/g, "dois dedos para ampliar"],
+    [/\btıklayın\b/g, "dokunun"], [/\bTıklayın\b/g, "Dokunun"],
+    [/\bClick\b/g, "Tap"], [/\bclick\b/g, "tap"],
+    [/\bClique\b/g, "Toque"], [/\bclique\b/g, "toque"],
+  ];
+  function telefonaUyarla(m) {
+    if (!document.documentElement.classList.contains("dost-uygulama")) return m;
+    return TELEFON_DEGIS.reduce((acc, [re, yeni]) => acc.replace(re, yeni), m);
+  }
+
   let openPopover = null;
   let openForBtn = null;
 
@@ -46,7 +64,7 @@
     const pop = document.createElement("div");
     pop.className = "graph-hint-popover";
     pop.setAttribute("role", "tooltip");
-    pop.textContent = pickFromTitle(btn.getAttribute("title"));
+    pop.textContent = telefonaUyarla(pickFromTitle(btn.getAttribute("title")));
     pop.style.top = rect.bottom + 8 + "px";
     pop.style.left = rect.left + "px";
     document.body.appendChild(pop);

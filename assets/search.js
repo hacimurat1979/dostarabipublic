@@ -468,6 +468,10 @@
 
   function openPanel() {
     panel.hidden = false;
+    // Tam ekran arama katmanı: diyalog anlamı ve ad (2026-10-21 taraması E-04).
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    panel.setAttribute("aria-label", placeholder());
     input.value = "";
     input.placeholder = placeholder();
     input.setAttribute("aria-label", placeholder());
@@ -484,7 +488,10 @@
   }
 
   function closePanel() {
+    // Kapanışta odak aramayı açan düğmeye döner (body'ye düşmesin, E-04).
+    var odakPanelde = panel.contains(document.activeElement);
     panel.hidden = true;
+    if (odakPanelde && toggleBtn.isConnected) { try { toggleBtn.focus({ preventScroll: true }); } catch (e) { /* odaklanamaz */ } }
   }
 
   toggleBtn.addEventListener("click", () => {

@@ -1974,6 +1974,10 @@
     // için tanıtım kutusu her sekmede yeniden çıkıyordu. Görüldüğü bir kez
     // kaydedilir; depolama yasaksa (gizli pencere) kutu yine çıkar.
     try { if (localStorage.getItem("dost-esma-onboard-seen")) return; } catch (_) {}
+    // Kayıt adresine (/esma/rahman/) doğrudan gelen kullanıcı bir isim paneliyle
+    // karşılanır; tanıtım kartı onun üstüne binmesin (2026-10-21 taraması). Kart,
+    // ana Esmâ sayfasına ilk girişte hâlâ çıkar.
+    if (/\/esma\/[^/]+\/?$/.test(location.pathname)) return;
     const steps = [
       { t: { tr: "O'ndan geldik, O'na gidiyoruz", en: "From Him we came, to Him we go", pt: "D'Ele viemos, a Ele vamos" },
         b: { tr: "Bu harita merkezde Allah ismiyle başlar — bütün isimleri kendinde toplayan İsm-i Âzam — ve onun ötesine, her isimlendirmenin ötesindeki Zât'a işaret eder.", en: "This map begins at the center with the Name Allah — the Name that gathers every Name within itself — and points beyond it, to the Essence beyond all naming.", pt: "Este mapa começa no centro com o Nome Allah — o Nome que reúne todos os Nomes em si — e aponta para além dele, para a Essência além de toda nomeação." } },
@@ -1986,8 +1990,12 @@
     ov.className = "esmaX-onb";
     ov.id = "esmaX-onb";
     let i = 0;
+    const oncekiOdak = document.activeElement;
     function draw() {
       const s = steps[i];
+      // Düğmeler her adımda yeniden çizilir; odak kutunun içindeyse yeni "Devam"a
+      // taşınır (yoksa body'ye düşerdi, 2026-10-21 taraması E-07).
+      const odakVardi = ov.contains(document.activeElement);
       ov.innerHTML = `
         <div class="esmaX-onb__card" role="dialog" aria-modal="true" aria-label="${tt(s.t)}">
           <div class="esmaX-onb__dots">${steps.map((_, k) => `<span class="${k === i ? "is-active" : ""}"></span>`).join("")}</div>
@@ -2000,12 +2008,15 @@
         </div>`;
       ov.querySelector(".esmaX-onb__skip").addEventListener("click", done);
       ov.querySelector(".esmaX-onb__next").addEventListener("click", () => { if (i < steps.length - 1) { i++; draw(); } else done(); });
+      if (odakVardi) { try { ov.querySelector(".esmaX-onb__next").focus({ preventScroll: true }); } catch (_) {} }
     }
     function done() {
       try { localStorage.setItem("dost-esma-onboard-seen", "1"); } catch (_) {}
       onboardRedraw = null;
+      const odakVardi = ov.contains(document.activeElement);
       ov.classList.add("esmaX-onb--out");
       setTimeout(() => ov.remove(), reduceMotion ? 0 : 320);
+      if (odakVardi && oncekiOdak && oncekiOdak.isConnected && oncekiOdak !== document.body) { try { oncekiOdak.focus({ preventScroll: true }); } catch (_) {} }
     }
     // Esc ortak "bir adım geri" zincirinde, en önde (2026-10-10, mobil kaşif):
     // eskiden yalnız odak kutunun içindeyken çalışıyordu (dokunmatikte odak
