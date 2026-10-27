@@ -678,6 +678,50 @@
     if (okumaKatman) okumaKatman.ac();
   }
 
+  // Kenar notlarım (2026-10-27, kullanıcı kararı): bu yazı için SAHİBİN kendi notları ve resimleri.
+  // Veri data/daphne-kenar.json (canlıda şifreli, yalnız parolayla; resimler data/daphne-kenar-img/*.webp,
+  // aynı şekilde şifreli). Not yoksa hiçbir şey çizilmez. Notlar özet değildir: bu yüzden kendi
+  // mührüyle (mavi kesik daire = yalnız sen) ayrı bir bölümde durur.
+  let kenarSozu = null;
+  function kenarVerisi() {
+    if (!kenarSozu) kenarSozu = window.DostGraphUtils.fetchJson("data/daphne-kenar.json").catch(() => { kenarSozu = null; return { notlar: [] }; });
+    return kenarSozu;
+  }
+  function kenarMetin(m) {
+    const esc = window.DostGraphUtils.escapeHtml;
+    return String(m || "").split(/\n\s*\n/).filter((x) => x.trim()).map((x) => "<p>" + esc(x.trim())
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/\n/g, "<br>") + "</p>").join("");
+  }
+  function kenarYukle(a, yuva) {
+    if (!yuva) return;
+    kenarVerisi().then((v) => {
+      const notlar = ((v && v.notlar) || []).filter((n) => n.yazi === a.url);
+      if (!notlar.length || !yuva.isConnected) return;
+      const esc = window.DostGraphUtils.escapeHtml;
+      const tarihYaz = (iso) => {
+        const [y, m, g] = iso.split("-").map(Number);
+        const ay = tt({ tr: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+          en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+          pt: ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"] })[m - 1];
+        return `${g} ${ay} ${y}`;
+      };
+      yuva.innerHTML = `<section class="daphne-kenar" aria-labelledby="daphne-kenar-baslik">
+        <h3 class="daphne-kenar__baslik" id="daphne-kenar-baslik"><span class="daphne-kenar__muhur" aria-hidden="true"></span>${tt({ tr: "Kenar notlarım", en: "My margin notes", pt: "As minhas notas à margem" })}
+          <span class="daphne-kenar__gizli">${tt({ tr: "yalnız sen görürsün", en: "only you see this", pt: "só você vê isto" })}</span></h3>
+        ${notlar.map((n) => `<div class="daphne-kenar__not">
+          <p class="daphne-kenar__tarih">${esc(tarihYaz(n.tarih))}${n.paragraf ? ` · ${esc(String(n.paragraf))}. ${tt({ tr: "paragraf", en: "paragraph", pt: "parágrafo" })}` : ""}</p>
+          <div class="daphne-kenar__metin">${kenarMetin(n.metin)}</div>
+          ${(n.gorseller || []).map((g) => `<figure class="daphne-kenar__gorsel"><img data-gizli="data/daphne-kenar-img/${esc(g.dosya)}" alt="${esc(g.alt || "")}" width="${Number(g.w) || ""}" height="${Number(g.h) || ""}">${g.yazi ? `<figcaption>${esc(g.yazi)}</figcaption>` : ""}</figure>`).join("")}
+        </div>`).join("")}
+      </section>`;
+      yuva.querySelectorAll("img[data-gizli]").forEach((img) => {
+        const yol = img.getAttribute("data-gizli");
+        const G = window.DostGizli;
+        (G && G.cozBlob ? G.cozBlob(yol) : Promise.resolve(yol)).then((u) => { if (u && img.isConnected) img.src = u; }).catch(() => {});
+      });
+    });
+  }
+
   function okumaCiz(i) {
     const a = siraliYazilar[i];
     if (!a || !pageData) return;
@@ -704,10 +748,11 @@
         <article class="daphne-okuma__govde" data-dost-dosya="data/daphne-profile.json" data-dost-kaynak="${a.url}">
           <h2 class="daphne-okuma__baslik" id="daphne-okuma-baslik">${a.title}</h2>
           ${a.date ? `<p class="daphne-okuma__tarih">${a.date}</p>` : ""}
-          ${note}${ozet}${bos}
+          ${note}${ozet}<div class="daphne-kenar-yuva"></div>${bos}
           ${eksenlerHtml(a, pageData)}<div class="daphne-dost-yuva">${dostHtml(a)}</div>${sorularHtml(a)}
         </article>
       </div>`;
+    kenarYukle(a, el.querySelector(".daphne-kenar-yuva"));
     if (!(a.dost || []).length) {
       // Bağlar ayrı dosyada: gelince yuvaya yazılır; yazı bu arada kapanmış ya da
       // başka yazıya geçilmişse (yuva artık belgede değil) hiçbir şey yapılmaz.

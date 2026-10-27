@@ -39,6 +39,12 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
   `data/gizli/*.enc` (AES-GCM; parola kullanıcıda, depoda yok). Düz metin
   Daphne dosyaları buraya konmaz; özel repodaki sync betiği şifreler.
   Burada Daphne verisi düz metin olarak asla eklenmez.
+- **Gönül Defteri (2026-10-27, kullanıcı kararı):** `/gonul/` altındaki yazılar
+  kullanıcının KENDİ sesidir, okuma özeti değil (kuralın adı konmuş istisnası,
+  yalnız bu dizin). Sayfalar `scripts/gonul-uret.py` ile özel repoda üretilir;
+  burada elle değişiklik yapılmaz. Yazı yoksa dizin hiç yoktur.
+- **Kenar notlarım:** Daphne okumasında yalnız sahibine açık notlar; canlıda
+  `data/gizli/*.enc` içinde şifreli (resimler dahil). Düz metin buraya eklenmez.
 - **Mişkâtü'l-Envâr'da** her sayfa hadisin kendi Türkçe metniyle açılır.
 - **Üç dil (TR/EN/PT) birlikte güncellenir.**
 - **Yaptığımız işi olduğundan farklı göstermeyiz:**
