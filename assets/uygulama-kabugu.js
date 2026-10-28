@@ -155,6 +155,7 @@
     kabukGoster: { tr: "Gezinmeyi göster", en: "Show navigation", pt: "Mostrar navegação" },
     sasirtAlt: { tr: "Rastgele bir yere götürür", en: "Takes you somewhere at random", pt: "Leva-o a um lugar ao acaso" },
     gizlilik: { tr: "Gizlilik", en: "Privacy", pt: "Privacidade" },
+    gonul: { tr: "Gönül Defteri", en: "Heart Notebook", pt: "Caderno do Coração" },
     yeniSurum: { tr: "Yeni sürüm hazır", en: "A new version is ready", pt: "Há uma nova versão" },
     yenile: { tr: "Yenile", en: "Reload", pt: "Recarregar" },
     grup: { tr: "Grup", en: "Group", pt: "Grupo" },
@@ -435,7 +436,8 @@
           + '<span class="uyg-grup__ad">' + g.ad + "<small>" + g.oge.length + "</small></span>" + svg("sag", 18) + "</button>"
           + '<div class="uyg-grup__ogeler" id="uyg-grup-' + i + '"' + (ac ? "" : " hidden") + ">" + ogeler + "</div></div>";
       }).join("");
-    var gizlilik = document.querySelector(".app-footer__gizlilik a");
+    var gizlilik = document.querySelector('.app-footer__gizlilik a[href^="gizlilik"]');
+    var gonul = document.querySelector('.app-footer__gizlilik a[href^="gonul"]');
     var dil = (I18n && I18n.getLang && I18n.getLang()) || "tr";
     var koyu = document.body.getAttribute("data-theme") === "dark";
     var sm = document.getElementById("sessiz-mod-toggle");
@@ -448,6 +450,7 @@
       + '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.yazi) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-daire" data-eylem="kucult" aria-label="' + t(ETIKET.kucult) + '">A−</button><button type="button" class="uyg-daire" data-eylem="buyut" aria-label="' + t(ETIKET.buyut) + '">A+</button></span></div>'
       + (sm ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sessiz) + '</span><span class="uyg-ayar__denetim"><button type="button" class="uyg-anahtar" data-eylem="sessiz" aria-label="' + t(ETIKET.sessiz) + '" aria-pressed="' + (sm.getAttribute("aria-pressed") === "true") + '"><span class="uyg-anahtar__iz"><span class="uyg-anahtar__top"></span></span></button></span></div>' : "")
       + (su ? '<div class="uyg-ayar"><span class="uyg-ayar__ad">' + t(ETIKET.sasirt) + '<small class="uyg-ayar__alt">' + t(ETIKET.sasirtAlt) + '</small></span><span class="uyg-ayar__denetim"><button type="button" class="uyg-daire" data-eylem="sasirt" aria-label="' + t(ETIKET.sasirt) + '">' + su.innerHTML + "</button></span></div>" : "");
+    if (gonul) dahaBolum.insertAdjacentHTML("beforeend", '<a class="uyg-baglanti" href="' + gonul.getAttribute("href") + '"><span>' + t(ETIKET.gonul) + "</span>" + svg("sag", 18) + "</a>");
     if (gizlilik) dahaBolum.insertAdjacentHTML("beforeend", '<a class="uyg-baglanti" href="' + gizlilik.getAttribute("href") + '"><span>' + t(ETIKET.gizlilik) + "</span>" + svg("sag", 18) + "</a>");
     // Geliştirici modu açıksa "Sorun bildir"; sürüm/künye satırı herkese görünür
     // (7 art arda dokunuş modu açar/kapatır -- bu sayfanın var olan tek tıklama
