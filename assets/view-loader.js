@@ -80,7 +80,7 @@
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
   var KIPLER = {
-    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-qvrpO+KjKI1YK0H1lSurUukInN1/stgZZFkibMESTzphSNLqRL51+jwdwM3mp1OJ" },
+    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-sZ+K4WZSofxAsPU5hLIqZmXlWACKsZC9j+yaVgGp1cPXCE++R3kflCvq6dGFUoaV" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-OetL6ZzUApIaeF6LIXNsT9ezDbL94Q7Tt+ydLwgqtlJ2X4i+cA9RJrD/suJKs/+o" },

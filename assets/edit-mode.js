@@ -65,6 +65,8 @@
     ".daphne-okuma__govde .daphne-profile-card__note",
     ".daphne-bag__neden",
     ".daphne-soru__metin",
+    // Gönül Defteri sayfaları (2026-10-28, scripts/gonul-uret.py): her öğe data-dost-alan taşır.
+    ".gonul-duzenle",
   ].join(", ");
 
   const escapeHtml = window.DostGraphUtils

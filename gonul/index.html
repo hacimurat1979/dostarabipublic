@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Gönül Defteri: scripts/gonul-uret.py üretir (elle düzenlenmez). Yazarın kendi sesi, okuma özeti DEĞİL. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <title>Gönül Defteri — Dost Arabî</title>
 <meta name="description" content="Yazarın kendi sesiyle, resimli kısa yazılar. Okuma özeti değildir.">
 <link rel="canonical" href="https://dostarabi.com/gonul/">
@@ -20,12 +20,19 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#8a6100">
 <style>
-  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-display: swap; }
-  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-SemiBold-static.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Medium-static.woff2") format("woff2"); font-weight: 500 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-SemiBold-static.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: swap; }
   :root {
     --page-plane: #f9f9f7; --surface-1: #fcfcfb; --text-primary: #1a1a1a;
     --text-secondary: #52514e; --text-muted: #6f6d65; --gridline: #e1e0d9;
     --accent-interactive: #8a6100; --ink: #1a1a1a;
+    /* @revise paneli (assets/gonul-revise.css) site değişkenlerinin adlarını kullanır */
+    --series-theme: var(--accent-interactive); --series-theme-text: var(--accent-interactive); --border: var(--gridline);
+    --dur-kisa: 0.15s; --helix-gold: #ffc233;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
@@ -59,8 +66,11 @@
   figcaption { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; }
   .galeri { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 8px; margin: 22px 0; }
   .galeri figure { margin: 0; }
-  .dize { font-family: "Fraunces Dost", Georgia, serif; font-size: 1.15rem; line-height: 1.75; margin: 22px 0; }
-  blockquote { font-family: "Fraunces Dost", Georgia, serif; font-size: 1.2rem; line-height: 1.4; margin: 24px 0; padding-left: 16px; border-left: 2px solid var(--ink); }
+  /* Serif gövde Regular (400); kalın yalnız yazarın işaretlediği yerde (strong, 600) */
+  .dize { font-family: "Fraunces Dost", Georgia, serif; font-weight: 400; font-size: 1.15rem; line-height: 1.75; margin: 22px 0; }
+  .dize strong, blockquote strong { font-weight: 600; }
+  strong { font-weight: 600; }
+  blockquote { font-family: "Fraunces Dost", Georgia, serif; font-weight: 400; font-size: 1.2rem; line-height: 1.4; margin: 24px 0; padding-left: 16px; border-left: 2px solid var(--ink); }
   .kunye { margin-top: 40px; padding: 12px 14px; border: 1px dashed var(--gridline); border-radius: 12px; font-size: 0.9rem; color: var(--text-secondary); display: flex; gap: 10px; align-items: flex-start; }
   .kunye .muhur { margin-top: 4px; }
   .kunye p { margin: 0; }
@@ -73,6 +83,7 @@
   .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 </style>
+<script src="/assets/gonul-revise.js" defer></script>
 </head>
 <body>
 <main>
