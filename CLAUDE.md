@@ -52,6 +52,14 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
 - Şemalar ve çizimler korunur; künye/şeffaflık cümleleri
   ("bu şemayı biz çizdik") yorum değildir.
 
+- **Bu repodaki `assets/*.js` ve `*.css` küçültülmüştür (2026-10-29):** özel repodaki okunur kaynaklar
+  yayın adımında esbuild ile küçültülüp buraya yazılır (`scripts/canli-kucult.py`). Burada elle düzenleme
+  yapılmaz; kaynak özel repodadır.
+- **Okuma araçları (2026-10-29):** Dinle, Okuma kipi, paragraf notu (yalnız cihazda), alıntı/atıf, yan yana
+  oku, Defterim yedeği, katmanlı çevrimdışı paket, bugünün parçası. Hepsi okuyucunun kendi cihazında çalışır;
+  site içeriği değil, okuma araçlarıdır. Çeviri gözden geçirme künyesi yalnız kayıt varsa görünür
+  (`data/ceviri-gozden-gecirme.json`, şu an kayıt yok).
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
