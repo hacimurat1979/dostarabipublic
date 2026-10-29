@@ -71,16 +71,16 @@
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-CJnjbSwU8iz6Fj5ASDmbnzIk6aw7Z+q5jmVDL7ADf/agerwX22Dx8yQ0jKkO5dtg", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-PR4lTvb0ECieUAJ8fvDRgV/d8+1ZFd6oGZKkCe/Scbef08KkGUrW4F7agX3KQyUu", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-k9T3xcX1Fp+sG/Igu7L51OAU4T4j/CzR2+E1OqPR74qhZXnmiHnJsrURjx81RCU4", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-1OAigqOuBjlIYnvDV2Q8nwqa2xzw0DsdVkT9jPp+GbJtXw7qIvmfiDfnGItJs/ix", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-IQ7K0IISJsBMVesN04dYrya4qWcT22iqRYCUTo7k/o5s12LJCZYHU1Wc7GPs2RUX", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-AOP5aDLS2dC8w8sffn6nZaVsbeevPni77ovb5yWgoca5rRLKlPwYZV6ELOvWjuHE", wrap: "tasiyicilar-wrap" },
-    __fususApp: { src: "assets/fusus.js", integrity: "sha384-0mNky+sPAtu3sRVxIPvKp1CIYaXa4D3omFQgcaY7ZSScYUFeopebFXDAiHNWRxHK", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
+    __fususApp: { src: "assets/fusus.js", integrity: "sha384-GnV+aBB+NjdxJK/qySO0qpVuKon/vRiV/eYuektOsaJ+YGV44h8P2XUbWXJyhr7f", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
     __miskatApp: { src: "assets/miskat.js", integrity: "sha384-7U0yTfTg5QApy8uLwBgBjL6iPT/GF9lD3Td1ndbzz5nkORKolZ3jlaTGm7eglRor", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
   };
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
   var KIPLER = {
-    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-yajtLEzUfEcHrE+cFO5s1lIWHMH0VG9vLom+Db8LMNaul7lN4Q0GbCWad9j2vnLV" },
+    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-bt92BssHzTAzMKFJ/3WgOto/u4jDgoRn3N5bxcTSOcwVdamq1rQWc9+k0gBK8r8r" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-OetL6ZzUApIaeF6LIXNsT9ezDbL94Q7Tt+ydLwgqtlJ2X4i+cA9RJrD/suJKs/+o" },

@@ -612,6 +612,39 @@
         </article>`;
       })
       .join("");
+    kenarIsaretle();
+  }
+
+  // Kenar notu halkası (2026-10-29, kullanıcı onaylı öneri): notu olan yazının kartında mavi kesik daire
+  // (yalnız sahibine; sayı ya da içerik söylemez) ve listenin başında "Notlarım" süzgeci. Not yoksa hiçbir iz yok.
+  function kenarIsaretle() {
+    kenarVerisi().then((v) => {
+      const notlar = (v && v.notlar) || [];
+      if (!notlar.length || !articlesList) return;
+      const urller = new Set(notlar.map((n) => n.yazi));
+      const etiket = tt({ tr: "Kenar notum var", en: "I have a margin note", pt: "Tenho uma nota à margem" });
+      articlesList.querySelectorAll(".daphne-profile-card").forEach((kart) => {
+        const dugme = kart.querySelector("[data-okuma]");
+        const a = dugme ? siraliYazilar[Number(dugme.dataset.okuma)] : null;
+        if (!a || !urller.has(a.url) || kart.classList.contains("daphne-profile-card--kenar")) return;
+        kart.classList.add("daphne-profile-card--kenar");
+        const meta = kart.querySelector(".daphne-profile-card__meta");
+        if (meta) meta.insertAdjacentHTML("beforeend", `<span class="daphne-kenar-halka" role="img" aria-label="${etiket}" title="${etiket}"></span>`);
+      });
+      let suz = document.getElementById("daphne-kenar-suzgec");
+      if (!suz) {
+        suz = document.createElement("button");
+        suz.type = "button"; suz.id = "daphne-kenar-suzgec"; suz.className = "daphne-kenar-suzgec";
+        suz.setAttribute("aria-pressed", "false");
+        suz.addEventListener("click", () => {
+          const ac = suz.getAttribute("aria-pressed") !== "true";
+          suz.setAttribute("aria-pressed", ac ? "true" : "false");
+          articlesList.classList.toggle("daphne-profile-articles-grid--kenar", ac);
+        });
+        articlesList.parentNode.insertBefore(suz, articlesList);
+      }
+      suz.innerHTML = `<span class="daphne-kenar-halka" aria-hidden="true"></span>${tt({ tr: "Notlarım", en: "My notes", pt: "As minhas notas" })}`;
+    });
   }
 
   function drag(sim) {

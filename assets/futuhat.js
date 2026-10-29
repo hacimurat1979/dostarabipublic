@@ -1277,6 +1277,14 @@
         </details>`;
       })
       .join("");
+    // Okuma izi: yazarın Gönül yazısı bağladığı kısımların çipi mürekkep halka alır (graph-utils gonulIzleri).
+    window.DostGraphUtils.gonulIzleri().then((m) => {
+      Object.keys(m || {}).forEach((k) => {
+        const mt = k.match(/^\/futuhat\/([^/]+)\/$/);
+        const c = mt && partsEl.querySelector('.futuhat-part-chip[data-id="' + mt[1] + '"]');
+        if (c) c.classList.add("futuhat-part-chip--gonul");
+      });
+    });
     // Son cildi hardcode etmek yerine hesapla -- her yeni cilt eklendiğinde
     // bu metnin bayat kalmasına yol açan, iki kez tekrarlanmış bir hataydı
     // (bkz. research/anlayis-evrimi/MISUNDERSTANDINGS.md #4).
@@ -1587,6 +1595,7 @@
 
       ${okumaGezintiHtml(part)}
     `;
+    window.DostGraphUtils.gonulIzi("/futuhat/" + part.id + "/", articleEl.querySelector(".futuhat-hero"));
     window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), (id) => {
       window.dostTrack && window.dostTrack("kitap_bolumu_acildi", { part: id, kaynak: "gezinti" });
       activatePart(id);

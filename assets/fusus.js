@@ -235,6 +235,13 @@
     listEl.querySelectorAll("button[data-id]").forEach(function (b) {
       b.addEventListener("click", function () { kullaniciSec(b.dataset.id); });
     });
+    window.DostGraphUtils.gonulIzleri().then(function (m) {
+      Object.keys(m || {}).forEach(function (k) {
+        var mt = k.match(/^\/fusus\/([^/]+)\/$/);
+        var c = mt && listEl.querySelector('.fusus-chip[data-id="' + mt[1] + '"]');
+        if (c) c.classList.add("fusus-chip--gonul");
+      });
+    });
     window.DostGraphUtils.cipOrtala(listEl);
   }
 
@@ -405,6 +412,7 @@
     articleEl.dataset.dostDosya = "data/ibn-arabi/fusus-atlas.json";
     articleEl.dataset.dostKaynak = f.id;
     articleEl.innerHTML = html;
+    window.DostGraphUtils.gonulIzi("/fusus/" + f.id + "/", articleEl.querySelector(".fusus-article__head"));
     window.DostGraphUtils.wireReadingNav(articleEl.querySelector(".okuma-gezinti"), function (id) { kullaniciSec(id); });
     mountHelixBlocks(articleEl, helixes, captions);
     // Üç ses: Dost'un doğrudan sözü ayrı dokuda; değinince künye

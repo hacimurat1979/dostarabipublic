@@ -2134,7 +2134,31 @@ window.DostGraphUtils = (function () {
     return String(s == null ? "" : s).replace(/<\/?(?:em|strong)>/g, "").replace(/\n\n/g, " ");
   }
 
-  return { zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, daireAcilis, gezildi, defterOdagi, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  // Okuma izi (2026-10-29, kullanıcı onaylı öneri): Gönül yazarının BİR KISMA kendisinin bağladığı yazılar
+  // (data/gonul/izler.json, scripts/gonul-uret.py üretir; bağ yoksa boş). Site hiçbir bağı kendisi kurmaz.
+  let gonulIzSozu = null;
+  function gonulIzleri() {
+    if (!gonulIzSozu) gonulIzSozu = fetchJson("data/gonul/izler.json").catch(() => ({}));
+    return gonulIzSozu;
+  }
+  // yol: "/futuhat/c10k125/"; host: kısmın başlık öğesi. Bağ varsa başlığın altına mühürlü tek satır.
+  function gonulIzi(yol, host) {
+    if (!host) return;
+    gonulIzleri().then((m) => {
+      const l = m && m[yol];
+      if (!l || !l.length || !host.isConnected || host.querySelector(".gonul-izi")) return;
+      const lang = (window.DostI18n && window.DostI18n.getLang && window.DostI18n.getLang()) || "tr";
+      const pick = (o) => (o && (o[lang] || o.tr)) || "";
+      const on = (window.__dostRouteBase || "") + "/gonul/" + (lang === "tr" ? "" : lang + "/");
+      const et = { tr: "Gönül Defteri'nde bu kısımla ilgili yazı", en: "Heart Notebook entry linked to this part", pt: "Entrada do Caderno do Coração ligada a esta parte" }[lang] || "";
+      const p = document.createElement("p");
+      p.className = "gonul-izi";
+      p.innerHTML = '<span class="gonul-izi__muhur" aria-hidden="true"></span><span>' + escapeHtml(et) + ": "
+        + l.map((y) => '<a href="' + on + escapeHtml(y.id) + '/">' + escapeHtml(pick(y.baslik)) + " ›</a>").join(" · ") + "</span>";
+      host.appendChild(p);
+    });
+  }
+  return { gonulIzleri, gonulIzi, zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, daireAcilis, gezildi, defterOdagi, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

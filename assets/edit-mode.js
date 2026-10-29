@@ -492,6 +492,7 @@
     } else {
       entry.sayfa_baslik = document.title;
       if (o.yazi) { entry.yazi = o.yazi; entry.yazi_baslik = o.yaziBaslik; }
+      if (o.kaynak) { entry.dosya = o.kaynak.dosya; entry.kayit = o.kaynak.kayit; entry.kaynak_baslik = o.kaynak.baslik; }
     }
     if (o.image) {
       try { await gorselYaz(entry.id, o.image); entry.gorsel = entry.id; }
@@ -507,8 +508,9 @@
     q.push(entry);
     if (!setQueue(q) && entry.gorsel) gorselSil(entry.gorsel).catch(() => {});
   }
-  function buildKendiNotModal(triggerEl) {
-    const dy = daphneYazilari();
+  function buildKendiNotModal(triggerEl, onayar) {
+    onayar = onayar || {};
+    const dy = onayar.tur === "gonul-taslagi" ? null : daphneYazilari();
     const modal = document.createElement("div");
     modal.className = "dost-shot-modal";
     const secenekler = dy ? dy.liste.map((a) =>
@@ -535,6 +537,11 @@
       '<button type="button" data-action="cancel">' + escapeHtml(ui({ tr: "Vazgeç", en: "Cancel", pt: "Cancelar" })) + "</button>" +
       '<button type="button" data-action="save" class="dost-shot-modal__save">' + escapeHtml(ui({ tr: "Kaydet", en: "Save", pt: "Guardar" })) + "</button>" +
       "</div></div>";
+    if (onayar.kaynak) {
+      // Kayda bağlı doğan not: başlığı göster (hangi kısım için yazıldığı görünsün)
+      const l = modal.querySelector(".dost-kendi__tur legend");
+      if (l) l.insertAdjacentHTML("afterend", '<p class="dost-kendi__kaynak">' + escapeHtml(onayar.kaynak.baslik) + "</p>");
+    }
     document.body.appendChild(modal);
     let currentImage = null;
     const preview = modal.querySelector(".dost-shot-modal__preview");
@@ -581,6 +588,7 @@
       const secili = yaziSec && yaziSec.value ? dy.liste.find((a) => a.url === yaziSec.value) : null;
       const par = parseInt((modal.querySelector("#dost-kendi-par") || {}).value, 10);
       await kendiNotKaydet(t, {
+        kaynak: onayar.kaynak || null,
         metin: metin, image: currentImage,
         yazi: secili ? secili.url : "", yaziBaslik: secili ? secili.title : "",
         paragraf: t === "kenar-notu" && par > 0 ? par : 0,
@@ -680,6 +688,32 @@
 
   function scanAndMakeEditable() {
     document.querySelectorAll(PROSE_SELECTOR).forEach(makeEditable);
+    gonuleYazDugmeleri();
+  }
+
+  // "Gönül'e yaz" (2026-10-29, kullanıcı onaylı öneri): @revise açıkken, kaynağı bilinen her okuma
+  // kartının (data-dost-dosya + data-dost-kaynak) başlığının yanında mürekkep halkalı küçük düğme.
+  // Not o kayda bağlı doğar (dosya + kayıt + sayfa); yazar listeden seçmez. Yalnız kip açıkken vardır.
+  function gonuleYazDugmeleri() {
+    document.querySelectorAll("article[data-dost-dosya][data-dost-kaynak]").forEach((kart) => {
+      if (kart.querySelector(".dost-gonul-yaz")) return;
+      if (/\/gonul\//.test(location.pathname)) return;      // Gönül sayfalarının kendisinde anlamsız
+      const baslik = kart.querySelector("h1, h2, h3");
+      if (!baslik) return;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "dost-gonul-yaz";
+      const et = ui({ tr: "Gönül'e yaz", en: "Write to the notebook", pt: "Escrever no caderno" });
+      b.innerHTML = '<span class="dost-gonul-yaz__muhur" aria-hidden="true"></span>' + escapeHtml(et);
+      b.setAttribute("aria-label", et + ": " + (baslik.textContent || "").trim());
+      b.addEventListener("click", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        buildKendiNotModal(b, {
+          tur: "gonul-taslagi",
+          kaynak: { dosya: kart.dataset.dostDosya, kayit: kart.dataset.dostKaynak, baslik: (baslik.textContent || "").trim() },
+        });
+      });
+      baslik.insertAdjacentElement("afterend", b);
+    });
   }
 
   // Bulgudan kuyruğa (durus-kontrol.js / tahkik-tarama.js): "düzeltme
@@ -865,7 +899,7 @@
   function entryTitle(e, i) {
     const where = (e.url || "").replace(/^.*\/(?=[^/]*$)/, "") || "/";
     if (e.type === "kenar-notu") return `${i + 1}. ✍️ ${escapeHtml(ui({ tr: "kenar notu", en: "margin note", pt: "nota à margem" }))} · ${escapeHtml(e.yazi_baslik || e.yazi || "")}`;
-    if (e.type === "gonul-taslagi") return `${i + 1}. ✍️ ${escapeHtml(ui({ tr: "Gönül Defteri taslağı", en: "Heart Notebook draft", pt: "Rascunho do Caderno do Coração" }))}`;
+    if (e.type === "gonul-taslagi") return `${i + 1}. ✍️ ${escapeHtml(ui({ tr: "Gönül Defteri taslağı", en: "Heart Notebook draft", pt: "Rascunho do Caderno do Coração" }))}${e.kaynak_baslik ? " · " + escapeHtml(e.kaynak_baslik) : ""}`;
     if (e.type === "visual-note") return `${i + 1}. 🖌️ ${escapeHtml(ui({ tr: "görsel not", en: "visual note", pt: "nota visual" }))} · ${escapeHtml(where)}`;
     return `${i + 1}. ✎ ${escapeHtml(e.heading || where)}`;
   }
