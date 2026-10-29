@@ -208,7 +208,7 @@
           <g id="birlesikMapsG"></g>
           <g id="birlesikEtiketG"></g>
         </svg>
-        <p class="cizim-birlesik__ipucu">${t({tr:"Yakla\u015Fmak i\xE7in: Ctrl (\u2318) + tekerlek, iki parmak ya da s\xFCrg\xFC.",en:"To come closer: Ctrl (\u2318) + scroll, two fingers, or the slider.",pt:"Para se aproximar: Ctrl (\u2318) + roda, dois dedos ou o controlo deslizante."})}</p>
+        <p class="cizim-birlesik__ipucu">${t({tr:"Yakla\u015Fmak i\xE7in: Ctrl (\u2318) + tekerlek, iki parmak ya da s\xFCrg\xFC.",en:"To come closer: Ctrl (\u2318) + scroll, two fingers, or the slider.",pt:"Para se aproximar: Ctrl (\u2318) + roda, dois dedos ou o controle deslizante."})}</p>
         <div class="cizim-birlesik__controls">
           <div class="cizim-birlesik__quick">
             <button type="button" class="cizim-birlesik__btn" id="birlesikMergeBtn">${t({tr:"Tek Haritada Birle\u015Ftir",en:"Merge into One Map",pt:"Fundir num S\xF3 Mapa"})}</button>
