@@ -1,298 +1,56 @@
-// Hocalar — İbnü'l-Arabî'nin Rûhu'l-kuds'ta andığı 55 hocadan son ikisi,
-// ikisi de kadın (docs/icerik-yol-haritasi.md D6).
-//
-// NEDEN BU BİÇİM. Basit bir liste-panel iskeleti, ama iki uzun PORTRE
-// taşıyor -- her biri birden fazla doğrudan alıntı içeriyor (İbnü'l-Arabî'nin
-// kendi sözleri, Austin'in çevirisinden). Bu yüzden panel bir "durum" değil
-// bir "anlatı" gösteriyor; alıntılar sırayla, bağlamlarıyla birlikte.
-window.__hocalarApp = (function () {
-  "use strict";
-
-  const I18n = window.DostI18n;
-  const GU = window.DostGraphUtils;
-
-  const wrapEl = document.getElementById("hocalar-wrap");
-  const listEl = document.getElementById("hocalar-list");
-  const digerEl = document.getElementById("hocalar-diger");
-  const detailPanel = document.getElementById("detail-panel");
-  const detailContent = document.getElementById("detail-content");
-
-  if (!wrapEl || !listEl) return { activate() {}, onLangChange() {}, goToNode() {} };
-
-  const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
-
-  let data = null;
-  let hocalar = [];
-  let focusId = null;
-
-  function alintiHtml(a) {
-    const baglam = a.baglam ? `<p class="hoca-alinti__baglam">${tt(a.baglam)}</p>` : "";
-    return `<blockquote class="hoca-alinti">
-      <p class="hoca-alinti__metin">${tt(a.metin)}</p>
-      ${baglam}
+window.__hocalarApp=(function(){"use strict";const T=window.DostI18n,k=window.DostGraphUtils,j=document.getElementById("hocalar-wrap"),$=document.getElementById("hocalar-list"),_=document.getElementById("hocalar-diger"),h=document.getElementById("detail-panel"),z=document.getElementById("detail-content");if(!j||!$)return{activate(){},onLangChange(){},goToNode(){}};const e=T.pick3;let d=null,c=[],u=null;function E(a){const t=a.baglam?`<p class="hoca-alinti__baglam">${e(a.baglam)}</p>`:"";return`<blockquote class="hoca-alinti">
+      <p class="hoca-alinti__metin">${e(a.metin)}</p>
+      ${t}
       <cite class="hoca-alinti__kaynak">${a.kaynak.eser}, s. ${a.kaynak.sayfa}</cite>
-    </blockquote>`;
-  }
-
-  function kaynaklarHtml(list) {
-    return list.map((k) => {
-      const yil = k.yil ? ", " + k.yil : "";
-      const not = k.not ? ` <span class="bilmiyoruz-madde__kaynak-not">— ${k.not}</span>` : "";
-      return `<li class="bilmiyoruz-madde__kaynak">${k.yazar}, <em>${k.eser}</em>${yil}${not}</li>`;
-    }).join("");
-  }
-
-  function panelGoster(d) {
-    // Seçim adrese yazılır (/hocalar/<id>): Paylaş düğmesi location.href'i
-    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
-    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
-    if (window.__dostNav) window.__dostNav.setHash("hocalar", String(d.id));
-    focusId = d.id;
-    // 2026-08-09 kullanıcı geri bildirimi: başka bir akademik site "Şems
-    // hakkında şunları biliyoruz" der, Dostarabi "Dost onu nasıl anlatıyor?"
-    // diyebilmeli -- bu yüzden "Kendi ağzından" artık diğer bölümlerle aynı
-    // ağırlıkta bir alt başlık değil, kendi görsel sınıfıyla (.hoca-sozler-
-    // baslik) daha baskın; alıntılar da kendi sarmalayıcısında (.hoca-
-    // sozler) daha ferah. Akademik kaynak listesi ise tam tersi yönde
-    // sessizleşiyor -- eser-agi.js'teki aynı <details> deseni.
-    detailContent.innerHTML = `
-      <p class="detail-eyebrow">${tt(d.konum)}
-        <span class="hoca-sira-rozet">${d.sira}</span></p>
-      <h2 class="detail-title">${tt(d.ad)}</h2>
-      <p class="hoca-kimlik">${tt(d.kimlik)}</p>
-      <div class="detail-block detail-block--soru"><p>${tt(d.ozet)}</p></div>
-      <p class="hoca-sozler-baslik">${tt({ tr: "Kendi ağzından", en: "In his own words", pt: "Nas suas próprias palavras" })}</p>
-      <div class="hoca-sozler">${d.alintilar.map(alintiHtml).join("")}</div>
+    </blockquote>`}function B(a){return a.map(t=>{const i=t.yil?", "+t.yil:"",n=t.not?` <span class="bilmiyoruz-madde__kaynak-not">\u2014 ${t.not}</span>`:"";return`<li class="bilmiyoruz-madde__kaynak">${t.yazar}, <em>${t.eser}</em>${i}${n}</li>`}).join("")}function p(a){window.__dostNav&&window.__dostNav.setHash("hocalar",String(a.id)),u=a.id,z.innerHTML=`
+      <p class="detail-eyebrow">${e(a.konum)}
+        <span class="hoca-sira-rozet">${a.sira}</span></p>
+      <h2 class="detail-title">${e(a.ad)}</h2>
+      <p class="hoca-kimlik">${e(a.kimlik)}</p>
+      <div class="detail-block detail-block--soru"><p>${e(a.ozet)}</p></div>
+      <p class="hoca-sozler-baslik">${e({tr:"Kendi a\u011Fz\u0131ndan",en:"In his own words",pt:"Nas suas pr\xF3prias palavras"})}</p>
+      <div class="hoca-sozler">${a.alintilar.map(E).join("")}</div>
       <details class="eser-agi-kaynak-detay hoca-kaynak-detay">
-        <summary>${tt({ tr: "Kaynaklar", en: "Sources", pt: "Fontes" })}</summary>
-        <ul class="bilmiyoruz-madde__kaynaklar">${kaynaklarHtml(d.kaynaklar)}</ul>
-      </details>`;
-    detailPanel.hidden = false;
-  }
-
-  function renderList() {
-    // 2026-08-10 denetim bulgusu (G32): sayfa başlıksız, doğrudan "54/55"
-    // numaralı kartla açılıyordu -- 55 hocadan neden yalnız ikisinin
-    // portresi olduğu görünmüyordu. Gerekçe zaten veride yazılıydı
-    // (hocalar.json "not" alanı, üç dilde, duruşa uygun: "okumadığımızı
-    // söylemeyi tercih ettik") ama hiç ÇİZİLMİYORDU. Başlık + o not.
-    const giris = `<div class="hocalar-giris">
-        <h2 class="hocalar-giris__baslik">${tt({ tr: "Hocalar", en: "Teachers", pt: "Professores" })}</h2>
-        <p class="hocalar-giris__not">${tt(data.not)}</p>
-      </div>`;
-    listEl.innerHTML = giris + hocalar.map((d) => `<button class="hoca-satir" type="button" data-id="${d.id}">
-        <span class="hoca-satir__sira">${d.sira}</span>
+        <summary>${e({tr:"Kaynaklar",en:"Sources",pt:"Fontes"})}</summary>
+        <ul class="bilmiyoruz-madde__kaynaklar">${B(a.kaynaklar)}</ul>
+      </details>`,h.hidden=!1}function H(){const a=`<div class="hocalar-giris">
+        <h2 class="hocalar-giris__baslik">${e({tr:"Hocalar",en:"Teachers",pt:"Professores"})}</h2>
+        <p class="hocalar-giris__not">${e(d.not)}</p>
+      </div>`;$.innerHTML=a+c.map(t=>`<button class="hoca-satir" type="button" data-id="${t.id}">
+        <span class="hoca-satir__sira">${t.sira}</span>
         <span class="hoca-satir__govde">
-          <span class="hoca-satir__ad">${tt(d.ad)}</span>
-          <span class="hoca-satir__konum">${tt(d.konum)}</span>
+          <span class="hoca-satir__ad">${e(t.ad)}</span>
+          <span class="hoca-satir__konum">${e(t.konum)}</span>
         </span>
-      </button>`).join("");
-    listEl.querySelectorAll(".hoca-satir").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const d = hocalar.find((x) => x.id === btn.dataset.id);
-        if (d) panelGoster(d);
-      });
-    });
-  }
-
-  // 2026-08-09 (kullanıcı isteği): altısının (Şems, Fâtıma + dört diğeri)
-  // GERÇEK bağı -- hepsi Fütûhât'ın AYNI pasajında (s. 335), yıllar sonra,
-  // tek tek anılıyor. GORSEL_DIL.md'nin "davranışı resmet" ilkesi: altı
-  // nokta kendi başlarına durmuyor, hepsi o TEK kaynağa doğru yakınsıyor --
-  // iç içe çemberler DEĞİL (GORSEL_DIL.md yasağı), her nokta merkeze kendi
-  // çizgisiyle bağlanan bir yakınsama. Şems/Fâtıma'nın kendi portresi
-  // olduğu için tıklanabilir; diğer dördünün yalnız adı/yeri var (veri
-  // kendi notunda söylüyor: "her biri için ayrı bir kimlik/anlatı yok") --
-  // o yüzden onlar tıklanamaz, yalnız etiketli.
-  function vuslatSemasiHtml(dve) {
-    if (!dve || !dve.kisiler || !dve.kisiler.length) return "";
-    const kisiler = hocalar.slice(0, 2).concat(dve.kisiler);
-    const n = kisiler.length;
-    const cx = 160, cy = 148, r = 112;
-    const noktalar = kisiler.map((k, i) => {
-      const t = n === 1 ? 0.5 : i / (n - 1);
-      const a = Math.PI * (0.08 + t * 0.84);
-      const x = cx + r * Math.cos(a), y = cy - r * Math.sin(a);
-      return { ad: tt(k.ad), id: k.id, x, y, tiklanabilir: i < 2 };
-    });
-    const cizgiler = noktalar.map((p) =>
-      `<line class="hoca-vuslat__cizgi" x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${cx}" y2="${cy}" />`).join("");
-    // 2026-08-09 UI denetimi bulgusu (pa11y): rolsüz bir <g>'ye aria-label
-    // koymak axe'in aria-prohibited-attr kuralını ihliyor -- tıklanamayan
-    // dört nokta için <title> kullanılıyor (SVG'nin kendi, her zaman geçerli
-    // erişilebilir-ad yöntemi); yalnız GERÇEKTEN interaktif olan ikisi
-    // role="button" TAŞIDIĞI için aria-label alabiliyor. Dış <svg>'nin
-    // role="img" olması da "interaktif kontrol img içine yerleşmez" kuralını
-    // ihliyordu (içeride iki gerçek düğme var) -- kaldırıldı, aria-label
-    // SVG'nin kendi örtük rolüyle (graphics-document) zaten geçerli.
-    const noktaEl = noktalar.map((p, i) => {
-      const kisaAd = p.ad.length > 15 ? p.ad.slice(0, 14) + "…" : p.ad;
-      // Komşu yaylardaki etiketler yatayda birbirine yakın düşebiliyor (6
-      // nokta, dar bir yay) -- çift/tek indeksi iki farklı uzaklığa
-      // ayırmak (eser-agi/seyahat-atlasi'nin kullandığı "iki sıraya diz"
-      // ile aynı fikir) art arda gelen ikisinin üst üste binmesini önlüyor.
-      const uzaklik = i % 2 === 0 ? 10 : 24;
-      const etiketY = p.y < cy - 10 ? p.y - uzaklik : p.y + 18;
-      const interaktif = p.tiklanabilir ? ` data-id="${p.id}" tabindex="0" role="button" aria-label="${p.ad}"` : "";
-      const baslik = p.tiklanabilir ? "" : `<title>${p.ad}</title>`;
-      return `<g class="hoca-vuslat__nokta${p.tiklanabilir ? " hoca-vuslat__nokta--tiklanabilir" : ""}"${interaktif}>
-        ${baslik}<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5"></circle>
-        <text x="${p.x.toFixed(1)}" y="${etiketY.toFixed(1)}" text-anchor="middle">${kisaAd}</text>
-      </g>`;
-    }).join("");
-    return `<svg class="hoca-vuslat" viewBox="0 0 320 190" aria-label="${tt({
-      tr: "Altısı da Fütûhât-ı Mekkiyye'nin aynı bölümünde (s. 335) bir arada anılıyor",
-      en: "All six are named together in the same chapter of the Futuhat al-Makkiyya (p. 335)",
-      pt: "Todos os seis são nomeados juntos no mesmo capítulo das Futuhat al-Makkiyya (p. 335)" })}">
-      ${cizgiler}
-      <circle class="hoca-vuslat__merkez" cx="${cx}" cy="${cy}" r="7"></circle>
-      <text class="hoca-vuslat__merkez-etiket" x="${cx}" y="${cy + 24}" text-anchor="middle">${tt({ tr: "Fütûhât, s. 335", en: "Futuhat, p. 335", pt: "Futuhat, p. 335" })}</text>
-      ${noktaEl}
-    </svg>`;
-  }
-
-  function wireVuslatSemasi() {
-    if (!digerEl) return;
-    digerEl.querySelectorAll(".hoca-vuslat__nokta--tiklanabilir").forEach((el) => {
-      const git = () => {
-        const d = hocalar.find((x) => x.id === el.dataset.id);
-        if (d) panelGoster(d);
-      };
-      el.addEventListener("click", git);
-      el.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); git(); } });
-    });
-  }
-
-  // Fütûhât s.335'in Şems/Fâtıma'yla birlikte andığı dört kişi -- Rûhu'l-kuds'un
-  // 55 hocalık listesinden değiller, o yüzden hoca-satir/panelGoster akışına
-  // değil, sade ve tıklanamaz bir listeye giriyorlar (bkz. schema notu).
-  function renderDiger() {
-    if (!digerEl) return;
-    let html = "";
-    const dve = data.digerVeraEhli;
-    if (dve) {
-      const satirlar = dve.kisiler.map((k) =>
-        `<li class="hocalar-diger__satir"><strong>${tt(k.ad)}</strong> — ${tt(k.konum)}</li>`).join("");
-      html += `
-        <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Fütûhât'ta da adı geçen diğerleri", en: "Others also named in the Futuhat", pt: "Outros também nomeados nas Futuhat" })}</p>
-        <p class="hocalar-diger__not">${tt(dve.not)}</p>
-        ${vuslatSemasiHtml(dve)}
-        <ul class="hocalar-diger__liste">${satirlar}</ul>
-        ${alintiHtml(dve.paylasilanNot)}`;
-    }
-    // Fütûhât'ın BAŞKA bölümlerinde tek cümlelik "üstad" izleri -- her biri
-    // ayrı bir bölümden geldiği için digerVeraEhli'nin listesine karışmıyor.
-    const dba = data.digerBolumlerdeAnilanlar;
-    if (dba && dba.length) {
-      const kartlar = dba.map((k) =>
-        `<div class="hocalar-diger__satir">
-           <strong>${tt(k.ad)}</strong>
-           <p class="hoca-alinti__baglam">${tt(k.not)}</p>
-           <cite class="hoca-alinti__kaynak">${k.kaynak.eser}, s. ${k.kaynak.sayfa}</cite>
-         </div>`).join("");
-      html += `
-        <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Fütûhât'ın başka bölümlerinde geçen izler", en: "Traces in other chapters of the Futuhat", pt: "Vestígios noutros capítulos das Futuhat" })}</p>
-        <div class="hocalar-diger__liste">${kartlar}</div>`;
-    }
-    // Nesebü'l-Hırka (Hırka Kitabı) silsile bağlantıları -- Rûhu'l-kuds
-    // portresinden ayrı bir eksen: 'hoca-talebe' değil 'hırka veren-alan'
-    // sözleşmesi (bkz. hocalar.schema.json hirkaSilsilesi tanımı).
-    const hs = data.hirkaSilsilesi;
-    if (hs && hs.kisiler && hs.kisiler.length) {
-      const rolRozet = { "hirka-veren": { tr: "hırka veren", en: "gave the robe", pt: "deu o manto" },
-                         "hirka-alan":  { tr: "hırka alan",  en: "received the robe", pt: "recebeu o manto" } };
-      const kartlar = hs.kisiler.map((k) => {
-        const rEt = rolRozet[k.rol] || rolRozet["hirka-veren"];
-        const yilYer = (k.yil_hicri ? "h." + k.yil_hicri + ", " : "") + tt(k.yer);
-        return `<div class="hocalar-diger__satir">
-          <strong>${tt(k.ad)}</strong>
-          <span class="hocalar-diger__rozet hocalar-diger__rozet--${k.rol}">${tt(rEt)}</span>
-          <span class="hocalar-diger__meta"> — ${yilYer}</span>
-          <p class="hoca-alinti__baglam">${tt(k.not)}</p>
-          <cite class="hoca-alinti__kaynak">${k.kaynak.eser}, ${k.kaynak.sayfa}</cite>
-        </div>`;
-      }).join("");
-      html += `
-        <p class="detail-eyebrow detail-eyebrow--section">${tt({ tr: "Hırka silsilesi (Nesebü'l-Hırka'dan)", en: "Chain of the robe (from Nesebü'l-Hırka)", pt: "Cadeia do manto (do Nesebü'l-Hırka)" })}</p>
-        <p class="hocalar-diger__not">${tt(hs.not)}</p>
-        <div class="hocalar-diger__liste">${kartlar}</div>`;
-    }
-    digerEl.innerHTML = html;
-    wireVuslatSemasi();
-  }
-
-  function girisPaneli() {
-    focusId = null;
-    detailContent.innerHTML = `
-      <p class="detail-eyebrow">${tt({ tr: "Hocalar", en: "Teachers", pt: "Mestres" })}</p>
-      <h2 class="detail-title">${tt({ tr: "Listenin sonundaki iki isim", en: "The last two names on the list", pt: "Os dois últimos nomes da lista" })}</h2>
-      <div class="detail-block detail-block--soru"><p>${tt(data.not)}</p></div>`;
-    detailPanel.hidden = false;
-  }
-
-  let yuklendi = false;
-  function yukle() {
-    if (yuklendi) return Promise.resolve();
-    const base = window.__dostRouteBase || "";
-    const url = (base ? base + "/" : "") + "data/ibn-arabi/hocalar.json";
-    return GU.fetchJson(url).then((d) => {
-      data = d;
-      hocalar = d.hocalar || [];
-      yuklendi = true;
-      renderList();
-      renderDiger();
-    });
-  }
-
-  let baglandi = false;
-  function baglaBirKez() {
-    if (baglandi) return;
-    baglandi = true;
-    if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
-    GU.registerStepBack("hocalar-wrap", () => {
-      if (focusId) {
-        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
-        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
-        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
-        girisPaneli();
-        detailPanel.hidden = true;
-        if (window.__dostNav) window.__dostNav.setHash("hocalar");
-        return true;
-      }
-      return false;
-    });
-  }
-
-  return {
-    activate() {
-      // 2026-08-06 kullanıcı bulgusu: görünüm ilk açıldığında detay paneli
-      // otomatik açılıyordu (girisPaneli() burada çağrılıyordu) -- oysa
-      // ETKILESIM_DILI.md'nin "bağlanmamış düğme" ilkesinin tersi bir
-      // sorun bu: kullanıcı hiçbir şey seçmeden panel zaten açık geliyordu.
-      // Artık veri sessizce yükleniyor, panel yalnız bir kayıt seçildiğinde
-      // açılıyor.
-      baglaBirKez();
-      yukle().catch(() => {
-        if (window.DostViewStatus) window.DostViewStatus.showError("hocalar-wrap", () => window.__hocalarApp.activate());
-      });
-    },
-    onLangChange() {
-      if (!yuklendi) return;
-      renderList();
-      renderDiger();
-      if (focusId) {
-        const d = hocalar.find((x) => x.id === focusId);
-        if (d) panelGoster(d); else if (!detailPanel.hidden) girisPaneli();
-      } else if (!detailPanel.hidden) girisPaneli();
-    },
-    goToNode(id) {
-      this.activate();
-      yukle().then(() => {
-        const d = hocalar.find((x) => x.id === id);
-        if (d) panelGoster(d);
-        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
-        else if (id && window.__dostNav) window.__dostNav.setHash("hocalar");
-      });
-    },
-  };
-})();
+      </button>`).join(""),$.querySelectorAll(".hoca-satir").forEach(t=>{t.addEventListener("click",()=>{const i=c.find(n=>n.id===t.dataset.id);i&&p(i)})})}function I(a){if(!a||!a.kisiler||!a.kisiler.length)return"";const t=c.slice(0,2).concat(a.kisiler),i=t.length,n=160,l=148,o=112,r=t.map((s,y)=>{const v=i===1?.5:y/(i-1),m=Math.PI*(.08+v*.84),x=n+o*Math.cos(m),F=l-o*Math.sin(m);return{ad:e(s.ad),id:s.id,x,y:F,tiklanabilir:y<2}}),b=r.map(s=>`<line class="hoca-vuslat__cizgi" x1="${s.x.toFixed(1)}" y1="${s.y.toFixed(1)}" x2="${n}" y2="${l}" />`).join(""),w=r.map((s,y)=>{const v=s.ad.length>15?s.ad.slice(0,14)+"\u2026":s.ad,m=y%2===0?10:24,x=s.y<l-10?s.y-m:s.y+18,F=s.tiklanabilir?` data-id="${s.id}" tabindex="0" role="button" aria-label="${s.ad}"`:"",D=s.tiklanabilir?"":`<title>${s.ad}</title>`;return`<g class="hoca-vuslat__nokta${s.tiklanabilir?" hoca-vuslat__nokta--tiklanabilir":""}"${F}>
+        ${D}<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="5"></circle>
+        <text x="${s.x.toFixed(1)}" y="${x.toFixed(1)}" text-anchor="middle">${v}</text>
+      </g>`}).join("");return`<svg class="hoca-vuslat" viewBox="0 0 320 190" aria-label="${e({tr:"Alt\u0131s\u0131 da F\xFCt\xFBh\xE2t-\u0131 Mekkiyye'nin ayn\u0131 b\xF6l\xFCm\xFCnde (s. 335) bir arada an\u0131l\u0131yor",en:"All six are named together in the same chapter of the Futuhat al-Makkiyya (p. 335)",pt:"Todos os seis s\xE3o nomeados juntos no mesmo cap\xEDtulo das Futuhat al-Makkiyya (p. 335)"})}">
+      ${b}
+      <circle class="hoca-vuslat__merkez" cx="${n}" cy="${l}" r="7"></circle>
+      <text class="hoca-vuslat__merkez-etiket" x="${n}" y="${l+24}" text-anchor="middle">${e({tr:"F\xFCt\xFBh\xE2t, s. 335",en:"Futuhat, p. 335",pt:"Futuhat, p. 335"})}</text>
+      ${w}
+    </svg>`}function S(){_&&_.querySelectorAll(".hoca-vuslat__nokta--tiklanabilir").forEach(a=>{const t=()=>{const i=c.find(n=>n.id===a.dataset.id);i&&p(i)};a.addEventListener("click",t),a.addEventListener("keydown",i=>{(i.key==="Enter"||i.key===" ")&&(i.preventDefault(),t())})})}function N(){if(!_)return;let a="";const t=d.digerVeraEhli;if(t){const l=t.kisiler.map(o=>`<li class="hocalar-diger__satir"><strong>${e(o.ad)}</strong> \u2014 ${e(o.konum)}</li>`).join("");a+=`
+        <p class="detail-eyebrow detail-eyebrow--section">${e({tr:"F\xFCt\xFBh\xE2t'ta da ad\u0131 ge\xE7en di\u011Ferleri",en:"Others also named in the Futuhat",pt:"Outros tamb\xE9m nomeados nas Futuhat"})}</p>
+        <p class="hocalar-diger__not">${e(t.not)}</p>
+        ${I(t)}
+        <ul class="hocalar-diger__liste">${l}</ul>
+        ${E(t.paylasilanNot)}`}const i=d.digerBolumlerdeAnilanlar;if(i&&i.length){const l=i.map(o=>`<div class="hocalar-diger__satir">
+           <strong>${e(o.ad)}</strong>
+           <p class="hoca-alinti__baglam">${e(o.not)}</p>
+           <cite class="hoca-alinti__kaynak">${o.kaynak.eser}, s. ${o.kaynak.sayfa}</cite>
+         </div>`).join("");a+=`
+        <p class="detail-eyebrow detail-eyebrow--section">${e({tr:"F\xFCt\xFBh\xE2t'\u0131n ba\u015Fka b\xF6l\xFCmlerinde ge\xE7en izler",en:"Traces in other chapters of the Futuhat",pt:"Vest\xEDgios noutros cap\xEDtulos das Futuhat"})}</p>
+        <div class="hocalar-diger__liste">${l}</div>`}const n=d.hirkaSilsilesi;if(n&&n.kisiler&&n.kisiler.length){const l={"hirka-veren":{tr:"h\u0131rka veren",en:"gave the robe",pt:"deu o manto"},"hirka-alan":{tr:"h\u0131rka alan",en:"received the robe",pt:"recebeu o manto"}},o=n.kisiler.map(r=>{const b=l[r.rol]||l["hirka-veren"],w=(r.yil_hicri?"h."+r.yil_hicri+", ":"")+e(r.yer);return`<div class="hocalar-diger__satir">
+          <strong>${e(r.ad)}</strong>
+          <span class="hocalar-diger__rozet hocalar-diger__rozet--${r.rol}">${e(b)}</span>
+          <span class="hocalar-diger__meta"> \u2014 ${w}</span>
+          <p class="hoca-alinti__baglam">${e(r.not)}</p>
+          <cite class="hoca-alinti__kaynak">${r.kaynak.eser}, ${r.kaynak.sayfa}</cite>
+        </div>`}).join("");a+=`
+        <p class="detail-eyebrow detail-eyebrow--section">${e({tr:"H\u0131rka silsilesi (Neseb\xFC'l-H\u0131rka'dan)",en:"Chain of the robe (from Neseb\xFC'l-H\u0131rka)",pt:"Cadeia do manto (do Neseb\xFC'l-H\u0131rka)"})}</p>
+        <p class="hocalar-diger__not">${e(n.not)}</p>
+        <div class="hocalar-diger__liste">${o}</div>`}_.innerHTML=a,S()}function g(){u=null,z.innerHTML=`
+      <p class="detail-eyebrow">${e({tr:"Hocalar",en:"Teachers",pt:"Mestres"})}</p>
+      <h2 class="detail-title">${e({tr:"Listenin sonundaki iki isim",en:"The last two names on the list",pt:"Os dois \xFAltimos nomes da lista"})}</h2>
+      <div class="detail-block detail-block--soru"><p>${e(d.not)}</p></div>`,h.hidden=!1}let f=!1;function L(){if(f)return Promise.resolve();const a=window.__dostRouteBase||"",t=(a?a+"/":"")+"data/ibn-arabi/hocalar.json";return k.fetchJson(t).then(i=>{d=i,c=i.hocalar||[],f=!0,H(),N()})}let M=!1;function A(){M||(M=!0,k.setupDetailPanelFocus&&k.setupDetailPanelFocus(),k.registerStepBack("hocalar-wrap",()=>u?(g(),h.hidden=!0,window.__dostNav&&window.__dostNav.setHash("hocalar"),!0):!1))}return{activate(){A(),L().catch(()=>{window.DostViewStatus&&window.DostViewStatus.showError("hocalar-wrap",()=>window.__hocalarApp.activate())})},onLangChange(){if(f)if(H(),N(),u){const a=c.find(t=>t.id===u);a?p(a):h.hidden||g()}else h.hidden||g()},goToNode(a){this.activate(),L().then(()=>{const t=c.find(i=>i.id===a);t?p(t):a&&window.__dostNav&&window.__dostNav.setHash("hocalar")})}}})();

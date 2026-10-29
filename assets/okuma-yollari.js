@@ -1,141 +1,16 @@
-/**
- * Hakkında sayfasının dördüncü sekmesi: "Okuma Yolları" -- docs/icerik-
- * uretim-plani.md'nin "Kullanım 3" dediği içerik türü: her ana konu için
- * üç kademeli bir okuma sırası (bir makale, bir kitap, bir birincil metin).
- *
- * ADIM 4'te (2026-08-04 civarı) şema kurulmuş ve TEK bir örnek (vahdet-i
- * vücûd) yazılmıştı -- ama hiçbir sayfa bu veriyi okumuyordu, yani okuyucu
- * için görünmezdi (2026-08-09 taramasında bulundu). Bu dosya yalnız
- * SUNUYOR; yeni okuma yolu METNİ yazmıyor -- o, icerik-uretim-plani.md'nin
- * kendi kuralı gereği ("gerisini ben yazacağım") Murat'a ait.
- *
- * İki ayrı kaynak dosyası birleştiriliyor: "makale"/"kitap" kademeleri
- * data/ibn-arabi/kaynaklar-ozet.json'dan (docs/kaynaklar/*.yaml'ın kamuya
- * açık künye özeti -- kartların kendisi hiç yayımlanmıyor, bkz. scripts/
- * kaynak-ozet-uret.py), "birincil" kademesi ise data/ibn-arabi/eser-agi.
- * json'daki bir eserden (bkz. tools/schemas/okuma-yollari.schema.json).
- */
-window.__okumaYollariApp = (function () {
-  "use strict";
-  const I18n = window.DostI18n;
-  const GU = window.DostGraphUtils;
-
-  const contentEl = document.getElementById("okuma-yollari-content");
-
-  let data = null;
-  let kaynaklar = null;
-  let eserler = null;
-  let fetchPromise = null;
-
-  const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
-  function esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-
-  const KADEME_ETIKET = {
-    makale: { tr: "Makale", en: "Article", pt: "Artigo" },
-    kitap: { tr: "Kitap", en: "Book", pt: "Livro" },
-    birincil: { tr: "Birincil Kaynak", en: "Primary Source", pt: "Fonte Primária" },
-  };
-
-  function fetchData() {
-    if (data) return Promise.resolve(data);
-    if (fetchPromise) return fetchPromise;
-    if (window.DostViewStatus) window.DostViewStatus.showLoading("okuma-yollari-panel");
-    fetchPromise = Promise.all([
-      GU.fetchJson("data/ibn-arabi/okuma-yollari.json"),
-      GU.fetchJson("data/ibn-arabi/kaynaklar-ozet.json"),
-      GU.fetchJson("data/ibn-arabi/eser-agi.json"),
-    ]).then(([y, k, e]) => {
-      data = y;
-      kaynaklar = (k && k.kaynaklar) || {};
-      eserler = new Map((e && e.eserler || []).map((x) => [x.id, x]));
-      if (window.DostViewStatus) window.DostViewStatus.hide("okuma-yollari-panel");
-      return data;
-    }).catch((err) => {
-      console.error("okuma-yollari verisi yüklenemedi", err);
-      fetchPromise = null;
-      if (window.DostViewStatus) window.DostViewStatus.showError("okuma-yollari-panel", () => window.__okumaYollariApp.activate());
-      return null;
-    });
-    return fetchPromise;
-  }
-
-  // "makale"/"kitap": künye kaynaklar-ozet.json'dan. Yıl/yayıncı bilinmiyorsa
-  // (null) satırdan bırakılıyor -- var olmayan bir şey uydurulmuyor.
-  function kunyeSatiri(k) {
-    if (!k) return "";
-    const parcalar = [k.yazar, k.yil, k.yayinci].filter(Boolean);
-    return esc(parcalar.join(" — "));
-  }
-
-  function kademeHtml(basamak, i) {
-    // --okuma-yolu-sira: üç kademenin sırayla belirmesi için (bkz.
-    // style.css'teki okuma-yolu-durak-belir) -- bir yol yürünür, bir liste
-    // taranır; salt süs değil, "üç durak" çerçevesinin görsel karşılığı.
-    const sira = ` style="--okuma-yolu-sira: ${i}"`;
-    const etiket = esc(tt(KADEME_ETIKET[basamak.kademe]));
-    const neden = `<p class="okuma-yolu-kademe__neden">${esc(tt(basamak.neden))}</p>`;
-    if (basamak.kademe === "birincil") {
-      const eser = eserler.get(basamak.kaynak_id);
-      const baslik = eser ? esc(eser.eser) : esc(basamak.kaynak_id);
-      const kunye = eser
-        ? `${esc(tt(eser.sehir))} — ${eser.yil.hicri ? eser.yil.hicri + "/" : ""}${eser.yil.miladi}`
-        : "";
-      const link = eser
-        ? `<button type="button" class="okuma-yolu-kademe__git" data-view="eser-agi" data-id="${esc(eser.id)}">${esc(tt({
-            tr: "Eser Ağı'nda gör ↗", en: "See in the Works Timeline ↗", pt: "Ver na Linha do Tempo das Obras ↗",
-          }))}</button>`
-        : "";
-      return `<div class="okuma-yolu-kademe okuma-yolu-kademe--birincil"${sira}>
-        <span class="okuma-yolu-kademe__etiket">${etiket}</span>
-        <p class="okuma-yolu-kademe__baslik">${baslik}</p>
-        <p class="okuma-yolu-kademe__kunye">${kunye}</p>
-        ${neden}${link}
-      </div>`;
-    }
-    const k = kaynaklar[basamak.kaynak_id];
-    const baslik = k ? esc(k.baslik) : esc(basamak.kaynak_id);
-    const doi = k && k.doi
-      ? `<a class="okuma-yolu-kademe__doi" href="https://doi.org/${esc(k.doi)}" target="_blank" rel="noopener noreferrer">DOI ↗</a>` : "";
-    return `<div class="okuma-yolu-kademe"${sira}>
-      <span class="okuma-yolu-kademe__etiket">${etiket}</span>
-      <p class="okuma-yolu-kademe__baslik">${baslik}</p>
-      <p class="okuma-yolu-kademe__kunye">${kunyeSatiri(k)}</p>
-      ${neden}${doi}
-    </div>`;
-  }
-
-  function yolHtml(y) {
-    return `<article class="okuma-yolu">
-      <h2 class="okuma-yolu__konu">${esc(tt(y.konu))}</h2>
+window.__okumaYollariApp=(function(){"use strict";const _=window.DostI18n,d=window.DostGraphUtils,k=document.getElementById("okuma-yollari-content");let n=null,c=null,m=null,s=null;const r=_.pick3;function a(e){return String(e||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}const w={makale:{tr:"Makale",en:"Article",pt:"Artigo"},kitap:{tr:"Kitap",en:"Book",pt:"Livro"},birincil:{tr:"Birincil Kaynak",en:"Primary Source",pt:"Fonte Prim\xE1ria"}};function h(){return n?Promise.resolve(n):s||(window.DostViewStatus&&window.DostViewStatus.showLoading("okuma-yollari-panel"),s=Promise.all([d.fetchJson("data/ibn-arabi/okuma-yollari.json"),d.fetchJson("data/ibn-arabi/kaynaklar-ozet.json"),d.fetchJson("data/ibn-arabi/eser-agi.json")]).then(([e,o,t])=>(n=e,c=o&&o.kaynaklar||{},m=new Map((t&&t.eserler||[]).map(u=>[u.id,u])),window.DostViewStatus&&window.DostViewStatus.hide("okuma-yollari-panel"),n)).catch(e=>(console.error("okuma-yollari verisi y\xFCklenemedi",e),s=null,window.DostViewStatus&&window.DostViewStatus.showError("okuma-yollari-panel",()=>window.__okumaYollariApp.activate()),null)),s)}function f(e){if(!e)return"";const o=[e.yazar,e.yil,e.yayinci].filter(Boolean);return a(o.join(" \u2014 "))}function g(e,o){const t=` style="--okuma-yolu-sira: ${o}"`,u=a(r(w[e.kademe])),y=`<p class="okuma-yolu-kademe__neden">${a(r(e.neden))}</p>`;if(e.kademe==="birincil"){const i=m.get(e.kaynak_id),S=a(i?i.eser:e.kaynak_id),D=i?`${a(r(i.sehir))} \u2014 ${i.yil.hicri?i.yil.hicri+"/":""}${i.yil.miladi}`:"",E=i?`<button type="button" class="okuma-yolu-kademe__git" data-view="eser-agi" data-id="${a(i.id)}">${a(r({tr:"Eser A\u011F\u0131'nda g\xF6r \u2197",en:"See in the Works Timeline \u2197",pt:"Ver na Linha do Tempo das Obras \u2197"}))}</button>`:"";return`<div class="okuma-yolu-kademe okuma-yolu-kademe--birincil"${t}>
+        <span class="okuma-yolu-kademe__etiket">${u}</span>
+        <p class="okuma-yolu-kademe__baslik">${S}</p>
+        <p class="okuma-yolu-kademe__kunye">${D}</p>
+        ${y}${E}
+      </div>`}const l=c[e.kaynak_id],b=a(l?l.baslik:e.kaynak_id),v=l&&l.doi?`<a class="okuma-yolu-kademe__doi" href="https://doi.org/${a(l.doi)}" target="_blank" rel="noopener noreferrer">DOI \u2197</a>`:"";return`<div class="okuma-yolu-kademe"${t}>
+      <span class="okuma-yolu-kademe__etiket">${u}</span>
+      <p class="okuma-yolu-kademe__baslik">${b}</p>
+      <p class="okuma-yolu-kademe__kunye">${f(l)}</p>
+      ${y}${v}
+    </div>`}function $(e){return`<article class="okuma-yolu">
+      <h2 class="okuma-yolu__konu">${a(r(e.konu))}</h2>
       <div class="okuma-yolu__kademeler">
-        ${y.uc_kademe.map((b, i) => kademeHtml(b, i)).join('<span class="okuma-yolu__ok" aria-hidden="true"><span>→</span></span>')}
+        ${e.uc_kademe.map((o,t)=>g(o,t)).join('<span class="okuma-yolu__ok" aria-hidden="true"><span>\u2192</span></span>')}
       </div>
-    </article>`;
-  }
-
-  function render() {
-    if (!contentEl || !data) return;
-    const intro = `<p class="okuma-yolu-intro">${esc(tt({
-      tr: "Her konu için üç durak: önce kısa bir makale, sonra bir kitap, sonra Şeyh'in kendi metnine dönüş. Zorunlu bir sıra değil — yalnız bir öneri.",
-      en: "Three stops per topic: first a short article, then a book, then a return to the Shaykh's own text. Not a required order — only a suggestion.",
-      pt: "Três paradas por tema: primeiro um artigo curto, depois um livro, depois um regresso ao próprio texto do Xeique. Não é uma ordem obrigatória — apenas uma sugestão.",
-    }))}</p>`;
-    contentEl.innerHTML = intro + data.yollar.map(yolHtml).join("");
-    contentEl.querySelectorAll(".okuma-yolu-kademe__git").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        window.__dostNav && window.__dostNav.goTo(btn.dataset.view, btn.dataset.id || undefined);
-      });
-    });
-  }
-
-  return {
-    activate() {
-      fetchData().then((d) => { if (d) render(); });
-    },
-    onLangChange() {
-      if (data) render();
-    },
-  };
-})();
+    </article>`}function p(){if(!k||!n)return;const e=`<p class="okuma-yolu-intro">${a(r({tr:"Her konu i\xE7in \xFC\xE7 durak: \xF6nce k\u0131sa bir makale, sonra bir kitap, sonra \u015Eeyh'in kendi metnine d\xF6n\xFC\u015F. Zorunlu bir s\u0131ra de\u011Fil \u2014 yaln\u0131z bir \xF6neri.",en:"Three stops per topic: first a short article, then a book, then a return to the Shaykh's own text. Not a required order \u2014 only a suggestion.",pt:"Tr\xEAs paradas por tema: primeiro um artigo curto, depois um livro, depois um regresso ao pr\xF3prio texto do Xeique. N\xE3o \xE9 uma ordem obrigat\xF3ria \u2014 apenas uma sugest\xE3o."}))}</p>`;k.innerHTML=e+n.yollar.map($).join(""),k.querySelectorAll(".okuma-yolu-kademe__git").forEach(o=>{o.addEventListener("click",()=>{window.__dostNav&&window.__dostNav.goTo(o.dataset.view,o.dataset.id||void 0)})})}return{activate(){h().then(e=>{e&&p()})},onLangChange(){n&&p()}}})();

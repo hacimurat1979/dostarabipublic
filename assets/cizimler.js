@@ -1,256 +1,188 @@
-(function () {
-  "use strict";
-
-  const I18n = window.DostI18n;
-  const wrap = document.getElementById("cizimler-wrap");
-  const listEl = document.getElementById("cizimler-list");
-  if (!wrap || !listEl) return;
-
-  let data = null;
-  let fetchPromise = null;
-
-  const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
-
-  function linkify(text, id) {
-    return window.__dostCrossLink ? window.__dostCrossLink.linkify(text, "cizimler", id) : text;
-  }
-
-  function fetchData() {
-    if (data) return Promise.resolve(data);
-    if (fetchPromise) return fetchPromise;
-    if (window.DostViewStatus) window.DostViewStatus.showLoading("cizimler-wrap");
-    fetchPromise = window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-cizimleri.json")
-      .then((d) => {
-        data = d;
-        if (window.DostViewStatus) window.DostViewStatus.hide("cizimler-wrap");
-        return d;
-      })
-      .catch((err) => {
-        console.error("Fütûhât çizimleri yüklenemedi / Failed to load Futuhat diagrams", err);
-        fetchPromise = null;
-        if (window.DostViewStatus) window.DostViewStatus.showError("cizimler-wrap", () => window.__cizimlerApp.activate());
-        return null;
-      });
-    return fetchPromise;
-  }
-
-  // İbn Arabî'nin Fütûhât 371. bölüme kendi eliyle çizdiği şekillerin,
-  // akademik tasvirlere dayanan özgün SVG yeniden çizimleri.
-  const cizimRenderers = {
-    "bulut-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 320 340" role="img" aria-label="${tt(d.outer)}">
+(function(){"use strict";const L=window.DostI18n,S=document.getElementById("cizimler-wrap"),z=document.getElementById("cizimler-list");if(!S||!z)return;let u=null,M=null;const t=L.pick3;function P(e,a){return window.__dostCrossLink?window.__dostCrossLink.linkify(e,"cizimler",a):e}function ie(){return u?Promise.resolve(u):M||(window.DostViewStatus&&window.DostViewStatus.showLoading("cizimler-wrap"),M=window.DostGraphUtils.fetchJson("data/ibn-arabi/futuhat-cizimleri.json").then(e=>(u=e,window.DostViewStatus&&window.DostViewStatus.hide("cizimler-wrap"),e)).catch(e=>(console.error("F\xFCt\xFBh\xE2t \xE7izimleri y\xFCklenemedi / Failed to load Futuhat diagrams",e),M=null,window.DostViewStatus&&window.DostViewStatus.showError("cizimler-wrap",()=>window.__cizimlerApp.activate()),null)),M)}const Y={"bulut-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 320 340" role="img" aria-label="${t(e.outer)}">
         <circle class="term-diagram-node--dashed" cx="160" cy="175" r="150"/>
-        <text class="term-diagram-label--small" x="160" y="20" text-anchor="middle">${tt(d.outer)}</text>
+        <text class="term-diagram-label--small" x="160" y="20" text-anchor="middle">${t(e.outer)}</text>
         <polygon class="term-diagram-node" points="160,58 132,112 188,112"/>
-        <text class="term-diagram-label--small" x="160" y="98" text-anchor="middle">${tt(d.intellect)}</text>
+        <text class="term-diagram-label--small" x="160" y="98" text-anchor="middle">${t(e.intellect)}</text>
         <rect class="term-diagram-node" x="105" y="122" width="110" height="52" rx="4"/>
-        <text class="term-diagram-label--small" x="160" y="138" text-anchor="middle">${tt(d.soul)}</text>
+        <text class="term-diagram-label--small" x="160" y="138" text-anchor="middle">${t(e.soul)}</text>
         <circle class="term-diagram-node--faint term-diagram-node--sm" cx="130" cy="160" r="13"/>
-        <text class="term-diagram-note" x="130" y="164" text-anchor="middle">${tt(d.faculty1)}</text>
+        <text class="term-diagram-note" x="130" y="164" text-anchor="middle">${t(e.faculty1)}</text>
         <circle class="term-diagram-node--faint term-diagram-node--sm" cx="190" cy="160" r="13"/>
-        <text class="term-diagram-note" x="190" y="164" text-anchor="middle">${tt(d.faculty2)}</text>
+        <text class="term-diagram-note" x="190" y="164" text-anchor="middle">${t(e.faculty2)}</text>
         <rect class="term-diagram-node" x="115" y="192" width="90" height="90"/>
         <line class="term-diagram-tether" x1="115" y1="192" x2="205" y2="282"/>
         <line class="term-diagram-tether" x1="205" y1="192" x2="115" y2="282"/>
-        <text class="term-diagram-note" x="160" y="204" text-anchor="middle">${tt(d.heat)}</text>
-        <text class="term-diagram-note" x="160" y="278" text-anchor="middle">${tt(d.cold)}</text>
-        <text class="term-diagram-note" x="122" y="242" text-anchor="middle">${tt(d.wet)}</text>
-        <text class="term-diagram-note" x="198" y="242" text-anchor="middle">${tt(d.dry)}</text>
-        <text class="term-diagram-label" x="160" y="235" text-anchor="middle">${tt(d.nature)}</text>
+        <text class="term-diagram-note" x="160" y="204" text-anchor="middle">${t(e.heat)}</text>
+        <text class="term-diagram-note" x="160" y="278" text-anchor="middle">${t(e.cold)}</text>
+        <text class="term-diagram-note" x="122" y="242" text-anchor="middle">${t(e.wet)}</text>
+        <text class="term-diagram-note" x="198" y="242" text-anchor="middle">${t(e.dry)}</text>
+        <text class="term-diagram-label" x="160" y="235" text-anchor="middle">${t(e.nature)}</text>
         <circle class="term-diagram-node--accent" cx="160" cy="292" r="26"/>
-        <text class="term-diagram-label--small" x="160" y="297" text-anchor="middle">${tt(d.core)}</text>
+        <text class="term-diagram-label--small" x="160" y="297" text-anchor="middle">${t(e.core)}</text>
       </svg>
-    `,
-    "ars-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 300 300" role="img" aria-label="${tt(d.throne)}">
+    `,"ars-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 300 300" role="img" aria-label="${t(e.throne)}">
         <circle class="term-diagram-node--dashed" cx="150" cy="150" r="135"/>
-        <text class="term-diagram-label--small" x="150" y="24" text-anchor="middle">${tt(d.outer)}</text>
+        <text class="term-diagram-label--small" x="150" y="24" text-anchor="middle">${t(e.outer)}</text>
         <circle class="term-diagram-node" cx="150" cy="150" r="95"/>
-        <text class="term-diagram-label" x="150" y="63" text-anchor="middle">${tt(d.pillar1)}</text>
-        <text class="term-diagram-label" x="150" y="253" text-anchor="middle">${tt(d.pillar3)}</text>
-        <text class="term-diagram-label" x="47" y="154" text-anchor="middle">${tt(d.pillar4)}</text>
-        <text class="term-diagram-label" x="253" y="154" text-anchor="middle">${tt(d.pillar2)}</text>
+        <text class="term-diagram-label" x="150" y="63" text-anchor="middle">${t(e.pillar1)}</text>
+        <text class="term-diagram-label" x="150" y="253" text-anchor="middle">${t(e.pillar3)}</text>
+        <text class="term-diagram-label" x="47" y="154" text-anchor="middle">${t(e.pillar4)}</text>
+        <text class="term-diagram-label" x="253" y="154" text-anchor="middle">${t(e.pillar2)}</text>
         <circle class="term-diagram-node--sm" cx="130" cy="235" r="5"/>
         <circle class="term-diagram-node--sm" cx="170" cy="235" r="5"/>
         <circle class="term-diagram-node--accent" cx="150" cy="150" r="42"/>
-        <text class="term-diagram-label--small" x="150" y="155" text-anchor="middle">${tt(d.core)}</text>
-        <text class="term-diagram-note" x="150" y="218" text-anchor="middle">${tt(d.feet)}</text>
+        <text class="term-diagram-label--small" x="150" y="155" text-anchor="middle">${t(e.core)}</text>
+        <text class="term-diagram-note" x="150" y="218" text-anchor="middle">${t(e.feet)}</text>
       </svg>
-    `,
-    "cadir-sureti": (d) => {
-      const radii = [25, 45, 65, 85, 105, 125, 145];
-      const cx = 160, baseY = 230;
-      const arcs = radii.map((r) => `<path class="term-diagram-arrow" d="M${cx - r},${baseY} A${r},${r} 0 0,1 ${cx + r},${baseY}" fill="none"/>`).join("");
-      const kingdoms = [d.kingdom1, d.kingdom2, d.kingdom3, d.kingdom4];
-      const kx = [70, 130, 190, 250];
-      const kNodes = kingdoms.map((k, i) => `
-        <circle class="term-diagram-node--faint" cx="${kx[i]}" cy="278" r="23"/>
-        <text class="term-diagram-note" x="${kx[i]}" y="282" text-anchor="middle">${tt(k)}</text>
-      `).join("");
-      return `
-        <svg class="cizim-card__svg" viewBox="0 0 320 320" role="img" aria-label="${tt(d.pillar)}">
-          ${arcs}
-          <text class="term-diagram-note" x="160" y="200" text-anchor="middle">${tt(d.domes[0])}</text>
-          <text class="term-diagram-note" x="160" y="80" text-anchor="middle">${tt(d.domes[6])}</text>
+    `,"cadir-sureti":e=>{const a=[25,45,65,85,105,125,145],i=160,c=230,n=a.map(d=>`<path class="term-diagram-arrow" d="M${i-d},${c} A${d},${d} 0 0,1 ${i+d},${c}" fill="none"/>`).join(""),r=[e.kingdom1,e.kingdom2,e.kingdom3,e.kingdom4],s=[70,130,190,250],l=r.map((d,o)=>`
+        <circle class="term-diagram-node--faint" cx="${s[o]}" cy="278" r="23"/>
+        <text class="term-diagram-note" x="${s[o]}" y="282" text-anchor="middle">${t(d)}</text>
+      `).join("");return`
+        <svg class="cizim-card__svg" viewBox="0 0 320 320" role="img" aria-label="${t(e.pillar)}">
+          ${n}
+          <text class="term-diagram-note" x="160" y="200" text-anchor="middle">${t(e.domes[0])}</text>
+          <text class="term-diagram-note" x="160" y="80" text-anchor="middle">${t(e.domes[6])}</text>
           <line class="term-diagram-arrow" x1="160" y1="228" x2="160" y2="20" marker-end="url(#cizimArrowEnd)"/>
-          <text class="term-diagram-label--small" x="196" y="128" text-anchor="middle">${tt(d.pillar)}</text>
-          ${kNodes}
+          <text class="term-diagram-label--small" x="196" y="128" text-anchor="middle">${t(e.pillar)}</text>
+          ${l}
         </svg>
-      `;
-    },
-    "esma-hazretleri-sureti": (d) => {
-      const pts = [
-        [47.8, 134.5], [75.4, 179.2], [118.5, 209.4], [170.0, 220.0],
-        [221.5, 209.4], [264.6, 179.2], [292.2, 134.5],
-      ];
-      const nodes = d.names.map((n, i) => `
-        <line class="term-diagram-tether" x1="170" y1="90" x2="${pts[i][0]}" y2="${pts[i][1]}"/>
-      `).join("") + d.names.map((n, i) => `
-        <circle class="term-diagram-node${i === 0 ? " term-diagram-node--accent" : ""}" cx="${pts[i][0]}" cy="${pts[i][1]}" r="21"/>
-        <text class="term-diagram-note" x="${pts[i][0]}" y="${pts[i][1] + 4}" text-anchor="middle">${tt(n)}</text>
-      `).join("");
-      return `
-        <svg class="cizim-card__svg" viewBox="0 0 340 260" role="img" aria-label="${tt(d.center)}">
+      `},"esma-hazretleri-sureti":e=>{const a=[[47.8,134.5],[75.4,179.2],[118.5,209.4],[170,220],[221.5,209.4],[264.6,179.2],[292.2,134.5]],i=e.names.map((c,n)=>`
+        <line class="term-diagram-tether" x1="170" y1="90" x2="${a[n][0]}" y2="${a[n][1]}"/>
+      `).join("")+e.names.map((c,n)=>`
+        <circle class="term-diagram-node${n===0?" term-diagram-node--accent":""}" cx="${a[n][0]}" cy="${a[n][1]}" r="21"/>
+        <text class="term-diagram-note" x="${a[n][0]}" y="${a[n][1]+4}" text-anchor="middle">${t(c)}</text>
+      `).join("");return`
+        <svg class="cizim-card__svg" viewBox="0 0 340 260" role="img" aria-label="${t(e.center)}">
           <line class="term-diagram-tether" x1="110" y1="45" x2="170" y2="90"/>
           <line class="term-diagram-tether" x1="230" y1="45" x2="170" y2="90"/>
           <circle class="term-diagram-node--dashed term-diagram-node--sm" cx="110" cy="45" r="20"/>
-          <text class="term-diagram-note" x="110" y="49" text-anchor="middle">${tt(d.parent1)}</text>
+          <text class="term-diagram-note" x="110" y="49" text-anchor="middle">${t(e.parent1)}</text>
           <circle class="term-diagram-node--dashed term-diagram-node--sm" cx="230" cy="45" r="20"/>
-          <text class="term-diagram-note" x="230" y="49" text-anchor="middle">${tt(d.parent2)}</text>
-          ${nodes}
+          <text class="term-diagram-note" x="230" y="49" text-anchor="middle">${t(e.parent2)}</text>
+          ${i}
           <circle class="term-diagram-node--accent" cx="170" cy="90" r="30"/>
-          <text class="term-diagram-label--small" x="170" y="95" text-anchor="middle">${tt(d.center)}</text>
+          <text class="term-diagram-label--small" x="170" y="95" text-anchor="middle">${t(e.center)}</text>
         </svg>
-      `;
-    },
-    "iki-yol-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 320 170" role="img" aria-label="${tt(d.straight)}">
+      `},"iki-yol-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 320 170" role="img" aria-label="${t(e.straight)}">
         <circle class="term-diagram-node--sm" cx="30" cy="85" r="8"/>
-        <text class="term-diagram-note" x="30" y="115" text-anchor="middle">${tt(d.start)}</text>
+        <text class="term-diagram-note" x="30" y="115" text-anchor="middle">${t(e.start)}</text>
         <circle class="term-diagram-node--accent term-diagram-node--sm" cx="290" cy="85" r="8"/>
-        <text class="term-diagram-note" x="290" y="115" text-anchor="middle">${tt(d.end)}</text>
+        <text class="term-diagram-note" x="290" y="115" text-anchor="middle">${t(e.end)}</text>
         <line class="term-diagram-arrow term-diagram-arrow--oneway" x1="40" y1="85" x2="278" y2="85" marker-end="url(#cizimArrowEnd)"/>
-        <text class="term-diagram-label--small" x="160" y="65" text-anchor="middle">${tt(d.straight)}</text>
+        <text class="term-diagram-label--small" x="160" y="65" text-anchor="middle">${t(e.straight)}</text>
         <path class="term-diagram-arrow term-diagram-arrow--dashed" d="M40,85 Q90,35 160,85 Q230,135 278,85" fill="none"/>
-        <text class="term-diagram-label--small" x="160" y="150" text-anchor="middle">${tt(d.crooked)}</text>
+        <text class="term-diagram-label--small" x="160" y="150" text-anchor="middle">${t(e.crooked)}</text>
       </svg>
-    `,
-    "nokta-muhit-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 320 320" role="img" aria-label="${tt(d.point)}">
+    `,"nokta-muhit-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 320 320" role="img" aria-label="${t(e.point)}">
         <circle class="term-diagram-node--dashed" cx="160" cy="170" r="140"/>
-        <text class="term-diagram-note" x="245" y="90" text-anchor="middle">${tt(d.circumference)}</text>
+        <text class="term-diagram-note" x="245" y="90" text-anchor="middle">${t(e.circumference)}</text>
         <line class="term-diagram-tether" x1="160" y1="30" x2="60" y2="220"/>
         <line class="term-diagram-tether" x1="160" y1="30" x2="90" y2="260"/>
         <line class="term-diagram-tether" x1="160" y1="30" x2="160" y2="290"/>
         <line class="term-diagram-tether" x1="160" y1="30" x2="230" y2="260"/>
         <line class="term-diagram-tether" x1="160" y1="30" x2="260" y2="220"/>
         <circle class="term-diagram-node--accent term-diagram-node--sm" cx="160" cy="30" r="9"/>
-        <text class="term-diagram-label--small" x="160" y="18" text-anchor="middle">${tt(d.point)}</text>
-        <text class="term-diagram-note" x="160" y="235" text-anchor="middle">${tt(d.gap)}</text>
+        <text class="term-diagram-label--small" x="160" y="18" text-anchor="middle">${t(e.point)}</text>
+        <text class="term-diagram-note" x="160" y="235" text-anchor="middle">${t(e.gap)}</text>
       </svg>
-    `,
-    "insan-i-kamil-yakinsama": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 320 200" role="img" aria-label="${tt(d.center)}">
+    `,"insan-i-kamil-yakinsama":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 320 200" role="img" aria-label="${t(e.center)}">
         <line class="term-diagram-arrow" x1="55" y1="50" x2="222" y2="95" marker-end="url(#cizimArrowEnd)"/>
         <line class="term-diagram-arrow" x1="55" y1="100" x2="218" y2="100" marker-end="url(#cizimArrowEnd)"/>
         <line class="term-diagram-arrow" x1="55" y1="150" x2="222" y2="105" marker-end="url(#cizimArrowEnd)"/>
         <circle class="term-diagram-node--sm" cx="40" cy="50" r="14"/>
-        <text class="term-diagram-note" x="40" y="30" text-anchor="middle">${tt(d.source1)}</text>
+        <text class="term-diagram-note" x="40" y="30" text-anchor="middle">${t(e.source1)}</text>
         <circle class="term-diagram-node--sm" cx="40" cy="100" r="14"/>
-        <text class="term-diagram-note" x="40" y="80" text-anchor="middle">${tt(d.source2)}</text>
+        <text class="term-diagram-note" x="40" y="80" text-anchor="middle">${t(e.source2)}</text>
         <circle class="term-diagram-node--sm" cx="40" cy="150" r="14"/>
-        <text class="term-diagram-note" x="40" y="130" text-anchor="middle">${tt(d.source3)}</text>
+        <text class="term-diagram-note" x="40" y="130" text-anchor="middle">${t(e.source3)}</text>
         <path class="term-diagram-mirror" d="M245,65 A50,50 0 0,1 245,135" fill="none"/>
-        <text class="term-diagram-note" x="272" y="104" text-anchor="middle">${tt(d.shadow)}</text>
+        <text class="term-diagram-note" x="272" y="104" text-anchor="middle">${t(e.shadow)}</text>
         <circle class="term-diagram-node--accent" cx="240" cy="100" r="28"/>
-        <text class="term-diagram-label--small" x="240" y="105" text-anchor="middle">${tt(d.center)}</text>
+        <text class="term-diagram-label--small" x="240" y="105" text-anchor="middle">${t(e.center)}</text>
       </svg>
-    `,
-    "uc-mertebe-cicegi": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 340 340" role="img" aria-label="${tt(d.center)}">
+    `,"uc-mertebe-cicegi":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 340 340" role="img" aria-label="${t(e.center)}">
         <circle class="term-diagram-node--faint" cx="170" cy="55" r="58"/>
         <circle class="term-diagram-node--faint" cx="55" cy="170" r="58"/>
         <circle class="term-diagram-node--faint" cx="285" cy="170" r="58"/>
         <circle class="term-diagram-node--faint" cx="170" cy="285" r="58"/>
-        <text class="term-diagram-note" x="170" y="28" text-anchor="middle">${tt(d.fire)}</text>
-        <text class="term-diagram-note" x="28" y="170" text-anchor="middle">${tt(d.air)}</text>
-        <text class="term-diagram-note" x="312" y="170" text-anchor="middle">${tt(d.earth)}</text>
-        <text class="term-diagram-note" x="170" y="317" text-anchor="middle">${tt(d.water)}</text>
-        <text class="term-diagram-note" x="103" y="103" text-anchor="middle">${tt(d.soul)}</text>
-        <text class="term-diagram-note" x="237" y="103" text-anchor="middle">${tt(d.intellect)}</text>
-        <text class="term-diagram-note" x="237" y="242" text-anchor="middle">${tt(d.nature)}</text>
-        <text class="term-diagram-note" x="103" y="242" text-anchor="middle">${tt(d.particles)}</text>
+        <text class="term-diagram-note" x="170" y="28" text-anchor="middle">${t(e.fire)}</text>
+        <text class="term-diagram-note" x="28" y="170" text-anchor="middle">${t(e.air)}</text>
+        <text class="term-diagram-note" x="312" y="170" text-anchor="middle">${t(e.earth)}</text>
+        <text class="term-diagram-note" x="170" y="317" text-anchor="middle">${t(e.water)}</text>
+        <text class="term-diagram-note" x="103" y="103" text-anchor="middle">${t(e.soul)}</text>
+        <text class="term-diagram-note" x="237" y="103" text-anchor="middle">${t(e.intellect)}</text>
+        <text class="term-diagram-note" x="237" y="242" text-anchor="middle">${t(e.nature)}</text>
+        <text class="term-diagram-note" x="103" y="242" text-anchor="middle">${t(e.particles)}</text>
         <circle class="term-diagram-node" cx="170" cy="115" r="30"/>
         <circle class="term-diagram-node" cx="115" cy="170" r="30"/>
         <circle class="term-diagram-node" cx="225" cy="170" r="30"/>
         <circle class="term-diagram-node" cx="170" cy="225" r="30"/>
-        <text class="term-diagram-label--small" x="170" y="120" text-anchor="middle">${tt(d.life)}</text>
-        <text class="term-diagram-label--small" x="119" y="174" text-anchor="middle">${tt(d.power)}</text>
-        <text class="term-diagram-label--small" x="221" y="174" text-anchor="middle">${tt(d.knowledge)}</text>
-        <text class="term-diagram-label--small" x="170" y="230" text-anchor="middle">${tt(d.will)}</text>
+        <text class="term-diagram-label--small" x="170" y="120" text-anchor="middle">${t(e.life)}</text>
+        <text class="term-diagram-label--small" x="119" y="174" text-anchor="middle">${t(e.power)}</text>
+        <text class="term-diagram-label--small" x="221" y="174" text-anchor="middle">${t(e.knowledge)}</text>
+        <text class="term-diagram-label--small" x="170" y="230" text-anchor="middle">${t(e.will)}</text>
         <circle class="term-diagram-node--accent" cx="170" cy="170" r="32"/>
-        <text class="term-diagram-label--small" x="170" y="175" text-anchor="middle">${tt(d.center)}</text>
+        <text class="term-diagram-label--small" x="170" y="175" text-anchor="middle">${t(e.center)}</text>
       </svg>
-    `,
-    "dort-makam-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 260 260" role="img" aria-label="${tt(d.q1)}">
+    `,"dort-makam-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 260 260" role="img" aria-label="${t(e.q1)}">
         <circle class="term-diagram-node--dashed" cx="130" cy="130" r="108"/>
         <line class="term-diagram-axis" x1="130" y1="24" x2="130" y2="236"/>
         <line class="term-diagram-axis" x1="24" y1="130" x2="236" y2="130"/>
-        <text class="term-diagram-label--small" x="130" y="75" text-anchor="middle">${tt(d.q1)}</text>
-        <text class="term-diagram-label--small" x="185" y="135" text-anchor="middle">${tt(d.q2)}</text>
-        <text class="term-diagram-label--small" x="130" y="195" text-anchor="middle">${tt(d.q3)}</text>
-        <text class="term-diagram-label--small" x="75" y="135" text-anchor="middle">${tt(d.q4)}</text>
+        <text class="term-diagram-label--small" x="130" y="75" text-anchor="middle">${t(e.q1)}</text>
+        <text class="term-diagram-label--small" x="185" y="135" text-anchor="middle">${t(e.q2)}</text>
+        <text class="term-diagram-label--small" x="130" y="195" text-anchor="middle">${t(e.q3)}</text>
+        <text class="term-diagram-label--small" x="75" y="135" text-anchor="middle">${t(e.q4)}</text>
       </svg>
-    `,
-    "arz-i-hasr-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 300 390" role="img" aria-label="${tt(d.throne)}">
+    `,"arz-i-hasr-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 300 390" role="img" aria-label="${t(e.throne)}">
         <polygon class="term-diagram-node--accent" points="150,20 190,55 150,90 110,55"/>
-        <text class="term-diagram-label--small" x="150" y="60" text-anchor="middle">${tt(d.throne)}</text>
+        <text class="term-diagram-label--small" x="150" y="60" text-anchor="middle">${t(e.throne)}</text>
         <line class="term-diagram-tether" x1="150" y1="90" x2="150" y2="112"/>
         <circle class="term-diagram-node" cx="150" cy="135" r="23"/>
-        <text class="term-diagram-note" x="150" y="139" text-anchor="middle">${tt(d.spirit)}</text>
+        <text class="term-diagram-note" x="150" y="139" text-anchor="middle">${t(e.spirit)}</text>
         <circle class="term-diagram-node--faint" cx="75" cy="200" r="30"/>
-        <text class="term-diagram-note" x="75" y="204" text-anchor="middle">${tt(d.bookRight)}</text>
+        <text class="term-diagram-note" x="75" y="204" text-anchor="middle">${t(e.bookRight)}</text>
         <circle class="term-diagram-node--faint" cx="225" cy="200" r="30"/>
-        <text class="term-diagram-note" x="225" y="204" text-anchor="middle">${tt(d.bookLeft)}</text>
+        <text class="term-diagram-note" x="225" y="204" text-anchor="middle">${t(e.bookLeft)}</text>
         <circle class="term-diagram-node--dashed term-diagram-node--sm" cx="150" cy="255" r="16"/>
-        <text class="term-diagram-note" x="150" y="285" text-anchor="middle">${tt(d.death)}</text>
+        <text class="term-diagram-note" x="150" y="285" text-anchor="middle">${t(e.death)}</text>
         <line class="term-diagram-arrow" x1="150" y1="255" x2="212" y2="308" marker-end="url(#cizimArrowEnd)"/>
-        <text class="term-diagram-note" x="195" y="298" text-anchor="middle">${tt(d.sirat)}</text>
+        <text class="term-diagram-note" x="195" y="298" text-anchor="middle">${t(e.sirat)}</text>
         <path class="term-diagram-node--faint" d="M175,340 A45,45 0 0,1 265,340 Z"/>
-        <text class="term-diagram-note" x="220" y="335" text-anchor="middle">${tt(d.hell)}</text>
+        <text class="term-diagram-note" x="220" y="335" text-anchor="middle">${t(e.hell)}</text>
         <circle class="term-diagram-node--accent" cx="80" cy="330" r="48"/>
-        <text class="term-diagram-label--small" x="80" y="334" text-anchor="middle">${tt(d.paradiseMeadow)}</text>
+        <text class="term-diagram-label--small" x="80" y="334" text-anchor="middle">${t(e.paradiseMeadow)}</text>
       </svg>
-    `,
-    "kesib-ur-ruya-sureti": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 300 300" role="img" aria-label="${tt(d.center)}">
+    `,"kesib-ur-ruya-sureti":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 300 300" role="img" aria-label="${t(e.center)}">
         <line class="term-diagram-tether" x1="150" y1="150" x2="150" y2="80"/>
         <line class="term-diagram-tether" x1="150" y1="150" x2="75" y2="150"/>
         <line class="term-diagram-tether" x1="150" y1="150" x2="225" y2="150"/>
         <line class="term-diagram-tether" x1="150" y1="150" x2="150" y2="220"/>
         <circle class="term-diagram-node--dashed" cx="150" cy="65" r="28"/>
-        <text class="term-diagram-note" x="150" y="69" text-anchor="middle">${tt(d.prophets)}</text>
+        <text class="term-diagram-note" x="150" y="69" text-anchor="middle">${t(e.prophets)}</text>
         <circle class="term-diagram-node--dashed" cx="55" cy="150" r="28"/>
-        <text class="term-diagram-note" x="55" y="154" text-anchor="middle">${tt(d.saints)}</text>
+        <text class="term-diagram-note" x="55" y="154" text-anchor="middle">${t(e.saints)}</text>
         <circle class="term-diagram-node--dashed" cx="245" cy="150" r="28"/>
-        <text class="term-diagram-note" x="245" y="154" text-anchor="middle">${tt(d.messengers)}</text>
+        <text class="term-diagram-note" x="245" y="154" text-anchor="middle">${t(e.messengers)}</text>
         <circle class="term-diagram-node--dashed" cx="150" cy="235" r="28"/>
-        <text class="term-diagram-note" x="150" y="239" text-anchor="middle">${tt(d.believers)}</text>
+        <text class="term-diagram-note" x="150" y="239" text-anchor="middle">${t(e.believers)}</text>
         <circle class="term-diagram-node--accent" cx="150" cy="150" r="40"/>
-        <text class="term-diagram-label--small" x="150" y="155" text-anchor="middle">${tt(d.center)}</text>
+        <text class="term-diagram-label--small" x="150" y="155" text-anchor="middle">${t(e.center)}</text>
       </svg>
-    `,
-    "suretud-dirah": (d) => `
-      <svg class="cizim-card__svg" viewBox="0 0 200 200" role="img" aria-label="${tt(d.label)}">
+    `,"suretud-dirah":e=>`
+      <svg class="cizim-card__svg" viewBox="0 0 200 200" role="img" aria-label="${t(e.label)}">
         <path class="term-diagram-node--accent" d="M55,30 L145,30 L145,140 A45,45 0 0 1 55,140 Z"/>
-        <text class="term-diagram-label--small" x="100" y="90" text-anchor="middle">${tt(d.label)}</text>
+        <text class="term-diagram-label--small" x="100" y="90" text-anchor="middle">${t(e.label)}</text>
       </svg>
-    `,
-  };
-
-  const CIZIM_DEFS = `
+    `},se=`
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
       <defs>
         <marker id="cizimArrowEnd" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
@@ -258,591 +190,48 @@
         </marker>
       </defs>
     </svg>
-  `;
-
-  // Künye satırları üç dilli olabilir (2026-10-08: "371. Bölüm, 1. Şekil"
-  // EN/PT sayfalarında Türkçe kalıyordu); eski düz dize de kabul edilir.
-  function refMetni(r) { return r && typeof r === "object" ? tt(r) : (r || ""); }
-  // Dokuz harita künyeleri ("böl." = bölüm, "vr." = varak) EN/PT'de de
-  // Türkçe görünüyordu; kısaltmalar gösterimde dile çevrilir.
-  function citeMetni(c) {
-    const lang = I18n && I18n.getLang ? I18n.getLang() : "tr";
-    if (!c || lang === "tr") return c || "";
-    const muze = lang === "pt" ? "TİEM/Museu Evkaf" : "TİEM/Evkaf Museum";
-    return c.replace(/^Fütûhât,/, "Futuhat,").replace(/böl\. /g, "sec. ")
-      .replace(/TİEM\/Evkaf Müzesi/g, muze).replace(/vr\. /g, "fol. ");
-  }
-
-  function cardHtml(item, kisim) {
-    const renderer = cizimRenderers[item.diagram.type];
-    const svg = renderer ? renderer(item.diagram) : "";
-    const durum = kisim ? (kisimdaMi(item, kisim) ? " cizim-card--kisimda" : " cizim-card--perdeli") : "";
-    return `
-      <article class="cizim-card${durum}" data-cizim-kart="${item.id}">
-        <p class="cizim-card__ref">${refMetni(item.source_ref)}</p>
-        <h2 class="cizim-card__name">${tt(item.name)}</h2>
-        <div class="cizim-card__svg-wrap" data-cizim-id="${item.id}" role="button" tabindex="0"
-             aria-label="${tt({ tr: "Büyüt", en: "Enlarge", pt: "Ampliar" })}: ${String(tt(item.name)).replace(/<[^>]*>/g, "").replace(/"/g, "&quot;")}">${svg}</div>
-        <p class="cizim-card__desc">${linkify(tt(item.description), item.id)}</p>
+  `;function F(e){return e&&typeof e=="object"?t(e):e||""}function ne(e){const a=L&&L.getLang?L.getLang():"tr";if(!e||a==="tr")return e||"";const i=a==="pt"?"T\u0130EM/Museu Evkaf":"T\u0130EM/Evkaf Museum";return e.replace(/^Fütûhât,/,"Futuhat,").replace(/böl\. /g,"sec. ").replace(/TİEM\/Evkaf Müzesi/g,i).replace(/vr\. /g,"fol. ")}function oe(e,a){const i=Y[e.diagram.type],c=i?i(e.diagram):"";return`
+      <article class="cizim-card${a?ee(e,a)?" cizim-card--kisimda":" cizim-card--perdeli":""}" data-cizim-kart="${e.id}">
+        <p class="cizim-card__ref">${F(e.source_ref)}</p>
+        <h2 class="cizim-card__name">${t(e.name)}</h2>
+        <div class="cizim-card__svg-wrap" data-cizim-id="${e.id}" role="button" tabindex="0"
+             aria-label="${t({tr:"B\xFCy\xFCt",en:"Enlarge",pt:"Ampliar"})}: ${String(t(e.name)).replace(/<[^>]*>/g,"").replace(/"/g,"&quot;")}">${c}</div>
+        <p class="cizim-card__desc">${P(t(e.description),e.id)}</p>
       </article>
-    `;
-  }
-
-  // --- Büyütme (lightbox) ---
-  function openLightbox(itemId) {
-    if (!data) return;
-    const item = data.diagrams.find((x) => x.id === itemId);
-    if (!item) return;
-    const renderer = cizimRenderers[item.diagram.type];
-    const svg = renderer ? renderer(item.diagram) : "";
-    // CIZIM_DEFS'i burada TEKRAR eklemiyoruz: render()'ın zaten listEl'e
-    // yazdığı tek kopya, id="cizimArrowEnd" SVG belge genelinde çözüldüğü
-    // için (url(#...) referansı DOM'daki herhangi bir yerden çalışır) burada
-    // da geçerli. İkinci bir kopya yalnız aynı id'yi mükerrer basardı --
-    // görünürde belirti yoktu ama geçersiz HTML'di (UI denetimi bulgusu).
-    window.DostLightbox.open({
-      closeLabel: tt({ tr: "Kapat", en: "Close", pt: "Fechar" }),
-      svgHtml: svg,
-      ref: refMetni(item.source_ref),
-      name: tt(item.name),
-    });
-  }
-
-  // 371. bab'ın dokuz haritası (2026-08-21 kullanıcı isteği): eskiden ayrı,
-  // bağımsız bir "sahne" sayfasıydı (futuhat-371.html); kullanıcı tüm
-  // sahne sistemini kaldırıp bu haritayı "en uygun olduğunu düşündüğün
-  // yere" taşımamızı istedi. Yukarıdaki statik kartların zaten aynı 371.
-  // bab'ın çizimlerini tek tek gösterdiği bu görünüm en doğal ev --
-  // sahnenin kendi metni de zaten "bu dokuz harita, Çizimler görünümündeki
-  // öteki tarihî şemalarla birlikte duruyor" diyordu. Çizim geometrisi
-  // (drawShared/drawUnique) FACSİMİLE'dir, aynen taşındı; yalnız renkler
-  // sahnenin kendi --gold/--liminal/--text değişkenlerinden bu sayfanın
-  // --series-theme/--text-primary token'larına çevrildi.
-  const NS = 'http://www.w3.org/2000/svg';
-  const BIRLESIK_STEPS = [
-    { id: 'ama', shortLabel: { tr: 'Bulut', en: 'The Cloud', pt: 'A Nuvem' },
-      label: { tr: 'Bulut (Amâ)', en: 'The Cloud (al-ʿamāʾ)', pt: 'A Nuvem (al-ʿamāʾ)' },
-      gloss: { tr: 'Dizinin başlangıcı: varlığın ilk mertebeleri, "merhametli bir buhar" olan Bulut\'ta açılıyor. "Dünyanın sûreti bütünüyle küresel bir dairedir" — Şeyh\'in kendi sözü.',
-        en: 'The start of the sequence: the first levels of being unfold within the Cloud, "a merciful vapor." "The form of the world in its entirety is a spherical circle" — in the Shaykh\'s own words.',
-        pt: 'O início da sequência: os primeiros níveis do ser desdobram-se na Nuvem, "um vapor misericordioso." "A forma do mundo na sua totalidade é um círculo esférico" — nas palavras do próprio Xeique.' },
-      cite: 'Fütûhât, 9.316 (Tyser 2023, böl. 4.1; TİEM/Evkaf Müzesi 1870, vr. 90a)' },
-    { id: 'ars-kursi', shortLabel: { tr: 'Arş – Kürsî', en: 'Throne – Footstool', pt: 'Trono – Escabelo' },
-      label: { tr: 'Arş-ı İstivâ, Kürsî, İki Ayak, Su, Hava, Karanlık', en: 'The Throne of Sitting, Footstool, Two Feet, Water, Air, Darkness', pt: 'O Trono de Assento, Escabelo, Dois Pés, Água, Ar, Escuridão' },
-      gloss: { tr: 'Bir önceki haritanın en iç dairesine iniliyor. Arş dört unsura (ateş, hava, su, toprak) dayanıyor. Metindeki "iki ayak"tan biri cennette, biri cehennemde, ikisi de Kürsî\'nin üstünde.',
-        en: 'Descends into the innermost circle of the previous map. The Throne rests on four elements (fire, air, water, earth). Of the text\'s "two feet", one is set in Paradise, the other in Hell, both resting on the Footstool.',
-        pt: 'Desce para o círculo mais interior do mapa anterior. O Trono assenta em quatro elementos (fogo, ar, água, terra). Dos "dois pés" do texto, um está no Paraíso, o outro no Inferno, ambos sobre o Escabelo.' },
-      cite: 'Tyser 2023, böl. 4.2; TİEM/Evkaf Müzesi 1870, vr. 90b' },
-    { id: 'atlas', shortLabel: { tr: 'Atlas Feleği', en: 'Sphere of Atlas', pt: 'Esfera de Atlas' },
-      label: { tr: 'Atlas Feleği, Cennetler, Sabit Yıldızlar Küresi, Tûbâ Ağacı', en: 'The Sphere of Atlas, the Gardens, the Root of the Starry Sphere, the Tree of Ṭūbā', pt: 'A Esfera de Atlas, os Jardins, a Raiz da Esfera Estelar, a Árvore de Ṭūbā' },
-      gloss: { tr: 'İniş sürüyor. Atlas feleği ile sabit yıldızlar küresi arasında sekiz cennet konağı sıralanıyor — her biri, Şeriat\'a tâbi bir organa (göz, kulak, dil, el, mide, üreme organı, ayak, kalp) karşılık geliyor.',
-        en: 'The descent continues. Between the sphere of Atlas and the sphere of the fixed stars, eight paradisal abodes are arrayed — each corresponding to a bodily member subject to the Law (eye, ear, tongue, hand, stomach, reproductive organ, leg, heart).',
-        pt: 'A descida continua. Entre a esfera de Atlas e a esfera das estrelas fixas, alinham-se oito moradas paradisíacas — cada uma correspondendo a um membro do corpo sujeito à Lei (olho, ouvido, língua, mão, estômago, órgão reprodutor, perna, coração).' },
-      cite: 'Tyser 2023, böl. 4.3; TİEM/Evkaf Müzesi 1870, vr. 91a' },
-    { id: 'sabit-yildizlar-insan', shortLabel: { tr: 'Sabit Yıldızlar', en: 'Fixed Stars', pt: 'Estrelas Fixas' },
-      label: { tr: 'Sabit Yıldızlar Küresi, Gökkubbeler, Yer, Dört Mertebe ve İnsan', en: 'The Sphere of the Fixed Stars, the Domes of the Heavens, the Earth, the Four Realms, and Man', pt: 'A Esfera das Estrelas Fixas, as Cúpulas dos Céus, a Terra, os Quatro Reinos e o Homem' },
-      gloss: { tr: 'Bir çadır biçiminde: dünyanın üstünde yedi gök, yedi gezegen. Bütün küreleri dikey bir "direk" kesiyor — Kur\'an\'daki görünmez direğe (13:2) işaret eden bu çizgi, İbn Arabî\'ye göre İnsân-ı Kâmil\'dir; gökleri yeryüzüne düşmekten O tutuyor.',
-        en: 'In the shape of a tent: seven heavens above the earth, seven planets. A vertical "pillar" crosses all the spheres — this line, pointing to the invisible pillar of the Qur\'an (13:2), is, for Ibn al-ʿArabī, the Perfect Man; through him God holds the heavens from falling upon the earth.',
-        pt: 'Em forma de tenda: sete céus acima da terra, sete planetas. Um "pilar" vertical atravessa todas as esferas — esta linha, apontando para o pilar invisível do Alcorão (13:2), é, para Ibn al-ʿArabī, o Homem Perfeito; é através dele que Deus impede os céus de caírem sobre a terra.' },
-      cite: 'Fütûhât, 9.313 (Tyser 2023, böl. 4.4; TİEM/Evkaf Müzesi 1870, vr. 91b)' },
-    { id: 'arz-i-hasr', shortLabel: { tr: 'Haşir Yeri', en: 'Gathering', pt: 'Reunião' },
-      label: { tr: 'Haşir Yeri, Ayrım ve Hüküm Arşı, Melek Safları', en: 'The Land of Gathering, the Throne of Separation and Judgement, the Rows of Angels', pt: 'A Terra da Reunião, o Trono de Separação e Julgamento, as Fileiras de Anjos' },
-      gloss: { tr: 'Kıldan ince, kılıçtan keskin sırât köprüsü cehennemin üstünde gerili. Ölümün kesilişini simgeleyen bir daire, cenneti cehennemden ayıran a\'râf çizgisiyle kesişiyor. Yedi melek safı ve sekiz sütun üzerindeki Hüküm Arşı, sahneyi yukarıdan kuşatıyor.',
-        en: 'The bridge of the path (ṣirāṭ), thinner than a hair and sharper than a sword, stretches over hell. A circle symbolizing the slaughter of death intersects the line of the "heights" (al-aʿrāf) separating paradise from hell. Seven rows of angels and the Throne of Judgement, resting on eight pillars, frame the scene from above.',
-        pt: 'A ponte do caminho (ṣirāṭ), mais fina que um cabelo e mais afiada que uma espada, estende-se sobre o inferno. Um círculo simbolizando o abate da morte intersecta a linha das "alturas" (al-aʿrāf) que separa o paraíso do inferno. Sete fileiras de anjos e o Trono do Julgamento, apoiado em oito pilares, emolduram a cena vista do alto.' },
-      cite: 'Tyser 2023, böl. 4.5; TİEM/Evkaf Müzesi 1870, vr. 92a' },
-    { id: 'cehennem-kapilari', shortLabel: { tr: 'Cehennem Kapıları', en: 'Gates of Hell', pt: 'Portões do Inferno' },
-      label: { tr: 'Cehennemin Kapıları, Konakları ve İnen Dereceleri', en: 'The Gates of Hell, Its Abodes, and Its Descending Levels', pt: 'Os Portões do Inferno, as suas Moradas e Níveis Descendentes' },
-      gloss: { tr: 'Cehennemin yedi kapısı, insanın Şeriat\'a tâbi yedi organına karşılık geliyor. Şemanın tam merkezinde, kalbi örten bir kapı duruyor — insanın içindeki "gayb"ın yeri. "İnsanın dünyadaki bâtını, ahirette zâhir olur."',
-        en: 'Hell\'s seven gates correspond to the seven bodily members subject to the Law. At the very center of the diagram stands a door veiling the heart — the place of the unseen within man. "What is interior in man in this world becomes exterior in the hereafter."',
-        pt: 'Os sete portões do inferno correspondem aos sete membros do corpo sujeitos à Lei. No centro exato do diagrama ergue-se uma porta que vela o coração — o lugar do invisível dentro do homem. "O que é interior no homem neste mundo torna-se exterior no além."' },
-      cite: 'Fütûhât, 9.356 (Tyser 2023, böl. 4.6; TİEM/Evkaf Müzesi 1870, vr. 92b)' },
-    { id: 'esma-hazretleri', shortLabel: { tr: 'İlahî İsimler', en: 'Divine Names', pt: 'Nomes Divinos' },
-      label: { tr: 'İlahî İsimler Huzuru, Alt Dünya, Ahiret, Berzah', en: 'The Presence of the Divine Names, the Lowest World, the Hereafter, the Intermediary World', pt: 'A Presença dos Nomes Divinos, o Mundo Inferior, o Além, o Mundo Intermédio' },
-      gloss: { tr: 'İlahî isimlerin de kendi aralarında bir düzeni var: "öncüler" ve "hizmetkârlar." Varlığın sebebi olan yedi ana isim — Hayy, Alîm, Mürîd, Kâdir, Kâil, Cevvâd, Muksit — bu dünya, ahiret ve ikisi arasındaki berzahın kesiştiği yerde beliriyor.',
-        en: 'The divine names, too, have their own order: "chiefs" and "servants." Seven principal names — the Living, the Knower, the One who wills, the One who is able, the One who speaks, the Most-Generous, the Equitable — appear at the point where this world, the hereafter, and the barzakh between them meet.',
-        pt: 'Também os nomes divinos têm a sua própria ordem: "chefes" e "servos." Sete nomes principais — o Vivo, o Sabedor, Aquele que quer, Aquele que pode, Aquele que fala, o Generosíssimo, o Equânime — aparecem no ponto onde este mundo, o além, e o barzakh entre eles se encontram.' },
-      cite: 'Tyser 2023, böl. 4.7; TİEM/Evkaf Müzesi 1870, vr. 93a' },
-    { id: 'ruyet', shortLabel: { tr: 'Rü\'yet Tepesi', en: 'Dune of Vision', pt: 'Duna da Visão' },
-      label: { tr: 'Rü\'yet Kum Tepesi — Allah\'ın yüzünün açıldığı an', en: 'The Dune of Vision — the moment God\'s face is unveiled', pt: 'A Duna da Visão — o momento em que o rosto de Deus se revela' },
-      gloss: { tr: 'Cennette, halkın Allah\'ın yüzünü gördüğü belirli bir an ve yer — "beyaz misktendir."',
-        en: 'A specific moment and place in paradise where the people see God\'s face — "made of white musk."',
-        pt: 'Um momento e lugar específicos no paraíso onde o povo vê o rosto de Deus — "feito de almíscar branco."' },
-      cite: 'Tyser 2023, böl. 4.8; TİEM/Evkaf Müzesi 1870, vr. 93b' },
-    { id: 'kozmos', shortLabel: { tr: 'Kozmosun Tamamı', en: 'The Whole Cosmos', pt: 'Todo o Cosmos' },
-      label: { tr: 'Kozmosun tamamı — sekiz haritanın sentezi', en: 'The entirety of the cosmos — a synthesis of eight maps', pt: 'A totalidade do cosmos — uma síntese de oito mapas' },
-      gloss: { tr: 'Şeklinin merkezi, Rü\'yet Kum Tepesi\'yle aynı biçimi taşıyor — ahiret, dünyanın tam merkezinde duruyor. İbn Arabî\'nin kendi ifadesiyle: "dünya, Bulut ile Allah\'ın bakışı arasında beliriyor."',
-        en: 'The shape of its center matches that of the Dune of Vision — the hereafter sits at the very core of the world. In Ibn al-ʿArabī\'s own words: "the world appears between the Cloud and the glance of God."',
-        pt: 'A forma do seu centro corresponde à da Duna da Visão — o além situa-se no próprio núcleo do mundo. Nas palavras do próprio Ibn al-ʿArabī: "o mundo aparece entre a Nuvem e o olhar de Deus."' },
-      cite: 'Fütûhât, 9.461 (Tyser 2023, böl. 4.9; TİEM/Evkaf Müzesi 1870, vr. 93b-94a)' },
-  ];
-
-  // Paylaşılan taban + tekil çizgisel öğe -- futuhat-371.html'den DEĞİŞMEDEN
-  // taşındı (facsimile). GORSEL_DIL.md gereği 9. haritadaki iç içe İKİ
-  // eşmerkezli daire burada da yasak -- yerine merkezden dışa dört kısa
-  // çizgi (bir "yıldız" işareti).
-  function drawSharedBirlesik(g) {
-    const c = document.createElementNS(NS, 'circle');
-    c.setAttribute('cx', 0); c.setAttribute('cy', 0); c.setAttribute('r', 90);
-    c.setAttribute('fill', 'none'); c.setAttribute('stroke', 'var(--text-primary)');
-    c.setAttribute('stroke-width', 1.4);
-    c.setAttribute('opacity', 0.6);
-    g.appendChild(c);
-  }
-  function drawUniqueBirlesik(g, idx) {
-    const el = document.createElementNS(NS, 'g');
-    el.setAttribute('stroke', 'var(--text-primary)');
-    el.setAttribute('stroke-width', 1.6);
-    el.setAttribute('fill', 'none');
-    el.setAttribute('stroke-linecap', 'round');
-    const addLine = (x1, y1, x2, y2) => {
-      const l = document.createElementNS(NS, 'line');
-      l.setAttribute('x1', x1); l.setAttribute('y1', y1);
-      l.setAttribute('x2', x2); l.setAttribute('y2', y2);
-      el.appendChild(l);
-    };
-    const addCircle = (cx, cy, r, filled) => {
-      const c = document.createElementNS(NS, 'circle');
-      c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r);
-      if (filled) c.setAttribute('fill', 'var(--text-primary)');
-      el.appendChild(c);
-    };
-    switch (idx) {
-      case 0: addLine(-110, 0, 110, 0); break;
-      case 1: addLine(0, -110, 0, 110); break;
-      case 2: addLine(-78, -78, 78, 78); break;
-      case 3: addLine(-78, 78, 78, -78); break;
-      case 4: for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; addCircle(Math.cos(a) * 90, Math.sin(a) * 90, 4, true); } break;
-      case 5: for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + Math.PI / 6; addCircle(Math.cos(a) * 55, Math.sin(a) * 55, 3, true); } break;
-      case 6: {
-        const pts = [];
-        for (let i = 0; i < 3; i++) { const a = (i / 3) * Math.PI * 2 - Math.PI / 2; pts.push([Math.cos(a) * 88, Math.sin(a) * 88]); }
-        const p = document.createElementNS(NS, 'polygon');
-        p.setAttribute('points', pts.map((pt) => pt.join(',')).join(' '));
-        p.setAttribute('fill', 'none');
-        el.appendChild(p);
-        break;
-      }
-      case 7: {
-        const s = 88;
-        const p = document.createElementNS(NS, 'polygon');
-        p.setAttribute('points', `0,${-s} ${s},0 0,${s} ${-s},0`);
-        el.appendChild(p);
-        break;
-      }
-      case 8: {
-        addCircle(0, 0, 4, true);
-        [0, 90, 180, 270].forEach((deg) => {
-          const rad = deg * Math.PI / 180;
-          addLine(Math.cos(rad) * 22, Math.sin(rad) * 22, Math.cos(rad) * 40, Math.sin(rad) * 40);
-        });
-        break;
-      }
-    }
-    g.appendChild(el);
-  }
-
-  // --- Yaklaşmak (2026-10-10, görsel taraması madde 8) ---
-  // Dokuz harita eskiden yalnız bir sürgüyle birleşiyordu. Artık sitenin
-  // "yaklaşmak" fiili de aynı durumu sürüyor: Ctrl/⌘ + tekerlek ya da iki
-  // parmak. Uzakta dokuz ayrı harita (uzaklık = kesret); yaklaştıkça hem
-  // bakış (viewBox) daralır hem haritalar merkezde üst üste binip tek
-  // kompozisyon olur (derinlik = yaklaşma). Sürgü klavye karşılığı olarak
-  // kalıyor; iki kontrol tek bir değeri (birlesikMergeVal, 0..100) sürer.
-  // Etiketler haritaların içinden çıkıp ayrı bir katmanda duruyor: uzakta
-  // her haritanın üstünde, yaklaştıkça kompozisyonun çevresindeki bir
-  // dairede ve OKUNUR boyutta (piksel boyu ekrandan ölçülür). Çizimlerin
-  // kendisi (drawShared/drawUnique) değişmedi.
-  const BIRLESIK_GRID_CX = [300, 800, 1300, 300, 800, 1300, 300, 800, 1300];
-  const BIRLESIK_GRID_CY = [250, 250, 250, 500, 500, 500, 750, 750, 750];
-  const BIRLESIK_GRID_SCALE = 0.65;
-  const BIRLESIK_MERGE_SCALE_MAX = 2.0;
-  const BIRLESIK_MERKEZ = [800, 500];
-  const BIRLESIK_HALKA_R = 232;          // etiket dairesinin yarıçapı (kompozisyon 180, çizgiler 220)
-  // Etiket dairesindeki yer: her etiket ızgaradaki yönüne en yakın dilime
-  // gider (sol üstteki harita sol üste, alttaki alta...), yollar kesişmesin.
-  // Ortadaki haritanın (5) yönü yok; alttaki boşluğa yerleşir.
-  const BIRLESIK_HALKA_SIRA = [8, 0, 1, 7, 4, 2, 6, 5, 3];
-  const birlesikAci = (i) => -Math.PI / 2 + (BIRLESIK_HALKA_SIRA[i] / BIRLESIK_STEPS.length) * Math.PI * 2;
-  const birlesikEase = (p) => p * p * (3 - 2 * p);
-  let birlesikMergeVal = 0;
-  let birlesikMapEls = null;
-  let birlesikKamera = null;              // { uzakW, yakinW, oran, pxUzak, pxYakin, genislikler }
-
-  function birlesikOpenPopup(idx) {
-    const s = BIRLESIK_STEPS[idx];
-    const g = document.createElementNS(NS, 'g');
-    drawSharedBirlesik(g);
-    drawUniqueBirlesik(g, idx);
-    const svg = `<svg viewBox="-150 -150 300 300" class="cizim-card__svg" role="img" aria-label="${tt(s.label)}">${g.innerHTML}</svg>`;
-    window.DostLightbox.open({
-      closeLabel: tt({ tr: 'Kapat', en: 'Close', pt: 'Fechar' }),
-      svgHtml: svg,
-      ref: (idx + 1) + ' / ' + BIRLESIK_STEPS.length + ' — ' + citeMetni(s.cite),
-      name: tt(s.label),
-      caption: tt(s.gloss),
-    });
-  }
-
-  function birlesikSvg() { return document.querySelector(".cizim-birlesik__svg"); }
-
-  // Etiket yazı boyunu ekranda okunur tutmak için: viewBox birimi başına
-  // kaç piksel düştüğü bakışın genişliğine bağlı.
-  function birlesikKameraKur() {
-    const svg = birlesikSvg();
-    if (!svg || !birlesikMapEls) return;
-    const r = svg.getBoundingClientRect();
-    const cw = Math.max(240, r.width || 680), ch = Math.max(180, r.height || 425);
-    const oran = cw / ch;
-    const dar = cw < 520;
-    const pxUzak = dar ? 9 : 10.5, pxYakin = dar ? 12.5 : 14.5;
-    // Etiket genişliği: 100 birimlik yazıyla bir kez ölçülür, boyla orantılı.
-    const genislikler = birlesikMapEls.map((m) => {
-      const eski = m.etiket.style.fontSize;
-      m.etiket.style.fontSize = "100px";
-      let gw = 0;
-      try { gw = m.etiket.getComputedTextLength(); } catch (_) { gw = 0; }
-      m.etiket.style.fontSize = eski;
-      return gw || 60 * (m.etiket.textContent || "").length;
-    });
-    // Uzak bakış: 3×3 ızgara (ve üstlerindeki etiketler) sığsın.
-    let uzakW = Math.max(1320, 800 * oran);
-    for (let n = 0; n < 100; n++) {
-      const f = pxUzak * uzakW / cw;
-      const tas = birlesikMapEls.some((m, i) => Math.abs(BIRLESIK_GRID_CX[i] - BIRLESIK_MERKEZ[0]) + genislikler[i] * f / 200 + 16 > uzakW / 2);
-      if (!tas) break;
-      uzakW += 20;
-    }
-    // Yakın bakış: kompozisyon + çevresindeki etiket dairesi sığsın.
-    let yakinW = 560;
-    for (let n = 0; n < 200; n++) {
-      const f = pxYakin * yakinW / cw;                 // birim cinsinden yazı boyu
-      const H = yakinW / oran;
-      let sigar = true;
-      for (let i = 0; i < birlesikMapEls.length && sigar; i++) {
-        const a = birlesikAci(i);
-        const tw = genislikler[i] * f / 100;
-        const rr = BIRLESIK_HALKA_R + 0.5 * tw * Math.abs(Math.cos(a)) + 0.6 * f * Math.abs(Math.sin(a));
-        const x = Math.abs(rr * Math.cos(a)) + tw / 2 + 16;
-        const y = Math.abs(rr * Math.sin(a)) + f + 12;
-        if (x > yakinW / 2 || y > H / 2) sigar = false;
-      }
-      if (sigar) break;
-      yakinW += 20;
-    }
-    birlesikKamera = { uzakW, yakinW: Math.min(yakinW, uzakW), oran, cw, pxUzak, pxYakin, genislikler };
-  }
-
-  function birlesikUpdateStage(mergeVal) {
-    if (!birlesikMapEls) return;
-    if (!birlesikKamera) birlesikKameraKur();
-    const k = birlesikKamera;
-    const t = birlesikEase(mergeVal / 100);
-    const svg = birlesikSvg();
-    // Bakış: uzaktan yakına geometrik (oransal) geçiş -- yakınlaşma hissi
-    // her adımda aynı.
-    const W = k ? k.uzakW * Math.pow(k.yakinW / k.uzakW, t) : 1600;
-    const H = k ? W / k.oran : 1000;
-    if (svg) svg.setAttribute("viewBox", `${(BIRLESIK_MERKEZ[0] - W / 2).toFixed(1)} ${(BIRLESIK_MERKEZ[1] - H / 2).toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}`);
-    const px = k ? k.pxUzak + (k.pxYakin - k.pxUzak) * t : 12;
-    const f = k ? px * W / k.cw : 20;
-    const n = BIRLESIK_STEPS.length;
-    for (let i = 0; i < n; i++) {
-      const gx = BIRLESIK_GRID_CX[i], gy = BIRLESIK_GRID_CY[i];
-      const cx = gx + (BIRLESIK_MERKEZ[0] - gx) * t;
-      const cy = gy + (BIRLESIK_MERKEZ[1] - gy) * t;
-      const sc = BIRLESIK_GRID_SCALE + (BIRLESIK_MERGE_SCALE_MAX - BIRLESIK_GRID_SCALE) * t;
-      const op = 1 - t * 0.30;
-      const m = birlesikMapEls[i];
-      m.g.setAttribute('transform', `translate(${cx.toFixed(1)} ${cy.toFixed(1)}) scale(${sc.toFixed(3)})`);
-      m.g.setAttribute('opacity', op.toFixed(3));
-      // Etiket: uzakta haritanın üstünde ortalı; yakında dairede.
-      const tw = k ? k.genislikler[i] * f / 100 : 0;
-      const ux = gx, uy = gy - 112 * BIRLESIK_GRID_SCALE - f * 0.45;
-      const a = birlesikAci(i);
-      const rr = BIRLESIK_HALKA_R + 0.5 * tw * Math.abs(Math.cos(a)) + 0.6 * f * Math.abs(Math.sin(a));
-      const yx = BIRLESIK_MERKEZ[0] + rr * Math.cos(a), yy = BIRLESIK_MERKEZ[1] + rr * Math.sin(a) + f * 0.35;
-      m.etiket.setAttribute('x', (ux + (yx - ux) * t).toFixed(1));
-      m.etiket.setAttribute('y', (uy + (yy - uy) * t).toFixed(1));
-      m.etiket.style.fontSize = f.toFixed(1) + 'px';
-      // Yolda (ne ızgarada ne dairede) etiketler çizimlerin üstünden geçiyor:
-      // o arada biraz sönükleşir, iki uçta tam okunur.
-      m.etiket.style.opacity = (0.5 + 0.5 * Math.abs(2 * t - 1)).toFixed(3);
-    }
-    const slider = document.getElementById('birlesikSlider');
-    if (slider && Number(slider.value) !== Math.round(mergeVal)) slider.value = String(Math.round(mergeVal));
-    if (slider) slider.setAttribute('aria-valuetext', mergeVal <= 0
-      ? tt({ tr: 'Ayrık: dokuz harita', en: 'Apart: nine maps', pt: 'Separados: nove mapas' })
-      : mergeVal >= 100
-        ? tt({ tr: 'Birleşik: tek kompozisyon', en: 'Together: one composition', pt: 'Reunidos: uma composição' })
-        : tt({ tr: 'Yaklaşılıyor: %', en: 'Approaching: %', pt: 'A aproximar: %' }).replace('%', '%' + Math.round(mergeVal)));
-  }
-
-  function birlesikAyarla(v) {
-    birlesikMergeVal = Math.max(0, Math.min(100, v));
-    birlesikUpdateStage(birlesikMergeVal);
-  }
-
-  // Ctrl/⌘ + tekerlek, iki parmak (dokunmatik), Safari'de izleme yüzeyi
-  // kıstırması. Yalın tekerlek dokunulmaz: sayfa kaydırması kullanıcınındır.
-  function birlesikYaklasmaBagla(svg) {
-    svg.addEventListener('wheel', (e) => {
-      if (!(e.ctrlKey || e.metaKey)) return;
-      e.preventDefault();
-      const birim = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
-      birlesikAyarla(birlesikMergeVal - e.deltaY * birim * 0.22);
-    }, { passive: false });
-    let kistirma = null;
-    const mesafe = (tl) => Math.hypot(tl[0].clientX - tl[1].clientX, tl[0].clientY - tl[1].clientY);
-    svg.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 2) kistirma = { d0: mesafe(e.touches) || 1, v0: birlesikMergeVal };
-    }, { passive: true });
-    svg.addEventListener('touchmove', (e) => {
-      if (!kistirma || e.touches.length !== 2) return;
-      e.preventDefault();
-      // 2,5 kat açmak = uzaktan tam yakına.
-      birlesikAyarla(kistirma.v0 + (Math.log(mesafe(e.touches) / kistirma.d0) / Math.log(2.5)) * 100);
-    }, { passive: false });
-    const bitir = (e) => { if (!e.touches || e.touches.length < 2) kistirma = null; };
-    svg.addEventListener('touchend', bitir);
-    svg.addEventListener('touchcancel', bitir);
-    let jest = null;
-    svg.addEventListener('gesturestart', (e) => { e.preventDefault(); jest = birlesikMergeVal; });
-    svg.addEventListener('gesturechange', (e) => {
-      if (jest == null) return;
-      e.preventDefault();
-      birlesikAyarla(jest + (Math.log(e.scale || 1) / Math.log(2.5)) * 100);
-    });
-    svg.addEventListener('gestureend', () => { jest = null; });
-  }
-
-  function renderBirlesikStage() {
-    const mapsG = document.getElementById('birlesikMapsG');
-    const etiketG = document.getElementById('birlesikEtiketG');
-    if (!mapsG || !etiketG) return;
-    mapsG.innerHTML = '';
-    etiketG.innerHTML = '';
-    birlesikMapEls = [];
-    birlesikKamera = null;
-    const enlargeLabel = tt({ tr: 'Büyüt: ', en: 'Enlarge: ', pt: 'Ampliar: ' });
-    BIRLESIK_STEPS.forEach((s, i) => {
-      const g = document.createElementNS(NS, 'g');
-      const hit = document.createElementNS(NS, 'circle');
-      hit.setAttribute('cx', 0); hit.setAttribute('cy', 0); hit.setAttribute('r', 112);
-      hit.setAttribute('class', 'birlesik-map__hit');
-      hit.setAttribute('pointer-events', 'fill');
-      g.appendChild(hit);
-
-      drawSharedBirlesik(g);
-      drawUniqueBirlesik(g, i);
-      g.setAttribute('class', 'birlesik-map');
-      g.setAttribute('tabindex', '0');
-      g.setAttribute('role', 'button');
-      g.setAttribute('aria-label', enlargeLabel + tt(s.label));
-      g.addEventListener('click', () => birlesikOpenPopup(i));
-      g.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); birlesikOpenPopup(i); }
-      });
-      mapsG.appendChild(g);
-
-      // Etiket: numara + kısa ad. Fareyle tıklanınca da o haritayı büyütür
-      // (klavyede aynı iş haritanın kendisinde); ekran okuyucu için
-      // haritanın adı zaten aria-label'da, etiket tekrar okunmasın.
-      const etiket = document.createElementNS(NS, 'text');
-      etiket.setAttribute('class', 'birlesik-map__label');
-      etiket.setAttribute('text-anchor', 'middle');
-      etiket.setAttribute('aria-hidden', 'true');
-      const no = document.createElementNS(NS, 'tspan');
-      no.setAttribute('class', 'birlesik-map__no');
-      no.textContent = String(i + 1) + ' ';
-      etiket.appendChild(no);
-      etiket.appendChild(document.createTextNode(tt(s.shortLabel)));
-      etiket.addEventListener('click', () => birlesikOpenPopup(i));
-      etiket.addEventListener('mouseenter', () => g.classList.add('birlesik-map--deginiliyor'));
-      etiket.addEventListener('mouseleave', () => g.classList.remove('birlesik-map--deginiliyor'));
-      g.addEventListener('mouseenter', () => etiket.classList.add('birlesik-map__label--deginiliyor'));
-      g.addEventListener('mouseleave', () => etiket.classList.remove('birlesik-map__label--deginiliyor'));
-      g.addEventListener('focus', () => etiket.classList.add('birlesik-map__label--deginiliyor'));
-      g.addEventListener('blur', () => etiket.classList.remove('birlesik-map__label--deginiliyor'));
-      etiketG.appendChild(etiket);
-      birlesikMapEls.push({ g, etiket });
-    });
-    birlesikUpdateStage(birlesikMergeVal);
-
-    const slider = document.getElementById('birlesikSlider');
-    slider.addEventListener('input', (e) => birlesikAyarla(+e.target.value));
-    document.getElementById('birlesikMergeBtn').addEventListener('click', () => birlesikAyarla(100));
-    document.getElementById('birlesikResetBtn').addEventListener('click', () => birlesikAyarla(0));
-    const svg = birlesikSvg();
-    if (svg) birlesikYaklasmaBagla(svg);
-  }
-
-  function birlesikHaritaHtml(kisimda) {
-    const durum = kisimda === true ? " cizim-card--kisimda" : kisimda === false ? " cizim-card--perdeli" : "";
-    return `<article class="cizim-card cizim-card--birlesik${durum}" data-cizim-kart="dokuz-harita">
-      <p class="cizim-card__ref">${tt({ tr: 'Fütûhât, 9.316–9.461 — 371. Bab', en: 'Futuhat, 9.316–9.461 — Chapter 371', pt: 'Futuhat, 9.316–9.461 — Capítulo 371' })}</p>
-      <h2 class="cizim-card__name">${tt({ tr: '371. Bab: Dokuz Harita', en: 'Chapter 371: Nine Maps', pt: 'Capítulo 371: Nove Mapas' })}</h2>
-      <p class="cizim-card__desc">${tt({
-        tr: 'İbn Arabî\'nin, Fütûhât\'ın ikinci telifine kendi eliyle çizdiği dokuz harita — kendi ifadesiyle "tek bir kompozisyon" olarak görülmesini istediği bir dizi. Uzaktan dokuz çizim; yaklaştıkça tek bir kompozisyon. Her haritaya ayrı ayrı tıklayıp büyütebilirsin.',
-        en: 'Nine maps Ibn al-ʿArabī drew with his own hand into the second recension of the Futuhat — meant, in his own words, to be seen as a single composition. From afar, nine drawings; as you come closer, one composition. Click any map on its own to enlarge it.',
-        pt: 'Nove mapas que Ibn al-ʿArabī desenhou com a própria mão na segunda recensão das Futuhat — pensados, nas suas palavras, para serem vistos como uma única composição. De longe, nove desenhos; ao aproximar-se, uma só composição. Clique em qualquer mapa para o ampliar.',
-      })}</p>
+    `}function j(e){if(!u)return;const a=u.diagrams.find(n=>n.id===e);if(!a)return;const i=Y[a.diagram.type],c=i?i(a.diagram):"";window.DostLightbox.open({closeLabel:t({tr:"Kapat",en:"Close",pt:"Fechar"}),svgHtml:c,ref:F(a.source_ref),name:t(a.name)})}const x="http://www.w3.org/2000/svg",_=[{id:"ama",shortLabel:{tr:"Bulut",en:"The Cloud",pt:"A Nuvem"},label:{tr:"Bulut (Am\xE2)",en:"The Cloud (al-\u02BFam\u0101\u02BE)",pt:"A Nuvem (al-\u02BFam\u0101\u02BE)"},gloss:{tr:`Dizinin ba\u015Flang\u0131c\u0131: varl\u0131\u011F\u0131n ilk mertebeleri, "merhametli bir buhar" olan Bulut'ta a\xE7\u0131l\u0131yor. "D\xFCnyan\u0131n s\xFBreti b\xFCt\xFCn\xFCyle k\xFCresel bir dairedir" \u2014 \u015Eeyh'in kendi s\xF6z\xFC.`,en:`The start of the sequence: the first levels of being unfold within the Cloud, "a merciful vapor." "The form of the world in its entirety is a spherical circle" \u2014 in the Shaykh's own words.`,pt:'O in\xEDcio da sequ\xEAncia: os primeiros n\xEDveis do ser desdobram-se na Nuvem, "um vapor misericordioso." "A forma do mundo na sua totalidade \xE9 um c\xEDrculo esf\xE9rico" \u2014 nas palavras do pr\xF3prio Xeique.'},cite:"F\xFCt\xFBh\xE2t, 9.316 (Tyser 2023, b\xF6l. 4.1; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 90a)"},{id:"ars-kursi",shortLabel:{tr:"Ar\u015F \u2013 K\xFCrs\xEE",en:"Throne \u2013 Footstool",pt:"Trono \u2013 Escabelo"},label:{tr:"Ar\u015F-\u0131 \u0130stiv\xE2, K\xFCrs\xEE, \u0130ki Ayak, Su, Hava, Karanl\u0131k",en:"The Throne of Sitting, Footstool, Two Feet, Water, Air, Darkness",pt:"O Trono de Assento, Escabelo, Dois P\xE9s, \xC1gua, Ar, Escurid\xE3o"},gloss:{tr:`Bir \xF6nceki haritan\u0131n en i\xE7 dairesine iniliyor. Ar\u015F d\xF6rt unsura (ate\u015F, hava, su, toprak) dayan\u0131yor. Metindeki "iki ayak"tan biri cennette, biri cehennemde, ikisi de K\xFCrs\xEE'nin \xFCst\xFCnde.`,en:`Descends into the innermost circle of the previous map. The Throne rests on four elements (fire, air, water, earth). Of the text's "two feet", one is set in Paradise, the other in Hell, both resting on the Footstool.`,pt:'Desce para o c\xEDrculo mais interior do mapa anterior. O Trono assenta em quatro elementos (fogo, ar, \xE1gua, terra). Dos "dois p\xE9s" do texto, um est\xE1 no Para\xEDso, o outro no Inferno, ambos sobre o Escabelo.'},cite:"Tyser 2023, b\xF6l. 4.2; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 90b"},{id:"atlas",shortLabel:{tr:"Atlas Fele\u011Fi",en:"Sphere of Atlas",pt:"Esfera de Atlas"},label:{tr:"Atlas Fele\u011Fi, Cennetler, Sabit Y\u0131ld\u0131zlar K\xFCresi, T\xFBb\xE2 A\u011Fac\u0131",en:"The Sphere of Atlas, the Gardens, the Root of the Starry Sphere, the Tree of \u1E6C\u016Bb\u0101",pt:"A Esfera de Atlas, os Jardins, a Raiz da Esfera Estelar, a \xC1rvore de \u1E6C\u016Bb\u0101"},gloss:{tr:"\u0130ni\u015F s\xFCr\xFCyor. Atlas fele\u011Fi ile sabit y\u0131ld\u0131zlar k\xFCresi aras\u0131nda sekiz cennet kona\u011F\u0131 s\u0131ralan\u0131yor \u2014 her biri, \u015Eeriat'a t\xE2bi bir organa (g\xF6z, kulak, dil, el, mide, \xFCreme organ\u0131, ayak, kalp) kar\u015F\u0131l\u0131k geliyor.",en:"The descent continues. Between the sphere of Atlas and the sphere of the fixed stars, eight paradisal abodes are arrayed \u2014 each corresponding to a bodily member subject to the Law (eye, ear, tongue, hand, stomach, reproductive organ, leg, heart).",pt:"A descida continua. Entre a esfera de Atlas e a esfera das estrelas fixas, alinham-se oito moradas paradis\xEDacas \u2014 cada uma correspondendo a um membro do corpo sujeito \xE0 Lei (olho, ouvido, l\xEDngua, m\xE3o, est\xF4mago, \xF3rg\xE3o reprodutor, perna, cora\xE7\xE3o)."},cite:"Tyser 2023, b\xF6l. 4.3; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 91a"},{id:"sabit-yildizlar-insan",shortLabel:{tr:"Sabit Y\u0131ld\u0131zlar",en:"Fixed Stars",pt:"Estrelas Fixas"},label:{tr:"Sabit Y\u0131ld\u0131zlar K\xFCresi, G\xF6kkubbeler, Yer, D\xF6rt Mertebe ve \u0130nsan",en:"The Sphere of the Fixed Stars, the Domes of the Heavens, the Earth, the Four Realms, and Man",pt:"A Esfera das Estrelas Fixas, as C\xFApulas dos C\xE9us, a Terra, os Quatro Reinos e o Homem"},gloss:{tr:`Bir \xE7ad\u0131r bi\xE7iminde: d\xFCnyan\u0131n \xFCst\xFCnde yedi g\xF6k, yedi gezegen. B\xFCt\xFCn k\xFCreleri dikey bir "direk" kesiyor \u2014 Kur'an'daki g\xF6r\xFCnmez dire\u011Fe (13:2) i\u015Faret eden bu \xE7izgi, \u0130bn Arab\xEE'ye g\xF6re \u0130ns\xE2n-\u0131 K\xE2mil'dir; g\xF6kleri yery\xFCz\xFCne d\xFC\u015Fmekten O tutuyor.`,en:`In the shape of a tent: seven heavens above the earth, seven planets. A vertical "pillar" crosses all the spheres \u2014 this line, pointing to the invisible pillar of the Qur'an (13:2), is, for Ibn al-\u02BFArab\u012B, the Perfect Man; through him God holds the heavens from falling upon the earth.`,pt:'Em forma de tenda: sete c\xE9us acima da terra, sete planetas. Um "pilar" vertical atravessa todas as esferas \u2014 esta linha, apontando para o pilar invis\xEDvel do Alcor\xE3o (13:2), \xE9, para Ibn al-\u02BFArab\u012B, o Homem Perfeito; \xE9 atrav\xE9s dele que Deus impede os c\xE9us de ca\xEDrem sobre a terra.'},cite:"F\xFCt\xFBh\xE2t, 9.313 (Tyser 2023, b\xF6l. 4.4; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 91b)"},{id:"arz-i-hasr",shortLabel:{tr:"Ha\u015Fir Yeri",en:"Gathering",pt:"Reuni\xE3o"},label:{tr:"Ha\u015Fir Yeri, Ayr\u0131m ve H\xFCk\xFCm Ar\u015F\u0131, Melek Saflar\u0131",en:"The Land of Gathering, the Throne of Separation and Judgement, the Rows of Angels",pt:"A Terra da Reuni\xE3o, o Trono de Separa\xE7\xE3o e Julgamento, as Fileiras de Anjos"},gloss:{tr:"K\u0131ldan ince, k\u0131l\u0131\xE7tan keskin s\u0131r\xE2t k\xF6pr\xFCs\xFC cehennemin \xFCst\xFCnde gerili. \xD6l\xFCm\xFCn kesili\u015Fini simgeleyen bir daire, cenneti cehennemden ay\u0131ran a'r\xE2f \xE7izgisiyle kesi\u015Fiyor. Yedi melek saf\u0131 ve sekiz s\xFCtun \xFCzerindeki H\xFCk\xFCm Ar\u015F\u0131, sahneyi yukar\u0131dan ku\u015Fat\u0131yor.",en:'The bridge of the path (\u1E63ir\u0101\u1E6D), thinner than a hair and sharper than a sword, stretches over hell. A circle symbolizing the slaughter of death intersects the line of the "heights" (al-a\u02BFr\u0101f) separating paradise from hell. Seven rows of angels and the Throne of Judgement, resting on eight pillars, frame the scene from above.',pt:'A ponte do caminho (\u1E63ir\u0101\u1E6D), mais fina que um cabelo e mais afiada que uma espada, estende-se sobre o inferno. Um c\xEDrculo simbolizando o abate da morte intersecta a linha das "alturas" (al-a\u02BFr\u0101f) que separa o para\xEDso do inferno. Sete fileiras de anjos e o Trono do Julgamento, apoiado em oito pilares, emolduram a cena vista do alto.'},cite:"Tyser 2023, b\xF6l. 4.5; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 92a"},{id:"cehennem-kapilari",shortLabel:{tr:"Cehennem Kap\u0131lar\u0131",en:"Gates of Hell",pt:"Port\xF5es do Inferno"},label:{tr:"Cehennemin Kap\u0131lar\u0131, Konaklar\u0131 ve \u0130nen Dereceleri",en:"The Gates of Hell, Its Abodes, and Its Descending Levels",pt:"Os Port\xF5es do Inferno, as suas Moradas e N\xEDveis Descendentes"},gloss:{tr:`Cehennemin yedi kap\u0131s\u0131, insan\u0131n \u015Eeriat'a t\xE2bi yedi organ\u0131na kar\u015F\u0131l\u0131k geliyor. \u015Eeman\u0131n tam merkezinde, kalbi \xF6rten bir kap\u0131 duruyor \u2014 insan\u0131n i\xE7indeki "gayb"\u0131n yeri. "\u0130nsan\u0131n d\xFCnyadaki b\xE2t\u0131n\u0131, ahirette z\xE2hir olur."`,en:`Hell's seven gates correspond to the seven bodily members subject to the Law. At the very center of the diagram stands a door veiling the heart \u2014 the place of the unseen within man. "What is interior in man in this world becomes exterior in the hereafter."`,pt:'Os sete port\xF5es do inferno correspondem aos sete membros do corpo sujeitos \xE0 Lei. No centro exato do diagrama ergue-se uma porta que vela o cora\xE7\xE3o \u2014 o lugar do invis\xEDvel dentro do homem. "O que \xE9 interior no homem neste mundo torna-se exterior no al\xE9m."'},cite:"F\xFCt\xFBh\xE2t, 9.356 (Tyser 2023, b\xF6l. 4.6; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 92b)"},{id:"esma-hazretleri",shortLabel:{tr:"\u0130lah\xEE \u0130simler",en:"Divine Names",pt:"Nomes Divinos"},label:{tr:"\u0130lah\xEE \u0130simler Huzuru, Alt D\xFCnya, Ahiret, Berzah",en:"The Presence of the Divine Names, the Lowest World, the Hereafter, the Intermediary World",pt:"A Presen\xE7a dos Nomes Divinos, o Mundo Inferior, o Al\xE9m, o Mundo Interm\xE9dio"},gloss:{tr:'\u0130lah\xEE isimlerin de kendi aralar\u0131nda bir d\xFCzeni var: "\xF6nc\xFCler" ve "hizmetk\xE2rlar." Varl\u0131\u011F\u0131n sebebi olan yedi ana isim \u2014 Hayy, Al\xEEm, M\xFCr\xEEd, K\xE2dir, K\xE2il, Cevv\xE2d, Muksit \u2014 bu d\xFCnya, ahiret ve ikisi aras\u0131ndaki berzah\u0131n kesi\u015Fti\u011Fi yerde beliriyor.',en:'The divine names, too, have their own order: "chiefs" and "servants." Seven principal names \u2014 the Living, the Knower, the One who wills, the One who is able, the One who speaks, the Most-Generous, the Equitable \u2014 appear at the point where this world, the hereafter, and the barzakh between them meet.',pt:'Tamb\xE9m os nomes divinos t\xEAm a sua pr\xF3pria ordem: "chefes" e "servos." Sete nomes principais \u2014 o Vivo, o Sabedor, Aquele que quer, Aquele que pode, Aquele que fala, o Generos\xEDssimo, o Equ\xE2nime \u2014 aparecem no ponto onde este mundo, o al\xE9m, e o barzakh entre eles se encontram.'},cite:"Tyser 2023, b\xF6l. 4.7; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 93a"},{id:"ruyet",shortLabel:{tr:"R\xFC'yet Tepesi",en:"Dune of Vision",pt:"Duna da Vis\xE3o"},label:{tr:"R\xFC'yet Kum Tepesi \u2014 Allah'\u0131n y\xFCz\xFCn\xFCn a\xE7\u0131ld\u0131\u011F\u0131 an",en:"The Dune of Vision \u2014 the moment God's face is unveiled",pt:"A Duna da Vis\xE3o \u2014 o momento em que o rosto de Deus se revela"},gloss:{tr:`Cennette, halk\u0131n Allah'\u0131n y\xFCz\xFCn\xFC g\xF6rd\xFC\u011F\xFC belirli bir an ve yer \u2014 "beyaz misktendir."`,en:`A specific moment and place in paradise where the people see God's face \u2014 "made of white musk."`,pt:'Um momento e lugar espec\xEDficos no para\xEDso onde o povo v\xEA o rosto de Deus \u2014 "feito de alm\xEDscar branco."'},cite:"Tyser 2023, b\xF6l. 4.8; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 93b"},{id:"kozmos",shortLabel:{tr:"Kozmosun Tamam\u0131",en:"The Whole Cosmos",pt:"Todo o Cosmos"},label:{tr:"Kozmosun tamam\u0131 \u2014 sekiz haritan\u0131n sentezi",en:"The entirety of the cosmos \u2014 a synthesis of eight maps",pt:"A totalidade do cosmos \u2014 uma s\xEDntese de oito mapas"},gloss:{tr:`\u015Eeklinin merkezi, R\xFC'yet Kum Tepesi'yle ayn\u0131 bi\xE7imi ta\u015F\u0131yor \u2014 ahiret, d\xFCnyan\u0131n tam merkezinde duruyor. \u0130bn Arab\xEE'nin kendi ifadesiyle: "d\xFCnya, Bulut ile Allah'\u0131n bak\u0131\u015F\u0131 aras\u0131nda beliriyor."`,en:`The shape of its center matches that of the Dune of Vision \u2014 the hereafter sits at the very core of the world. In Ibn al-\u02BFArab\u012B's own words: "the world appears between the Cloud and the glance of God."`,pt:'A forma do seu centro corresponde \xE0 da Duna da Vis\xE3o \u2014 o al\xE9m situa-se no pr\xF3prio n\xFAcleo do mundo. Nas palavras do pr\xF3prio Ibn al-\u02BFArab\u012B: "o mundo aparece entre a Nuvem e o olhar de Deus."'},cite:"F\xFCt\xFBh\xE2t, 9.461 (Tyser 2023, b\xF6l. 4.9; T\u0130EM/Evkaf M\xFCzesi 1870, vr. 93b-94a)"}];function V(e){const a=document.createElementNS(x,"circle");a.setAttribute("cx",0),a.setAttribute("cy",0),a.setAttribute("r",90),a.setAttribute("fill","none"),a.setAttribute("stroke","var(--text-primary)"),a.setAttribute("stroke-width",1.4),a.setAttribute("opacity",.6),e.appendChild(a)}function U(e,a){const i=document.createElementNS(x,"g");i.setAttribute("stroke","var(--text-primary)"),i.setAttribute("stroke-width",1.6),i.setAttribute("fill","none"),i.setAttribute("stroke-linecap","round");const c=(r,s,l,d)=>{const o=document.createElementNS(x,"line");o.setAttribute("x1",r),o.setAttribute("y1",s),o.setAttribute("x2",l),o.setAttribute("y2",d),i.appendChild(o)},n=(r,s,l,d)=>{const o=document.createElementNS(x,"circle");o.setAttribute("cx",r),o.setAttribute("cy",s),o.setAttribute("r",l),d&&o.setAttribute("fill","var(--text-primary)"),i.appendChild(o)};switch(a){case 0:c(-110,0,110,0);break;case 1:c(0,-110,0,110);break;case 2:c(-78,-78,78,78);break;case 3:c(-78,78,78,-78);break;case 4:for(let r=0;r<8;r++){const s=r/8*Math.PI*2;n(Math.cos(s)*90,Math.sin(s)*90,4,!0)}break;case 5:for(let r=0;r<6;r++){const s=r/6*Math.PI*2+Math.PI/6;n(Math.cos(s)*55,Math.sin(s)*55,3,!0)}break;case 6:{const r=[];for(let l=0;l<3;l++){const d=l/3*Math.PI*2-Math.PI/2;r.push([Math.cos(d)*88,Math.sin(d)*88])}const s=document.createElementNS(x,"polygon");s.setAttribute("points",r.map(l=>l.join(",")).join(" ")),s.setAttribute("fill","none"),i.appendChild(s);break}case 7:{const s=document.createElementNS(x,"polygon");s.setAttribute("points","0,-88 88,0 0,88 -88,0"),i.appendChild(s);break}case 8:{n(0,0,4,!0),[0,90,180,270].forEach(r=>{const s=r*Math.PI/180;c(Math.cos(s)*22,Math.sin(s)*22,Math.cos(s)*40,Math.sin(s)*40)});break}}e.appendChild(i)}const O=[300,800,1300,300,800,1300,300,800,1300],le=[250,250,250,500,500,500,750,750,750],K=.65,ce=2,v=[800,500],W=232,de=[8,0,1,7,4,2,6,5,3],X=e=>-Math.PI/2+de[e]/_.length*Math.PI*2,me=e=>e*e*(3-2*e);let k=0,p=null,E=null;function H(e){const a=_[e],i=document.createElementNS(x,"g");V(i),U(i,e);const c=`<svg viewBox="-150 -150 300 300" class="cizim-card__svg" role="img" aria-label="${t(a.label)}">${i.innerHTML}</svg>`;window.DostLightbox.open({closeLabel:t({tr:"Kapat",en:"Close",pt:"Fechar"}),svgHtml:c,ref:e+1+" / "+_.length+" \u2014 "+ne(a.cite),name:t(a.label),caption:t(a.gloss)})}function R(){return document.querySelector(".cizim-birlesik__svg")}function he(){const e=R();if(!e||!p)return;const a=e.getBoundingClientRect(),i=Math.max(240,a.width||680),c=Math.max(180,a.height||425),n=i/c,r=i<520,s=r?9:10.5,l=r?12.5:14.5,d=p.map(m=>{const g=m.etiket.style.fontSize;m.etiket.style.fontSize="100px";let f=0;try{f=m.etiket.getComputedTextLength()}catch{f=0}return m.etiket.style.fontSize=g,f||60*(m.etiket.textContent||"").length});let o=Math.max(1320,800*n);for(let m=0;m<100;m++){const g=s*o/i;if(!p.some((w,y)=>Math.abs(O[y]-v[0])+d[y]*g/200+16>o/2))break;o+=20}let h=560;for(let m=0;m<200;m++){const g=l*h/i,f=h/n;let w=!0;for(let y=0;y<p.length&&w;y++){const A=X(y),b=d[y]*g/100,I=W+.5*b*Math.abs(Math.cos(A))+.6*g*Math.abs(Math.sin(A)),B=Math.abs(I*Math.cos(A))+b/2+16,D=Math.abs(I*Math.sin(A))+g+12;(B>h/2||D>f/2)&&(w=!1)}if(w)break;h+=20}E={uzakW:o,yakinW:Math.min(h,o),oran:n,cw:i,pxUzak:s,pxYakin:l,genislikler:d}}function q(e){if(!p)return;E||he();const a=E,i=me(e/100),c=R(),n=a?a.uzakW*Math.pow(a.yakinW/a.uzakW,i):1600,r=a?n/a.oran:1e3;c&&c.setAttribute("viewBox",`${(v[0]-n/2).toFixed(1)} ${(v[1]-r/2).toFixed(1)} ${n.toFixed(1)} ${r.toFixed(1)}`);const s=a?a.pxUzak+(a.pxYakin-a.pxUzak)*i:12,l=a?s*n/a.cw:20,d=_.length;for(let h=0;h<d;h++){const m=O[h],g=le[h],f=m+(v[0]-m)*i,w=g+(v[1]-g)*i,y=K+(ce-K)*i,A=1-i*.3,b=p[h];b.g.setAttribute("transform",`translate(${f.toFixed(1)} ${w.toFixed(1)}) scale(${y.toFixed(3)})`),b.g.setAttribute("opacity",A.toFixed(3));const I=a?a.genislikler[h]*l/100:0,B=m,D=g-112*K-l*.45,C=X(h),re=W+.5*I*Math.abs(Math.cos(C))+.6*l*Math.abs(Math.sin(C)),ye=v[0]+re*Math.cos(C),be=v[1]+re*Math.sin(C)+l*.35;b.etiket.setAttribute("x",(B+(ye-B)*i).toFixed(1)),b.etiket.setAttribute("y",(D+(be-D)*i).toFixed(1)),b.etiket.style.fontSize=l.toFixed(1)+"px",b.etiket.style.opacity=(.5+.5*Math.abs(2*i-1)).toFixed(3)}const o=document.getElementById("birlesikSlider");o&&Number(o.value)!==Math.round(e)&&(o.value=String(Math.round(e))),o&&o.setAttribute("aria-valuetext",e<=0?t({tr:"Ayr\u0131k: dokuz harita",en:"Apart: nine maps",pt:"Separados: nove mapas"}):e>=100?t({tr:"Birle\u015Fik: tek kompozisyon",en:"Together: one composition",pt:"Reunidos: uma composi\xE7\xE3o"}):t({tr:"Yakla\u015F\u0131l\u0131yor: %",en:"Approaching: %",pt:"A aproximar: %"}).replace("%","%"+Math.round(e)))}function $(e){k=Math.max(0,Math.min(100,e)),q(k)}function ue(e){e.addEventListener("wheel",r=>{if(!(r.ctrlKey||r.metaKey))return;r.preventDefault();const s=r.deltaMode===1?16:r.deltaMode===2?400:1;$(k-r.deltaY*s*.22)},{passive:!1});let a=null;const i=r=>Math.hypot(r[0].clientX-r[1].clientX,r[0].clientY-r[1].clientY);e.addEventListener("touchstart",r=>{r.touches.length===2&&(a={d0:i(r.touches)||1,v0:k})},{passive:!0}),e.addEventListener("touchmove",r=>{!a||r.touches.length!==2||(r.preventDefault(),$(a.v0+Math.log(i(r.touches)/a.d0)/Math.log(2.5)*100))},{passive:!1});const c=r=>{(!r.touches||r.touches.length<2)&&(a=null)};e.addEventListener("touchend",c),e.addEventListener("touchcancel",c);let n=null;e.addEventListener("gesturestart",r=>{r.preventDefault(),n=k}),e.addEventListener("gesturechange",r=>{n!=null&&(r.preventDefault(),$(n+Math.log(r.scale||1)/Math.log(2.5)*100))}),e.addEventListener("gestureend",()=>{n=null})}function xe(){const e=document.getElementById("birlesikMapsG"),a=document.getElementById("birlesikEtiketG");if(!e||!a)return;e.innerHTML="",a.innerHTML="",p=[],E=null;const i=t({tr:"B\xFCy\xFCt: ",en:"Enlarge: ",pt:"Ampliar: "});_.forEach((r,s)=>{const l=document.createElementNS(x,"g"),d=document.createElementNS(x,"circle");d.setAttribute("cx",0),d.setAttribute("cy",0),d.setAttribute("r",112),d.setAttribute("class","birlesik-map__hit"),d.setAttribute("pointer-events","fill"),l.appendChild(d),V(l),U(l,s),l.setAttribute("class","birlesik-map"),l.setAttribute("tabindex","0"),l.setAttribute("role","button"),l.setAttribute("aria-label",i+t(r.label)),l.addEventListener("click",()=>H(s)),l.addEventListener("keydown",m=>{(m.key==="Enter"||m.key===" ")&&(m.preventDefault(),H(s))}),e.appendChild(l);const o=document.createElementNS(x,"text");o.setAttribute("class","birlesik-map__label"),o.setAttribute("text-anchor","middle"),o.setAttribute("aria-hidden","true");const h=document.createElementNS(x,"tspan");h.setAttribute("class","birlesik-map__no"),h.textContent=String(s+1)+" ",o.appendChild(h),o.appendChild(document.createTextNode(t(r.shortLabel))),o.addEventListener("click",()=>H(s)),o.addEventListener("mouseenter",()=>l.classList.add("birlesik-map--deginiliyor")),o.addEventListener("mouseleave",()=>l.classList.remove("birlesik-map--deginiliyor")),l.addEventListener("mouseenter",()=>o.classList.add("birlesik-map__label--deginiliyor")),l.addEventListener("mouseleave",()=>o.classList.remove("birlesik-map__label--deginiliyor")),l.addEventListener("focus",()=>o.classList.add("birlesik-map__label--deginiliyor")),l.addEventListener("blur",()=>o.classList.remove("birlesik-map__label--deginiliyor")),a.appendChild(o),p.push({g:l,etiket:o})}),q(k),document.getElementById("birlesikSlider").addEventListener("input",r=>$(+r.target.value)),document.getElementById("birlesikMergeBtn").addEventListener("click",()=>$(100)),document.getElementById("birlesikResetBtn").addEventListener("click",()=>$(0));const n=R();n&&ue(n)}function ge(e){return`<article class="cizim-card cizim-card--birlesik${e===!0?" cizim-card--kisimda":e===!1?" cizim-card--perdeli":""}" data-cizim-kart="dokuz-harita">
+      <p class="cizim-card__ref">${t({tr:"F\xFCt\xFBh\xE2t, 9.316\u20139.461 \u2014 371. Bab",en:"Futuhat, 9.316\u20139.461 \u2014 Chapter 371",pt:"Futuhat, 9.316\u20139.461 \u2014 Cap\xEDtulo 371"})}</p>
+      <h2 class="cizim-card__name">${t({tr:"371. Bab: Dokuz Harita",en:"Chapter 371: Nine Maps",pt:"Cap\xEDtulo 371: Nove Mapas"})}</h2>
+      <p class="cizim-card__desc">${t({tr:`\u0130bn Arab\xEE'nin, F\xFCt\xFBh\xE2t'\u0131n ikinci telifine kendi eliyle \xE7izdi\u011Fi dokuz harita \u2014 kendi ifadesiyle "tek bir kompozisyon" olarak g\xF6r\xFClmesini istedi\u011Fi bir dizi. Uzaktan dokuz \xE7izim; yakla\u015Ft\u0131k\xE7a tek bir kompozisyon. Her haritaya ayr\u0131 ayr\u0131 t\u0131klay\u0131p b\xFCy\xFCtebilirsin.`,en:"Nine maps Ibn al-\u02BFArab\u012B drew with his own hand into the second recension of the Futuhat \u2014 meant, in his own words, to be seen as a single composition. From afar, nine drawings; as you come closer, one composition. Click any map on its own to enlarge it.",pt:"Nove mapas que Ibn al-\u02BFArab\u012B desenhou com a pr\xF3pria m\xE3o na segunda recens\xE3o das Futuhat \u2014 pensados, nas suas palavras, para serem vistos como uma \xFAnica composi\xE7\xE3o. De longe, nove desenhos; ao aproximar-se, uma s\xF3 composi\xE7\xE3o. Clique em qualquer mapa para o ampliar."})}</p>
       <div class="cizim-birlesik">
         <svg class="cizim-birlesik__svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet"
-             aria-label="${tt({ tr: 'Dokuz harita: ayrı çizimler ve merkezde birleşen tek bir kompozisyon', en: 'Nine maps: separate drawings and a single composition merging at the center', pt: 'Nove mapas: desenhos separados e uma única composição a fundir-se no centro' })}">
+             aria-label="${t({tr:"Dokuz harita: ayr\u0131 \xE7izimler ve merkezde birle\u015Fen tek bir kompozisyon",en:"Nine maps: separate drawings and a single composition merging at the center",pt:"Nove mapas: desenhos separados e uma \xFAnica composi\xE7\xE3o a fundir-se no centro"})}">
           <g id="birlesikMapsG"></g>
           <g id="birlesikEtiketG"></g>
         </svg>
-        <p class="cizim-birlesik__ipucu">${tt({
-          tr: 'Yaklaşmak için: Ctrl (⌘) + tekerlek, iki parmak ya da sürgü.',
-          en: 'To come closer: Ctrl (⌘) + scroll, two fingers, or the slider.',
-          pt: 'Para se aproximar: Ctrl (⌘) + roda, dois dedos ou o controlo deslizante.',
-        })}</p>
+        <p class="cizim-birlesik__ipucu">${t({tr:"Yakla\u015Fmak i\xE7in: Ctrl (\u2318) + tekerlek, iki parmak ya da s\xFCrg\xFC.",en:"To come closer: Ctrl (\u2318) + scroll, two fingers, or the slider.",pt:"Para se aproximar: Ctrl (\u2318) + roda, dois dedos ou o controlo deslizante."})}</p>
         <div class="cizim-birlesik__controls">
           <div class="cizim-birlesik__quick">
-            <button type="button" class="cizim-birlesik__btn" id="birlesikMergeBtn">${tt({ tr: 'Tek Haritada Birleştir', en: 'Merge into One Map', pt: 'Fundir num Só Mapa' })}</button>
-            <button type="button" class="cizim-birlesik__btn cizim-birlesik__btn--ghost" id="birlesikResetBtn">${tt({ tr: 'Başa Dön', en: 'Return to Start', pt: 'Voltar ao Início' })}</button>
+            <button type="button" class="cizim-birlesik__btn" id="birlesikMergeBtn">${t({tr:"Tek Haritada Birle\u015Ftir",en:"Merge into One Map",pt:"Fundir num S\xF3 Mapa"})}</button>
+            <button type="button" class="cizim-birlesik__btn cizim-birlesik__btn--ghost" id="birlesikResetBtn">${t({tr:"Ba\u015Fa D\xF6n",en:"Return to Start",pt:"Voltar ao In\xEDcio"})}</button>
           </div>
           <div class="cizim-birlesik__slider-row">
-            <span>${tt({ tr: 'Ayrık', en: 'Apart', pt: 'Separados' })}</span>
-            <input type="range" id="birlesikSlider" min="0" max="100" value="${Math.round(birlesikMergeVal)}" aria-label="${tt({ tr: 'Ayrık / Birleşik', en: 'Apart / Together', pt: 'Separados / Reunidos' })}">
-            <span>${tt({ tr: 'Birleşik', en: 'Together', pt: 'Reunidos' })}</span>
+            <span>${t({tr:"Ayr\u0131k",en:"Apart",pt:"Separados"})}</span>
+            <input type="range" id="birlesikSlider" min="0" max="100" value="${Math.round(k)}" aria-label="${t({tr:"Ayr\u0131k / Birle\u015Fik",en:"Apart / Together",pt:"Separados / Reunidos"})}">
+            <span>${t({tr:"Birle\u015Fik",en:"Together",pt:"Reunidos"})}</span>
           </div>
         </div>
       </div>
-    </article>`;
-  }
-
-  // --- Kısım süzgeci (2026-10-10, kapılar; görsel taraması madde 11) ---
-  // Fütûhât kısım sayfasındaki "Çizim" rozeti bir kapı: /cizimler/?kisim=<id>
-  // adresine açılır. Burada o kısma veride gerçekten bağlı çizimler
-  // (futuhat-cizimleri.json `kisimlar`, dokuz harita için `dokuzHarita`)
-  // ışıkta kalır, ötekiler perdelenir (matlık); ilk bağlı çizime inilir.
-  // Süzgeç adresin kendisidir -- geri/ileri tuşu aynı hâli geri getirir.
-  const KISIM_RE = /^c(\d+)k(\d+)$/;
-  function adrestekiKisim() {
-    try {
-      const k = new URLSearchParams(location.search).get("kisim");
-      return k && KISIM_RE.test(k) ? k : null;
-    } catch (_) { return null; }
-  }
-  function romen(n) {
-    const tablo = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
-    let out = "", kalan = n;
-    for (const [v, s] of tablo) while (kalan >= v) { out += s; kalan -= v; }
-    return out;
-  }
-  function kisimAdi(id) {
-    const m = KISIM_RE.exec(id);
-    if (!m) return id;
-    const c = romen(+m[1]), k = romen(+m[2]);
-    return tt({ tr: `Cilt ${c}, Kısım ${k}`, en: `Volume ${c}, Part ${k}`, pt: `Volume ${c}, Parte ${k}` });
-  }
-  function kisimdaMi(item, kisim) {
-    return !!kisim && Array.isArray(item.kisimlar) && item.kisimlar.includes(kisim);
-  }
-  function dokuzHaritaKisimda(kisim) {
-    return !!kisim && !!data && !!data.dokuzHarita && Array.isArray(data.dokuzHarita.kisimlar) && data.dokuzHarita.kisimlar.includes(kisim);
-  }
-  function suzgecHtml(kisim) {
-    if (!kisim) return "";
-    const sayi = data.diagrams.filter((x) => kisimdaMi(x, kisim)).length + (dokuzHaritaKisimda(kisim) ? 1 : 0);
-    const kisimHref = window.__dostNav ? window.__dostNav.href("futuhat", kisim) : "/futuhat/" + kisim + "/";
-    const tumHref = window.__dostNav ? window.__dostNav.href("cizimler") : "/cizimler/";
-    return `<div class="cizim-suzgec" role="status">
-      <p class="cizim-suzgec__metin">${tt({
-        tr: `Fütûhât · ${kisimAdi(kisim)} — bu kısma bağlı ${sayi} çizim ışıkta; ötekiler perdeli.`,
-        en: `Futuhat · ${kisimAdi(kisim)} — the ${sayi} diagram${sayi === 1 ? "" : "s"} tied to this part stay in the light; the others are veiled.`,
-        pt: `Futuhat · ${kisimAdi(kisim)} — ${sayi === 1 ? "o diagrama ligado" : `os ${sayi} diagramas ligados`} a esta parte ${sayi === 1 ? "fica" : "ficam"} na luz; os outros ficam velados.`,
-      })}</p>
+    </article>`}const J=/^c(\d+)k(\d+)$/;function Z(){try{const e=new URLSearchParams(location.search).get("kisim");return e&&J.test(e)?e:null}catch{return null}}function Q(e){const a=[[1e3,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];let i="",c=e;for(const[n,r]of a)for(;c>=n;)i+=r,c-=n;return i}function N(e){const a=J.exec(e);if(!a)return e;const i=Q(+a[1]),c=Q(+a[2]);return t({tr:`Cilt ${i}, K\u0131s\u0131m ${c}`,en:`Volume ${i}, Part ${c}`,pt:`Volume ${i}, Parte ${c}`})}function ee(e,a){return!!a&&Array.isArray(e.kisimlar)&&e.kisimlar.includes(a)}function te(e){return!!e&&!!u&&!!u.dokuzHarita&&Array.isArray(u.dokuzHarita.kisimlar)&&u.dokuzHarita.kisimlar.includes(e)}function pe(e){if(!e)return"";const a=u.diagrams.filter(n=>ee(n,e)).length+(te(e)?1:0),i=window.__dostNav?window.__dostNav.href("futuhat",e):"/futuhat/"+e+"/",c=window.__dostNav?window.__dostNav.href("cizimler"):"/cizimler/";return`<div class="cizim-suzgec" role="status">
+      <p class="cizim-suzgec__metin">${t({tr:`F\xFCt\xFBh\xE2t \xB7 ${N(e)} \u2014 bu k\u0131sma ba\u011Fl\u0131 ${a} \xE7izim \u0131\u015F\u0131kta; \xF6tekiler perdeli.`,en:`Futuhat \xB7 ${N(e)} \u2014 the ${a} diagram${a===1?"":"s"} tied to this part stay in the light; the others are veiled.`,pt:`Futuhat \xB7 ${N(e)} \u2014 ${a===1?"o diagrama ligado":`os ${a} diagramas ligados`} a esta parte ${a===1?"fica":"ficam"} na luz; os outros ficam velados.`})}</p>
       <div class="cizim-suzgec__baglar">
-        <a class="cizim-suzgec__bag" href="${kisimHref}" data-view="futuhat" data-id="${kisim}">${tt({ tr: "Kısma dön", en: "Back to the part", pt: "Voltar à parte" })}</a>
-        <a class="cizim-suzgec__bag cizim-suzgec__bag--kaldir" href="${tumHref}" data-suzgec-kaldir="1">${tt({ tr: "Tüm çizimler", en: "All diagrams", pt: "Todos os diagramas" })}</a>
+        <a class="cizim-suzgec__bag" href="${i}" data-view="futuhat" data-id="${e}">${t({tr:"K\u0131sma d\xF6n",en:"Back to the part",pt:"Voltar \xE0 parte"})}</a>
+        <a class="cizim-suzgec__bag cizim-suzgec__bag--kaldir" href="${c}" data-suzgec-kaldir="1">${t({tr:"T\xFCm \xE7izimler",en:"All diagrams",pt:"Todos os diagramas"})}</a>
       </div>
-    </div>`;
-  }
-  let gosterilenKisim = null;
-  function suzgeciKaldir(adimAc) {
-    const yol = location.pathname;
-    try {
-      if (adimAc) history.pushState(null, "", yol);
-      else history.replaceState(null, "", yol);
-    } catch (_) { /* eski tarayıcı */ }
-    render();
-  }
-
-  function render() {
-    if (!data) return;
-    const kisim = adrestekiKisim();
-    const yeniSuzgec = kisim !== gosterilenKisim;
-    gosterilenKisim = kisim;
-    const cards = data.diagrams.map((item) => cardHtml(item, kisim)).join("");
-    const sources = (data.sources || []).map((s) => `<li>${refMetni(s)}</li>`).join("");
-    listEl.classList.toggle("cizimler-list--suzgecli", !!kisim);
-    listEl.innerHTML = `
-      ${CIZIM_DEFS}
-      ${suzgecHtml(kisim)}
-      <p class="cizimler-intro">${linkify(tt(data.intro), null)}</p>
-      ${birlesikHaritaHtml(kisim ? dokuzHaritaKisimda(kisim) : null)}
-      ${cards}
-      <ul class="cizimler-sources">${sources}</ul>
-    `;
-    renderBirlesikStage();
-    listEl.querySelectorAll(".cizim-card__svg-wrap").forEach((el) => {
-      el.addEventListener("click", () => openLightbox(el.dataset.cizimId));
-      el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openLightbox(el.dataset.cizimId);
-        }
-      });
-    });
-    const kaldir = listEl.querySelector("[data-suzgec-kaldir]");
-    if (kaldir) kaldir.addEventListener("click", (e) => {
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      e.preventDefault();
-      suzgeciKaldir(true);
-    });
-    // Kapıdan yeni gelindiyse o kısmın ilk çizimine in (ışıktaki ilk kart).
-    if (kisim && yeniSuzgec && !wrap.hidden) {
-      const ilk = listEl.querySelector(".cizim-card--kisimda");
-      if (ilk) requestAnimationFrame(() => {
-        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        ilk.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
-      });
-    }
-    // Sadece bu görünüm gerçekten açıkken kapat -- paylaşılan lightbox artık
-    // tüm görünümler arasında tek bir örnek olduğu için, arka planda (görünür
-    // değilken) bir dil değişimi başka bir görünümün açık lightbox'ını
-    // yanlışlıkla kapatmasın.
-    if (!wrap.hidden) window.DostLightbox.close();
-  }
-
-  // Bir adım geri: süzgeç açıksa Esc onu kaldırır (lightbox zincirde önce).
-  if (window.DostGraphUtils && window.DostGraphUtils.registerStepBack) {
-    window.DostGraphUtils.registerStepBack("cizimler-wrap", () => {
-      if (!gosterilenKisim || !adrestekiKisim()) return false;
-      suzgeciKaldir(false);
-      return true;
-    });
-  }
-  // Pencere boyu değişince bakış (viewBox) ve etiket boyu yeniden ölçülür.
-  window.addEventListener("resize", window.DostGraphUtils.debounceResize(() => {
-    if (wrap.hidden || !birlesikMapEls) return;
-    birlesikKamera = null;
-    birlesikUpdateStage(birlesikMergeVal);
-  }));
-
-  window.__cizimlerApp = {
-    activate() {
-      fetchData().then(() => {
-        // Aynı süzgeçle yeniden açılınca (geri/ileri tuşu) kart yeniden
-        // ışıklansın ve ilk karta inilsin.
-        gosterilenKisim = null;
-        render();
-      });
-    },
-    onLangChange() {
-      render();
-    },
-  };
-})();
+    </div>`}let T=null;function ae(e){const a=location.pathname;try{e?history.pushState(null,"",a):history.replaceState(null,"",a)}catch{}G()}function G(){if(!u)return;const e=Z(),a=e!==T;T=e;const i=u.diagrams.map(r=>oe(r,e)).join(""),c=(u.sources||[]).map(r=>`<li>${F(r)}</li>`).join("");z.classList.toggle("cizimler-list--suzgecli",!!e),z.innerHTML=`
+      ${se}
+      ${pe(e)}
+      <p class="cizimler-intro">${P(t(u.intro),null)}</p>
+      ${ge(e?te(e):null)}
+      ${i}
+      <ul class="cizimler-sources">${c}</ul>
+    `,xe(),z.querySelectorAll(".cizim-card__svg-wrap").forEach(r=>{r.addEventListener("click",()=>j(r.dataset.cizimId)),r.addEventListener("keydown",s=>{(s.key==="Enter"||s.key===" ")&&(s.preventDefault(),j(r.dataset.cizimId))})});const n=z.querySelector("[data-suzgec-kaldir]");if(n&&n.addEventListener("click",r=>{r.button!==0||r.metaKey||r.ctrlKey||r.shiftKey||r.altKey||(r.preventDefault(),ae(!0))}),e&&a&&!S.hidden){const r=z.querySelector(".cizim-card--kisimda");r&&requestAnimationFrame(()=>{const s=window.matchMedia("(prefers-reduced-motion: reduce)").matches;r.scrollIntoView({block:"start",behavior:s?"auto":"smooth"})})}S.hidden||window.DostLightbox.close()}window.DostGraphUtils&&window.DostGraphUtils.registerStepBack&&window.DostGraphUtils.registerStepBack("cizimler-wrap",()=>!T||!Z()?!1:(ae(!1),!0)),window.addEventListener("resize",window.DostGraphUtils.debounceResize(()=>{S.hidden||!p||(E=null,q(k))})),window.__cizimlerApp={activate(){ie().then(()=>{T=null,G()})},onLangChange(){G()}}})();

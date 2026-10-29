@@ -1,129 +1,19 @@
-/**
- * Hakkında sayfasının beşinci sekmesi: "Nereden Başlamalı" (2026-08-28).
- *
- * Sitenin on dokuz görünümü var ve giriş kapısı bir grafik: ilk kez gelen
- * biri on beş düğüm görüyor ve nereye tıklayacağını bilmiyor. #start-hint
- * kartı iki kapı gösteriyor (Zât'tan başla / Kalp'ten başla) ama orada
- * biten şey bir DURAK, bir yol değil.
- *
- * Bu sayfa yolları veriyor. "Okuma Yolları" ile karıştırılmamalı ve o
- * yüzden adı ondan ayrı: orası bir KONU için üç kademeli bir KAYNAK sırası
- * (bir makale, bir kitap, bir birincil metin), burası sitenin kendi
- * sayfaları arasında bir gezinti.
- *
- * İki kural, ikisi de ETKILESIM_DILI.md'den:
- *  - Bağlanmamış düğme yok. Bir yol haritasında bu özellikle geçerli,
- *    çünkü bu sayfanın TEK işi bir yere göndermek; şemadaki `view` listesi
- *    ontology.js'in rota sözlüğüyle aynı tutuluyor.
- *  - Tıklama kullanıcıyı habersiz taşımaz: durak düğmesi ne olacağını
- *    (hangi bölüm, hangi sayfa) yazıyor, sonra oraya gidiyor.
- */
-window.__neredenBaslamaliApp = (function () {
-  "use strict";
-  const I18n = window.DostI18n;
-  const GU = window.DostGraphUtils;
-
-  const contentEl = document.getElementById("nereden-baslamali-content");
-  const tt = I18n.pick3;
-
-  let data = null;
-  let fetchPromise = null;
-
-  function esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-
-  // Bölüm adları. Rota sözlüğünün TAMAMI değil, yalnız bu sayfada geçenler
-  // -- eksik bir ad sessizce "view" kodunu gösterir, uydurma bir ad değil.
-  const GORUNUM_ADI = {
-    ontoloji: { tr: "Ontoloji", en: "Ontology", pt: "Ontologia" },
-    terimler: { tr: "Terimler", en: "Terms", pt: "Termos" },
-    bilmiyoruz: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" },
-    "acik-sorular": { tr: "Açık Sorular", en: "Open Questions", pt: "Perguntas Abertas" },
-    "elestiri-arkeolojisi": { tr: "Eleştiri Arkeolojisi", en: "Archaeology of Criticism", pt: "Arqueologia da Crítica" },
-    futuhat: { tr: "Fütûhât-ı Mekkiyye", en: "The Meccan Openings", pt: "As Aberturas de Meca" },
-    fusus: { tr: "Füsûsu'l-Hikem", en: "Fusus al-Hikam", pt: "Fusus al-Hikam" },
-    miskat: { tr: "Mişkâtü'l-Envâr", en: "Mishkat al-Anwar", pt: "Mishkat al-Anwar" },
-    kavram: { tr: "Kavram Sayfası", en: "Concept Page", pt: "Página do Conceito" },
-    hakkinda: { tr: "Hakkında", en: "About", pt: "Sobre" },
-  };
-
-  function fetchData() {
-    if (data) return Promise.resolve(data);
-    if (fetchPromise) return fetchPromise;
-    if (window.DostViewStatus) window.DostViewStatus.showLoading("nereden-baslamali-panel");
-    fetchPromise = GU.fetchJson("data/nereden-baslamali.json")
-      .then((d) => {
-        data = d;
-        if (window.DostViewStatus) window.DostViewStatus.hide("nereden-baslamali-panel");
-        return data;
-      })
-      .catch((err) => {
-        console.error("nereden-baslamali verisi yüklenemedi / failed to load", err);
-        fetchPromise = null;
-        if (window.DostViewStatus) {
-          window.DostViewStatus.showError("nereden-baslamali-panel", () => window.__neredenBaslamaliApp.activate());
-        }
-        return null;
-      });
-    return fetchPromise;
-  }
-
-  function durakHtml(d, sira) {
-    const gorunum = GORUNUM_ADI[d.view] ? tt(GORUNUM_ADI[d.view]) : d.view;
-    // Gidilecek yer düğmenin ÜSTÜNDE yazılı: tıklamadan önce nereye
-    // gidileceği belli olsun (habersiz taşımama kuralı).
-    // Aynı yolda iki durak aynı bölüme gidebiliyor (Ontoloji -> Zât ve
-    // Ontoloji -> Kalp); yalnız bölüm adını yazan bir düğme ikisini
-    // ayırt ettirmiyordu. Sayfa adı da düğmede.
-    const hedef = d.hedef ? tt(d.hedef) : "";
-    return `<li class="nb-durak">
-      <span class="nb-durak__no" aria-hidden="true">${sira}</span>
+window.__neredenBaslamaliApp=(function(){"use strict";const c=window.DostI18n,p=window.DostGraphUtils,l=document.getElementById("nereden-baslamali-content"),t=c.pick3;let i=null,s=null;function n(a){return String(a||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}const u={ontoloji:{tr:"Ontoloji",en:"Ontology",pt:"Ontologia"},terimler:{tr:"Terimler",en:"Terms",pt:"Termos"},bilmiyoruz:{tr:"Bilmiyoruz",en:"We Don't Know",pt:"N\xE3o Sabemos"},"acik-sorular":{tr:"A\xE7\u0131k Sorular",en:"Open Questions",pt:"Perguntas Abertas"},"elestiri-arkeolojisi":{tr:"Ele\u015Ftiri Arkeolojisi",en:"Archaeology of Criticism",pt:"Arqueologia da Cr\xEDtica"},futuhat:{tr:"F\xFCt\xFBh\xE2t-\u0131 Mekkiyye",en:"The Meccan Openings",pt:"As Aberturas de Meca"},fusus:{tr:"F\xFCs\xFBsu'l-Hikem",en:"Fusus al-Hikam",pt:"Fusus al-Hikam"},miskat:{tr:"Mi\u015Fk\xE2t\xFC'l-Env\xE2r",en:"Mishkat al-Anwar",pt:"Mishkat al-Anwar"},kavram:{tr:"Kavram Sayfas\u0131",en:"Concept Page",pt:"P\xE1gina do Conceito"},hakkinda:{tr:"Hakk\u0131nda",en:"About",pt:"Sobre"}};function w(){return i?Promise.resolve(i):s||(window.DostViewStatus&&window.DostViewStatus.showLoading("nereden-baslamali-panel"),s=p.fetchJson("data/nereden-baslamali.json").then(a=>(i=a,window.DostViewStatus&&window.DostViewStatus.hide("nereden-baslamali-panel"),i)).catch(a=>(console.error("nereden-baslamali verisi y\xFCklenemedi / failed to load",a),s=null,window.DostViewStatus&&window.DostViewStatus.showError("nereden-baslamali-panel",()=>window.__neredenBaslamaliApp.activate()),null)),s)}function k(a,e){const o=u[a.view]?t(u[a.view]):a.view,r=a.hedef?t(a.hedef):"";return`<li class="nb-durak">
+      <span class="nb-durak__no" aria-hidden="true">${e}</span>
       <div class="nb-durak__govde">
-        <p class="nb-durak__ne">${esc(tt(d.ne))}</p>
-        <p class="nb-durak__bak">${esc(tt(d.bak))}</p>
-        <button type="button" class="nb-durak__git" data-view="${esc(d.view)}"${d.id ? ` data-id="${esc(d.id)}"` : ""}>
-          <span class="nb-durak__git-yer">${esc(gorunum)}${hedef ? ` <span class="nb-durak__git-sayfa">· ${esc(hedef)}</span>` : ""}</span>
-          <span class="nb-durak__git-ok" aria-hidden="true">→</span>
+        <p class="nb-durak__ne">${n(t(a.ne))}</p>
+        <p class="nb-durak__bak">${n(t(a.bak))}</p>
+        <button type="button" class="nb-durak__git" data-view="${n(a.view)}"${a.id?` data-id="${n(a.id)}"`:""}>
+          <span class="nb-durak__git-yer">${n(o)}${r?` <span class="nb-durak__git-sayfa">\xB7 ${n(r)}</span>`:""}</span>
+          <span class="nb-durak__git-ok" aria-hidden="true">\u2192</span>
         </button>
       </div>
-    </li>`;
-  }
-
-  function yolHtml(y) {
-    const n = (y.duraklar || []).length;
-    const durakSayisi = tt({
-      tr: n + " durak", en: n + (n === 1 ? " stop" : " stops"), pt: n + (n === 1 ? " parada" : " paradas"),
-    });
-    return `<section class="nb-yol">
-      <h2 class="nb-yol__baslik">${esc(tt(y.baslik))}</h2>
-      <p class="nb-yol__olcu">${esc(durakSayisi)}</p>
-      <p class="nb-yol__kim">${esc(tt(y.kim))}</p>
-      <ol class="nb-durak-liste">${(y.duraklar || []).map((d, i) => durakHtml(d, i + 1)).join("")}</ol>
-    </section>`;
-  }
-
-  function render() {
-    if (!contentEl || !data) return;
-    contentEl.innerHTML = `
-      <p class="nb-not">${esc(tt(data.not))}</p>
-      <div class="nb-yollar">${(data.yollar || []).map(yolHtml).join("")}</div>
-    `;
-    contentEl.querySelectorAll(".nb-durak__git").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const view = btn.dataset.view, id = btn.dataset.id;
-        if (window.__dostNav && window.__dostNav.goTo) window.__dostNav.goTo(view, id);
-        else window.location.href = (window.__dostRouteBase || "") + "/" + view + (id ? "/" + id : "");
-      });
-    });
-  }
-
-  function activate() {
-    fetchData().then((d) => { if (d) render(); });
-  }
-
-  return {
-    activate: activate,
-    onLangChange: function () { if (data) render(); },
-  };
-})();
+    </li>`}function _(a){const e=(a.duraklar||[]).length,o=t({tr:e+" durak",en:e+(e===1?" stop":" stops"),pt:e+(e===1?" parada":" paradas")});return`<section class="nb-yol">
+      <h2 class="nb-yol__baslik">${n(t(a.baslik))}</h2>
+      <p class="nb-yol__olcu">${n(o)}</p>
+      <p class="nb-yol__kim">${n(t(a.kim))}</p>
+      <ol class="nb-durak-liste">${(a.duraklar||[]).map((r,b)=>k(r,b+1)).join("")}</ol>
+    </section>`}function d(){!l||!i||(l.innerHTML=`
+      <p class="nb-not">${n(t(i.not))}</p>
+      <div class="nb-yollar">${(i.yollar||[]).map(_).join("")}</div>
+    `,l.querySelectorAll(".nb-durak__git").forEach(a=>{a.addEventListener("click",()=>{const e=a.dataset.view,o=a.dataset.id;window.__dostNav&&window.__dostNav.goTo?window.__dostNav.goTo(e,o):window.location.href=(window.__dostRouteBase||"")+"/"+e+(o?"/"+o:"")})}))}function m(){w().then(a=>{a&&d()})}return{activate:m,onLangChange:function(){i&&d()}}})();
