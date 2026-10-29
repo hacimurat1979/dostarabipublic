@@ -52,9 +52,9 @@
   //   1. Halka kapanınca üstünde iki giriş noktası belirir: Zât (tepe) ve
   //      Kalp -- Ontoloji çemberindeki yerleriyle aynı yerde.
   //   2. Seçim halkanın üzerinden yapılır (tıklama, ya da Tab + Enter).
-  //      Esc, "Geç" ya da boş zemine tıklamak seçimsiz girer; bir süre
-  //      hiçbir şey yapılmazsa da seçimsiz girilir (eşik geçilir, kimse
-  //      eşikte bekletilmez) -- bir noktaya değinilirken bu süre durur.
+  //      Esc ya da "Geç" seçimsiz girer. 2026-10-29 (kullanıcı notu): artık
+  //      süre dolunca kendiliğinden girilmez ve boş zemine tıklamak da girmez;
+  //      Zât, Kalp ya da Geç'ten biri seçilmedikçe eşikte kalınır.
   //   3. Halka açılıp Ontoloji çemberinin yerine oturur ve onun çemberine
   //      dönüşür; seçilen ucun paneli çember doğduktan sonra açılır
   //      (ontology.js maybeBirth).
@@ -74,13 +74,8 @@
   const secimMetni = document.getElementById("welcome-secim");
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // Seçimsiz girişe kadar bekleme: cümleyi okuyup bir uç seçmeye yetecek
-  // kadar. Hareket azaltılmışsa ritüel zaten kısa (halka çizilmiyor).
-  const BEKLEME = reduceMotion ? 3500 : 7000;
-
   let finished = false;
   let gidiyor = false;
-  let beklemeTimer = null;
 
   // 2026-08-26 sağlamlaştırma: dinleyiciler animasyon kurulumundan ÖNCE,
   // kendi null-guard'larıyla bağlanıyor -- bir öğe eksik kalırsa tam ekran
@@ -96,18 +91,12 @@
       event.stopPropagation();
       leave(btn.dataset.uc || null);
     });
-    // Bir noktaya değinilirken (fare ya da klavye odağı) seçimsiz giriş
-    // beklemesi durur; ayrılınca kısa bir payla yeniden başlar.
-    uclar.addEventListener("pointerover", beklemeyiDurdur);
-    uclar.addEventListener("focusin", beklemeyiDurdur);
-    uclar.addEventListener("pointerout", () => beklemeyiKur(3000));
-    uclar.addEventListener("focusout", () => beklemeyiKur(3000));
   }
   root.addEventListener("click", () => {
     // Halka çizilirken tıklamak onu tamamlar (seçim noktaları belirir);
-    // seçim açıkken boş zemine tıklamak seçimsiz girer.
+    // seçim açıkken boş zemine tıklamak bir şey yapmaz -- giriş yalnız
+    // Zât, Kalp ya da Geç'tir.
     if (!finished) finish();
-    else leave(null);
   });
   window.addEventListener("keydown", (event) => {
     if (root.hidden || gidiyor) return;
@@ -150,15 +139,6 @@
     if (l[i]) l[i].focus();
   }
 
-  function beklemeyiDurdur() {
-    if (beklemeTimer) { clearTimeout(beklemeTimer); beklemeTimer = null; }
-  }
-  function beklemeyiKur(ms) {
-    beklemeyiDurdur();
-    if (!finished || gidiyor) return;
-    beklemeTimer = setTimeout(() => leave(null), ms);
-  }
-
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
@@ -191,13 +171,12 @@
     if (gidiyor || root.hidden) return;
     gidiyor = true;
     finished = true;
-    beklemeyiDurdur();
     window.__dostKarsilamaSecimi = secim || null;
     // Ontoloji'nin doğuşu (ontology.js runBirth) bu olayla başlar: halka
     // yerine otururken çember belirir, düğümler onun üstünde doğar.
-    const haberVer = () => {
+    const haberVer = (gecikme) => {
       window.__dostKarsilamaGitti = true;
-      document.dispatchEvent(new CustomEvent("dost:welcome-left", { detail: { secim: secim || null } }));
+      document.dispatchEvent(new CustomEvent("dost:welcome-left", { detail: { secim: secim || null, gecikme: gecikme || 0 } }));
     };
     const bitir = (ms) => setTimeout(() => {
       root.hidden = true;
@@ -208,24 +187,57 @@
     const g = hedefHalka();
     if (!g) {
       root.classList.add("welcome-screen--leaving");
-      haberVer();
+      haberVer(0);
       bitir(950);
       return;
     }
-    // Halkanın açılışı: sahne (halka) ontoloji çemberinin yerine ve
-    // boyuna taşınır; karanlık zemin ve yazılar çekilir. Halka oraya
-    // varınca altındaki çember zaten belirmiş olur; halka onun içinde söner.
+    // Halkanın açılışı, üç soluk (2026-10-29, kullanıcı notu: "Zât düğümüne
+    // küçülme efekti anlaşılmıyor, bir anda harita açılıyor gibi"):
+    //   1. (0-0,95 sn) zemin ve yazılar çekilir, halka Ontoloji çemberinin
+    //      yerine ve boyuna oturur;
+    //   2. (0,95-2,0 sn) halka çemberin tepesindeki Zât noktasına küçülür ve
+    //      orada bir ışığa dönüşür (ışık = zuhûr);
+    //   3. (2,0 sn sonrası) çember ve düğümler o ışıktan doğar: doğuş
+    //      (ontology.js runBirth) haritayı gizli tutarak bu ana kadar bekler.
     const sr = stage.getBoundingClientRect();
     const ringPx = sr.width * (r / 300);
     const olcek = g.r / ringPx;
-    const dx = g.x - (sr.left + sr.width / 2);
-    const dy = g.y - (sr.top + sr.height / 2);
+    const sx = sr.left + sr.width / 2, sy = sr.top + sr.height / 2;
+    const dx = g.x - sx;
+    const dy = g.y - sy;
+    const ZAT_BEKLE = 1950;
     beam.style.strokeDashoffset = "0";
     root.classList.add("welcome-screen--donusum");
     stage.style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px) scale(" + olcek.toFixed(4) + ")";
-    setTimeout(haberVer, 300);
-    setTimeout(() => root.classList.add("welcome-screen--donusum-son"), 900);
-    bitir(1500);
+    haberVer(ZAT_BEKLE);
+    const zatVar = isFinite(g.zx) && isFinite(g.zy) && g.zr > 2;
+    if (zatVar) {
+      // Zât ışığı: halkanın vardığı noktada, düğümün ~3 katı çapında yanar.
+      let isik = root.querySelector(".welcome-screen__zat-isik");
+      if (!isik) {
+        isik = document.createElement("div");
+        isik.className = "welcome-screen__zat-isik";
+        isik.setAttribute("aria-hidden", "true");
+        root.appendChild(isik);
+      }
+      const cap = Math.max(36, g.zr * 6);
+      isik.style.left = g.zx.toFixed(1) + "px";
+      isik.style.top = g.zy.toFixed(1) + "px";
+      isik.style.width = cap.toFixed(1) + "px";
+      isik.style.height = cap.toFixed(1) + "px";
+      setTimeout(() => {
+        // Halka Zât'a küçülür: ontoloji çemberinin tepesine taşınıp ~düğüm boyuna iner.
+        const k2 = Math.max(0.02, (g.zr * 1.1) / ringPx);
+        root.classList.add("welcome-screen--zata");
+        stage.style.transform = "translate(" + (g.zx - sx).toFixed(1) + "px," + (g.zy - sy).toFixed(1) + "px) scale(" + k2.toFixed(4) + ")";
+      }, 900);
+      setTimeout(() => root.classList.add("welcome-screen--zat-yanik"), 1500);
+      setTimeout(() => root.classList.add("welcome-screen--zat-son"), ZAT_BEKLE + 350);
+      bitir(ZAT_BEKLE + 1100);
+    } else {
+      setTimeout(() => root.classList.add("welcome-screen--donusum-son"), 900);
+      bitir(1500);
+    }
   }
 
   function finish() {
@@ -249,7 +261,6 @@
           requestAnimationFrame(() => requestAnimationFrame(() => uclar.classList.add("welcome-screen__uclar--acik")));
         }
         if (secimMetni) secimMetni.classList.add("welcome-screen__secim--acik");
-        beklemeyiKur(BEKLEME);
       }, reduceMotion ? 0 : 520);
     } catch (e) {
       leave(null);

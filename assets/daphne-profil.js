@@ -786,7 +786,13 @@
       if (b) b.focus();
     }
   }
-  window.__dostDaphneOkuma = { yenile: okumaYenile };
+  // @revise "Kendi notum" modalı (assets/edit-mode.js, 2026-10-29): kenar notunun hangi yazıya
+  // gideceği seçilir; okuma paneli açıksa o yazı hazır gelir.
+  window.__dostDaphneOkuma = {
+    yenile: okumaYenile,
+    yazilar: () => siraliYazilar.map((a) => ({ url: a.url, title: a.title, date: a.date })),
+    acik: () => (okuma && !okuma.hidden && okumaIndeks >= 0 && siraliYazilar[okumaIndeks] ? siraliYazilar[okumaIndeks].url : ""),
+  };
 
   function okumaKapat() {
     if (!okuma || okuma.hidden) return false;

@@ -641,7 +641,8 @@
         function secimiAc(secim) {
           if (secim && window.__dostNav) window.__dostNav.goTo("ontoloji", secim);
         }
-        function maybeBirth() {
+        function maybeBirth(olay) {
+          const gecikme = olay && olay.detail ? olay.detail.gecikme : 0;
           const secim = karsilamaSecimi();
           if (!birthFn) { secimiAc(secim); return; }
           if (currentMainView !== "ontology" || currentDetailNode || currentDetailEdge) { birthFn = null; secimiAc(secim); return; }
@@ -649,7 +650,7 @@
           birthFn = null;
           // İlk nefes (F01, 2026-10-21, kullanıcı onayı): çember doğduktan sonra, cihaz başına
           // bir kez, rücû kenarında bir ışık akar. Karşılamada uç seçildiyse hiç oynamaz.
-          if (!f(() => { secimiAc(secim); if (!secim) ilkNefes(); })) { secimiAc(secim); if (!secim) ilkNefes(); }
+          if (!f(() => { secimiAc(secim); if (!secim) ilkNefes(); }, gecikme)) { secimiAc(secim); if (!secim) ilkNefes(); }
         }
         const welcomeEl = document.getElementById("welcome-screen");
         if (welcomeEl && !welcomeEl.hidden && !window.__dostKarsilamaGitti) {
@@ -2843,7 +2844,7 @@
     // bağlanır. Kamera hiç kıpırdamaz: halkanın vardığı yer, çemberin
     // ilk bakıştaki yeridir. reduced-motion'da hiç çalışmaz.
     // Dönüş: doğuş gerçekten başladıysa true; bitince bitti() çağrılır.
-    birthFn = function runBirth(bitti) {
+    birthFn = function runBirth(bitti, gecikme) {
       if (reduceMotion) return false;
       // Dar ekranda (mobil-liste kipi) SVG "haritayı aç"a kadar CSS ile
       // gizli -- clientWidth 0. Gizliyken doğuş zaten görünmez; d3-zoom'un
@@ -2854,9 +2855,12 @@
       nodes.forEach((n) => { n.__birth = 0; });
       birthRing = 0;
       const linksG = svg.select("g.links").attr("opacity", 0);
-      linksG.transition().delay(1150).duration(700).attr("opacity", 1);
+      // gecikme (ms): karşılama halkası Zât'a küçülürken harita gizli kalır,
+      // doğuş halka Zât'a varınca başlar (welcome.js leave, 2026-10-29).
+      const bekle = Math.max(0, gecikme || 0);
+      linksG.transition().delay(1150 + bekle).duration(700).attr("opacity", 1);
 
-      const HALKA = 520, STAG = 105, DUR = 460, start = performance.now();
+      const HALKA = 520, STAG = 105, DUR = 460, start = performance.now() + bekle;
       function step(now) {
         const t = now - start;
         let done = true;
@@ -2888,7 +2892,13 @@
       if (!el.clientWidth || ontologyWrap.hidden || tiltTarget > 0.5) return null;
       const t = ilkBakis.get(bakisAnahtari()) || ilkBakisKaydet(computeFitTransform());
       const r = el.getBoundingClientRect();
-      return { x: r.left + t.applyX(ringCx), y: r.top + t.applyY(ringCy), r: t.k * ringR };
+      // Zât (OMURGA'da -90°: çemberin tepesi): karşılama halkası önce çemberin
+      // yerine oturur, sonra bu noktaya küçülür (welcome.js leave).
+      const zat = nodes.find((n) => n.id === "dhat");
+      const zx = zat && isFinite(zat.px) ? zat.px : ringCx;
+      const zy = zat && isFinite(zat.py) ? zat.py : ringCy - ringR;
+      return { x: r.left + t.applyX(ringCx), y: r.top + t.applyY(ringCy), r: t.k * ringR,
+               zx: r.left + t.applyX(zx), zy: r.top + t.applyY(zy), zr: t.k * radiusFor({ id: "dhat" }) };
     };
     // ---- Sakin, huzurlu salınım ----
     // Burada bilerek TAM DÖNÜŞ yapmıyoruz. Hâller ve Sırlar'da dönüş

@@ -19,6 +19,7 @@
 <meta property="og:image" content="https://dostarabi.com/gonul/img/bahar-yagmuru.webp">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#8a6100">
+<script src="/assets/gonul-tema.js"></script>
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -35,13 +36,20 @@
     --dur-kisa: 0.15s; --helix-gold: #ffc233;
     color-scheme: light dark;
   }
+  /* Tema: elle seçim (assets/gonul-tema.js → html[data-theme]) sistem temasından önce gelir */
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
       --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
-      --accent-interactive: #c98500; --ink: #ede9e2;
+      --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
     }
   }
+  :root[data-theme="dark"] {
+    --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+    --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+    --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--page-plane); color: var(--text-primary); font: 400 1.0625rem/1.7 "Source Sans Dost", system-ui, sans-serif; }
   main { max-width: 40rem; margin: 0 auto; padding: 24px 16px 72px; }

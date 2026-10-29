@@ -851,8 +851,8 @@
   }
 
   // Nefes alan halo: Ontoloji'deki .node--root .node-halo keyframe'iyle
-  // (node-halo-breathe: 0%/100% opacity .14 scale 1 -> 50% opacity .34 scale
-  // 1.4, 6sn) BİREBİR aynı genlikte -- 0 (dip) ile 1 (tepe) arasında bir faz
+  // (node-halo-breathe: 0%/100% opacity .26 scale 1 -> 50% opacity .56 scale
+  // 1.5, 6sn; 2026-10-29'da güçlendirildi) BİREBİR aynı genlikte -- 0 (dip) ile 1 (tepe) arasında bir faz
   // döndürür; çağıran yer bunu ontoloji'deki gibi opacity/scale'e uygular.
   // Önceki ±%8-10'luk ince salınım ontoloji'nin göze çarpan nefesiyle
   // eşleşmiyordu ("canlı glow etkisi yok" şikâyeti kısmen buradandı).
@@ -1095,8 +1095,8 @@
         // düğümünün ~1.95 katı (bkz. RADIUS_BY_ID notu); 0.4'lük ek katsayı
         // nefes tepe noktasında bu tabanın üzerine (~%40) ekleniyor.
         const phase = reduceMotion ? 0.5 : haloBreathPhase(n, ts);
-        haloR = r * 1.95 * (1 + 0.4 * phase);
-        haloOp = (0.14 + 0.20 * phase) * (isActive ? 1.7 : 1);
+        haloR = r * 1.95 * (1 + 0.5 * phase);
+        haloOp = (0.26 + 0.30 * phase) * (isActive ? 1.4 : 1);
       } else {
         haloR = r * (1.25 + hs * 0.85);
         haloOp = (0.07 + hs * 0.20) * (isActive ? 1.7 : 1);

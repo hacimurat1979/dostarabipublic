@@ -66,7 +66,7 @@
     __seyahatAtlasiApp: { src: "assets/seyahat-atlasi.js", integrity: "sha384-naxpaqzSHvlq69BO9wXNK378xl4zM6GK21TIfEf2TulWWIf3GBQLu8+TDAs/TPRe", wrap: "seyahat-atlasi-wrap" },
     __yolculukApp: { src: "assets/yolculuk.js", integrity: "sha384-ZJ+W1ohrpGr6oRBiWuYNvtug8ma1vSqcm8S/s7UZ83Ua8u4in5a261v1PgA3SJrc", wrap: "yolculuk-wrap" },
     __kuranDokusuApp: { src: "assets/kuran-dokusu.js", integrity: "sha384-CoZpRwRQUq5t8vD6vdY8Iz75+K6kIGsEesJAj3rK+hBbCjTcH4D2xXhPyrBCqwOM", wrap: "kuran-dokusu-wrap" },
-    __esmaApp: { src: "assets/esma.js", integrity: "sha384-afMzp2+TgdrZfTWY25ONJxn5sopMzhxR3BajRUq0R8aQ9dvMNZ1ZMzWhwrqAdQpA", wrap: "esma-wrap" },
+    __esmaApp: { src: "assets/esma.js", integrity: "sha384-T+RE5FZ8iyp8txOsLGNhqHG/RodaDhAM0NnL/UTa58hWsA5OhWm+xDHYiMrgUmbe", wrap: "esma-wrap" },
     __halApp: { src: "assets/hal.js", integrity: "sha384-gtASrea8ie31lnjO24iCIJdaj1BONhxkDJfKciRK+2+r9rgKpct8SyN3rNuGi9MW", wrap: "hal-wrap" },
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-CJnjbSwU8iz6Fj5ASDmbnzIk6aw7Z+q5jmVDL7ADf/agerwX22Dx8yQ0jKkO5dtg", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-B73uXjCS6OoZFeCeojmy4RENJpzO2ihjR5kDkRb9tzyq20SAaoUB0j/yovXvWfpK", wrap: "sorular-wrap" },
@@ -80,7 +80,7 @@
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
   var KIPLER = {
-    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-sZ+K4WZSofxAsPU5hLIqZmXlWACKsZC9j+yaVgGp1cPXCE++R3kflCvq6dGFUoaV" },
+    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-yajtLEzUfEcHrE+cFO5s1lIWHMH0VG9vLom+Db8LMNaul7lN4Q0GbCWad9j2vnLV" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-1PmxR3+hl+07fSLr3TRBvdTR8KB5bohyy5bIbVV/MvCejJK40VEZAZOQkk5zmJcz" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-xRKL39c70u4As3BIP+Hz3yHEtCb4LIYb6v82X15e4ad+mG2YXEwHJot+Kzs1jsHS" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-OetL6ZzUApIaeF6LIXNsT9ezDbL94Q7Tt+ydLwgqtlJ2X4i+cA9RJrD/suJKs/+o" },

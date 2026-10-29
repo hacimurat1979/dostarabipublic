@@ -469,6 +469,127 @@
     modal.addEventListener("keydown", (e) => trapTabKey(e, modal));
   }
 
+  // --- kendi notum (2026-10-29, kullanıcı isteği) ----------------------------------------
+  // İki hedef: (1) Kenar notu -- Daphne yazısının kenarında YALNIZ sahibinin göreceği not
+  // (canlıda şifreli); hangi yazıya ekleneceği seçilir, açık okuma paneli varsa o yazı hazır
+  // gelir. (2) Gönül Defteri taslağı -- herkese açık olacak yazının ham notu; bu sayfaya
+  // (ve varsa seçilen Daphne yazısına) bağlanır. İkisi de dışa giden pakette `note` metni
+  // ve (varsa) `image` taşır; Claude redakte edip işler, onayınla yayına çıkar.
+  function daphneYazilari() {
+    try {
+      const o = window.__dostDaphneOkuma;
+      return o && o.yazilar ? { liste: o.yazilar(), acik: o.acik ? o.acik() : "" } : null;
+    } catch (e) { return null; }
+  }
+  async function kendiNotKaydet(tur, o) {
+    const entry = {
+      id: yeniId(), type: tur, url: location.pathname,
+      lang: "tr", note: o.metin, gorsel: null, timestamp: new Date().toISOString(),
+    };
+    if (tur === "kenar-notu") {
+      entry.yazi = o.yazi; entry.yazi_baslik = o.yaziBaslik;
+      if (o.paragraf) entry.paragraf = o.paragraf;
+    } else {
+      entry.sayfa_baslik = document.title;
+      if (o.yazi) { entry.yazi = o.yazi; entry.yazi_baslik = o.yaziBaslik; }
+    }
+    if (o.image) {
+      try { await gorselYaz(entry.id, o.image); entry.gorsel = entry.id; }
+      catch (e) {
+        uyari(ui({
+          tr: "Görüntü kaydedilemedi (IndexedDB). Not görüntüsüz kaydedildi.",
+          en: "The image could not be stored (IndexedDB). The note was saved without it.",
+          pt: "A imagem não pôde ser guardada (IndexedDB). A nota foi guardada sem ela.",
+        }));
+      }
+    }
+    const q = getQueue();
+    q.push(entry);
+    if (!setQueue(q) && entry.gorsel) gorselSil(entry.gorsel).catch(() => {});
+  }
+  function buildKendiNotModal(triggerEl) {
+    const dy = daphneYazilari();
+    const modal = document.createElement("div");
+    modal.className = "dost-shot-modal";
+    const secenekler = dy ? dy.liste.map((a) =>
+      `<option value="${escapeHtml(a.url)}"${a.url === dy.acik ? " selected" : ""}>${escapeHtml((a.date || "") + " · " + a.title)}</option>`).join("") : "";
+    modal.innerHTML =
+      '<div class="dost-shot-modal__backdrop"></div>' +
+      '<div class="dost-shot-modal__card" role="dialog" aria-modal="true">' +
+      '<fieldset class="dost-kendi__tur"><legend class="dost-shot-modal__label">' + escapeHtml(ui({ tr: "Bu not nereye?", en: "Where does this note go?", pt: "Para onde vai esta nota?" })) + "</legend>" +
+      (dy ? '<label><input type="radio" name="dost-kendi-tur" value="kenar-notu" checked> ' + escapeHtml(ui({ tr: "Kenar notu — yalnız ben görürüm", en: "Margin note — only I see it", pt: "Nota à margem — só eu vejo" })) + "</label>" : "") +
+      '<label><input type="radio" name="dost-kendi-tur" value="gonul-taslagi"' + (dy ? "" : " checked") + "> " + escapeHtml(ui({ tr: "Gönül Defteri taslağı — herkese açık olacak", en: "Heart Notebook draft — will be public", pt: "Rascunho do Caderno do Coração — será público" })) + "</label>" +
+      "</fieldset>" +
+      (dy ? '<div class="dost-kendi__yazi"><label class="dost-shot-modal__label" for="dost-kendi-yazi">' + escapeHtml(ui({ tr: "Hangi Daphne yazısı?", en: "Which Daphne piece?", pt: "Qual texto da Daphne?" })) + "</label>" +
+        '<select id="dost-kendi-yazi" class="dost-kendi__sec">' + (dy.acik ? "" : '<option value="">—</option>') + secenekler + "</select>" +
+        '<label class="dost-shot-modal__label" for="dost-kendi-par">' + escapeHtml(ui({ tr: "Paragraf no (isteğe bağlı)", en: "Paragraph no. (optional)", pt: "N.º do parágrafo (opcional)" })) + "</label>" +
+        '<input id="dost-kendi-par" class="dost-kendi__par" type="number" min="1" inputmode="numeric"></div>' : "") +
+      '<div class="dost-shot-modal__attach">' +
+      '<button type="button" data-action="pick">🖼️ ' + escapeHtml(ui({ tr: "Resim ekle", en: "Add image", pt: "Adicionar imagem" })) + "</button>" +
+      '<button type="button" data-action="remove-image" class="dost-shot-modal__remove" hidden>' + escapeHtml(ui({ tr: "Görüntüyü kaldır", en: "Remove image", pt: "Remover imagem" })) + "</button>" +
+      "</div>" +
+      '<img class="dost-shot-modal__preview" alt="" hidden src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">' +
+      '<label class="dost-shot-modal__label" for="dost-kendi-metin">' + escapeHtml(ui({ tr: "Notun (kendi sesinle; redaksiyonu Claude yapar, onayınla yayına çıkar)", en: "Your note (in your own voice; Claude edits, nothing goes live without your approval)", pt: "A tua nota (na tua voz; o Claude revê, nada é publicado sem a tua aprovação)" })) + "</label>" +
+      '<textarea id="dost-kendi-metin" class="dost-shot-modal__note" rows="6"></textarea>' +
+      '<div class="dost-shot-modal__actions">' +
+      '<button type="button" data-action="cancel">' + escapeHtml(ui({ tr: "Vazgeç", en: "Cancel", pt: "Cancelar" })) + "</button>" +
+      '<button type="button" data-action="save" class="dost-shot-modal__save">' + escapeHtml(ui({ tr: "Kaydet", en: "Save", pt: "Guardar" })) + "</button>" +
+      "</div></div>";
+    document.body.appendChild(modal);
+    let currentImage = null;
+    const preview = modal.querySelector(".dost-shot-modal__preview");
+    const removeBtn = modal.querySelector('[data-action="remove-image"]');
+    const textarea = modal.querySelector("textarea");
+    const yaziSec = modal.querySelector("#dost-kendi-yazi");
+    const yaziKutu = modal.querySelector(".dost-kendi__yazi");
+    const turler = modal.querySelectorAll('input[name="dost-kendi-tur"]');
+    const tur = () => (modal.querySelector('input[name="dost-kendi-tur"]:checked') || {}).value;
+    function turDegisti() {
+      if (!yaziKutu) return;
+      // Gönül taslağında yazı seçimi isteğe bağlı bir atıftır; paragraf yalnız kenar notunda.
+      modal.querySelector(".dost-kendi__par").parentNode.querySelectorAll('label[for="dost-kendi-par"], #dost-kendi-par')
+        .forEach((x) => { x.hidden = tur() !== "kenar-notu"; });
+    }
+    turler.forEach((r) => r.addEventListener("change", turDegisti));
+    turDegisti();
+    textarea.focus();
+    function setImage(dataUrl) {
+      currentImage = dataUrl;
+      preview.src = dataUrl || "";
+      preview.hidden = !dataUrl;
+      removeBtn.hidden = !dataUrl;
+    }
+    let birak = null;
+    function close() {
+      if (birak) birak();
+      modal.remove();
+      if (triggerEl && triggerEl.isConnected) triggerEl.focus();
+    }
+    birak = katmanAc(close);
+    modal.querySelector(".dost-shot-modal__backdrop").addEventListener("click", close);
+    modal.querySelector('[data-action="cancel"]').addEventListener("click", close);
+    removeBtn.addEventListener("click", () => setImage(null));
+    modal.querySelector('[data-action="pick"]').addEventListener("click", async () => {
+      const dataUrl = await pickImageFileToDataUrl();
+      if (dataUrl) setImage(dataUrl);
+    });
+    modal.querySelector('[data-action="save"]').addEventListener("click", async () => {
+      const metin = textarea.value.trim();
+      if (!metin && !currentImage) { textarea.focus(); return; }
+      const t = tur();
+      if (t === "kenar-notu" && (!yaziSec || !yaziSec.value)) { if (yaziSec) yaziSec.focus(); return; }
+      const secili = yaziSec && yaziSec.value ? dy.liste.find((a) => a.url === yaziSec.value) : null;
+      const par = parseInt((modal.querySelector("#dost-kendi-par") || {}).value, 10);
+      await kendiNotKaydet(t, {
+        metin: metin, image: currentImage,
+        yazi: secili ? secili.url : "", yaziBaslik: secili ? secili.title : "",
+        paragraf: t === "kenar-notu" && par > 0 ? par : 0,
+      });
+      close();
+    });
+    modal.addEventListener("keydown", (e) => trapTabKey(e, modal));
+  }
+
   // --- metin düzenlemesi --------------------------------------------------
   function nearestHeading(el) {
     let node = el.previousElementSibling;
@@ -655,8 +776,12 @@
       });
     }, 120);
   }
-  function exportQueue() {
-    gorselleriTopla().then((g) => indir(JSON.stringify(paketKur(g), null, 2), dosyaAdi()));
+  // Paylaşım sayfası dosya paylaşabiliyor mu (telefon). Yoksa "gönder" JSON'u indirir.
+  function paylasimDesteklenir() {
+    try {
+      const f = new File(["{}"], "x.json", { type: "application/json" });
+      return !!(navigator.canShare && navigator.share && navigator.canShare({ files: [f] }));
+    } catch (e) { return false; }
   }
   function claudeaGonder() {
     const p = hazirPaket || { metin: JSON.stringify(paketKur(null), null, 2), ad: dosyaAdi() };
@@ -734,13 +859,18 @@
   }
 
   // --- biriken notların listesi --------------------------------------------
+  // Metin düzenlemesi dışındaki, serbest metinli kayıtlar: görsel not, kenar notu (yalnız
+  // sahibine), Gönül Defteri taslağı. Üçü de `note` alanında metin taşır.
+  function notMu(e) { return e.type === "visual-note" || e.type === "kenar-notu" || e.type === "gonul-taslagi"; }
   function entryTitle(e, i) {
     const where = (e.url || "").replace(/^.*\/(?=[^/]*$)/, "") || "/";
+    if (e.type === "kenar-notu") return `${i + 1}. ✍️ ${escapeHtml(ui({ tr: "kenar notu", en: "margin note", pt: "nota à margem" }))} · ${escapeHtml(e.yazi_baslik || e.yazi || "")}`;
+    if (e.type === "gonul-taslagi") return `${i + 1}. ✍️ ${escapeHtml(ui({ tr: "Gönül Defteri taslağı", en: "Heart Notebook draft", pt: "Rascunho do Caderno do Coração" }))}`;
     if (e.type === "visual-note") return `${i + 1}. 🖌️ ${escapeHtml(ui({ tr: "görsel not", en: "visual note", pt: "nota visual" }))} · ${escapeHtml(where)}`;
     return `${i + 1}. ✎ ${escapeHtml(e.heading || where)}`;
   }
   function adresSatiri(e) {
-    if (e.type === "visual-note") return "";
+    if (notMu(e)) return "";
     const parcalar = [e.dosya, e.kayit, e.alan, e.lang].filter(Boolean);
     const durum = !e.alan
       ? ui({ tr: "adres yok — elle bulunacak", en: "no address — to be located by hand", pt: "sem endereço — localizar à mão" })
@@ -762,7 +892,7 @@
   }
   function saveEntryText(id, value) {
     kaydiGuncelle(id, (e) => {
-      if (e.type === "visual-note") e.note = value;
+      if (notMu(e)) e.note = value;
       else { e.after = value; e.after_metin = value.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(); }
       e.editedAt = new Date().toISOString();
     });
@@ -784,9 +914,9 @@
           <button type="button" class="dost-notes__del" data-del="${escapeHtml(e.id || "")}">${escapeHtml(ui({ tr: "Sil", en: "Delete", pt: "Apagar" }))}</button>
         </div>
         ${adresSatiri(e)}
-        ${e.type !== "visual-note" && e.before != null ? `<p class="dost-notes__fark">${kelimeFarki(e.before_metin || e.before, e.after_metin || e.after)}</p>` : ""}
+        ${!notMu(e) && e.before != null ? `<p class="dost-notes__fark">${kelimeFarki(e.before_metin || e.before, e.after_metin || e.after)}</p>` : ""}
         ${e.gorsel || e.image ? `<img class="dost-notes__thumb" alt="" data-gorsel="${escapeHtml(e.gorsel || "")}" ${e.image ? `src="${escapeHtml(e.image)}"` : ""}>` : ""}
-        <textarea class="dost-notes__text" data-text="${escapeHtml(e.id || "")}" rows="3">${escapeHtml(e.type === "visual-note" ? e.note : e.after)}</textarea>
+        <textarea class="dost-notes__text" data-text="${escapeHtml(e.id || "")}" rows="3">${escapeHtml(notMu(e) ? e.note : e.after)}</textarea>
       </div>`).join("");
     body.querySelectorAll("img[data-gorsel]").forEach((img) => {
       const id = img.dataset.gorsel;
@@ -843,15 +973,20 @@
       "</button>" +
       '<div class="dost-edit-panel__menu" hidden>' +
       '<p class="dost-edit-panel__hint">' + escapeHtml(ui({
-        tr: "Düzenleme modu açık — düz yazı metinlere dokunup değiştirebilir ya da bu sayfa için bir görsel not bırakabilirsin.",
-        en: "Edit mode is on — tap prose to change it, or leave a visual note for this page.",
-        pt: "Modo de edição ativo — toque no texto para alterá-lo, ou deixe uma nota visual para esta página.",
+        tr: "Düzenleme modu açık — düz yazı metinlere dokunup değiştirebilir, bu sayfa için görsel not ya da kendi notunu bırakabilirsin.",
+        en: "Edit mode is on — tap prose to change it, or leave a visual note or your own note.",
+        pt: "Modo de edição ativo — toque no texto para alterá-lo, ou deixe uma nota visual ou a sua própria nota.",
       })) + "</p>" +
       b("visual-note", { tr: "🖌️ Bu Sayfa İçin Görsel Not", en: "🖌️ Visual Note for This Page", pt: "🖌️ Nota Visual para Esta Página" }) +
+      b("own-note", { tr: "✍️ Kendi Notum", en: "✍️ My Own Note", pt: "✍️ A Minha Nota" }) +
       b("notes", { tr: "📋 Kayıtlı Notlar", en: "📋 Saved Notes", pt: "📋 Notas Guardadas" }) +
-      b("send", { tr: "📤 Claude'a gönder", en: "📤 Send to Claude", pt: "📤 Enviar ao Claude" }) +
-      b("copy", { tr: "Kopyala (görüntüsüz)", en: "Copy (no images)", pt: "Copiar (sem imagens)" }) +
-      b("export", { tr: "Dışa Aktar (indir)", en: "Export (download)", pt: "Exportar (descarregar)" }) +
+      // Gönder + indir tek düğme (2026-10-29: ikisi aynı işi yapıyordu). Telefonda paylaşım
+      // sayfası, bilgisayarda JSON dosyası iner; etiket neyin olacağını söyler. Pano
+      // yalnız görüntüsüz, hızlı yapıştırma içindir -- ayrı bir iş.
+      b("send", paylasimDesteklenir()
+        ? { tr: "📤 Claude'a gönder", en: "📤 Send to Claude", pt: "📤 Enviar ao Claude" }
+        : { tr: "⬇ JSON dosyası olarak indir", en: "⬇ Download as JSON file", pt: "⬇ Descarregar como ficheiro JSON" }) +
+      b("copy", { tr: "📋 Panoya kopyala (görüntüsüz)", en: "📋 Copy to clipboard (no images)", pt: "📋 Copiar (sem imagens)" }) +
       b("clear", { tr: "Temizle", en: "Clear", pt: "Limpar" }) +
       b("minimize", { tr: "Küçült ↑", en: "Minimise ↑", pt: "Minimizar ↑" }) +
       b("exit", { tr: "Düzenleme Modunu Kapat", en: "Close Edit Mode", pt: "Fechar Modo de Edição" }) +
@@ -899,9 +1034,9 @@
     toggle.addEventListener("click", (e) => { if (e.detail === 0) menuAyarla(menu.hidden); });
     panel.querySelector('[data-action="visual-note"]').addEventListener("click", () => { menuAyarla(false); buildVisualNoteModal(toggle); });
     panel.querySelector('[data-action="notes"]').addEventListener("click", () => { menuAyarla(false); openNoteList(toggle); });
+    panel.querySelector('[data-action="own-note"]').addEventListener("click", () => { menuAyarla(false); buildKendiNotModal(toggle); });
     panel.querySelector('[data-action="send"]').addEventListener("click", claudeaGonder);
     panel.querySelector('[data-action="copy"]').addEventListener("click", kopyala);
-    panel.querySelector('[data-action="export"]').addEventListener("click", exportQueue);
     panel.querySelector('[data-action="clear"]').addEventListener("click", clearQueue);
     panel.querySelector('[data-action="minimize"]').addEventListener("click", () => menuAyarla(false));
     panel.querySelector('[data-action="exit"]').addEventListener("click", () => { menuAyarla(false); disableEditMode(); });

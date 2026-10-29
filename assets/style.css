@@ -3839,14 +3839,15 @@ body[data-theme="dark"] #sirlar-legend {
 .node--root .node-halo {
   fill: var(--series-theme);
   transform-box: fill-box; transform-origin: center;
+  filter: blur(3px);
   animation: node-halo-breathe 6s ease-in-out infinite;
 }
 @keyframes node-halo-breathe {
-  0%, 100% { opacity: 0.14; transform: scale(1); }
-  50%      { opacity: 0.34; transform: scale(1.4); }
+  0%, 100% { opacity: 0.26; transform: scale(1); }
+  50%      { opacity: 0.56; transform: scale(1.5); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .node--root .node-halo { animation: none; opacity: 0.2; }
+  .node--root .node-halo { animation: none; opacity: 0.38; }
 }
 .viz-root[data-theme="dark"] .node--root .node-halo {
   fill: var(--accent-glow-dark);
@@ -3875,6 +3876,22 @@ body[data-theme="dark"] #sirlar-legend {
 }
 #graph .ontology-node:focus-visible .node-halo { opacity: 0.85; }
 #graph .ontology-node.node--active .node-halo { opacity: 1; }
+#graph .ontology-node.node--root .node-halo {
+  transform-box: fill-box; transform-origin: center;
+  animation: onto-zat-nefes 6s ease-in-out infinite;
+}
+@keyframes onto-zat-nefes {
+  0%, 100% { opacity: 0.5; transform: scale(0.94); }
+  50%      { opacity: 0.95; transform: scale(1.14); }
+}
+#graph .ontology-node.node--root:focus-visible .node-halo,
+#graph .ontology-node.node--root.node--active .node-halo { animation: none; transform: none; }
+@media (hover: hover) {
+  #graph .ontology-node.node--root:hover .node-halo { animation: none; transform: none; opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #graph .ontology-node.node--root .node-halo { animation: none; opacity: 0.55; }
+}
 #graph .ontology-node:focus-visible circle:not(.node-halo),
 #graph .ontology-node.node--active circle:not(.node-halo) {
   stroke: var(--surface-1);
@@ -5841,6 +5858,21 @@ a[href]:not([class]):not([target]):not([href^="mailto:"]):focus-visible {
 }
 .welcome-screen--donusum .welcome-screen__beam { filter: drop-shadow(0 0 4px rgba(201,151,26,0.6)); }
 .welcome-screen--donusum-son .welcome-screen__stage { opacity: 0; }
+
+.welcome-screen--donusum { --zat-ms: 0.9s; }
+.welcome-screen--zata .welcome-screen__stage {
+  transition: transform 1.05s cubic-bezier(0.55, 0, 0.25, 1), opacity 0.5s var(--ease-nefes) 0.75s;
+  opacity: 0;
+}
+.welcome-screen__zat-isik {
+  position: fixed; left: 0; top: 0; width: 0; height: 0; border-radius: 50%;
+  pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(0.4);
+  background: radial-gradient(circle, #fff7e0 0%, #ffe39a 26%, rgba(255,194,51,0.55) 52%, rgba(255,194,51,0) 72%);
+  transition: opacity 0.55s var(--ease-nefes), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.welcome-screen--zat-yanik .welcome-screen__zat-isik { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.welcome-screen--zat-son .welcome-screen__zat-isik { opacity: 0; transition: opacity 0.7s var(--ease-nefes); }
+@media (prefers-reduced-motion: reduce) { .welcome-screen__zat-isik { display: none; } }
 
 html.karsilama-acik .consent-banner { display: none; }
 
@@ -8405,16 +8437,16 @@ body.share-stage-open { overflow: hidden; }
   50%      { opacity: 0.65; transform: scale(1.45); }
 }
 .share-stage--acik .share-zat-halo {
-  filter: none;
+  filter: blur(3px);
   animation-name: share-zat-halo-breathe;
 }
 @keyframes share-zat-halo-breathe {
-  0%, 100% { opacity: 0.14; transform: scale(1); }
-  50%      { opacity: 0.34; transform: scale(1.4); }
+  0%, 100% { opacity: 0.26; transform: scale(1); }
+  50%      { opacity: 0.56; transform: scale(1.5); }
 }
 @media (prefers-reduced-motion: reduce) {
   .share-zat-halo { animation: none; opacity: 0.45; }
-  .share-stage--acik .share-zat-halo { opacity: 0.2; }
+  .share-stage--acik .share-zat-halo { opacity: 0.38; }
 }
 .share-stage__text {
   position: absolute;
@@ -14446,3 +14478,11 @@ html.defter-odakta #hal-wrap .hal-chords { opacity: 0.15; }
 .daphne-kenar__gorsel { margin: 10px 0 0; }
 .daphne-kenar__gorsel img { display: block; max-width: 100%; height: auto; border-radius: 10px; background: var(--gridline); }
 .daphne-kenar__gorsel figcaption { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
+
+.dost-kendi__tur { border: 0; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.dost-kendi__tur label { display: flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+.dost-kendi__yazi { display: grid; gap: 6px; margin-bottom: 10px; }
+.dost-kendi__sec, .dost-kendi__par {
+  width: 100%; min-height: 40px; padding: 6px 10px; border-radius: 10px;
+  border: 1px solid var(--border, #d6d4cc); background: var(--surface-1, #fff); color: inherit; font: inherit;
+}
