@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-877c09ae2c0a";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-66d44094663f";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
@@ -23,6 +23,7 @@ const SHELL_URLS = [
   "./assets/telefon-haritasi.js",
   "./assets/fonts/Fraunces-Italic-static.woff2",
   "./assets/fonts/AmiriQuran-Arabic-400.woff2",
+  "./assets/fonts/Dost-065E-Mark.woff2",
   "./assets/fonts/Fraunces-Regular-static.woff2",
   "./assets/fonts/SourceSans3-Italic-static.woff2",
   "./assets/fonts/SourceSans3-Medium-static.woff2",

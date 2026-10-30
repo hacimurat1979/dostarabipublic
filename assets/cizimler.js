@@ -230,7 +230,7 @@
     </div>`}let T=null;function ae(e){const a=location.pathname;try{e?history.pushState(null,"",a):history.replaceState(null,"",a)}catch{}G()}function G(){if(!u)return;const e=Z(),a=e!==T;T=e;const i=u.diagrams.map(r=>oe(r,e)).join(""),c=(u.sources||[]).map(r=>`<li>${F(r)}</li>`).join("");z.classList.toggle("cizimler-list--suzgecli",!!e),z.innerHTML=`
       ${se}
       ${pe(e)}
-      <p class="cizimler-intro">${P(t(u.intro),null)}</p>
+      <p class="cizimler-intro" data-kisa-satir="4">${P(t(u.intro),null)}</p>
       ${ge(e?te(e):null)}
       ${i}
       <ul class="cizimler-sources">${c}</ul>
