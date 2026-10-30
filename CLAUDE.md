@@ -60,6 +60,11 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
   site içeriği değil, okuma araçlarıdır. Çeviri gözden geçirme künyesi yalnız kayıt varsa görünür
   (`data/ceviri-gozden-gecirme.json`, şu an kayıt yok).
 
+- **Mobil kabuk V3 "Üç Kapı" (2026-10-30, kullanıcı kararı):** alt çubuk Keşfet · Oku · Defterim; Ara üstte;
+  haritada tek "Görünüm" hapı. Geri alma: `?kabuk=v2`. Kaynak özel repoda.
+- **Okuma işaretleri ve araçlar (2026-10-30):** paragraf bağlantısı (`#pN`), vurgulayıcı ve Defterim etiketleri
+  (yalnız cihazda), aramada eşleşen cümle önizlemesi, kısım künyesi, `?` kısayol sayfası; @revise/@share ek araçları.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
