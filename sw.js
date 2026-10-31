@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-51e8fa657fab";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-5bed13232860";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
