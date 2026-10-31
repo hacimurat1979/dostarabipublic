@@ -378,6 +378,7 @@
             <a class="btn-ghost" id="terimler-btn" href="terimler/" title="İbn Arabî'nin terimleri, tek tek — Ibn Arabi's terms, one by one — Os termos de Ibn Arabi, um a um" data-tr="Terimler" data-en="Terms" data-pt="Termos">Terimler</a>
             <a class="btn-ghost" id="sorular-btn" href="sorular/" title="Sık sorulan sorular, kısa cevaplarla — Frequently asked questions, briefly answered — Perguntas frequentes, respondidas brevemente" data-tr="Sorular" data-en="Questions" data-pt="Perguntas">Sorular</a>
             <a class="btn-ghost" id="cizimler-btn" href="cizimler/" title="Kavramlar arası ilişkileri gösteren şemalar — Diagrams showing relationships between concepts — Diagramas mostrando relações entre conceitos" data-tr="Çizimler" data-en="Diagrams" data-pt="Diagramas">Çizimler</a>
+            <a class="btn-ghost" id="semalar-btn" href="semalar/" title="Sitedeki şemalar tek yerde, kimin çizdiği belli olarak: Dost'un kendi çizimleri, kısımların bölümlerinden bizim çizdiklerimiz ve okuma çerçevelerimiz. — The site's diagrams in one place, with who drew each one made clear: Dost's own figures, those we drew from the parts' sections, and our reading frameworks. — Os diagramas do site em um só lugar, com a autoria de cada um indicada: as figuras do próprio Dost, as que desenhamos a partir das seções das partes e nossos esquemas de leitura." data-tr="Şemalar" data-en="Diagrams Archive" data-pt="Arquivo de Diagramas">Şemalar</a>
             <a class="btn-ghost btn-ghost--yeni" id="ayethadis-btn" href="ayethadis/" title="Sitede alıntılanan âyet ve hadislerin, en çok tekrarladıkları yerden başlayarak sıralandığı bir dizin — An index of quoted verses and hadiths, ordered by how often each recurs — Um índice de versículos e ditos citados, ordenados por quantas vezes cada um recorre" data-tr="Âyet &amp; Hadis" data-en="Verses &amp; Hadith" data-pt="Versículos e Hadith">Âyet &amp; Hadis</a>
           </div>
         </div>
@@ -632,6 +633,15 @@
         <button class="view-status__retry" type="button" hidden></button>
       </div>
       <div id="cizimler-list"></div>
+    </section>
+
+    <section class="semalar-wrap" id="semalar-wrap" hidden>
+      <div class="view-status" id="semalar-wrap-status" hidden>
+        <div class="view-status__spinner" aria-hidden="true"></div>
+        <p class="view-status__text"></p>
+        <button class="view-status__retry" type="button" hidden></button>
+      </div>
+      <div id="semalar-list"></div>
     </section>
 
     <section class="graph-wrap" id="sirlar-wrap" hidden>
@@ -1492,7 +1502,7 @@ mesmo antes que o assombro exista."></blockquote>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-+cKyJYlWqFyG7qRu2y/jk4Fp9MYZYG8Psv+mboY79CaF9A7mf24SE9uk503789rO"></script>
   <script src="assets/view-status.js" defer integrity="sha384-g/wGAJbad65C0o+R+m5AeG9d3ybeqZTb3sAeMm4vNZwVPNaJhBwa7ZhqZd50s35H"></script>
-  <script src="assets/graph-utils.js" defer integrity="sha384-4wv9p0589GpnLJPiY47stkCZteWWrg72I7jvyUKs9SO+sgGTl6eyTBRBauRTbXN3"></script>
+  <script src="assets/graph-utils.js" defer integrity="sha384-jSrlYTNmcTOKundGqPZJIsD3y2UapXVKyDkb7P4Ff88mUXLJF2nqV7o1iZIit7j5"></script>
   <!-- nav-drawer.js graph-utils.js'ten SONRA gelmeli (2026-08-15): artık
        açılışta GU.registerStepBack çağırıyor. -->
   <script src="assets/nav-drawer.js" defer integrity="sha384-k9zYYO/GGN4UNrZwFg20EpOftHr0iVZt8EusZEpdPwPDqorGiDCZKg/BcnVM6NF/"></script>
@@ -1503,7 +1513,7 @@ mesmo antes que o assombro exista."></blockquote>
        tembel-yükleme listesine değil buraya konuyor: ontology.js sır
        detayını çizerken window.__dostKademe hazır olmalı. -->
   <script src="assets/kademe.js" defer integrity="sha384-pHPXqeCpal28UySB+/9nmbO0gpF/bP97VpAFPlRP5khCm4pDyvyj1et7nJrKrOq9"></script>
-  <script src="assets/search.js" defer integrity="sha384-vZGvqTos5xWO47vnkR+/r/hRkF4fUFIRQw8QFVTjrQo7rokuHEABPbed8VOHtzM4"></script>
+  <script src="assets/search.js" defer integrity="sha384-a6A3t+3leApVfcZwSI0czMpSy4VTd32coBZPL1DhBGF+pQfY/3sIg1Y95l97nxmE"></script>
   <script src="assets/uygulama-kabugu.js" defer integrity="sha384-qdY3N4atLMvffIqiK+7D7bxmyn/70ym6epBJmACsPOPp/viY9wIfQL7CpLc4JyUa"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-0cRxdoe8RiTJ66KA+R5BgIVdAeqqwGI62BpiO3k3RuQ0a9Dq7cB//x2rgwX/rPKW"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
@@ -1516,8 +1526,8 @@ mesmo antes que o assombro exista."></blockquote>
        ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
        (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
        static <script> etiketi yok. -->
-  <script src="assets/view-loader.js" defer integrity="sha384-3dldpVVB4UyTi1kJc15nzw7RYR4deDEeU0hRHxcOigsbhYhnVVxRqWkp92i4yHEl"></script>
-  <script src="assets/ontology.js" defer integrity="sha384-fg5t2FcxHl1ELk8V/aU9kdOraVFbXv4+yc3IzZFzVhUim7/ubTEPWZjOBc2hmZ+y"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-eH/6oH4ry/1ehsMO6tLYMhMjwjxSG78SxDXKxiD+iM+a8IiDbmpQad160S/X+qJm"></script>
+  <script src="assets/ontology.js" defer integrity="sha384-ECZviViAK5gFtQcpg6Dzo56AnWif8jKgIK+ZkbjNyiBjzmWoRSOQTTiOUVSjGf9H"></script>
   <script src="assets/crosslink-preview.js" defer integrity="sha384-g2nh6sNpUAj5LKML92UHSowZw8p0k+kfc8aQBnKAH/8cQUW14l37TYJoHUf9bGrS"></script>
   <script src="assets/ayet-onizleme.js" defer integrity="sha384-ygCVfnuNPUklTf75V7VgJiZAcVo9gvSytOrlbMQLcK+0myIu3ITJjlNtZ8mhVGtQ"></script>
   <script src="assets/start-hint.js" defer integrity="sha384-sOcKjLXxj1YBfmi5aHKHBr/Gt+3GAE/ct3dVxHTe5slMjhlJ+6kxTZh15O8zlYyF"></script>
