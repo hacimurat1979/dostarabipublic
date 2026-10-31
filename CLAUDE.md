@@ -65,6 +65,12 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
 - **Okuma işaretleri ve araçlar (2026-10-30):** paragraf bağlantısı (`#pN`), vurgulayıcı ve Defterim etiketleri
   (yalnız cihazda), aramada eşleşen cümle önizlemesi, kısım künyesi, `?` kısayol sayfası; @revise/@share ek araçları.
 
+- **Şemalar Arşivi (2026-10-31, kullanıcı onayı):** `/semalar/` sitedeki şemaları köken halkasıyla toplar (altın = Dost'un eli,
+  mürekkep = bizim çizdiğimiz, mavi = bizim okuma çerçevemiz); Berzah ve Hayal şemaları yalnız aynı terimin geçtiği
+  yerleri ve kısmın kendi cümlesini gösterir, bağın anlamı yazılmaz. Kaynak özel repoda; burada elle değişiklik yapılmaz.
+- **Paragraf kuralı (2026-10-31, kullanıcı kararı):** uzun tek paragraf cümle sınırlarında görsel alt paragraflara ayrılır
+  (otomatik, `par-ara` işareti); ✕ düğmesi paneli kapatır; kişiler arası "rakip/rekabet" çerçevesi bizim sesimizle yazılmaz.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
