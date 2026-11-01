@@ -71,6 +71,11 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
 - **Paragraf kuralı (2026-10-31, kullanıcı kararı):** uzun tek paragraf cümle sınırlarında görsel alt paragraflara ayrılır
   (otomatik, `par-ara` işareti); ✕ düğmesi paneli kapatır; kişiler arası "rakip/rekabet" çerçevesi bizim sesimizle yazılmaz.
 
+- **Yan Yana: Dost ve Kuantum Fiziği (2026-11-01, kullanıcı onayı):** `/yan-yana/` altı düz statik sayfalar; Dost'un
+  metninden alıntıları fizik literatürüyle yan yana koyan BİZİM okuma çerçevemizdir, okuma özeti değildir (kuralın adı konmuş
+  istisnası); her sayfada künye, "aynıdır/doğrulandı" yok; yalnız Türkçe; `noindex`, sitemap'te yok. Sayfalar özel
+  repoda `scripts/yanyana-uret.py` ile üretilir; burada elle değişiklik yapılmaz.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
