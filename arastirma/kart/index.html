@@ -625,7 +625,8 @@ textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     }
   };
 
-  const EPOSTA = "hacimurat.karaman@gmail.com";
+  // E-posta adresi sitede düz metin durmaz (issue #9, 2026-11-02): iletişim sayfasına bağlanır.
+  const ILETISIM = { tr: ["/iletisim/", "İletişim"], en: ["/iletisim/en/", "Contact"], pt: ["/iletisim/pt/", "Contato"] };
   const DEPO_ANAHTARI = "dost-kart-eslesme-v1";
 
   // --- durum -------------------------------------------------------------
@@ -963,8 +964,9 @@ textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     const kap = $("kapanis");
     kap.textContent = t.kapanis;
     const a = document.createElement("a");
-    a.href = "mailto:" + EPOSTA;
-    a.textContent = EPOSTA;
+    const il = ILETISIM[dil] || ILETISIM.tr;
+    a.href = il[0];
+    a.textContent = il[1];
     kap.appendChild(a);
     document.querySelectorAll("[data-dil]").forEach((b) => {
       b.setAttribute("aria-pressed", b.dataset.dil === dil ? "true" : "false");

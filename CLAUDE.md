@@ -76,6 +76,10 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
   istisnası); her sayfada künye, "aynıdır/doğrulandı" yok; yalnız Türkçe; `noindex`, sitemap'te yok. Sayfalar özel
   repoda `scripts/yanyana-uret.py` ile üretilir; burada elle değişiklik yapılmaz.
 
+- **İletişim (2026-11-02, issue #9):** e-posta adresi sitede hiçbir yerde düz metin durmaz; altbilgideki "İletişim" bağlantısı
+  `/iletisim/` sayfasına gider, "Yaz" düğmesi adresi `assets/iletisim.js` ile kurup kullanıcının e-posta uygulamasını açar.
+  Kaynak özel repoda (`scripts/iletisim-uret.py`); burada elle değişiklik yapılmaz.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.

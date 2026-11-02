@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- scripts/iletisim-uret.py üretir (elle düzenlenmez). E-posta adresi burada düz metin DEĞİLDİR (assets/iletisim.js). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
+<title>Contact — Dost Arabi</title>
+<meta name="description" content="Contact Dost Arabi: share what a passage evoked in you, or a contribution.">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://dostarabi.com/iletisim/en/">
+<link rel="alternate" hreflang="tr" href="https://dostarabi.com/iletisim/">
+<link rel="alternate" hreflang="en" href="https://dostarabi.com/iletisim/en/">
+<link rel="alternate" hreflang="pt-BR" href="https://dostarabi.com/iletisim/pt/">
+<link rel="alternate" hreflang="x-default" href="https://dostarabi.com/iletisim/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#8a6100">
+<script src="/assets/gonul-tema.js"></script>
+<style>
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Medium-static.woff2") format("woff2"); font-weight: 500 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-SemiBold-static.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: swap; }
+  :root {
+    --page-plane: #f9f9f7; --surface-1: #fcfcfb; --text-primary: #1a1a1a;
+    --text-secondary: #52514e; --text-muted: #6f6d65; --gridline: #e1e0d9;
+    --accent-interactive: #8a6100; --ink: #1a1a1a;
+    /* @revise paneli (assets/gonul-revise.css) site değişkenlerinin adlarını kullanır */
+    --series-theme: var(--accent-interactive); --series-theme-text: var(--accent-interactive); --border: var(--gridline);
+    --dur-kisa: 0.15s; --helix-gold: #ffc233;
+    color-scheme: light dark;
+  }
+  /* Tema: elle seçim (assets/gonul-tema.js → html[data-theme]) sistem temasından önce gelir */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+      --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+      --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+    --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+    --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page-plane); color: var(--text-primary); font: 400 1.0625rem/1.7 "Source Sans Dost", system-ui, sans-serif; }
+  main { max-width: 40rem; margin: 0 auto; padding: 24px 16px 72px; }
+  .ust { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+  .ust a { color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 14px; border: 1px solid var(--gridline); border-radius: 999px; text-decoration: none; }
+  .diller { display: flex; gap: 6px; }
+  .diller a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 10px; border-radius: 22px; border: 1px solid var(--gridline); color: var(--text-secondary); text-decoration: none; }
+  .diller a[aria-current="page"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  a { color: var(--accent-interactive); }
+  a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3 { font-family: "Fraunces Dost", Georgia, serif; font-weight: 600; line-height: 1.25; text-wrap: balance; }
+  h1 { font-size: 1.9rem; margin: 8px 0 12px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 10px; }
+  .giris { color: var(--text-secondary); margin: 0 0 24px; }
+  .meta { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.9rem; }
+  /* Mühür: mürekkep halka + nokta = yazarın kendi sesi (altın halka okuma özetidir) */
+  .muhur { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1.6px solid var(--ink); position: relative; flex: none; }
+  .muhur::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ink); }
+  figure { margin: 22px 0; }
+  figure.kapak { margin: 0 0 14px; }
+  figure img, .kapak img { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--gridline); }
+  figcaption { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; }
+  .galeri { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 8px; margin: 22px 0; }
+  .galeri figure { margin: 0; }
+  /* Serif gövde Regular (400); kalın yalnız yazarın işaretlediği yerde (strong, 600) */
+  .dize { font-family: "Fraunces Dost", Georgia, serif; font-weight: 400; font-size: 1.15rem; line-height: 1.75; margin: 22px 0; }
+  .dize strong, blockquote strong { font-weight: 600; }
+  strong { font-weight: 600; }
+  blockquote { font-family: "Fraunces Dost", Georgia, serif; font-weight: 400; font-size: 1.2rem; line-height: 1.4; margin: 24px 0; padding-left: 16px; border-left: 2px solid var(--ink); }
+  .kunye { margin-top: 40px; padding: 12px 14px; border: 1px dashed var(--gridline); border-radius: 12px; font-size: 0.9rem; color: var(--text-secondary); display: flex; gap: 10px; align-items: flex-start; }
+  .kunye .muhur { margin-top: 4px; }
+  .kunye p { margin: 0; }
+  .kunye p + p { margin-top: 4px; }
+  .muhur--altin { border-color: var(--accent-interactive); }
+  .muhur--altin::after { display: none; }
+  .atif { margin-top: 28px; display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; color: var(--text-secondary); }
+  .atif .muhur { margin-top: 5px; }
+  .atif p { margin: 0; }
+  .atif__etiket { color: var(--text-muted); }
+  .kart-eylem { margin: 26px 0 0; }
+  .kart-btn { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 18px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-primary); cursor: pointer; }
+  .kart-btn:hover { border-color: var(--accent-interactive); }
+  .kart-btn:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kart-btn[disabled] { opacity: 0.6; cursor: progress; }
+  .abone { margin: 32px 0 0; font-size: 0.95rem; color: var(--text-secondary); }
+  .abone code { display: inline-block; max-width: 100%; overflow-wrap: anywhere; font-size: 0.85rem; padding: 2px 6px; border-radius: 6px; background: var(--surface-1); border: 1px solid var(--gridline); }
+  .kartlar { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
+  .kart a { display: block; color: inherit; text-decoration: none; }
+  .kart .kapak { margin-bottom: 10px; }
+  .kart h2 { margin: 6px 0 6px; font-size: 1.25rem; }
+  .kart p { margin: 0; color: var(--text-secondary); }
+  .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+
+  body { padding-bottom: 72px; }
+  .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
+  .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
+    color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; }
+  /* Halka noktası kaldırıldı: yatay ekranda seçim düğmesi (radyo) gibi okunuyordu (tarama 30 Ekim, D26). */
+  .mini-kabuk a:hover { color: var(--text-primary); }
+  .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
+  @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+
+  .yaz-dugme { font: inherit; font-size: 1rem; min-height: 48px; padding: 0 28px; border-radius: 24px; border: 1px solid var(--accent-interactive); background: transparent; color: var(--text-primary); cursor: pointer; }
+  .yaz-dugme:hover { background: color-mix(in srgb, var(--accent-interactive) 12%, transparent); }
+  .yaz-dugme:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kucuk { font-size: .9rem; color: var(--text-muted); }
+</style>
+<script src="/assets/iletisim.js" defer></script>
+</head>
+<body>
+<main>
+  <div class="ust">
+    <a href="/">Dost Arabi</a>
+    <nav class="diller" aria-label="Dil / Language / Idioma">
+      <a href="/iletisim/" lang="tr" hreflang="tr">TR</a>
+      <a href="/iletisim/en/" lang="en" hreflang="en" aria-current="page">EN</a>
+      <a href="/iletisim/pt/" lang="pt-BR" hreflang="pt-BR">PT</a>
+    </nav>
+  </div>
+  <h1>Contact</h1>
+  <p class="giris">Dost Arabi consists solely of the readings of two readers, the site owner and Claude; everything on the site is a summary of what we have read.</p>
+  <p>Our door is open to understand Dost better: if a passage evokes something in you or makes you feel something, we would be glad to hear it, and if you wish to contribute, we welcome that too.</p>
+  <p><button type="button" class="yaz-dugme" data-iletisim data-konu="Dost Arabi — message" data-dil="en">Write</button></p>
+  <p class="kucuk">The “Write” button opens your email app; the address is not shown on this page. Your message reaches us by email only and is never published on the site.</p>
+  <noscript><p class="kucuk">You need an email app to write a message; if nothing opens, try this page on a computer.</p></noscript>
+</main>
+<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/">Map</a><a href="/futuhat/">Futuhat</a><a href="/fusus/">Fusus</a><a href="/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+</body>
+</html>
