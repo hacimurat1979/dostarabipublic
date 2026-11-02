@@ -1,53 +1,4 @@
-/**
- * Hakkında'nın dört giriş sayfası (2026-10-18): Kapsam ("Neredeyiz"),
- * Kaynakça, Nasıl okunur, Sözlük.
- *
- * Yeni okuyucunun siteye girerken bulamadığı dört OLGU sayfası; yorum
- * taşımazlar. Veri, mevcut kayıtlardan scripts/giris-verisi-uret.py ile
- * türetilir (giris-kapsam / giris-kaynakca / giris-sozluk .json); "Nasıl
- * okunur" ETKILESIM_DILI.md ve GORSEL_DIL.md'nin özetidir.
- *
- * Tek modül, dört sekme: siirler.js sekme değişince activate(which) çağırır.
- * Kurallar (ETKILESIM_DILI.md): bağlanmamış düğme yok -- sayılar, künye
- * bölüm etiketleri ve sözlük girdileri gerçek <a href>; tıklama yalnız o
- * kaydın/bölümün panelini açar (window.__dostNav.goTo).
- */
-window.__girisApp = (function () {
-  "use strict";
-  const I18n = window.DostI18n;
-  const GU = window.DostGraphUtils;
-  const tt = I18n.pick3;
-
-  const SAYFALAR = ["kapsam", "kaynakca", "nasil-okunur", "sozluk"];
-  const DOSYA = {
-    kapsam: "data/ibn-arabi/giris-kapsam.json",
-    kaynakca: "data/ibn-arabi/giris-kaynakca.json",
-    sozluk: "data/ibn-arabi/giris-sozluk.json",
-  };
-  const veri = {};
-  const bekleyen = {};
-  const durum = { sozluk: { q: "", v: "hepsi" }, kaynakca: { q: "", t: "hepsi" } };
-  let acik = null;
-
-  function esc(s) {
-    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-  function lang() { return I18n.getLang(); }
-  function loc() { const l = lang(); return l === "tr" ? "tr-TR" : l === "pt" ? "pt-BR" : "en-US"; }
-  function sayi(n) { return Number(n).toLocaleString(loc()); }
-  function yuzde(p) {
-    // TR'de "%11,3" (önde), EN/PT'de "11.3%" / "11,3%" (sonda): dile göre yüzde biçimi.
-    const n = (p * 100).toLocaleString(loc(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    return lang() === "tr" ? "%" + n : n + "%";
-  }
-  function s(k) { return tt(S[k]); }
-
-  // ── biçem ─────────────────────────────────────────────────────────────
-  // Tembel yüklenen sayfaların biçemi burada: style.css ilk yükte iner ve
-  // bütçesi dar (scripts/boyut-butcesi.json "ilk-yuk"); bu sekmeler yalnız
-  // istenince açılır. Renkler sitenin kendi değişkenleri; yazı boyutları
-  // ortak ölçeğe (--detail-font-scale, A−/A+) bağlı.
-  const CSS = `
+window.__girisApp=(function(){"use strict";const q=window.DostI18n,G=window.DostGraphUtils,y=q.pick3,B=["kapsam","kaynakca","nasil-okunur","sozluk"],P={kapsam:"data/ibn-arabi/giris-kapsam.json",kaynakca:"data/ibn-arabi/giris-kaynakca.json",sozluk:"data/ibn-arabi/giris-sozluk.json"},$={},w={},u={sozluk:{q:"",v:"hepsi"},kaynakca:{q:"",t:"hepsi"}};let j=null;function t(a){return String(a==null?"":a).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}function E(){return q.getLang()}function b(){const a=E();return a==="tr"?"tr-TR":a==="pt"?"pt-BR":"en-US"}function h(a){return Number(a).toLocaleString(b())}function A(a){const e=(a*100).toLocaleString(b(),{minimumFractionDigits:1,maximumFractionDigits:1});return E()==="tr"?"%"+e:e+"%"}function o(a){return y(v[a])}const T=`
 .gp-sayfa{--gp-terimler:#5f7391;--gp-esma:#b5654a;--gp-hal:#4f8a72;--gp-ontoloji:#8d6bb0;max-width:780px;margin:0 auto;padding:8px 0 56px}
 body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-hal:#7fb09a;--gp-ontoloji:#c3a8d8}
 .gp-baslik{font-size:calc(1.5rem * var(--detail-font-scale,1));margin:0 0 8px;text-wrap:balance}
@@ -140,618 +91,73 @@ body[data-theme="dark"] .gp-sayfa{--gp-terimler:#9aa9bd;--gp-esma:#d58a6f;--gp-h
 .gp-sz__kisa{font-size:calc(.84rem * var(--detail-font-scale,1));color:var(--text-secondary);line-height:1.5}
 .gp-sz__tur{color:var(--text-muted)}
 @media (max-width:560px){.gp-sayim{grid-template-columns:repeat(2,1fr)}.gp-arac{flex-wrap:wrap}.gp-sonuc-say{order:3}}
-`;
-  (function stilEkle() {
-    if (document.getElementById("giris-sayfalari-stil")) return;
-    const st = document.createElement("style");
-    st.id = "giris-sayfalari-stil";
-    st.textContent = CSS;
-    document.head.appendChild(st);
-  })();
-
-  // ── metinler ──────────────────────────────────────────────────────────
-  const S = {
-    kapsamBaslik: { tr: "Neredeyiz", en: "Where we are", pt: "Onde estamos" },
-    kapsamGiris: {
-      tr: "Fütûhât'ın 18 cildi bir halkada. Her daire bir cilt; dairenin büyüklüğü ve parlaklığı, o ciltte sitedeki Türkçe metnin kaynak metne oranını gösterir.",
-      en: "The 18 volumes of the Futuhat on one ring. Each circle is a volume; its size and brightness show the ratio of the site's Turkish text to the source text in that volume.",
-      pt: "Os 18 volumes do Futuhat em um anel. Cada círculo é um volume; seu tamanho e brilho mostram a razão entre o texto turco do site e o texto-fonte daquele volume.",
-    },
-    halkaAd: { tr: "Fütûhât'ın 18 cildinde özetin kaynak metne oranı", en: "Ratio of summary to source text across the 18 volumes of the Futuhat", pt: "Razão entre resumo e texto-fonte nos 18 volumes do Futuhat" },
-    sarmalBaslik: { tr: "Füsûs: yirmi yedi fass", en: "The Fusus: twenty-seven chapters", pt: "O Fusus: vinte e sete capítulos" },
-    sarmalGiris: {
-      tr: "Kitabın yirmi yedi fassı kendi sırasıyla bir sarmalda. Her düğüm bir fass; yakın olan öndedir, uzak olan solgun. Bir düğüme dokununca yanar ve sıra numarası görünür; “Aç” halkası o fassı açar. Klavyede ok tuşları numara sırasıyla gezer.",
-      en: "The book's twenty-seven chapters, in the book's own order, on a spiral. Each node is a chapter; the nearer is in front, the farther is faded. Touching a node lights it and shows its number; the “Open” ring opens that chapter. On a keyboard the arrow keys move in number order.",
-      pt: "Os vinte e sete capítulos do livro, na ordem do próprio livro, numa espiral. Cada nó é um capítulo; o mais próximo está à frente, o mais distante esmaecido. Ao tocar num nó, ele acende e mostra o seu número; o anel “Abrir” abre esse capítulo. No teclado, as setas percorrem os nós por ordem de número.",
-    },
-    sarmalAd: { tr: "Füsûs'un yirmi yedi fassı bir sarmalda", en: "The twenty-seven chapters of the Fusus on a spiral", pt: "Os vinte e sete capítulos do Fusus numa espiral" },
-    sarmalFass: { tr: "fass", en: "chapter", pt: "capítulo" },
-    sarmalAc: { tr: "Aç", en: "Open", pt: "Abrir" },
-    merkezOkundu: { tr: "kısım okundu", en: "parts read", pt: "partes lidas" },
-    merkezOrtalama: { tr: "ortalama oran", en: "average ratio", pt: "razão média" },
-    ciltAralik: {
-      tr: (a, b, x, y) => `Oran cilde göre ${a} (Cilt ${x}) ile ${b} (Cilt ${y}) arasında değişiyor.`,
-      en: (a, b, x, y) => `The ratio ranges from ${a} (Volume ${x}) to ${b} (Volume ${y}).`,
-      pt: (a, b, x, y) => `A razão varia de ${a} (Volume ${x}) a ${b} (Volume ${y}).`,
-    },
-    tabloCilt: { tr: "Cilt", en: "Volume", pt: "Volume" },
-    tabloKisim: { tr: "Kısım", en: "Parts", pt: "Partes" },
-    tabloOzet: { tr: "Sitedeki metin (karakter)", en: "Site text (characters)", pt: "Texto do site (caracteres)" },
-    tabloHam: { tr: "Kaynak metin (karakter)", en: "Source text (characters)", pt: "Texto-fonte (caracteres)" },
-    tabloOran: { tr: "Oran", en: "Ratio", pt: "Razão" },
-    eserBaslik: { tr: "Okuma durumu", en: "Reading status", pt: "Estado da leitura" },
-    eserEser: { tr: "Eser", en: "Work", pt: "Obra" },
-    eserOkunan: { tr: "Okunan", en: "Read", pt: "Lido" },
-    eserOlcum: { tr: "Oran ölçümü", en: "Ratio measured", pt: "Razão medida" },
-    eserFutuhat: { tr: "Fütûhât-ı Mekkiyye", en: "Meccan Openings (Futuhat)", pt: "Aberturas de Meca (Futuhat)" },
-    eserFusus: { tr: "Füsûsu'l-Hikem", en: "Fusus al-Hikam", pt: "Fusus al-Hikam" },
-    eserMiskat: { tr: "Mişkâtü'l-Envâr", en: "Mishkat al-Anwar", pt: "Mishkat al-Anwar" },
-    birimKisim: { tr: "kısım", en: "parts", pt: "partes" },
-    birimFass: { tr: "fass", en: "chapters", pt: "capítulos" },
-    birimHadis: { tr: "hadis", en: "hadiths", pt: "hadiths" },
-    olcumVar: { tr: "18 cilt", en: "18 volumes", pt: "18 volumes" },
-    olcumYok: { tr: "yok", en: "none", pt: "nenhuma" },
-    sayimBaslik: { tr: "Sitedeki kayıtlar", en: "Records on the site", pt: "Registros no site" },
-    sayimNot: { tr: "Her sayı, o kayıtların bölümünü açar.", en: "Each number opens the section of those records.", pt: "Cada número abre a seção desses registros." },
-    notBaslik: { tr: "Nasıl ölçüldü", en: "How it was measured", pt: "Como foi medido" },
-    notOkundu: {
-      tr: "“Okundu”: kısmın, fassın ya da hadisin sitede kendi sayfası var.",
-      en: "“Read”: the part, chapter or hadith has its own page on the site.",
-      pt: "“Lido”: a parte, o capítulo ou o hadith tem página própria no site.",
-    },
-    notOran: {
-      tr: "Oran: o ciltteki Fütûhât kısımlarının sitedeki Türkçe düzyazısının karakter sayısı bölü Ekrem Demirli çevirisinin o cildinin taranmış (OCR) metninin karakter sayısı. Alıntılar sayıya dahildir; taranmış metindeki sayfa üst bilgileri, dipnotlar ve tarama hataları paydadadır.",
-      en: "Ratio: the character count of the site's Turkish prose for the Futuhat parts in that volume, divided by the character count of the scanned (OCR) text of the same volume of Ekrem Demirli's translation. Quotations are included in the count; page headers, footnotes and scanning errors in the scanned text are in the denominator.",
-      pt: "Razão: o número de caracteres da prosa turca do site para as partes do Futuhat naquele volume, dividido pelo número de caracteres do texto digitalizado (OCR) do mesmo volume da tradução de Ekrem Demirli. As citações entram na contagem; cabeçalhos de página, notas de rodapé e erros de digitalização do texto digitalizado estão no denominador.",
-    },
-    notYayin: {
-      tr: "Taranmış metin, satılan bir çevirinin tam metni olduğu için yayımlanmaz; siteye yalnız bu oran gider.",
-      en: "The scanned text is the full text of a translation on sale, so it is not published; only this ratio goes to the site.",
-      pt: "O texto digitalizado é o texto completo de uma tradução à venda, por isso não é publicado; apenas esta razão vai para o site.",
-    },
-    notFusus: {
-      tr: "Füsûs ve Mişkât için oran ölçülmedi.",
-      en: "No ratio was measured for the Fusus and the Mishkat.",
-      pt: "Nenhuma razão foi medida para o Fusus e o Mishkat.",
-    },
-    sayimAdlari: {
-      kisim: { tr: "Fütûhât kısmı", en: "Futuhat parts", pt: "Partes do Futuhat" },
-      fass: { tr: "Füsûs fassı", en: "Fusus chapters", pt: "Capítulos do Fusus" },
-      hadis: { tr: "Mişkât hadisi", en: "Mishkat hadiths", pt: "Hadiths do Mishkat" },
-      kavram: { tr: "Kavram sayfası", en: "Concept pages", pt: "Páginas de conceitos" },
-      terim: { tr: "Terim", en: "Terms", pt: "Termos" },
-      esma: { tr: "Esmâ kaydı", en: "Names entries", pt: "Registros de Nomes" },
-      hal: { tr: "Hâl", en: "States", pt: "Estados" },
-      ontoloji: { tr: "Ontoloji düğümü", en: "Ontology nodes", pt: "Nós da ontologia" },
-      sir: { tr: "Sır", en: "Mysteries", pt: "Mistérios" },
-      soru: { tr: "Soru", en: "Questions", pt: "Perguntas" },
-      eser: { tr: "Eser", en: "Works", pt: "Obras" },
-      durak: { tr: "Seyahat durağı", en: "Travel stops", pt: "Paradas de viagem" },
-      menzil: { tr: "Menzil", en: "Stations", pt: "Estações" },
-      siir: { tr: "Şiir", en: "Poems", pt: "Poemas" },
-      kisi: { tr: "Eleştiri kişisi", en: "People in the criticism map", pt: "Pessoas no mapa de críticas" },
-    },
-
-    kaynakcaBaslik: { tr: "Kaynakça", en: "Bibliography", pt: "Bibliografia" },
-    kaynakcaGiris: {
-      tr: "Sitede adı geçen ve okumada kullanılan kaynakların künyeleri. Bir künyenin altında bölüm adı varsa, o bölümün kaydı bu künyeye kimlikle başvurur.",
-      en: "Bibliographic details of the sources named on the site and used in the readings. If a section name appears under an entry, that section's records refer to the entry by identifier.",
-      pt: "Dados bibliográficos das fontes citadas no site e usadas nas leituras. Se um nome de seção aparece sob uma entrada, os registros dessa seção remetem à entrada por identificador.",
-    },
-    ara: { tr: "Yazar ya da başlık ara", en: "Search author or title", pt: "Buscar autor ou título" },
-    hepsi: { tr: "Hepsi", en: "All", pt: "Todos" },
-    turler: {
-      c: { tr: "Çeviri ve basım", en: "Translations and editions", pt: "Traduções e edições" },
-      i: { tr: "İnceleme", en: "Studies", pt: "Estudos" },
-      m: { tr: "Makale ve bölüm", en: "Articles and chapters", pt: "Artigos e capítulos" },
-    },
-    kullanildigi: { tr: "Kayıtlarda anıldığı bölüm:", en: "Section whose records cite it:", pt: "Seção cujos registros a citam:" },
-    sonucYok: { tr: "Eşleşen kayıt yok.", en: "No matching entries.", pt: "Nenhum registro correspondente." },
-    temizle: { tr: "Süzgeci temizle", en: "Clear filter", pt: "Limpar filtro" },
-    yilYok: { tr: "y.y.", en: "n.d.", pt: "s.d." },
-
-    nasilBaslik: { tr: "Nasıl okunur", en: "How to read", pt: "Como ler" },
-    nasilGiris: {
-      tr: "Beş hareket, her görünümde aynı anlamda. Bir hareketi bir kez öğrenmek yeter.",
-      en: "Five gestures, with the same meaning in every view. Learning a gesture once is enough.",
-      pt: "Cinco gestos, com o mesmo sentido em todas as visões. Aprender um gesto uma vez basta.",
-    },
-    hareketler: [
-      { k: "yaklasmak", ad: { tr: "Yaklaşmak", en: "Drawing near", pt: "Aproximar-se" },
-        ne: { tr: "İki parmakla ya da Ctrl/⌘ + tekerlekle. Yalın tekerlek yakınlaştırmaz; sayfayı kaydırır.", en: "With two fingers, or Ctrl/⌘ + wheel. The plain wheel does not zoom; it scrolls the page.", pt: "Com dois dedos, ou Ctrl/⌘ + roda. A roda simples não aproxima; rola a página." } },
-      { k: "cekilmek", ad: { tr: "Geri çekilmek", en: "Stepping back", pt: "Recuar" },
-        ne: { tr: "Haritadaki ortala düğmesi bakışı başlangıçtaki hâline döndürür; seçili kip korunur. Geri çekilecek bir şey yoksa düğme görünmez.", en: "The recenter button on a map returns the view to where it began; the chosen mode is kept. When there is nothing to step back from, the button is not shown.", pt: "O botão de recentrar de um mapa devolve a visão ao ponto inicial; o modo escolhido é mantido. Quando não há o que recuar, o botão não aparece." } },
-      { k: "adim", ad: { tr: "Bir adım geri", en: "One step back", pt: "Um passo atrás" },
-        ne: { tr: "Esc ya da telefonda geri tuşu. Her seferinde yalnız bir adım: önce açık panel, sonra seçili öğe, sonra görünümün giriş hâli.", en: "Esc, or the back key on a phone. One step at a time: first the open panel, then the selected item, then the view's opening state.", pt: "Esc, ou a tecla voltar no telefone. Um passo de cada vez: primeiro o painel aberto, depois o item selecionado, depois o estado inicial da visão." } },
-      { k: "degmek", ad: { tr: "Değinmek", en: "Touching lightly", pt: "Tocar de leve" },
-        ne: { tr: "Üzerine gelmek ya da klavyeyle odaklanmak (Tab). Tıklamanın küçültülmüş bir önizlemesini gösterir.", en: "Hovering, or focusing with the keyboard (Tab). Shows a reduced preview of what a click would open.", pt: "Passar o cursor, ou focar com o teclado (Tab). Mostra uma prévia reduzida do que um clique abriria." } },
-      { k: "secmek", ad: { tr: "Seçmek", en: "Choosing", pt: "Escolher" },
-        ne: { tr: "Tıklamak, dokunmak ya da Enter. Yalnızca o öğenin paneli açılır; başka bir bölüme habersiz geçilmez.", en: "Click, tap or Enter. Only that item's panel opens; you are never moved to another section without notice.", pt: "Clicar, tocar ou Enter. Só o painel desse item abre; ninguém é levado a outra seção sem aviso." } },
-    ],
-    nasilIsik: { tr: "ışık = zuhûr", en: "light = manifestation", pt: "luz = manifestação" },
-    nasilMatlik: { tr: "matlık = perdelenme", en: "dimness = veiling", pt: "opacidade = velamento" },
-    nasilGolge: { tr: "gölge = gizlilik", en: "shadow = hiddenness", pt: "sombra = ocultamento" },
-    nasilCizim: {
-      tr: "Haritalardaki çizim dili sabittir: aynı görsel, her yerde aynı anlamı taşır.",
-      en: "The drawing language of the maps is fixed: the same visual carries the same meaning everywhere.",
-      pt: "A linguagem de desenho dos mapas é fixa: o mesmo visual tem o mesmo sentido em toda parte.",
-    },
-    nasilEkBaslik: { tr: "Ayrıca", en: "Also", pt: "Além disso" },
-    nasilEk: [
-      { ad: { tr: "Harita ya da liste", en: "Map or list", pt: "Mapa ou lista" },
-        ne: { tr: "Telefonda haritalar Grafik · Liste · Tam ekran kipleriyle açılır; seçilen kip bütün haritalarda ortaktır.", en: "On a phone, maps open with Graph · List · Full screen modes; the chosen mode is shared by all maps.", pt: "No telefone, os mapas abrem com os modos Gráfico · Lista · Tela cheia; o modo escolhido é comum a todos os mapas." } },
-      { ad: { tr: "Dil", en: "Language", pt: "Idioma" },
-        ne: { tr: "Her sayfa Türkçe, İngilizce ve Portekizce okunur. İngilizce ve Portekizce metinler bizim aktarımımızdır.", en: "Every page can be read in Turkish, English and Portuguese. The English and Portuguese texts are our own rendering.", pt: "Cada página pode ser lida em turco, inglês e português. Os textos em inglês e português são nossa própria versão." } },
-      { ad: { tr: "Yazı boyutu", en: "Text size", pt: "Tamanho do texto" },
-        ne: { tr: "Okuma sayfalarındaki A− / A+ yazıyı küçültür ve büyütür; seçim bütün okuma sayfalarında ortaktır.", en: "A− / A+ on reading pages shrinks and enlarges the text; the choice is shared by all reading pages.", pt: "A− / A+ nas páginas de leitura diminui e aumenta o texto; a escolha vale para todas as páginas de leitura." } },
-      { ad: { tr: "Çevrimdışı okuma", en: "Offline reading", pt: "Leitura offline" },
-        ne: { tr: "Çekmecedeki “Çevrimdışı okuma” içeriği isteğe bağlı olarak cihaza indirir; dokunmadıkça hiçbir şey inmez.", en: "“Offline reading” in the drawer downloads the content to the device on request; nothing is downloaded unless you tap it.", pt: "“Leitura offline” na gaveta baixa o conteúdo para o dispositivo sob demanda; nada é baixado sem que você toque." } },
-    ],
-
-    sozlukBaslik: { tr: "Sözlük", en: "Glossary", pt: "Glossário" },
-    sozlukGiris: {
-      tr: "Terimler, Esmâ, Hâller ve Ontoloji kayıtları tek A–Z listede. Her girdinin açıklaması, kendi bölümündeki tek satırlık açıklamasıdır; girdiye dokunmak o kaydı açar.",
-      en: "The records of Terms, Names, States and Ontology in one A–Z list. Each entry's description is its own one-line description in its section; tapping an entry opens that record.",
-      pt: "Os registros de Termos, Nomes, Estados e Ontologia em uma única lista A–Z. A descrição de cada entrada é a sua descrição de uma linha na própria seção; tocar numa entrada abre esse registro.",
-    },
-    sozlukAra: { tr: "Girdi ara", en: "Search entries", pt: "Buscar entradas" },
-    sozlukTur: {
-      terimler: { tr: "Terim", en: "Term", pt: "Termo" },
-      esma: { tr: "Esmâ", en: "Name", pt: "Nome" },
-      hal: { tr: "Hâl", en: "State", pt: "Estado" },
-      ontoloji: { tr: "Ontoloji", en: "Ontology", pt: "Ontologia" },
-    },
-    harfler: { tr: "Harfe git", en: "Jump to letter", pt: "Ir à letra" },
-    bolumAdi: {
-      "eser-agi": { tr: "Eser Ağı", en: "Works Network", pt: "Rede de Obras" },
-      bilmiyoruz: { tr: "Bilmiyoruz", en: "We Don't Know", pt: "Não Sabemos" },
-      sirlar: { tr: "Sırlar", en: "Mysteries", pt: "Mistérios" },
-      terimler: { tr: "Terimler", en: "Terms", pt: "Termos" },
-      ontoloji: { tr: "Ontoloji", en: "Ontology", pt: "Ontologia" },
-      "seyahat-atlasi": { tr: "Seyahat Atlası", en: "Travel Atlas", pt: "Atlas de Viagens" },
-      hocalar: { tr: "Hocalar", en: "Teachers", pt: "Mestres" },
-      "okuma-yollari": { tr: "Okuma Yolları", en: "Reading Paths", pt: "Caminhos de Leitura" },
-    },
-  };
-
-  // ── ortak ─────────────────────────────────────────────────────────────
-  function el(which) { return document.getElementById(which + "-content"); }
-  function panelId(which) { return which + "-panel"; }
-
-  function yukle(which) {
-    if (veri[which]) return Promise.resolve(veri[which]);
-    if (bekleyen[which]) return bekleyen[which];
-    if (window.DostViewStatus) window.DostViewStatus.showLoading(panelId(which));
-    bekleyen[which] = GU.fetchJson(DOSYA[which]).then((d) => {
-      veri[which] = d;
-      if (window.DostViewStatus) window.DostViewStatus.hide(panelId(which));
-      return d;
-    }).catch((err) => {
-      console.error("giriş sayfası verisi yüklenemedi / failed to load", which, err);
-      bekleyen[which] = null;
-      if (window.DostViewStatus) window.DostViewStatus.showError(panelId(which), () => activate(which));
-      return null;
-    });
-    return bekleyen[which];
-  }
-
-  function href(view, id) {
-    return window.__dostNav ? window.__dostNav.href(view, id) : "/" + view + "/";
-  }
-  function baglanti(view, id, icerik, sinif, ek) {
-    return `<a class="${sinif || "gp-link"}" href="${esc(href(view, id))}" data-gp-view="${esc(view)}"${id ? ` data-gp-id="${esc(id)}"` : ""}${ek || ""}>${icerik}</a>`;
-  }
-  function baglantilariBagla(kap) {
-    if (kap.dataset.gpBagli) return;
-    kap.dataset.gpBagli = "1";
-    kap.addEventListener("click", (e) => {
-      const a = e.target.closest("a[data-gp-view]");
-      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      e.preventDefault();
-      if (window.__dostNav && window.__dostNav.goTo) window.__dostNav.goTo(a.dataset.gpView, a.dataset.gpId || undefined);
-      else window.location.href = a.getAttribute("href");
-    });
-  }
-
-  const ROMEN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII"];
-
-  // ── Kapsam ────────────────────────────────────────────────────────────
-  function halkaHtml(d) {
-    const c = d.futuhat.cilt;
-    const pays = c.map((x) => x.pay);
-    const min = Math.min.apply(null, pays), max = Math.max.apply(null, pays);
-    const R = 108, M = 150, n = c.length;
-    let g = "";
-    c.forEach((x, i) => {
-      const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-      const t = max > min ? (x.pay - min) / (max - min) : 1;
-      const cx = M + R * Math.cos(a), cy = M + R * Math.sin(a);
-      const lx = M + (R + 27) * Math.cos(a), ly = M + (R + 27) * Math.sin(a) + 3;
-      g += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(6.8 + 9.2 * t).toFixed(1)}" class="gp-halka__daire" style="opacity:${(0.41 + 0.59 * t).toFixed(2)}"><title>${esc(s("tabloCilt"))} ${ROMEN[x.no]} · ${esc(yuzde(x.pay))}</title></circle>`;
-      g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" class="gp-halka__etiket">${ROMEN[x.no]}</text>`;
-    });
-    const f = d.okuma.futuhat;
-    return `<svg class="gp-halka" viewBox="0 0 300 300" role="img" aria-label="${esc(s("halkaAd"))}">
-      ${g}
-      <text x="150" y="146" text-anchor="middle" class="gp-halka__buyuk">${sayi(f.okunan)} / ${sayi(f.toplam)}</text>
-      <text x="150" y="163" text-anchor="middle" class="gp-halka__kucuk">${esc(s("merkezOkundu"))}</text>
-      <text x="150" y="180" text-anchor="middle" class="gp-halka__kucuk">${esc(s("merkezOrtalama"))} ${esc(yuzde(d.futuhat.ortalama))}</text>
-    </svg>`;
-  }
-
-  // Tasarım önerisi 8 (2026-10-21, kullanıcı onayı): Füsûs'un fassları bir sarmalda.
-  // Sarmal ilkesi (CLAUDE.md): halka yerine üç boyutlu sarmal. Derinlik atmosferik
-  // puslanmayla (yakın = dolgun, uzak = soluk) kurulur; sahte 3B yok. Düğümler yalnız
-  // sıra numarasını taşır; fass sırası kitabın kendi sırasıdır.
-  function sarmalHtml(d) {
-    const n = d.okuma.fusus.toplam, okunan = d.okuma.fusus.okunan;
-    const dugumler = [];
-    for (let i = 0; i < n; i++) {
-      const t = (i / Math.max(1, n - 1)) * Math.PI * 4.2;
-      const z = Math.cos(t);                       // 1 yakın … -1 uzak
-      dugumler.push({
-        i, z,
-        x: 110 + 62 * Math.sin(t),
-        y: 24 + i * (252 / Math.max(1, n - 1)),
-        r: 4.4 + (z + 1) * 2.1,
-        op: 0.34 + (z + 1) * 0.33,
-      });
-    }
-    // Düğümler NUMARA sırasıyla dizilir (Tab ve ekran okuyucu sırası 1→27); derinlik yalnız
-    // opaklık/yarıçap ile okunur. Y2 (2026-10-21, kullanıcı onayı): iki aşamalı dokunuş --
-    // ilk dokunuş düğümü seçer (yanar, adı çıkar, "Aç" halkası belirir), "Aç" bağlantısı fassa
-    // götürür (adı konmuş kapı). Sarmal tek Tab durağıdır; ←/→/↑/↓ numara sırasıyla gezer, Esc seçimi
-    // bırakır. Her düğümün çevresinde saydam geniş yakalama dairesi var (hedef ≥24 px, WCAG 2.5.8).
-    const g = dugumler.map((p) => {
-      const ad = `${p.i + 1}. ${s("sarmalFass")}`;
-      const op = Math.max(0.55, p.op);
-      return `<g class="gp-sarmal__bag" role="button" tabindex="${p.i === 0 ? 0 : -1}" aria-pressed="false" aria-label="${esc(ad)}" data-i="${p.i}" data-x="${p.x.toFixed(1)}" data-y="${p.y.toFixed(1)}" data-r="${p.r.toFixed(1)}">`
-        + `<circle class="gp-sarmal__yakala" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="12" fill="transparent"/>`
-        + `<circle class="gp-sarmal__nokta" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r.toFixed(1)}" opacity="${(p.i < okunan ? op : op * 0.5).toFixed(2)}" data-op="${(p.i < okunan ? op : op * 0.5).toFixed(2)}"/>`
-        + `<title>${esc(ad)}</title></g>`;
-    }).join("");
-    return `<svg class="gp-sarmal" viewBox="0 0 220 300" role="group" aria-label="${esc(s("sarmalAd"))}">${g}</svg>`;
-  }
-
-  // Sarmal etkileşimi (kapsam kökü üzerinde delegasyon; render sonrası bir kez).
-  function sarmalBagla(kap) {
-    const svg = kap.querySelector(".gp-sarmal");
-    if (!svg || svg.dataset.bagli) return;
-    svg.dataset.bagli = "1";
-    const dugumler = [...svg.querySelectorAll(".gp-sarmal__bag")];
-    let sec = -1;
-    function ciz() {
-      svg.querySelectorAll(".gp-sarmal__sec, .gp-sarmal__ac").forEach((e) => e.remove());
-      svg.classList.toggle("gp-sarmal--secimli", sec >= 0);
-      dugumler.forEach((g, i) => {
-        g.setAttribute("aria-pressed", String(i === sec));
-        g.classList.toggle("gp-sarmal__bag--sec", i === sec);
-      });
-      if (sec < 0) return;
-      const g = dugumler[sec], x = +g.dataset.x, y = +g.dataset.y, r = +g.dataset.r;
-      const sag = x > 110;
-      const ad = `${sec + 1}. ${s("sarmalFass")}`;
-      const lx = x + (sag ? -(r + 12) : r + 12);
-      g.insertAdjacentHTML("beforeend",
-        `<circle class="gp-sarmal__sec gp-sarmal__hale" cx="${x}" cy="${y}" r="${(r + 7).toFixed(1)}"/>`
-        + `<text class="gp-sarmal__sec gp-sarmal__ad" x="${lx.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${sag ? "end" : "start"}">${esc(ad)}</text>`);
-      const bx = Math.min(Math.max(x + (sag ? -58 : 58), 28), 192), by = Math.min(Math.max(y + 30, 28), 272);
-      svg.insertAdjacentHTML("beforeend", baglanti("fusus", "fs" + (sec + 1),
-        `<circle class="gp-sarmal__ac-daire" cx="${bx}" cy="${by}" r="22"/><text class="gp-sarmal__ac-yazi" x="${bx}" y="${by + 4}" text-anchor="middle">${esc(s("sarmalAc"))}</text>`,
-        "gp-sarmal__ac", ` aria-label="${esc(ad + ": " + s("sarmalAc"))}"`));
-    }
-    function sec_(i, odak) {
-      sec = i; dugumler.forEach((g, k) => g.setAttribute("tabindex", k === (i < 0 ? 0 : i) ? "0" : "-1"));
-      ciz(); if (odak && i >= 0) dugumler[i].focus();
-    }
-    svg.addEventListener("click", (e) => {
-      const g = e.target.closest && e.target.closest(".gp-sarmal__bag");
-      if (!g) return;
-      e.preventDefault();
-      const i = +g.dataset.i;
-      sec_(sec === i ? -1 : i, false);
-    });
-    svg.addEventListener("keydown", (e) => {
-      const g = e.target.closest && e.target.closest(".gp-sarmal__bag");
-      if (e.key === "Escape" && sec >= 0) { e.stopPropagation(); const k = sec; sec_(-1, false); dugumler[k].focus(); return; }
-      if (!g) return;
-      const i = +g.dataset.i, n = dugumler.length;
-      const yeni = (e.key === "ArrowRight" || e.key === "ArrowDown") ? Math.min(i + 1, n - 1)
-        : (e.key === "ArrowLeft" || e.key === "ArrowUp") ? Math.max(i - 1, 0)
-        : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
-      if (yeni >= 0) { e.preventDefault(); dugumler.forEach((d, k) => d.setAttribute("tabindex", k === yeni ? "0" : "-1")); dugumler[yeni].focus(); if (sec >= 0) sec_(yeni, true); return; }
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sec_(sec === i ? -1 : i, true); }
-    });
-  }
-
-  const SAYIM_BOLUM = {
-    kisim: ["futuhat"], fass: ["fusus"], hadis: ["miskat"], kavram: ["kavram"], terim: ["terimler"],
-    esma: ["esma"], hal: ["hal"], ontoloji: ["ontoloji"], sir: ["sirlar"], soru: ["sorular"],
-    eser: ["eser-agi"], durak: ["seyahat-atlasi"], menzil: ["menziller"], siir: ["hakkinda", "siirler"],
-    kisi: ["elestiri-arkeolojisi"],
-  };
-
-  // Sıralanabilir cilt tablosu (2026-10-30, fikir L7): başlık düğmesi sütuna göre sıralar (artan → azalan → ilk sıra);
-  // veri değişmez, yalnız satır dizilişi. aria-sort durumu başlıkta taşınır.
-  function tabloSiralanabilir(tablo) {
-    if (!tablo) return;
-    const govde = tablo.tBodies[0], satirlar = Array.prototype.slice.call(govde.rows);
-    satirlar.forEach((r, i) => { r.dataset.ilkSira = String(i); });
-    const sayiDegeri = (h) => { const t = (h.textContent || "").replace(/\s/g, "").replace(/[%]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", "."); const n = parseFloat(t); return isNaN(n) ? null : n; };
-    const basliklar = Array.prototype.slice.call(tablo.tHead.rows[0].cells);
-    basliklar.forEach((th, k) => {
-      const ad = th.textContent.trim();
-      th.innerHTML = '<button type="button" class="gp-tablo__sirala">' + esc(ad) + '<span class="gp-tablo__ok" aria-hidden="true"></span></button>';
-      th.setAttribute("aria-sort", "none");
-      th.querySelector("button").addEventListener("click", () => {
-        const onceki = th.getAttribute("aria-sort");
-        const yon = onceki === "none" ? "ascending" : onceki === "ascending" ? "descending" : "none";
-        basliklar.forEach((o) => o.setAttribute("aria-sort", "none"));
-        th.setAttribute("aria-sort", yon);
-        const sirali = satirlar.slice().sort((a, b) => {
-          if (yon === "none") return (+a.dataset.ilkSira) - (+b.dataset.ilkSira);
-          const x = k === 0 ? +a.dataset.ilkSira : sayiDegeri(a.cells[k]), y = k === 0 ? +b.dataset.ilkSira : sayiDegeri(b.cells[k]);
-          return (yon === "ascending" ? 1 : -1) * ((x == null ? -Infinity : x) - (y == null ? -Infinity : y));
-        });
-        sirali.forEach((r) => govde.appendChild(r));
-      });
-    });
-  }
-
-  function renderKapsam(d) {
-    const c = d.futuhat.cilt;
-    const lo = d.futuhat.enDusuk, hi = d.futuhat.enYuksek;
-    const satirlar = c.map((x) => `<tr><th scope="row">${ROMEN[x.no]}</th><td class="gp-say">${sayi(x.kisim)}</td><td class="gp-say">${sayi(x.ozet)}</td><td class="gp-say">${sayi(x.ham)}</td><td class="gp-say">${esc(yuzde(x.pay))}</td></tr>`).join("");
-    const o = d.okuma;
-    const eser = [
-      [s("eserFutuhat"), o.futuhat, "birimKisim", true],
-      [s("eserFusus"), o.fusus, "birimFass", false],
-      [s("eserMiskat"), o.miskat, "birimHadis", false],
-    ].map(([ad, r, birim, olcum]) => `<tr><th scope="row">${esc(ad)}</th><td>${sayi(r.okunan)} / ${sayi(r.toplam)} ${esc(s(birim))}</td><td>${esc(s(olcum ? "olcumVar" : "olcumYok"))}</td></tr>`).join("");
-    const sayim = Object.keys(SAYIM_BOLUM).filter((k) => d.sayim[k] != null).map((k) => {
-      const [v, id] = SAYIM_BOLUM[k];
-      return `<li>${baglanti(v, id, `<span class="gp-sayim__n">${sayi(d.sayim[k])}</span><span class="gp-sayim__ad">${esc(tt(S.sayimAdlari[k]))}</span>`, "gp-link gp-sayim__a")}</li>`;
-    }).join("");
-    el("kapsam").innerHTML = `
+`;(function(){if(document.getElementById("giris-sayfalari-stil"))return;const e=document.createElement("style");e.id="giris-sayfalari-stil",e.textContent=T,document.head.appendChild(e)})();const v={kapsamBaslik:{tr:"Neredeyiz",en:"Where we are",pt:"Onde estamos"},kapsamGiris:{tr:"F\xFCt\xFBh\xE2t'\u0131n 18 cildi bir halkada. Her daire bir cilt; dairenin b\xFCy\xFCkl\xFC\u011F\xFC ve parlakl\u0131\u011F\u0131, o ciltte sitedeki T\xFCrk\xE7e metnin kaynak metne oran\u0131n\u0131 g\xF6sterir.",en:"The 18 volumes of the Futuhat on one ring. Each circle is a volume; its size and brightness show the ratio of the site's Turkish text to the source text in that volume.",pt:"Os 18 volumes do Futuhat em um anel. Cada c\xEDrculo \xE9 um volume; seu tamanho e brilho mostram a raz\xE3o entre o texto turco do site e o texto-fonte daquele volume."},halkaAd:{tr:"F\xFCt\xFBh\xE2t'\u0131n 18 cildinde \xF6zetin kaynak metne oran\u0131",en:"Ratio of summary to source text across the 18 volumes of the Futuhat",pt:"Raz\xE3o entre resumo e texto-fonte nos 18 volumes do Futuhat"},sarmalBaslik:{tr:"F\xFCs\xFBs: yirmi yedi fass",en:"The Fusus: twenty-seven chapters",pt:"O Fusus: vinte e sete cap\xEDtulos"},sarmalGiris:{tr:"Kitab\u0131n yirmi yedi fass\u0131 kendi s\u0131ras\u0131yla bir sarmalda. Her d\xFC\u011F\xFCm bir fass; yak\u0131n olan \xF6ndedir, uzak olan solgun. Bir d\xFC\u011F\xFCme dokununca yanar ve s\u0131ra numaras\u0131 g\xF6r\xFCn\xFCr; \u201CA\xE7\u201D halkas\u0131 o fass\u0131 a\xE7ar. Klavyede ok tu\u015Flar\u0131 numara s\u0131ras\u0131yla gezer.",en:"The book's twenty-seven chapters, in the book's own order, on a spiral. Each node is a chapter; the nearer is in front, the farther is faded. Touching a node lights it and shows its number; the \u201COpen\u201D ring opens that chapter. On a keyboard the arrow keys move in number order.",pt:"Os vinte e sete cap\xEDtulos do livro, na ordem do pr\xF3prio livro, numa espiral. Cada n\xF3 \xE9 um cap\xEDtulo; o mais pr\xF3ximo est\xE1 \xE0 frente, o mais distante esmaecido. Ao tocar num n\xF3, ele acende e mostra o seu n\xFAmero; o anel \u201CAbrir\u201D abre esse cap\xEDtulo. No teclado, as setas percorrem os n\xF3s por ordem de n\xFAmero."},sarmalAd:{tr:"F\xFCs\xFBs'un yirmi yedi fass\u0131 bir sarmalda",en:"The twenty-seven chapters of the Fusus on a spiral",pt:"Os vinte e sete cap\xEDtulos do Fusus numa espiral"},sarmalFass:{tr:"fass",en:"chapter",pt:"cap\xEDtulo"},sarmalAc:{tr:"A\xE7",en:"Open",pt:"Abrir"},merkezOkundu:{tr:"k\u0131s\u0131m okundu",en:"parts read",pt:"partes lidas"},merkezOrtalama:{tr:"ortalama oran",en:"average ratio",pt:"raz\xE3o m\xE9dia"},ciltAralik:{tr:(a,e,i,n)=>`Oran cilde g\xF6re ${a} (Cilt ${i}) ile ${e} (Cilt ${n}) aras\u0131nda de\u011Fi\u015Fiyor.`,en:(a,e,i,n)=>`The ratio ranges from ${a} (Volume ${i}) to ${e} (Volume ${n}).`,pt:(a,e,i,n)=>`A raz\xE3o varia de ${a} (Volume ${i}) a ${e} (Volume ${n}).`},tabloCilt:{tr:"Cilt",en:"Volume",pt:"Volume"},tabloKisim:{tr:"K\u0131s\u0131m",en:"Parts",pt:"Partes"},tabloOzet:{tr:"Sitedeki metin (karakter)",en:"Site text (characters)",pt:"Texto do site (caracteres)"},tabloHam:{tr:"Kaynak metin (karakter)",en:"Source text (characters)",pt:"Texto-fonte (caracteres)"},tabloOran:{tr:"Oran",en:"Ratio",pt:"Raz\xE3o"},eserBaslik:{tr:"Okuma durumu",en:"Reading status",pt:"Estado da leitura"},eserEser:{tr:"Eser",en:"Work",pt:"Obra"},eserOkunan:{tr:"Okunan",en:"Read",pt:"Lido"},eserOlcum:{tr:"Oran \xF6l\xE7\xFCm\xFC",en:"Ratio measured",pt:"Raz\xE3o medida"},eserFutuhat:{tr:"F\xFCt\xFBh\xE2t-\u0131 Mekkiyye",en:"Meccan Openings (Futuhat)",pt:"Aberturas de Meca (Futuhat)"},eserFusus:{tr:"F\xFCs\xFBsu'l-Hikem",en:"Fusus al-Hikam",pt:"Fusus al-Hikam"},eserMiskat:{tr:"Mi\u015Fk\xE2t\xFC'l-Env\xE2r",en:"Mishkat al-Anwar",pt:"Mishkat al-Anwar"},birimKisim:{tr:"k\u0131s\u0131m",en:"parts",pt:"partes"},birimFass:{tr:"fass",en:"chapters",pt:"cap\xEDtulos"},birimHadis:{tr:"hadis",en:"hadiths",pt:"hadiths"},olcumVar:{tr:"18 cilt",en:"18 volumes",pt:"18 volumes"},olcumYok:{tr:"yok",en:"none",pt:"nenhuma"},sayimBaslik:{tr:"Sitedeki kay\u0131tlar",en:"Records on the site",pt:"Registros no site"},sayimNot:{tr:"Her say\u0131, o kay\u0131tlar\u0131n b\xF6l\xFCm\xFCn\xFC a\xE7ar.",en:"Each number opens the section of those records.",pt:"Cada n\xFAmero abre a se\xE7\xE3o desses registros."},notBaslik:{tr:"Nas\u0131l \xF6l\xE7\xFCld\xFC",en:"How it was measured",pt:"Como foi medido"},notOkundu:{tr:"\u201COkundu\u201D: k\u0131sm\u0131n, fass\u0131n ya da hadisin sitede kendi sayfas\u0131 var.",en:"\u201CRead\u201D: the part, chapter or hadith has its own page on the site.",pt:"\u201CLido\u201D: a parte, o cap\xEDtulo ou o hadith tem p\xE1gina pr\xF3pria no site."},notOran:{tr:"Oran: o ciltteki F\xFCt\xFBh\xE2t k\u0131s\u0131mlar\u0131n\u0131n sitedeki T\xFCrk\xE7e d\xFCzyaz\u0131s\u0131n\u0131n karakter say\u0131s\u0131 b\xF6l\xFC Ekrem Demirli \xE7evirisinin o cildinin taranm\u0131\u015F (OCR) metninin karakter say\u0131s\u0131. Al\u0131nt\u0131lar say\u0131ya dahildir; taranm\u0131\u015F metindeki sayfa \xFCst bilgileri, dipnotlar ve tarama hatalar\u0131 paydadad\u0131r.",en:"Ratio: the character count of the site's Turkish prose for the Futuhat parts in that volume, divided by the character count of the scanned (OCR) text of the same volume of Ekrem Demirli's translation. Quotations are included in the count; page headers, footnotes and scanning errors in the scanned text are in the denominator.",pt:"Raz\xE3o: o n\xFAmero de caracteres da prosa turca do site para as partes do Futuhat naquele volume, dividido pelo n\xFAmero de caracteres do texto digitalizado (OCR) do mesmo volume da tradu\xE7\xE3o de Ekrem Demirli. As cita\xE7\xF5es entram na contagem; cabe\xE7alhos de p\xE1gina, notas de rodap\xE9 e erros de digitaliza\xE7\xE3o do texto digitalizado est\xE3o no denominador."},notYayin:{tr:"Taranm\u0131\u015F metin, sat\u0131lan bir \xE7evirinin tam metni oldu\u011Fu i\xE7in yay\u0131mlanmaz; siteye yaln\u0131z bu oran gider.",en:"The scanned text is the full text of a translation on sale, so it is not published; only this ratio goes to the site.",pt:"O texto digitalizado \xE9 o texto completo de uma tradu\xE7\xE3o \xE0 venda, por isso n\xE3o \xE9 publicado; apenas esta raz\xE3o vai para o site."},notFusus:{tr:"F\xFCs\xFBs ve Mi\u015Fk\xE2t i\xE7in oran \xF6l\xE7\xFClmedi.",en:"No ratio was measured for the Fusus and the Mishkat.",pt:"Nenhuma raz\xE3o foi medida para o Fusus e o Mishkat."},sayimAdlari:{kisim:{tr:"F\xFCt\xFBh\xE2t k\u0131sm\u0131",en:"Futuhat parts",pt:"Partes do Futuhat"},fass:{tr:"F\xFCs\xFBs fass\u0131",en:"Fusus chapters",pt:"Cap\xEDtulos do Fusus"},hadis:{tr:"Mi\u015Fk\xE2t hadisi",en:"Mishkat hadiths",pt:"Hadiths do Mishkat"},kavram:{tr:"Kavram sayfas\u0131",en:"Concept pages",pt:"P\xE1ginas de conceitos"},terim:{tr:"Terim",en:"Terms",pt:"Termos"},esma:{tr:"Esm\xE2 kayd\u0131",en:"Names entries",pt:"Registros de Nomes"},hal:{tr:"H\xE2l",en:"States",pt:"Estados"},ontoloji:{tr:"Ontoloji d\xFC\u011F\xFCm\xFC",en:"Ontology nodes",pt:"N\xF3s da ontologia"},sir:{tr:"S\u0131r",en:"Mysteries",pt:"Mist\xE9rios"},soru:{tr:"Soru",en:"Questions",pt:"Perguntas"},eser:{tr:"Eser",en:"Works",pt:"Obras"},durak:{tr:"Seyahat dura\u011F\u0131",en:"Travel stops",pt:"Paradas de viagem"},menzil:{tr:"Menzil",en:"Stations",pt:"Esta\xE7\xF5es"},siir:{tr:"\u015Eiir",en:"Poems",pt:"Poemas"},kisi:{tr:"Ele\u015Ftiri ki\u015Fisi",en:"People in the criticism map",pt:"Pessoas no mapa de cr\xEDticas"}},kaynakcaBaslik:{tr:"Kaynak\xE7a",en:"Bibliography",pt:"Bibliografia"},kaynakcaGiris:{tr:"Sitede ad\u0131 ge\xE7en ve okumada kullan\u0131lan kaynaklar\u0131n k\xFCnyeleri. Bir k\xFCnyenin alt\u0131nda b\xF6l\xFCm ad\u0131 varsa, o b\xF6l\xFCm\xFCn kayd\u0131 bu k\xFCnyeye kimlikle ba\u015Fvurur.",en:"Bibliographic details of the sources named on the site and used in the readings. If a section name appears under an entry, that section's records refer to the entry by identifier.",pt:"Dados bibliogr\xE1ficos das fontes citadas no site e usadas nas leituras. Se um nome de se\xE7\xE3o aparece sob uma entrada, os registros dessa se\xE7\xE3o remetem \xE0 entrada por identificador."},ara:{tr:"Yazar ya da ba\u015Fl\u0131k ara",en:"Search author or title",pt:"Buscar autor ou t\xEDtulo"},hepsi:{tr:"Hepsi",en:"All",pt:"Todos"},turler:{c:{tr:"\xC7eviri ve bas\u0131m",en:"Translations and editions",pt:"Tradu\xE7\xF5es e edi\xE7\xF5es"},i:{tr:"\u0130nceleme",en:"Studies",pt:"Estudos"},m:{tr:"Makale ve b\xF6l\xFCm",en:"Articles and chapters",pt:"Artigos e cap\xEDtulos"}},kullanildigi:{tr:"Kay\u0131tlarda an\u0131ld\u0131\u011F\u0131 b\xF6l\xFCm:",en:"Section whose records cite it:",pt:"Se\xE7\xE3o cujos registros a citam:"},sonucYok:{tr:"E\u015Fle\u015Fen kay\u0131t yok.",en:"No matching entries.",pt:"Nenhum registro correspondente."},temizle:{tr:"S\xFCzgeci temizle",en:"Clear filter",pt:"Limpar filtro"},yilYok:{tr:"y.y.",en:"n.d.",pt:"s.d."},nasilBaslik:{tr:"Nas\u0131l okunur",en:"How to read",pt:"Como ler"},nasilGiris:{tr:"Be\u015F hareket, her g\xF6r\xFCn\xFCmde ayn\u0131 anlamda. Bir hareketi bir kez \xF6\u011Frenmek yeter.",en:"Five gestures, with the same meaning in every view. Learning a gesture once is enough.",pt:"Cinco gestos, com o mesmo sentido em todas as vis\xF5es. Aprender um gesto uma vez basta."},hareketler:[{k:"yaklasmak",ad:{tr:"Yakla\u015Fmak",en:"Drawing near",pt:"Aproximar-se"},ne:{tr:"\u0130ki parmakla ya da Ctrl/\u2318 + tekerlekle. Yal\u0131n tekerlek yak\u0131nla\u015Ft\u0131rmaz; sayfay\u0131 kayd\u0131r\u0131r.",en:"With two fingers, or Ctrl/\u2318 + wheel. The plain wheel does not zoom; it scrolls the page.",pt:"Com dois dedos, ou Ctrl/\u2318 + roda. A roda simples n\xE3o aproxima; rola a p\xE1gina."}},{k:"cekilmek",ad:{tr:"Geri \xE7ekilmek",en:"Stepping back",pt:"Recuar"},ne:{tr:"Haritadaki ortala d\xFC\u011Fmesi bak\u0131\u015F\u0131 ba\u015Flang\u0131\xE7taki h\xE2line d\xF6nd\xFCr\xFCr; se\xE7ili kip korunur. Geri \xE7ekilecek bir \u015Fey yoksa d\xFC\u011Fme g\xF6r\xFCnmez.",en:"The recenter button on a map returns the view to where it began; the chosen mode is kept. When there is nothing to step back from, the button is not shown.",pt:"O bot\xE3o de recentrar de um mapa devolve a vis\xE3o ao ponto inicial; o modo escolhido \xE9 mantido. Quando n\xE3o h\xE1 o que recuar, o bot\xE3o n\xE3o aparece."}},{k:"adim",ad:{tr:"Bir ad\u0131m geri",en:"One step back",pt:"Um passo atr\xE1s"},ne:{tr:"Esc ya da telefonda geri tu\u015Fu. Her seferinde yaln\u0131z bir ad\u0131m: \xF6nce a\xE7\u0131k panel, sonra se\xE7ili \xF6\u011Fe, sonra g\xF6r\xFCn\xFCm\xFCn giri\u015F h\xE2li.",en:"Esc, or the back key on a phone. One step at a time: first the open panel, then the selected item, then the view's opening state.",pt:"Esc, ou a tecla voltar no telefone. Um passo de cada vez: primeiro o painel aberto, depois o item selecionado, depois o estado inicial da vis\xE3o."}},{k:"degmek",ad:{tr:"De\u011Finmek",en:"Touching lightly",pt:"Tocar de leve"},ne:{tr:"\xDCzerine gelmek ya da klavyeyle odaklanmak (Tab). T\u0131klaman\u0131n k\xFC\xE7\xFClt\xFClm\xFC\u015F bir \xF6nizlemesini g\xF6sterir.",en:"Hovering, or focusing with the keyboard (Tab). Shows a reduced preview of what a click would open.",pt:"Passar o cursor, ou focar com o teclado (Tab). Mostra uma pr\xE9via reduzida do que um clique abriria."}},{k:"secmek",ad:{tr:"Se\xE7mek",en:"Choosing",pt:"Escolher"},ne:{tr:"T\u0131klamak, dokunmak ya da Enter. Yaln\u0131zca o \xF6\u011Fenin paneli a\xE7\u0131l\u0131r; ba\u015Fka bir b\xF6l\xFCme habersiz ge\xE7ilmez.",en:"Click, tap or Enter. Only that item's panel opens; you are never moved to another section without notice.",pt:"Clicar, tocar ou Enter. S\xF3 o painel desse item abre; ningu\xE9m \xE9 levado a outra se\xE7\xE3o sem aviso."}}],nasilIsik:{tr:"\u0131\u015F\u0131k = zuh\xFBr",en:"light = manifestation",pt:"luz = manifesta\xE7\xE3o"},nasilMatlik:{tr:"matl\u0131k = perdelenme",en:"dimness = veiling",pt:"opacidade = velamento"},nasilGolge:{tr:"g\xF6lge = gizlilik",en:"shadow = hiddenness",pt:"sombra = ocultamento"},nasilCizim:{tr:"Haritalardaki \xE7izim dili sabittir: ayn\u0131 g\xF6rsel, her yerde ayn\u0131 anlam\u0131 ta\u015F\u0131r.",en:"The drawing language of the maps is fixed: the same visual carries the same meaning everywhere.",pt:"A linguagem de desenho dos mapas \xE9 fixa: o mesmo visual tem o mesmo sentido em toda parte."},nasilEkBaslik:{tr:"Ayr\u0131ca",en:"Also",pt:"Al\xE9m disso"},nasilEk:[{ad:{tr:"Harita ya da liste",en:"Map or list",pt:"Mapa ou lista"},ne:{tr:"Telefonda haritalar Grafik \xB7 Liste \xB7 Tam ekran kipleriyle a\xE7\u0131l\u0131r; se\xE7ilen kip b\xFCt\xFCn haritalarda ortakt\u0131r.",en:"On a phone, maps open with Graph \xB7 List \xB7 Full screen modes; the chosen mode is shared by all maps.",pt:"No telefone, os mapas abrem com os modos Gr\xE1fico \xB7 Lista \xB7 Tela cheia; o modo escolhido \xE9 comum a todos os mapas."}},{ad:{tr:"Dil",en:"Language",pt:"Idioma"},ne:{tr:"Her sayfa T\xFCrk\xE7e, \u0130ngilizce ve Portekizce okunur. \u0130ngilizce ve Portekizce metinler bizim aktar\u0131m\u0131m\u0131zd\u0131r.",en:"Every page can be read in Turkish, English and Portuguese. The English and Portuguese texts are our own rendering.",pt:"Cada p\xE1gina pode ser lida em turco, ingl\xEAs e portugu\xEAs. Os textos em ingl\xEAs e portugu\xEAs s\xE3o nossa pr\xF3pria vers\xE3o."}},{ad:{tr:"Yaz\u0131 boyutu",en:"Text size",pt:"Tamanho do texto"},ne:{tr:"Okuma sayfalar\u0131ndaki A\u2212 / A+ yaz\u0131y\u0131 k\xFC\xE7\xFClt\xFCr ve b\xFCy\xFCt\xFCr; se\xE7im b\xFCt\xFCn okuma sayfalar\u0131nda ortakt\u0131r.",en:"A\u2212 / A+ on reading pages shrinks and enlarges the text; the choice is shared by all reading pages.",pt:"A\u2212 / A+ nas p\xE1ginas de leitura diminui e aumenta o texto; a escolha vale para todas as p\xE1ginas de leitura."}},{ad:{tr:"\xC7evrimd\u0131\u015F\u0131 okuma",en:"Offline reading",pt:"Leitura offline"},ne:{tr:"\xC7ekmecedeki \u201C\xC7evrimd\u0131\u015F\u0131 okuma\u201D i\xE7eri\u011Fi iste\u011Fe ba\u011Fl\u0131 olarak cihaza indirir; dokunmad\u0131k\xE7a hi\xE7bir \u015Fey inmez.",en:"\u201COffline reading\u201D in the drawer downloads the content to the device on request; nothing is downloaded unless you tap it.",pt:"\u201CLeitura offline\u201D na gaveta baixa o conte\xFAdo para o dispositivo sob demanda; nada \xE9 baixado sem que voc\xEA toque."}}],sozlukBaslik:{tr:"S\xF6zl\xFCk",en:"Glossary",pt:"Gloss\xE1rio"},sozlukGiris:{tr:"Terimler, Esm\xE2, H\xE2ller ve Ontoloji kay\u0131tlar\u0131 tek A\u2013Z listede. Her girdinin a\xE7\u0131klamas\u0131, kendi b\xF6l\xFCm\xFCndeki tek sat\u0131rl\u0131k a\xE7\u0131klamas\u0131d\u0131r; girdiye dokunmak o kayd\u0131 a\xE7ar.",en:"The records of Terms, Names, States and Ontology in one A\u2013Z list. Each entry's description is its own one-line description in its section; tapping an entry opens that record.",pt:"Os registros de Termos, Nomes, Estados e Ontologia em uma \xFAnica lista A\u2013Z. A descri\xE7\xE3o de cada entrada \xE9 a sua descri\xE7\xE3o de uma linha na pr\xF3pria se\xE7\xE3o; tocar numa entrada abre esse registro."},sozlukAra:{tr:"Girdi ara",en:"Search entries",pt:"Buscar entradas"},sozlukTur:{terimler:{tr:"Terim",en:"Term",pt:"Termo"},esma:{tr:"Esm\xE2",en:"Name",pt:"Nome"},hal:{tr:"H\xE2l",en:"State",pt:"Estado"},ontoloji:{tr:"Ontoloji",en:"Ontology",pt:"Ontologia"}},harfler:{tr:"Harfe git",en:"Jump to letter",pt:"Ir \xE0 letra"},bolumAdi:{"eser-agi":{tr:"Eser A\u011F\u0131",en:"Works Network",pt:"Rede de Obras"},bilmiyoruz:{tr:"Bilmiyoruz",en:"We Don't Know",pt:"N\xE3o Sabemos"},sirlar:{tr:"S\u0131rlar",en:"Mysteries",pt:"Mist\xE9rios"},terimler:{tr:"Terimler",en:"Terms",pt:"Termos"},ontoloji:{tr:"Ontoloji",en:"Ontology",pt:"Ontologia"},"seyahat-atlasi":{tr:"Seyahat Atlas\u0131",en:"Travel Atlas",pt:"Atlas de Viagens"},hocalar:{tr:"Hocalar",en:"Teachers",pt:"Mestres"},"okuma-yollari":{tr:"Okuma Yollar\u0131",en:"Reading Paths",pt:"Caminhos de Leitura"}}};function k(a){return document.getElementById(a+"-content")}function M(a){return a+"-panel"}function K(a){return $[a]?Promise.resolve($[a]):(w[a]||(window.DostViewStatus&&window.DostViewStatus.showLoading(M(a)),w[a]=G.fetchJson(P[a]).then(e=>($[a]=e,window.DostViewStatus&&window.DostViewStatus.hide(M(a)),e)).catch(e=>(console.error("giri\u015F sayfas\u0131 verisi y\xFCklenemedi / failed to load",a,e),w[a]=null,window.DostViewStatus&&window.DostViewStatus.showError(M(a),()=>V(a)),null))),w[a])}function Y(a,e){return window.__dostNav?window.__dostNav.href(a,e):"/"+a+"/"}function O(a,e,i,n,l){return`<a class="${n||"gp-link"}" href="${t(Y(a,e))}" data-gp-view="${t(a)}"${e?` data-gp-id="${t(e)}"`:""}${l||""}>${i}</a>`}function C(a){a.dataset.gpBagli||(a.dataset.gpBagli="1",a.addEventListener("click",e=>{const i=e.target.closest("a[data-gp-view]");!i||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||(e.preventDefault(),window.__dostNav&&window.__dostNav.goTo?window.__dostNav.goTo(i.dataset.gpView,i.dataset.gpId||void 0):window.location.href=i.getAttribute("href"))}))}const S=["","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII"];function X(a){const e=a.futuhat.cilt,i=e.map(g=>g.pay),n=Math.min.apply(null,i),l=Math.max.apply(null,i),r=108,s=150,p=e.length;let d="";e.forEach((g,m)=>{const f=-Math.PI/2+m*2*Math.PI/p,x=l>n?(g.pay-n)/(l-n):1,_=s+r*Math.cos(f),z=s+r*Math.sin(f),F=s+(r+27)*Math.cos(f),na=s+(r+27)*Math.sin(f)+3;d+=`<circle cx="${_.toFixed(1)}" cy="${z.toFixed(1)}" r="${(6.8+9.2*x).toFixed(1)}" class="gp-halka__daire" style="opacity:${(.41+.59*x).toFixed(2)}"><title>${t(o("tabloCilt"))} ${S[g.no]} \xB7 ${t(A(g.pay))}</title></circle>`,d+=`<text x="${F.toFixed(1)}" y="${na.toFixed(1)}" text-anchor="middle" class="gp-halka__etiket">${S[g.no]}</text>`});const c=a.okuma.futuhat;return`<svg class="gp-halka" viewBox="0 0 300 300" role="img" aria-label="${t(o("halkaAd"))}">
+      ${d}
+      <text x="150" y="146" text-anchor="middle" class="gp-halka__buyuk">${h(c.okunan)} / ${h(c.toplam)}</text>
+      <text x="150" y="163" text-anchor="middle" class="gp-halka__kucuk">${t(o("merkezOkundu"))}</text>
+      <text x="150" y="180" text-anchor="middle" class="gp-halka__kucuk">${t(o("merkezOrtalama"))} ${t(A(a.futuhat.ortalama))}</text>
+    </svg>`}function U(a){const e=a.okuma.fusus.toplam,i=a.okuma.fusus.okunan,n=[];for(let r=0;r<e;r++){const s=r/Math.max(1,e-1)*Math.PI*4.2,p=Math.cos(s);n.push({i:r,z:p,x:110+62*Math.sin(s),y:24+r*(252/Math.max(1,e-1)),r:4.4+(p+1)*2.1,op:.34+(p+1)*.33})}const l=n.map(r=>{const s=`${r.i+1}. ${o("sarmalFass")}`,p=Math.max(.55,r.op);return`<g class="gp-sarmal__bag" role="button" tabindex="${r.i===0?0:-1}" aria-pressed="false" aria-label="${t(s)}" data-i="${r.i}" data-x="${r.x.toFixed(1)}" data-y="${r.y.toFixed(1)}" data-r="${r.r.toFixed(1)}"><circle class="gp-sarmal__yakala" cx="${r.x.toFixed(1)}" cy="${r.y.toFixed(1)}" r="12" fill="transparent"/><circle class="gp-sarmal__nokta" cx="${r.x.toFixed(1)}" cy="${r.y.toFixed(1)}" r="${r.r.toFixed(1)}" opacity="${(r.i<i?p:p*.5).toFixed(2)}" data-op="${(r.i<i?p:p*.5).toFixed(2)}"/><title>${t(s)}</title></g>`}).join("");return`<svg class="gp-sarmal" viewBox="0 0 220 300" role="group" aria-label="${t(o("sarmalAd"))}">${l}</svg>`}function W(a){const e=a.querySelector(".gp-sarmal");if(!e||e.dataset.bagli)return;e.dataset.bagli="1";const i=[...e.querySelectorAll(".gp-sarmal__bag")];let n=-1;function l(){if(e.querySelectorAll(".gp-sarmal__sec, .gp-sarmal__ac").forEach(z=>z.remove()),e.classList.toggle("gp-sarmal--secimli",n>=0),i.forEach((z,F)=>{z.setAttribute("aria-pressed",String(F===n)),z.classList.toggle("gp-sarmal__bag--sec",F===n)}),n<0)return;const s=i[n],p=+s.dataset.x,d=+s.dataset.y,c=+s.dataset.r,g=p>110,m=`${n+1}. ${o("sarmalFass")}`,f=p+(g?-(c+12):c+12);s.insertAdjacentHTML("beforeend",`<circle class="gp-sarmal__sec gp-sarmal__hale" cx="${p}" cy="${d}" r="${(c+7).toFixed(1)}"/><text class="gp-sarmal__sec gp-sarmal__ad" x="${f.toFixed(1)}" y="${(d+4).toFixed(1)}" text-anchor="${g?"end":"start"}">${t(m)}</text>`);const x=Math.min(Math.max(p+(g?-58:58),28),192),_=Math.min(Math.max(d+30,28),272);e.insertAdjacentHTML("beforeend",O("fusus","fs"+(n+1),`<circle class="gp-sarmal__ac-daire" cx="${x}" cy="${_}" r="22"/><text class="gp-sarmal__ac-yazi" x="${x}" y="${_+4}" text-anchor="middle">${t(o("sarmalAc"))}</text>`,"gp-sarmal__ac",` aria-label="${t(m+": "+o("sarmalAc"))}"`))}function r(s,p){n=s,i.forEach((d,c)=>d.setAttribute("tabindex",c===(s<0?0:s)?"0":"-1")),l(),p&&s>=0&&i[s].focus()}e.addEventListener("click",s=>{const p=s.target.closest&&s.target.closest(".gp-sarmal__bag");if(!p)return;s.preventDefault();const d=+p.dataset.i;r(n===d?-1:d,!1)}),e.addEventListener("keydown",s=>{const p=s.target.closest&&s.target.closest(".gp-sarmal__bag");if(s.key==="Escape"&&n>=0){s.stopPropagation();const m=n;r(-1,!1),i[m].focus();return}if(!p)return;const d=+p.dataset.i,c=i.length,g=s.key==="ArrowRight"||s.key==="ArrowDown"?Math.min(d+1,c-1):s.key==="ArrowLeft"||s.key==="ArrowUp"?Math.max(d-1,0):s.key==="Home"?0:s.key==="End"?c-1:-1;if(g>=0){s.preventDefault(),i.forEach((m,f)=>m.setAttribute("tabindex",f===g?"0":"-1")),i[g].focus(),n>=0&&r(g,!0);return}(s.key==="Enter"||s.key===" ")&&(s.preventDefault(),r(n===d?-1:d,!0))})}const N={kisim:["futuhat"],fass:["fusus"],hadis:["miskat"],kavram:["kavram"],terim:["terimler"],esma:["esma"],hal:["hal"],ontoloji:["ontoloji"],sir:["sirlar"],soru:["sorular"],eser:["eser-agi"],durak:["seyahat-atlasi"],menzil:["menziller"],siir:["hakkinda","siirler"],kisi:["elestiri-arkeolojisi"]};function Z(a){if(!a)return;const e=a.tBodies[0],i=Array.prototype.slice.call(e.rows);i.forEach((r,s)=>{r.dataset.ilkSira=String(s)});const n=r=>{const s=(r.textContent||"").replace(/\s/g,"").replace(/[%]/g,"").replace(/\.(?=\d{3}(\D|$))/g,"").replace(",","."),p=parseFloat(s);return isNaN(p)?null:p},l=Array.prototype.slice.call(a.tHead.rows[0].cells);l.forEach((r,s)=>{const p=r.textContent.trim();r.innerHTML='<button type="button" class="gp-tablo__sirala">'+t(p)+'<span class="gp-tablo__ok" aria-hidden="true"></span></button>',r.setAttribute("aria-sort","none"),r.querySelector("button").addEventListener("click",()=>{const d=r.getAttribute("aria-sort"),c=d==="none"?"ascending":d==="ascending"?"descending":"none";l.forEach(m=>m.setAttribute("aria-sort","none")),r.setAttribute("aria-sort",c),i.slice().sort((m,f)=>{if(c==="none")return+m.dataset.ilkSira-+f.dataset.ilkSira;const x=s===0?+m.dataset.ilkSira:n(m.cells[s]),_=s===0?+f.dataset.ilkSira:n(f.cells[s]);return(c==="ascending"?1:-1)*((x==null?-1/0:x)-(_==null?-1/0:_))}).forEach(m=>e.appendChild(m))})})}function Q(a){const e=a.futuhat.cilt,i=a.futuhat.enDusuk,n=a.futuhat.enYuksek,l=e.map(d=>`<tr><th scope="row">${S[d.no]}</th><td class="gp-say">${h(d.kisim)}</td><td class="gp-say">${h(d.ozet)}</td><td class="gp-say">${h(d.ham)}</td><td class="gp-say">${t(A(d.pay))}</td></tr>`).join(""),r=a.okuma,s=[[o("eserFutuhat"),r.futuhat,"birimKisim",!0],[o("eserFusus"),r.fusus,"birimFass",!1],[o("eserMiskat"),r.miskat,"birimHadis",!1]].map(([d,c,g,m])=>`<tr><th scope="row">${t(d)}</th><td>${h(c.okunan)} / ${h(c.toplam)} ${t(o(g))}</td><td>${t(o(m?"olcumVar":"olcumYok"))}</td></tr>`).join(""),p=Object.keys(N).filter(d=>a.sayim[d]!=null).map(d=>{const[c,g]=N[d];return`<li>${O(c,g,`<span class="gp-sayim__n">${h(a.sayim[d])}</span><span class="gp-sayim__ad">${t(y(v.sayimAdlari[d]))}</span>`,"gp-link gp-sayim__a")}</li>`}).join("");k("kapsam").innerHTML=`
       <div class="gp-sayfa">
-        <h2 class="gp-baslik">${esc(s("kapsamBaslik"))}</h2>
-        <p class="gp-giris">${esc(s("kapsamGiris"))}</p>
-        <div class="gp-halka-kap">${halkaHtml(d)}</div>
-        <p class="gp-aralik">${esc(S.ciltAralik[lang()](yuzde(lo.pay), yuzde(hi.pay), ROMEN[lo.no], ROMEN[hi.no]))}</p>
+        <h2 class="gp-baslik">${t(o("kapsamBaslik"))}</h2>
+        <p class="gp-giris">${t(o("kapsamGiris"))}</p>
+        <div class="gp-halka-kap">${X(a)}</div>
+        <p class="gp-aralik">${t(v.ciltAralik[E()](A(i.pay),A(n.pay),S[i.no],S[n.no]))}</p>
         <div class="gp-tablo-kap"><table class="gp-tablo">
-          <thead><tr><th scope="col">${esc(s("tabloCilt"))}</th><th scope="col" class="gp-say">${esc(s("tabloKisim"))}</th><th scope="col" class="gp-say">${esc(s("tabloOzet"))}</th><th scope="col" class="gp-say">${esc(s("tabloHam"))}</th><th scope="col" class="gp-say">${esc(s("tabloOran"))}</th></tr></thead>
-          <tbody>${satirlar}</tbody></table></div>
-        <h3 class="gp-alt">${esc(s("sarmalBaslik"))}</h3>
-        <p class="gp-not">${esc(s("sarmalGiris"))}</p>
-        <div class="gp-sarmal-kap">${sarmalHtml(d)}</div>
-        <h3 class="gp-alt">${esc(s("eserBaslik"))}</h3>
+          <thead><tr><th scope="col">${t(o("tabloCilt"))}</th><th scope="col" class="gp-say">${t(o("tabloKisim"))}</th><th scope="col" class="gp-say">${t(o("tabloOzet"))}</th><th scope="col" class="gp-say">${t(o("tabloHam"))}</th><th scope="col" class="gp-say">${t(o("tabloOran"))}</th></tr></thead>
+          <tbody>${l}</tbody></table></div>
+        <h3 class="gp-alt">${t(o("sarmalBaslik"))}</h3>
+        <p class="gp-not">${t(o("sarmalGiris"))}</p>
+        <div class="gp-sarmal-kap">${U(a)}</div>
+        <h3 class="gp-alt">${t(o("eserBaslik"))}</h3>
         <div class="gp-tablo-kap"><table class="gp-tablo gp-tablo--eser">
-          <thead><tr><th scope="col">${esc(s("eserEser"))}</th><th scope="col">${esc(s("eserOkunan"))}</th><th scope="col">${esc(s("eserOlcum"))}</th></tr></thead>
-          <tbody>${eser}</tbody></table></div>
-        <h3 class="gp-alt">${esc(s("sayimBaslik"))}</h3>
-        <p class="gp-not">${esc(s("sayimNot"))}</p>
-        <ul class="gp-sayim">${sayim}</ul>
-        <h3 class="gp-alt">${esc(s("notBaslik"))}</h3>
-        <ul class="gp-notlar"><li>${esc(s("notOkundu"))}</li><li>${esc(s("notOran"))}</li><li>${esc(s("notYayin"))}</li><li>${esc(s("notFusus"))}</li></ul>
-      </div>`;
-    baglantilariBagla(el("kapsam"));
-    sarmalBagla(el("kapsam"));
-    tabloSiralanabilir(el("kapsam").querySelector(".gp-tablo:not(.gp-tablo--eser)"));
-  }
-
-  // ── Kaynakça ──────────────────────────────────────────────────────────
-  function kaynakcaFiltre(d) {
-    const q = durum.kaynakca.q.trim().toLocaleLowerCase(loc());
-    return d.kaynaklar.filter((k) => {
-      if (durum.kaynakca.t !== "hepsi" && k.tur !== durum.kaynakca.t) return false;
-      if (!q) return true;
-      return (k.yazar + " " + k.baslik).toLocaleLowerCase(loc()).indexOf(q) >= 0;
-    });
-  }
-
-  function kaynakSatir(k) {
-    const yil = k.yil ? ` <span class="gp-ks__yil">(${esc(k.yil)})</span>` : ` <span class="gp-ks__yil">(${esc(s("yilYok"))})</span>`;
-    const doi = k.doi ? ` <a class="gp-doi" href="https://doi.org/${esc(encodeURI(k.doi))}" target="_blank" rel="noopener noreferrer">DOI</a>` : "";
-    const bolumler = (k.kullanim || []).map((u) => {
-      const ad = tt(S.bolumAdi[u.id || u.v] || { tr: u.v });
-      return baglanti(u.v, u.id, esc(ad), "gp-link gp-rozet");
-    }).join("");
-    return `<li class="gp-ks">
-      <span class="gp-ks__yazar">${esc(k.yazar)}${yil}</span>
-      <span class="gp-ks__baslik">${esc(k.baslik)}</span>
-      ${k.yayinci ? `<span class="gp-ks__yayinci">${esc(k.yayinci)}${doi}</span>` : (doi ? `<span class="gp-ks__yayinci">${doi}</span>` : "")}
-      ${bolumler ? `<span class="gp-ks__kullanim"><span class="gp-ks__etiket">${esc(s("kullanildigi"))}</span> ${bolumler}</span>` : ""}
-    </li>`;
-  }
-
-  function kaynakcaListe(d) {
-    const sirali = kaynakcaFiltre(d).slice().sort((a, b) => a.yazar.localeCompare(b.yazar, loc()) || (a.yil || 0) - (b.yil || 0));
-    const liste = el("kaynakca").querySelector(".gp-ks-liste");
-    const bos = el("kaynakca").querySelector(".gp-bos");
-    liste.innerHTML = sirali.map(kaynakSatir).join("");
-    bos.hidden = sirali.length > 0;
-    const say = el("kaynakca").querySelector(".gp-sonuc-say");
-    if (say) say.textContent = sayi(sirali.length) + " / " + sayi(d.kaynaklar.length);
-  }
-
-  function renderKaynakca(d) {
-    const sayilar = { hepsi: d.kaynaklar.length };
-    d.kaynaklar.forEach((k) => { sayilar[k.tur] = (sayilar[k.tur] || 0) + 1; });
-    const hap = (kod, ad) => `<button type="button" class="gp-hap${durum.kaynakca.t === kod ? " gp-hap--acik" : ""}" data-gp-tur="${kod}" aria-pressed="${durum.kaynakca.t === kod}">${esc(ad)} · ${sayi(sayilar[kod] || 0)}</button>`;
-    el("kaynakca").innerHTML = `
+          <thead><tr><th scope="col">${t(o("eserEser"))}</th><th scope="col">${t(o("eserOkunan"))}</th><th scope="col">${t(o("eserOlcum"))}</th></tr></thead>
+          <tbody>${s}</tbody></table></div>
+        <h3 class="gp-alt">${t(o("sayimBaslik"))}</h3>
+        <p class="gp-not">${t(o("sayimNot"))}</p>
+        <ul class="gp-sayim">${p}</ul>
+        <h3 class="gp-alt">${t(o("notBaslik"))}</h3>
+        <ul class="gp-notlar"><li>${t(o("notOkundu"))}</li><li>${t(o("notOran"))}</li><li>${t(o("notYayin"))}</li><li>${t(o("notFusus"))}</li></ul>
+      </div>`,C(k("kapsam")),W(k("kapsam")),Z(k("kapsam").querySelector(".gp-tablo:not(.gp-tablo--eser)"))}function J(a){const e=u.kaynakca.q.trim().toLocaleLowerCase(b());return a.kaynaklar.filter(i=>u.kaynakca.t!=="hepsi"&&i.tur!==u.kaynakca.t?!1:e?(i.yazar+" "+i.baslik).toLocaleLowerCase(b()).indexOf(e)>=0:!0)}function aa(a){const e=a.yil?` <span class="gp-ks__yil">(${t(a.yil)})</span>`:` <span class="gp-ks__yil">(${t(o("yilYok"))})</span>`,i=a.doi?` <a class="gp-doi" href="https://doi.org/${t(encodeURI(a.doi))}" target="_blank" rel="noopener noreferrer">DOI</a>`:"",n=(a.kullanim||[]).map(l=>{const r=y(v.bolumAdi[l.id||l.v]||{tr:l.v});return O(l.v,l.id,t(r),"gp-link gp-rozet")}).join("");return`<li class="gp-ks">
+      <span class="gp-ks__yazar">${t(a.yazar)}${e}</span>
+      <span class="gp-ks__baslik">${t(a.baslik)}</span>
+      ${a.yayinci?`<span class="gp-ks__yayinci">${t(a.yayinci)}${i}</span>`:i?`<span class="gp-ks__yayinci">${i}</span>`:""}
+      ${n?`<span class="gp-ks__kullanim"><span class="gp-ks__etiket">${t(o("kullanildigi"))}</span> ${n}</span>`:""}
+    </li>`}function L(a){const e=J(a).slice().sort((r,s)=>r.yazar.localeCompare(s.yazar,b())||(r.yil||0)-(s.yil||0)),i=k("kaynakca").querySelector(".gp-ks-liste"),n=k("kaynakca").querySelector(".gp-bos");i.innerHTML=e.map(aa).join(""),n.hidden=e.length>0;const l=k("kaynakca").querySelector(".gp-sonuc-say");l&&(l.textContent=h(e.length)+" / "+h(a.kaynaklar.length))}function D(a){const e={hepsi:a.kaynaklar.length};a.kaynaklar.forEach(l=>{e[l.tur]=(e[l.tur]||0)+1});const i=(l,r)=>`<button type="button" class="gp-hap${u.kaynakca.t===l?" gp-hap--acik":""}" data-gp-tur="${l}" aria-pressed="${u.kaynakca.t===l}">${t(r)} \xB7 ${h(e[l]||0)}</button>`;k("kaynakca").innerHTML=`
       <div class="gp-sayfa">
-        <h2 class="gp-baslik">${esc(s("kaynakcaBaslik"))}</h2>
-        <p class="gp-giris">${esc(s("kaynakcaGiris"))}</p>
+        <h2 class="gp-baslik">${t(o("kaynakcaBaslik"))}</h2>
+        <p class="gp-giris">${t(o("kaynakcaGiris"))}</p>
         <div class="gp-arac">
-          <input type="search" class="gp-ara" value="${esc(durum.kaynakca.q)}" placeholder="${esc(s("ara"))}" aria-label="${esc(s("ara"))}">
+          <input type="search" class="gp-ara" value="${t(u.kaynakca.q)}" placeholder="${t(o("ara"))}" aria-label="${t(o("ara"))}">
           <span class="gp-sonuc-say" aria-live="polite"></span>
         </div>
-        <div class="gp-hapler" role="group">${hap("hepsi", s("hepsi"))}${["c", "i", "m"].map((t) => hap(t, tt(S.turler[t]))).join("")}</div>
+        <div class="gp-hapler" role="group">${i("hepsi",o("hepsi"))}${["c","i","m"].map(l=>i(l,y(v.turler[l]))).join("")}</div>
         <ul class="gp-ks-liste"></ul>
-        <p class="gp-bos" hidden>${esc(s("sonucYok"))} <button type="button" class="gp-temizle">${esc(s("temizle"))}</button></p>
-      </div>`;
-    const kap = el("kaynakca");
-    kap.querySelector(".gp-ara").addEventListener("input", (e) => { durum.kaynakca.q = e.target.value; kaynakcaListe(d); });
-    kap.querySelectorAll(".gp-hap").forEach((b) => b.addEventListener("click", () => {
-      durum.kaynakca.t = b.dataset.gpTur;
-      kap.querySelectorAll(".gp-hap").forEach((x) => {
-        const on = x === b;
-        x.classList.toggle("gp-hap--acik", on);
-        x.setAttribute("aria-pressed", String(on));
-      });
-      kaynakcaListe(d);
-    }));
-    kap.querySelector(".gp-temizle").addEventListener("click", () => {
-      durum.kaynakca.q = ""; durum.kaynakca.t = "hepsi";
-      renderKaynakca(d);
-    });
-    baglantilariBagla(kap);
-    kaynakcaListe(d);
-  }
-
-  // ── Nasıl okunur ──────────────────────────────────────────────────────
-  // Her hareketin kendi çizimi (GORSEL_DIL: ışık = altın, matlık = perdelenme).
-  const IKON = {
-    yaklasmak: '<circle cx="13" cy="19" r="5" fill="currentColor"/><circle cx="27" cy="19" r="5" fill="currentColor"/><circle cx="6" cy="19" r="3" fill="currentColor" opacity=".3"/><circle cx="34" cy="19" r="3" fill="currentColor" opacity=".3"/>',
-    cekilmek: '<circle cx="19" cy="19" r="5" fill="currentColor"/><circle cx="29" cy="9" r="3.5" fill="currentColor" opacity=".45"/><circle cx="25" cy="13" r="2.5" fill="currentColor" opacity=".25"/>',
-    adim: '<rect x="5" y="10" width="28" height="18" rx="9" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="19" y="23" text-anchor="middle" font-size="9" font-weight="600" fill="currentColor" font-family="inherit">Esc</text>',
-    degmek: '<circle cx="19" cy="19" r="5" fill="currentColor" opacity=".55"/><circle cx="19" cy="19" r="9" fill="currentColor" opacity=".16"/>',
-    secmek: '<circle cx="19" cy="19" r="10" fill="currentColor"/><path d="M19 9a10 10 0 0 1 0 20z" fill="var(--surface-1)" opacity=".5"/>',
-  };
-
-  function renderNasil() {
-    const hareket = S.hareketler.map((h) => `<li class="gp-hareket">
-      <svg class="gp-hareket__ikon" width="38" height="38" viewBox="0 0 38 38" aria-hidden="true">${IKON[h.k]}</svg>
-      <div><b class="gp-hareket__ad">${esc(tt(h.ad))}</b><span class="gp-hareket__ne">${esc(tt(h.ne))}</span></div></li>`).join("");
-    const ek = S.nasilEk.map((h) => `<li class="gp-ek"><b>${esc(tt(h.ad))}</b><span>${esc(tt(h.ne))}</span></li>`).join("");
-    el("nasil-okunur").innerHTML = `
+        <p class="gp-bos" hidden>${t(o("sonucYok"))} <button type="button" class="gp-temizle">${t(o("temizle"))}</button></p>
+      </div>`;const n=k("kaynakca");n.querySelector(".gp-ara").addEventListener("input",l=>{u.kaynakca.q=l.target.value,L(a)}),n.querySelectorAll(".gp-hap").forEach(l=>l.addEventListener("click",()=>{u.kaynakca.t=l.dataset.gpTur,n.querySelectorAll(".gp-hap").forEach(r=>{const s=r===l;r.classList.toggle("gp-hap--acik",s),r.setAttribute("aria-pressed",String(s))}),L(a)})),n.querySelector(".gp-temizle").addEventListener("click",()=>{u.kaynakca.q="",u.kaynakca.t="hepsi",D(a)}),C(n),L(a)}const ea={yaklasmak:'<circle cx="13" cy="19" r="5" fill="currentColor"/><circle cx="27" cy="19" r="5" fill="currentColor"/><circle cx="6" cy="19" r="3" fill="currentColor" opacity=".3"/><circle cx="34" cy="19" r="3" fill="currentColor" opacity=".3"/>',cekilmek:'<circle cx="19" cy="19" r="5" fill="currentColor"/><circle cx="29" cy="9" r="3.5" fill="currentColor" opacity=".45"/><circle cx="25" cy="13" r="2.5" fill="currentColor" opacity=".25"/>',adim:'<rect x="5" y="10" width="28" height="18" rx="9" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="19" y="23" text-anchor="middle" font-size="9" font-weight="600" fill="currentColor" font-family="inherit">Esc</text>',degmek:'<circle cx="19" cy="19" r="5" fill="currentColor" opacity=".55"/><circle cx="19" cy="19" r="9" fill="currentColor" opacity=".16"/>',secmek:'<circle cx="19" cy="19" r="10" fill="currentColor"/><path d="M19 9a10 10 0 0 1 0 20z" fill="var(--surface-1)" opacity=".5"/>'};function ta(){const a=v.hareketler.map(i=>`<li class="gp-hareket">
+      <svg class="gp-hareket__ikon" width="38" height="38" viewBox="0 0 38 38" aria-hidden="true">${ea[i.k]}</svg>
+      <div><b class="gp-hareket__ad">${t(y(i.ad))}</b><span class="gp-hareket__ne">${t(y(i.ne))}</span></div></li>`).join(""),e=v.nasilEk.map(i=>`<li class="gp-ek"><b>${t(y(i.ad))}</b><span>${t(y(i.ne))}</span></li>`).join("");k("nasil-okunur").innerHTML=`
       <div class="gp-sayfa">
-        <h2 class="gp-baslik">${esc(s("nasilBaslik"))}</h2>
-        <p class="gp-giris">${esc(s("nasilGiris"))}</p>
-        <ol class="gp-hareketler">${hareket}</ol>
-        <p class="gp-not">${esc(s("nasilCizim"))}</p>
+        <h2 class="gp-baslik">${t(o("nasilBaslik"))}</h2>
+        <p class="gp-giris">${t(o("nasilGiris"))}</p>
+        <ol class="gp-hareketler">${a}</ol>
+        <p class="gp-not">${t(o("nasilCizim"))}</p>
         <div class="gp-lejant">
-          <span><i class="gp-nokta gp-nokta--isik"></i>${esc(s("nasilIsik"))}</span>
-          <span><i class="gp-nokta gp-nokta--mat"></i>${esc(s("nasilMatlik"))}</span>
-          <span><i class="gp-nokta gp-nokta--golge"></i>${esc(s("nasilGolge"))}</span>
+          <span><i class="gp-nokta gp-nokta--isik"></i>${t(o("nasilIsik"))}</span>
+          <span><i class="gp-nokta gp-nokta--mat"></i>${t(o("nasilMatlik"))}</span>
+          <span><i class="gp-nokta gp-nokta--golge"></i>${t(o("nasilGolge"))}</span>
         </div>
-        <h3 class="gp-alt">${esc(s("nasilEkBaslik"))}</h3>
-        <ul class="gp-ekler">${ek}</ul>
-      </div>`;
-  }
-
-  // ── Sözlük ────────────────────────────────────────────────────────────
-  // Baş harf: Türkçe harfler (Ç Ğ İ Ö Ş Ü) ayrı kalır; düzeltme/uzatma
-  // imleri (â î û ā ṣ ...) taban harfe iner.
-  function basHarf(ad) {
-    const n = String(ad).normalize("NFD").replace(/[̀-ͯ]/g, (m) => (/[̧̆̇̈]/.test(m) ? m : ""));
-    const harf = (n.normalize("NFC").match(/[A-Za-zÇĞİÖŞÜçğıöşü]/) || ["#"])[0];
-    return harf.toLocaleUpperCase(loc());
-  }
-
-  function sozlukHazirla(d) {
-    const l = lang();
-    const kol = new Intl.Collator(loc());
-    return d.girdiler.map((g) => {
-      const ad = g.ad[l] || g.ad.tr;
-      return { g, ad, kisa: g.k[l] || g.k.tr, harf: basHarf(ad) };
-    }).sort((a, b) => kol.compare(a.ad, b.ad));
-  }
-
-  function sozlukListe(d, hazir) {
-    const q = durum.sozluk.q.trim().toLocaleLowerCase(loc());
-    const suz = hazir.filter((x) => (durum.sozluk.v === "hepsi" || x.g.v === durum.sozluk.v)
-      && (!q || (x.ad + " " + x.kisa + " " + (x.g.ar || "")).toLocaleLowerCase(loc()).indexOf(q) >= 0));
-    let html = "", son = "";
-    const var_ = new Set();
-    suz.forEach((x) => {
-      if (x.harf !== son) {
-        if (son) html += "</ul>";
-        html += `<h3 class="gp-harf" id="gp-harf-${esc(x.harf)}">${esc(x.harf)}</h3><ul class="gp-sz-liste">`;
-        son = x.harf;
-      }
-      var_.add(x.harf);
-      html += `<li>${baglanti(x.g.v, x.g.id,
-        `<i class="gp-sz__nokta gp-sz__nokta--${esc(x.g.v)}" aria-hidden="true"></i><span class="gp-sz__govde"><span class="gp-sz__ust"><b class="gp-sz__ad">${esc(x.ad)}</b>${x.g.ar ? `<span class="gp-sz__ar" lang="ar" dir="rtl">${esc(x.g.ar)}</span>` : ""}</span><span class="gp-sz__kisa"><span class="gp-sz__tur">${esc(tt(S.sozlukTur[x.g.v]))}</span> · ${esc(x.kisa)}</span></span>`,
-        "gp-link gp-sz")}</li>`;
-    });
-    if (son) html += "</ul>";
-    const kap = el("sozluk");
-    kap.querySelector(".gp-sz-icerik").innerHTML = html;
-    kap.querySelector(".gp-bos").hidden = suz.length > 0;
-    kap.querySelector(".gp-sonuc-say").textContent = sayi(suz.length) + " / " + sayi(hazir.length);
-    // Harf şeridi: girdisi olan harf bir düğme (o harfe iner); olmayan sönük metin.
-    const tum = Array.from(new Set(hazir.map((x) => x.harf)));
-    kap.querySelector(".gp-az").innerHTML = tum.map((h) => (var_.has(h)
-      ? `<button type="button" class="gp-az__harf" data-gp-harf="${esc(h)}">${esc(h)}</button>`
-      : `<span class="gp-az__harf gp-az__harf--bos" aria-hidden="true">${esc(h)}</span>`)).join("");
-  }
-
-  function renderSozluk(d) {
-    const hazir = sozlukHazirla(d);
-    const sayilar = { hepsi: d.girdiler.length };
-    d.girdiler.forEach((g) => { sayilar[g.v] = (sayilar[g.v] || 0) + 1; });
-    const hap = (kod, ad) => `<button type="button" class="gp-hap${durum.sozluk.v === kod ? " gp-hap--acik" : ""}" data-gp-tur="${kod}" aria-pressed="${durum.sozluk.v === kod}">${kod !== "hepsi" ? `<i class="gp-sz__nokta gp-sz__nokta--${kod}" aria-hidden="true"></i>` : ""}${esc(ad)} · ${sayi(sayilar[kod] || 0)}</button>`;
-    el("sozluk").innerHTML = `
+        <h3 class="gp-alt">${t(o("nasilEkBaslik"))}</h3>
+        <ul class="gp-ekler">${e}</ul>
+      </div>`}function ra(a){return(String(a).normalize("NFD").replace(/[̀-ͯ]/g,n=>/[̧̆̇̈]/.test(n)?n:"").normalize("NFC").match(/[A-Za-zÇĞİÖŞÜçğıöşü]/)||["#"])[0].toLocaleUpperCase(b())}function sa(a){const e=E(),i=new Intl.Collator(b());return a.girdiler.map(n=>{const l=n.ad[e]||n.ad.tr;return{g:n,ad:l,kisa:n.k[e]||n.k.tr,harf:ra(l)}}).sort((n,l)=>i.compare(n.ad,l.ad))}function I(a,e){const i=u.sozluk.q.trim().toLocaleLowerCase(b()),n=e.filter(c=>(u.sozluk.v==="hepsi"||c.g.v===u.sozluk.v)&&(!i||(c.ad+" "+c.kisa+" "+(c.g.ar||"")).toLocaleLowerCase(b()).indexOf(i)>=0));let l="",r="";const s=new Set;n.forEach(c=>{c.harf!==r&&(r&&(l+="</ul>"),l+=`<h3 class="gp-harf" id="gp-harf-${t(c.harf)}">${t(c.harf)}</h3><ul class="gp-sz-liste">`,r=c.harf),s.add(c.harf),l+=`<li>${O(c.g.v,c.g.id,`<i class="gp-sz__nokta gp-sz__nokta--${t(c.g.v)}" aria-hidden="true"></i><span class="gp-sz__govde"><span class="gp-sz__ust"><b class="gp-sz__ad">${t(c.ad)}</b>${c.g.ar?`<span class="gp-sz__ar" lang="ar" dir="rtl">${t(c.g.ar)}</span>`:""}</span><span class="gp-sz__kisa"><span class="gp-sz__tur">${t(y(v.sozlukTur[c.g.v]))}</span> \xB7 ${t(c.kisa)}</span></span>`,"gp-link gp-sz")}</li>`}),r&&(l+="</ul>");const p=k("sozluk");p.querySelector(".gp-sz-icerik").innerHTML=l,p.querySelector(".gp-bos").hidden=n.length>0,p.querySelector(".gp-sonuc-say").textContent=h(n.length)+" / "+h(e.length);const d=Array.from(new Set(e.map(c=>c.harf)));p.querySelector(".gp-az").innerHTML=d.map(c=>s.has(c)?`<button type="button" class="gp-az__harf" data-gp-harf="${t(c)}">${t(c)}</button>`:`<span class="gp-az__harf gp-az__harf--bos" aria-hidden="true">${t(c)}</span>`).join("")}function R(a){const e=sa(a),i={hepsi:a.girdiler.length};a.girdiler.forEach(r=>{i[r.v]=(i[r.v]||0)+1});const n=(r,s)=>`<button type="button" class="gp-hap${u.sozluk.v===r?" gp-hap--acik":""}" data-gp-tur="${r}" aria-pressed="${u.sozluk.v===r}">${r!=="hepsi"?`<i class="gp-sz__nokta gp-sz__nokta--${r}" aria-hidden="true"></i>`:""}${t(s)} \xB7 ${h(i[r]||0)}</button>`;k("sozluk").innerHTML=`
       <div class="gp-sayfa">
-        <h2 class="gp-baslik">${esc(s("sozlukBaslik"))}</h2>
-        <p class="gp-giris">${esc(s("sozlukGiris"))}</p>
+        <h2 class="gp-baslik">${t(o("sozlukBaslik"))}</h2>
+        <p class="gp-giris">${t(o("sozlukGiris"))}</p>
         <div class="gp-arac">
-          <input type="search" class="gp-ara" value="${esc(durum.sozluk.q)}" placeholder="${esc(s("sozlukAra"))}" aria-label="${esc(s("sozlukAra"))}">
+          <input type="search" class="gp-ara" value="${t(u.sozluk.q)}" placeholder="${t(o("sozlukAra"))}" aria-label="${t(o("sozlukAra"))}">
           <span class="gp-sonuc-say" aria-live="polite"></span>
         </div>
-        <div class="gp-hapler" role="group">${hap("hepsi", s("hepsi"))}${["terimler", "esma", "hal", "ontoloji"].map((v) => hap(v, tt(S.sozlukTur[v]))).join("")}</div>
-        <div class="gp-az" role="group" aria-label="${esc(s("harfler"))}"></div>
+        <div class="gp-hapler" role="group">${n("hepsi",o("hepsi"))}${["terimler","esma","hal","ontoloji"].map(r=>n(r,y(v.sozlukTur[r]))).join("")}</div>
+        <div class="gp-az" role="group" aria-label="${t(o("harfler"))}"></div>
         <div class="gp-sz-icerik"></div>
-        <p class="gp-bos" hidden>${esc(s("sonucYok"))} <button type="button" class="gp-temizle">${esc(s("temizle"))}</button></p>
-      </div>`;
-    const kap = el("sozluk");
-    kap.querySelector(".gp-ara").addEventListener("input", (e) => { durum.sozluk.q = e.target.value; sozlukListe(d, hazir); });
-    kap.querySelectorAll(".gp-hap").forEach((b) => b.addEventListener("click", () => {
-      durum.sozluk.v = b.dataset.gpTur;
-      kap.querySelectorAll(".gp-hap").forEach((x) => {
-        const on = x === b;
-        x.classList.toggle("gp-hap--acik", on);
-        x.setAttribute("aria-pressed", String(on));
-      });
-      sozlukListe(d, hazir);
-    }));
-    kap.querySelector(".gp-temizle").addEventListener("click", () => {
-      durum.sozluk.q = ""; durum.sozluk.v = "hepsi";
-      renderSozluk(d);
-    });
-    kap.querySelector(".gp-az").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-gp-harf]");
-      if (!b) return;
-      const h = kap.querySelector("#gp-harf-" + (window.CSS && CSS.escape ? CSS.escape(b.dataset.gpHarf) : b.dataset.gpHarf));
-      if (h) h.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-    });
-    baglantilariBagla(kap);
-    sozlukListe(d, hazir);
-  }
-
-  // ── giriş noktaları ───────────────────────────────────────────────────
-  function ciz(which) {
-    if (which === "nasil-okunur") return renderNasil();
-    const d = veri[which];
-    if (!d) return;
-    if (which === "kapsam") renderKapsam(d);
-    else if (which === "kaynakca") renderKaynakca(d);
-    else if (which === "sozluk") renderSozluk(d);
-  }
-
-  function activate(which) {
-    if (SAYFALAR.indexOf(which) < 0) return;
-    acik = which;
-    if (which === "nasil-okunur") { ciz(which); return; }
-    yukle(which).then((d) => { if (d && acik === which) ciz(which); });
-  }
-
-  function onLangChange() {
-    SAYFALAR.forEach((w) => {
-      if (w === "nasil-okunur" ? el(w) && el(w).firstChild : veri[w]) ciz(w);
-    });
-  }
-
-  return { activate: activate, onLangChange: onLangChange };
-})();
+        <p class="gp-bos" hidden>${t(o("sonucYok"))} <button type="button" class="gp-temizle">${t(o("temizle"))}</button></p>
+      </div>`;const l=k("sozluk");l.querySelector(".gp-ara").addEventListener("input",r=>{u.sozluk.q=r.target.value,I(a,e)}),l.querySelectorAll(".gp-hap").forEach(r=>r.addEventListener("click",()=>{u.sozluk.v=r.dataset.gpTur,l.querySelectorAll(".gp-hap").forEach(s=>{const p=s===r;s.classList.toggle("gp-hap--acik",p),s.setAttribute("aria-pressed",String(p))}),I(a,e)})),l.querySelector(".gp-temizle").addEventListener("click",()=>{u.sozluk.q="",u.sozluk.v="hepsi",R(a)}),l.querySelector(".gp-az").addEventListener("click",r=>{const s=r.target.closest("[data-gp-harf]");if(!s)return;const p=l.querySelector("#gp-harf-"+(window.CSS&&T.escape?T.escape(s.dataset.gpHarf):s.dataset.gpHarf));p&&p.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}),C(l),I(a,e)}function H(a){if(a==="nasil-okunur")return ta();const e=$[a];e&&(a==="kapsam"?Q(e):a==="kaynakca"?D(e):a==="sozluk"&&R(e))}function V(a){if(!(B.indexOf(a)<0)){if(j=a,a==="nasil-okunur"){H(a);return}K(a).then(e=>{e&&j===a&&H(a)})}}function ia(){B.forEach(a=>{(a==="nasil-okunur"?k(a)&&k(a).firstChild:$[a])&&H(a)})}return{activate:V,onLangChange:ia}})();
