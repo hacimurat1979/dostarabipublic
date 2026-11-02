@@ -80,6 +80,11 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
   `/iletisim/` sayfasına gider, "Yaz" düğmesi adresi `assets/iletisim.js` ile kurup kullanıcının e-posta uygulamasını açar.
   Kaynak özel repoda (`scripts/iletisim-uret.py`); burada elle değişiklik yapılmaz.
 
+- **Yan Yana, 2 Kasım turu (2026-11-02, kullanıcı onayı):** `/yan-yana/makaleler/` (kuantum fiziğinin elli konusunda 82 makale özeti; deney·kuram·yorum
+  etiketleri bizim sınıflamamız; kendi özetine bakılmadan yazılanlar işaretli), `/yan-yana/paralel/` (okurun fizik makalesini ve Dost'tan bir sırlı anlatımı yan yana
+  okuduğu masa; site eşleştirme önermez, çiftler cihazda durur), Hesapla gör on hesap, zaman çizgisi. Kaynak özel repoda; burada elle değişiklik yapılmaz.
+- **Arayüz (2026-11-02):** detay panellerinde Ayrıntı katmanı, Oku araçları tek halkada, @revise menüsü sadeleşti, `@daphne`/`@share` düz sayfalarda da çalışır.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
