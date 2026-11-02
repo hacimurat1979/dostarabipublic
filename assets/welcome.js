@@ -1,1 +1,313 @@
-(function(){"use strict";const s=document.getElementById("welcome-screen");if(!s)return;const T=(function(){const e=document.querySelector("base");if(!e)return"";try{return new URL(e.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{return""}})();if(location.pathname.replace(/\/+$/,"")!==T){s.hidden=!0;return}const E=document.documentElement;E.classList.add("karsilama-acik");const h=s.querySelector(".welcome-screen__stage"),d=document.getElementById("welcome-beam"),p=document.getElementById("welcome-spark"),A=document.getElementById("welcome-text"),L=document.getElementById("welcome-tagline"),b=document.getElementById("welcome-glow"),l=document.getElementById("welcome-skip"),a=document.getElementById("welcome-uclar"),F=document.getElementById("welcome-secim"),y=window.matchMedia("(prefers-reduced-motion: reduce)").matches;let r=!1,w=!1;if(l){let e="";try{e=localStorage.getItem("dost-lang")||""}catch{}/^(tr|en|pt)$/.test(e)||(e=((navigator.language||"").slice(0,2)||"").toLowerCase());const t={tr:"Ge\xE7",en:"Skip",pt:"Pular"};t[e]&&(l.textContent=t[e],l.setAttribute("aria-label",t[e]))}l&&l.addEventListener("click",e=>{e.stopPropagation(),m(null)}),a&&a.addEventListener("click",e=>{const t=e.target.closest(".welcome-screen__uc");t&&(e.stopPropagation(),m(t.dataset.uc||null))}),s.addEventListener("click",()=>{r||f()}),window.addEventListener("keydown",e=>{if(s.hidden||w)return;if(e.key==="Escape"){e.preventDefault(),m(null);return}const t=e.target&&e.target.closest&&e.target.closest("#welcome-screen button");if(e.key==="Enter"||e.key===" "){if(t)return;e.preventDefault(),r?D(0):f();return}if(e.key==="Tab"){const i=z();if(!i.length)return;e.preventDefault();const n=i.indexOf(document.activeElement),o=n<0?e.shiftKey?i.length-1:0:(n+(e.shiftKey?-1:1)+i.length)%i.length;i[o].focus()}}),setTimeout(()=>{r||f()},9e3);function z(){const e=[];return r&&a&&!a.hidden&&e.push(...a.querySelectorAll(".welcome-screen__uc")),l&&e.push(l),e}function D(e){const t=z();t[e]&&t[e].focus()}function q(e){return e<.5?4*e*e*e:1-Math.pow(-2*e+2,3)/2}const C=150,P=150,g=120,k=2*Math.PI*g;function I(e){const t=-Math.PI/2+e*Math.PI*2;p.setAttribute("cx",C+g*Math.cos(t)),p.setAttribute("cy",P+g*Math.sin(t))}function K(){if(y||!h)return null;try{const e=window.__ontolojiHalkaEkrani,t=typeof e=="function"?e():null;return!t||!isFinite(t.x)||!isFinite(t.y)||!(t.r>10)?null:t}catch{return null}}function m(e){if(w||s.hidden)return;w=!0,r=!0,window.__dostKarsilamaSecimi=e||null;const t=c=>{window.__dostKarsilamaGitti=!0,document.dispatchEvent(new CustomEvent("dost:welcome-left",{detail:{secim:e||null,gecikme:c||0}}))},i=c=>setTimeout(()=>{s.hidden=!0,setTimeout(()=>E.classList.remove("karsilama-acik"),y?0:1200)},c),n=K();if(!n){s.classList.add("welcome-screen--leaving"),t(0),i(950);return}const o=h.getBoundingClientRect(),u=o.width*(g/300),x=n.r/u,B=o.left+o.width/2,M=o.top+o.height/2,G=n.x-B,H=n.y-M,_=1950;if(d.style.strokeDashoffset="0",s.classList.add("welcome-screen--donusum"),h.style.transform="translate("+G.toFixed(1)+"px,"+H.toFixed(1)+"px) scale("+x.toFixed(4)+")",t(_),isFinite(n.zx)&&isFinite(n.zy)&&n.zr>2){let c=s.querySelector(".welcome-screen__zat-isik");c||(c=document.createElement("div"),c.className="welcome-screen__zat-isik",c.setAttribute("aria-hidden","true"),s.appendChild(c));const S=Math.max(36,n.zr*6);c.style.left=n.zx.toFixed(1)+"px",c.style.top=n.zy.toFixed(1)+"px",c.style.width=S.toFixed(1)+"px",c.style.height=S.toFixed(1)+"px",setTimeout(()=>{const O=Math.max(.02,n.zr*1.1/u);s.classList.add("welcome-screen--zata"),h.style.transform="translate("+(n.zx-B).toFixed(1)+"px,"+(n.zy-M).toFixed(1)+"px) scale("+O.toFixed(4)+")"},900),setTimeout(()=>s.classList.add("welcome-screen--zat-yanik"),1500),setTimeout(()=>s.classList.add("welcome-screen--zat-son"),_+350),i(_+1100)}else setTimeout(()=>s.classList.add("welcome-screen--donusum-son"),900),i(1500)}function f(){if(!r){r=!0;try{d.style.strokeDashoffset="0",d.classList.add("welcome-screen__beam--complete"),p.classList.add("welcome-screen__spark--hidden"),b.style.opacity="0.5",setTimeout(()=>{A.classList.add("welcome-screen__text--visible"),L&&L.classList.add("welcome-screen__tagline--visible")},260),setTimeout(()=>{w||(a&&(a.hidden=!1,requestAnimationFrame(()=>requestAnimationFrame(()=>a.classList.add("welcome-screen__uclar--acik")))),F&&F.classList.add("welcome-screen__secim--acik"))},y?0:520)}catch{m(null)}}}function v(e){const t=performance.now();function i(n){if(r)return;const o=Math.min(1,(n-t)/e),u=q(o),x=k*(1-u);d.style.strokeDashoffset=String(x),I(u),b.style.opacity=String(.18+u*.22),o<1?requestAnimationFrame(i):f()}requestAnimationFrame(i)}try{d.style.strokeDasharray=String(k),d.style.strokeDashoffset=String(k),y?(I(1),f()):v(3200)}catch{m(null)}})();
+(function () {
+  "use strict";
+
+  const root = document.getElementById("welcome-screen");
+  if (!root) return;
+
+  // 2026-08-27 (kullanıcı kararı): karşılama ritüeli ARTIK HER SEFERİNDE
+  // gösteriliyor. Daha önce hatırlanıyordu ve kapı iki kez yer değiştirdi:
+  // 2026-08-16'da (uzman paneli, G-01/ONBOARDING-01) sessionStorage'dan
+  // localStorage'a çevrilmişti -- "ritüel cihaz başına bir kez gösterilsin,
+  // her yeni sekmede yeniden oynamasın". Kullanıcının ifadesiyle o karar
+  // geri alındı: "bir kez gören ya da görmeyen herkes için her seferinde
+  // muhakkak görünmeli."
+  //
+  // Gerekçe, sitenin kendi diliyle: "O'ndan O'na" bir bilgilendirme değil,
+  // bir eşiktir. Eşikten her girişte geçilir; bir kez geçip sonra yandan
+  // dolaşılan şey eşik değildir.
+  //
+  // `dost-welcome-seen` anahtarı artık ne okunuyor ne yazılıyor. Daha önce
+  // yazılmış olanlar zararsız biçimde orada kalıyor -- okunmadıkları için
+  // bir etkileri yok; kullanıcıların localStorage'ını temizlemek bizim
+  // işimiz değil.
+
+  // Derin bir rotaya doğrudan gelindiğinde (paylaşılan link, arama sonucu)
+  // ritüel araya girmesin -- gateTransition'ın zaten benimsediği "gelinmemiş
+  // bir yerden çıkış animasyonu yalan olurdu" ilkesi karşılama ekranına da
+  // uygulanıyor. Kök rotanın kendisi <base href> yüzünden her dağıtımda
+  // (canlı "/", önizleme "/dost-onizleme/") farklı olabildiği için ROUTE_BASE
+  // buradan hesaplanıyor (bkz. assets/ontology.js'teki aynı desen).
+  //
+  // Bu, "her seferinde göster" kuralının TEK istisnası ve bir hatırlama
+  // değil: kapı, gelinen YERE bakıyor, daha önce görülüp görülmediğine
+  // değil. Paylaşılan bir bölüm bağlantısını açan kişi o bölümü istiyor;
+  // önüne altı saniyelik bir eşik koymak onu karşılamak değil, geciktirmek
+  // olurdu. Aynı kişi köke geldiğinde ritüeli görür -- her seferinde.
+  const ROUTE_BASE = (function () {
+    const baseEl = document.querySelector("base");
+    if (!baseEl) return "";
+    try {
+      const u = new URL(baseEl.getAttribute("href"), location.origin);
+      return u.pathname.replace(/\/+$/, "");
+    } catch (e) { return ""; }
+  })();
+  if (location.pathname.replace(/\/+$/, "") !== ROUTE_BASE) {
+    root.hidden = true;
+    return;
+  }
+
+  // İKİ UÇTAN GİRİŞ (2026-10-09, görsel değerlendirme madde 15). Eskiden
+  // ritüel bitince ekranın altında üç katman üst üste biniyordu: "Zât'tan
+  // başla / Kalp'ten başla" ipucu kartı, çerez bandı ve lejant. Şimdi:
+  //   1. Halka kapanınca üstünde iki giriş noktası belirir: Zât (tepe) ve
+  //      Kalp -- Ontoloji çemberindeki yerleriyle aynı yerde.
+  //   2. Seçim halkanın üzerinden yapılır (tıklama, ya da Tab + Enter).
+  //      Esc ya da "Geç" seçimsiz girer. 2026-10-29 (kullanıcı notu): artık
+  //      süre dolunca kendiliğinden girilmez ve boş zemine tıklamak da girmez;
+  //      Zât, Kalp ya da Geç'ten biri seçilmedikçe eşikte kalınır.
+  //   3. Halka açılıp Ontoloji çemberinin yerine oturur ve onun çemberine
+  //      dönüşür; seçilen ucun paneli çember doğduktan sonra açılır
+  //      (ontology.js maybeBirth).
+  //   4. Çerez bandı ancak bundan SONRA gelir (html.karsilama-acik iken
+  //      CSS onu gizli tutar; satır-içi onam betiğine dokunulmadı).
+  const HTML = document.documentElement;
+  HTML.classList.add("karsilama-acik");
+
+  const stage = root.querySelector(".welcome-screen__stage");
+  const beam = document.getElementById("welcome-beam");
+  const spark = document.getElementById("welcome-spark");
+  const text = document.getElementById("welcome-text");
+  const tagline = document.getElementById("welcome-tagline");
+  const glow = document.getElementById("welcome-glow");
+  const skipBtn = document.getElementById("welcome-skip");
+  const uclar = document.getElementById("welcome-uclar");
+  const secimMetni = document.getElementById("welcome-secim");
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let finished = false;
+  let gidiyor = false;
+
+  // 2026-08-26 sağlamlaştırma: dinleyiciler animasyon kurulumundan ÖNCE,
+  // kendi null-guard'larıyla bağlanıyor -- bir öğe eksik kalırsa tam ekran
+  // siyah perde kalıcı olarak asılı kalmasın.
+  // Geç düğmesi tek dilde (2026-10-29, mobil bulgu G2): kayıtlı dil, yoksa tarayıcı dili; bilinmiyorsa üç dilli etiket kalır.
+  if (skipBtn) {
+    let dilKodu = "";
+    try { dilKodu = localStorage.getItem("dost-lang") || ""; } catch (e) { /* depolama kapalı */ }
+    if (!/^(tr|en|pt)$/.test(dilKodu)) dilKodu = ((navigator.language || "").slice(0, 2) || "").toLowerCase();
+    const GEC = { tr: "Geç", en: "Skip", pt: "Pular" };
+    if (GEC[dilKodu]) { skipBtn.textContent = GEC[dilKodu]; skipBtn.setAttribute("aria-label", GEC[dilKodu]); }
+  }
+  skipBtn && skipBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    leave(null);
+  });
+  if (uclar) {
+    uclar.addEventListener("click", (event) => {
+      const btn = event.target.closest(".welcome-screen__uc");
+      if (!btn) return;
+      event.stopPropagation();
+      leave(btn.dataset.uc || null);
+    });
+  }
+  root.addEventListener("click", () => {
+    // Halka çizilirken tıklamak onu tamamlar (seçim noktaları belirir);
+    // seçim açıkken boş zemine tıklamak bir şey yapmaz -- giriş yalnız
+    // Zât, Kalp ya da Geç'tir.
+    if (!finished) finish();
+  });
+  window.addEventListener("keydown", (event) => {
+    if (root.hidden || gidiyor) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      leave(null);
+      return;
+    }
+    const butonda = event.target && event.target.closest && event.target.closest("#welcome-screen button");
+    if (event.key === "Enter" || event.key === " ") {
+      if (butonda) return;            // düğmenin kendi tıklaması seçer
+      event.preventDefault();
+      if (!finished) finish();
+      else odakla(0);
+      return;
+    }
+    if (event.key === "Tab") {
+      // Karşılama açıkken odak onun içinde dolaşır (arkadaki sayfa henüz
+      // görünmüyor): Zât → Kalp → Geç.
+      const liste = odaklanabilir();
+      if (!liste.length) return;
+      event.preventDefault();
+      const i = liste.indexOf(document.activeElement);
+      const j = i < 0 ? (event.shiftKey ? liste.length - 1 : 0)
+        : (i + (event.shiftKey ? -1 : 1) + liste.length) % liste.length;
+      liste[j].focus();
+    }
+  });
+  // Halka herhangi bir sebeple tamamlanamazsa seçim yine de açılsın.
+  setTimeout(() => { if (!finished) finish(); }, 9000);
+
+  function odaklanabilir() {
+    const l = [];
+    if (finished && uclar && !uclar.hidden) l.push(...uclar.querySelectorAll(".welcome-screen__uc"));
+    if (skipBtn) l.push(skipBtn);
+    return l;
+  }
+  function odakla(i) {
+    const l = odaklanabilir();
+    if (l[i]) l[i].focus();
+  }
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  const cx = 150;
+  const cy = 150;
+  const r = 120;
+  const len = 2 * Math.PI * r;
+
+  function placeSpark(progress) {
+    const angle = -Math.PI / 2 + progress * Math.PI * 2;
+    spark.setAttribute("cx", cx + r * Math.cos(angle));
+    spark.setAttribute("cy", cy + r * Math.sin(angle));
+  }
+
+  // Ontoloji çemberinin ekrandaki yeri (ontology.js __ontolojiHalkaEkrani).
+  // Grafik görünmüyorsa (mobilde liste kipi) ya da hareket azaltılmışsa
+  // null: o zaman halka yerinde söner.
+  function hedefHalka() {
+    if (reduceMotion || !stage) return null;
+    try {
+      const f = window.__ontolojiHalkaEkrani;
+      const g = typeof f === "function" ? f() : null;
+      if (!g || !isFinite(g.x) || !isFinite(g.y) || !(g.r > 10)) return null;
+      return g;
+    } catch (e) { return null; }
+  }
+
+  function leave(secim) {
+    if (gidiyor || root.hidden) return;
+    gidiyor = true;
+    finished = true;
+    window.__dostKarsilamaSecimi = secim || null;
+    // Ontoloji'nin doğuşu (ontology.js runBirth) bu olayla başlar: halka
+    // yerine otururken çember belirir, düğümler onun üstünde doğar.
+    const haberVer = (gecikme) => {
+      window.__dostKarsilamaGitti = true;
+      document.dispatchEvent(new CustomEvent("dost:welcome-left", { detail: { secim: secim || null, gecikme: gecikme || 0 } }));
+    };
+    const bitir = (ms) => setTimeout(() => {
+      root.hidden = true;
+      // Çerez bandı seçimden SONRA: çember doğup yerine oturunca.
+      setTimeout(() => HTML.classList.remove("karsilama-acik"), reduceMotion ? 0 : 1200);
+    }, ms);
+
+    const g = hedefHalka();
+    if (!g) {
+      root.classList.add("welcome-screen--leaving");
+      haberVer(0);
+      bitir(950);
+      return;
+    }
+    // Halkanın açılışı, üç soluk (2026-10-29, kullanıcı notu: "Zât düğümüne
+    // küçülme efekti anlaşılmıyor, bir anda harita açılıyor gibi"):
+    //   1. (0-0,95 sn) zemin ve yazılar çekilir, halka Ontoloji çemberinin
+    //      yerine ve boyuna oturur;
+    //   2. (0,95-2,0 sn) halka çemberin tepesindeki Zât noktasına küçülür ve
+    //      orada bir ışığa dönüşür (ışık = zuhûr);
+    //   3. (2,0 sn sonrası) çember ve düğümler o ışıktan doğar: doğuş
+    //      (ontology.js runBirth) haritayı gizli tutarak bu ana kadar bekler.
+    const sr = stage.getBoundingClientRect();
+    const ringPx = sr.width * (r / 300);
+    const olcek = g.r / ringPx;
+    const sx = sr.left + sr.width / 2, sy = sr.top + sr.height / 2;
+    const dx = g.x - sx;
+    const dy = g.y - sy;
+    const ZAT_BEKLE = 1950;
+    beam.style.strokeDashoffset = "0";
+    root.classList.add("welcome-screen--donusum");
+    stage.style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px) scale(" + olcek.toFixed(4) + ")";
+    haberVer(ZAT_BEKLE);
+    const zatVar = isFinite(g.zx) && isFinite(g.zy) && g.zr > 2;
+    if (zatVar) {
+      // Zât ışığı: halkanın vardığı noktada, düğümün ~3 katı çapında yanar.
+      let isik = root.querySelector(".welcome-screen__zat-isik");
+      if (!isik) {
+        isik = document.createElement("div");
+        isik.className = "welcome-screen__zat-isik";
+        isik.setAttribute("aria-hidden", "true");
+        root.appendChild(isik);
+      }
+      const cap = Math.max(36, g.zr * 6);
+      isik.style.left = g.zx.toFixed(1) + "px";
+      isik.style.top = g.zy.toFixed(1) + "px";
+      isik.style.width = cap.toFixed(1) + "px";
+      isik.style.height = cap.toFixed(1) + "px";
+      setTimeout(() => {
+        // Halka Zât'a küçülür: ontoloji çemberinin tepesine taşınıp ~düğüm boyuna iner.
+        const k2 = Math.max(0.02, (g.zr * 1.1) / ringPx);
+        root.classList.add("welcome-screen--zata");
+        stage.style.transform = "translate(" + (g.zx - sx).toFixed(1) + "px," + (g.zy - sy).toFixed(1) + "px) scale(" + k2.toFixed(4) + ")";
+      }, 900);
+      setTimeout(() => root.classList.add("welcome-screen--zat-yanik"), 1500);
+      setTimeout(() => root.classList.add("welcome-screen--zat-son"), ZAT_BEKLE + 350);
+      bitir(ZAT_BEKLE + 1100);
+    } else {
+      setTimeout(() => root.classList.add("welcome-screen--donusum-son"), 900);
+      bitir(1500);
+    }
+  }
+
+  function finish() {
+    if (finished) return;
+    finished = true;
+    try {
+      beam.style.strokeDashoffset = "0";
+      beam.classList.add("welcome-screen__beam--complete");
+      spark.classList.add("welcome-screen__spark--hidden");
+      glow.style.opacity = "0.5";
+      setTimeout(() => {
+        text.classList.add("welcome-screen__text--visible");
+        if (tagline) tagline.classList.add("welcome-screen__tagline--visible");
+      }, 260);
+      // İki giriş noktası: halka kapandıktan hemen sonra yanar.
+      setTimeout(() => {
+        if (gidiyor) return;
+        if (uclar) {
+          uclar.hidden = false;
+          // hidden kalkınca bir kare bekle ki geçiş (opacity) görünsün.
+          requestAnimationFrame(() => requestAnimationFrame(() => uclar.classList.add("welcome-screen__uclar--acik")));
+        }
+        if (secimMetni) secimMetni.classList.add("welcome-screen__secim--acik");
+      }, reduceMotion ? 0 : 520);
+    } catch (e) {
+      leave(null);
+    }
+  }
+
+  function runDraw(durationMs) {
+    const start = performance.now();
+    function frame(now) {
+      if (finished) return;
+      const raw = Math.min(1, (now - start) / durationMs);
+      const eased = easeInOutCubic(raw);
+      const offset = len * (1 - eased);
+      beam.style.strokeDashoffset = String(offset);
+      placeSpark(eased);
+      glow.style.opacity = String(0.18 + eased * 0.22);
+      if (raw < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        finish();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // 2026-08-26: animasyon kurulumu/oynatımı try/catch içinde -- bir öğe
+  // eksik ya da SVG API'sinde beklenmeyen bir hata çıkarsa (yukarıdaki
+  // dinleyiciler zaten bağlı olduğu için tıklama/Esc her durumda çalışır),
+  // perde asılı kalmasın diye seçimsiz girilir.
+  try {
+    beam.style.strokeDasharray = String(len);
+    beam.style.strokeDashoffset = String(len);
+    if (reduceMotion) {
+      placeSpark(1);
+      finish();
+    } else {
+      runDraw(3200);
+    }
+  } catch (e) {
+    leave(null);
+  }
+})();

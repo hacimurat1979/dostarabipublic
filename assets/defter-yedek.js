@@ -1,35 +1,203 @@
-(function(){"use strict";if(window.DostDefterYedek)return;var w=window.DostGraphUtils;function i(e,a,r){var o=window.DostI18n;return o&&o.pick3?o.pick3({tr:e,en:a,pt:r}):e}function k(e,a){try{return e()}catch{return a}}var m="dost-defter",h="dost-notlarim",g="dost-vurgular";function f(e){var a=k(function(){return JSON.parse(localStorage.getItem(e)||"[]")},[]);return Array.isArray(a)?a:[]}function S(e,a){k(function(){localStorage.setItem(e,JSON.stringify(a))})}var j=["dost-lang","dost-theme","dost-font-scale","dost-okuma-kipi","dost-okuma-hiz","dost-gunluk-acik","dost-okuma-satir","dost-okuma-sutun","dost-okuma-yazi","dost-cevrimdisi-paketler"];function I(){var e={};return j.forEach(function(a){var r=k(function(){return localStorage.getItem(a)},null);r!=null&&(e[a]=r)}),e}function O(){return{dost:"defterim",surum:1,tarih:new Date().toISOString(),defter:f(m),notlar:f(h),vurgular:f(g),ayarlar:I()}}function _(e){try{return new URL(e,location.origin).href}catch{return e}}function D(e){return Array.isArray(e.etiketler)&&e.etiketler.length?"  "+e.etiketler.map(function(a){return"#"+String(a).replace(/\s+/g,"_")}).join(" "):""}function L(){try{var e=JSON.parse(localStorage.getItem("dost-gunluk")||"{}");return e&&typeof e=="object"&&!Array.isArray(e)?e:{}}catch{return{}}}function E(){var e=f(m),a=f(h),r=f(g),o=`---
-kaynak: Dost Arab\xEE (dostarabi.com)
-tur: defterim
-tarih: `+new Date().toISOString().slice(0,10)+`
-kayit: `+e.length+`
-not: `+a.length+`
-vurgu: `+r.length+`
----
+/* Defterim yedeği ve cihaz taşıma (2026-10-29, Defterim 2.0; kavram-defteri.js "Yedek ve taşıma" düğmesiyle tembel iner).
+ *
+ * Defterim (dost-defter: yıldızlı kayıtlar) ve Notlarım (dost-notlarim: paragraf notları) yalnız bu cihazın
+ * localStorage'ındadır; bu pencere onları cihazdan çıkarmanın üç yolunu verir, hiçbiri sunucuya gitmez:
+ *   - Markdown: okunur bir döküm (panoya kopyala / .md dosyası).
+ *   - JSON yedeği: dosya olarak indir; "Yedekten yükle" ile geri getir.
+ *   - Taşıma kodu: yedeğin metin hâli (sıkıştırılmış, base64); başka cihazda "Kodu yapıştır" ile birleşir.
+ * Yükleme birleştirir, üstüne yazmaz: aynı adresli kayıt ve aynı paragraftaki not zaten varsa dokunulmaz.
+ * QR yok: bir not defteri tek bir QR'a sığmaz; kod kopyalanıp bir mesajla ya da kendine e-postayla taşınır.
+ */
+(function () {
+  "use strict";
+  if (window.DostDefterYedek) return;
+  var GU = window.DostGraphUtils;
+  function t3(tr, en, pt) { var I = window.DostI18n; return I && I.pick3 ? I.pick3({ tr: tr, en: en, pt: pt }) : tr; }
+  function gk(fn, y) { try { return fn(); } catch (e) { return y; } }
+  var DEFTER = "dost-defter", NOTLAR = "dost-notlarim", VURGULAR = "dost-vurgular";
 
-# `+i("Defterim \u2014 Dost Arab\xEE","My Notebook \u2014 Dost Arab\xEE","Meu Caderno \u2014 Dost Arab\xEE")+`
+  function oku(k) { var a = gk(function () { return JSON.parse(localStorage.getItem(k) || "[]"); }, []); return Array.isArray(a) ? a : []; }
+  function yaz(k, a) { gk(function () { localStorage.setItem(k, JSON.stringify(a)); }); }
+  // Ayarlar (2026-10-30, fikir E7): dil, tema, yazı boyu, okuma kipi ve hızı, çevrimdışı paket seçimi yedeğe girer;
+  // içe alınınca yazılır. Başka hiçbir depo anahtarı taşınmaz.
+  var AYARLAR = ["dost-lang", "dost-theme", "dost-font-scale", "dost-okuma-kipi", "dost-okuma-hiz", "dost-gunluk-acik", "dost-okuma-satir", "dost-okuma-sutun", "dost-okuma-yazi", "dost-cevrimdisi-paketler"];
+  function ayarlar() { var o = {}; AYARLAR.forEach(function (k) { var v = gk(function () { return localStorage.getItem(k); }, null); if (v != null) o[k] = v; }); return o; }
+  function yedek() { return { dost: "defterim", surum: 1, tarih: new Date().toISOString(), defter: oku(DEFTER), notlar: oku(NOTLAR), vurgular: oku(VURGULAR), ayarlar: ayarlar() }; }
 
-_`+i("D\u0131\u015Fa aktarma","Exported","Exportado")+": "+new Date().toISOString().slice(0,10)+`_
-`;e.length&&(o+=`
-## `+i("Kay\u0131tlar","Saved items","Itens salvos")+`
+  // ── Markdown ───────────────────────────────────────────────────────────
+  function mutlak(yol) { try { return new URL(yol, location.origin).href; } catch (e) { return yol; } }
+  function etk(e) { return Array.isArray(e.etiketler) && e.etiketler.length ? "  " + e.etiketler.map(function (x) { return "#" + String(x).replace(/\s+/g, "_"); }).join(" ") : ""; }
+  function gunlukObj() { try { var o = JSON.parse(localStorage.getItem("dost-gunluk") || "{}"); return o && typeof o === "object" && !Array.isArray(o) ? o : {}; } catch (e) { return {}; } }
+  function markdown() {
+    var d = oku(DEFTER), n = oku(NOTLAR), vg = oku(VURGULAR);
+    // Obsidian / Notion için YAML başlığı (2026-10-30, fikir D12): kaynak, tarih, sayılar.
+    var s = "---\nkaynak: Dost Arabî (dostarabi.com)\ntur: defterim\ntarih: " + new Date().toISOString().slice(0, 10) + "\nkayit: " + d.length + "\nnot: " + n.length + "\nvurgu: " + vg.length + "\n---\n\n# " + t3("Defterim — Dost Arabî", "My Notebook — Dost Arabî", "Meu Caderno — Dost Arabî") + "\n\n"
+      + "_" + t3("Dışa aktarma", "Exported", "Exportado") + ": " + new Date().toISOString().slice(0, 10) + "_\n";
+    if (d.length) {
+      s += "\n## " + t3("Kayıtlar", "Saved items", "Itens salvos") + "\n\n";
+      d.forEach(function (e) { s += "- [" + (e.title || e.href) + "](" + e.href + ")" + (e.eyebrow ? " — " + e.eyebrow : "") + etk(e) + "\n"; });
+    }
+    if (n.length) {
+      s += "\n## " + t3("Notlarım", "My notes", "Minhas notas") + "\n";
+      n.forEach(function (e) {
+        s += "\n### [" + (e.baslik || e.yol) + "](" + mutlak(e.yol) + ")\n\n> “" + (e.alinti || "") + "…”\n\n" + (e.metin || "") + etk(e) + "\n";
+      });
+    }
+    var gl = gunlukObj(), gunler = Object.keys(gl).sort().reverse();
+    if (gunler.length) {
+      s += "\n## " + t3("Okuma günlüğüm", "My reading log", "Meu diário de leitura") + "\n";
+      gunler.forEach(function (g) {
+        s += "\n### " + g + "\n\n";
+        gl[g].forEach(function (x) { s += "- [" + (x.baslik || x.yol) + "](" + mutlak(x.yol) + ")\n"; });
+      });
+    }
+    if (vg.length) {
+      s += "\n## " + t3("Vurgularım", "My highlights", "Meus destaques") + "\n";
+      vg.forEach(function (e) {
+        s += "\n- [" + (e.baslik || e.yol) + "](" + mutlak(e.yol) + "): “" + (e.metin || "") + "”" + etk(e) + "\n";
+      });
+    }
+    return s;
+  }
 
-`,e.forEach(function(d){o+="- ["+(d.title||d.href)+"]("+d.href+")"+(d.eyebrow?" \u2014 "+d.eyebrow:"")+D(d)+`
-`})),a.length&&(o+=`
-## `+i("Notlar\u0131m","My notes","Minhas notas")+`
-`,a.forEach(function(d){o+=`
-### [`+(d.baslik||d.yol)+"]("+_(d.yol)+`)
+  // ── Taşıma kodu ────────────────────────────────────────────────────────
+  function b64uYaz(bayt) { var s = ""; for (var i = 0; i < bayt.length; i++) s += String.fromCharCode(bayt[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function b64uOku(str) {
+    var s = str.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
+    var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a;
+  }
+  function akisBayt(akis) { return new Response(akis).arrayBuffer().then(function (b) { return new Uint8Array(b); }); }
+  function kodUret() {
+    var ham = new TextEncoder().encode(JSON.stringify(yedek()));
+    if (typeof CompressionStream === "function") {
+      var cs = new CompressionStream("deflate-raw");
+      var w = cs.writable.getWriter(); w.write(ham); w.close();
+      return akisBayt(cs.readable).then(function (b) { return "DOST1z." + b64uYaz(b); });
+    }
+    return Promise.resolve("DOST1." + b64uYaz(ham));
+  }
+  function kodCoz(kod) {
+    kod = (kod || "").trim().replace(/\s+/g, "");
+    var m = kod.match(/^DOST1(z?)\.(.+)$/);
+    if (!m) return Promise.reject(new Error("biçim"));
+    var bayt = gk(function () { return b64uOku(m[2]); }, null);
+    if (!bayt) return Promise.reject(new Error("biçim"));
+    if (m[1]) {
+      if (typeof DecompressionStream !== "function") return Promise.reject(new Error("sıkıştırma"));
+      var ds = new DecompressionStream("deflate-raw");
+      var w = ds.writable.getWriter(); w.write(bayt); w.close();
+      return akisBayt(ds.readable).then(function (b) { return JSON.parse(new TextDecoder().decode(b)); });
+    }
+    return Promise.resolve(JSON.parse(new TextDecoder().decode(bayt)));
+  }
 
-> \u201C`+(d.alinti||"")+`\u2026\u201D
+  // ── Birleştirme ────────────────────────────────────────────────────────
+  function birlestir(y) {
+    if (!y || y.dost !== "defterim") throw new Error("biçim");
+    var d = oku(DEFTER), n = oku(NOTLAR), vg = oku(VURGULAR), ed = 0, en = 0, ev = 0;
+    function etiketTemizle(a) { return Array.isArray(a) ? a.map(function (x) { return String(x).slice(0, 24); }).slice(0, 8) : undefined; }
+    (y.defter || []).forEach(function (e) {
+      if (e && e.href && e.title && !d.some(function (x) { return x.href === e.href; })) { d.push({ href: String(e.href), title: String(e.title), eyebrow: String(e.eyebrow || ""), addedAt: +e.addedAt || Date.now(), etiketler: etiketTemizle(e.etiketler) }); ed++; }
+    });
+    (y.notlar || []).forEach(function (e) {
+      if (e && e.yol && e.metin && !n.some(function (x) { return x.yol === e.yol && x.alinti === e.alinti; })) {
+        n.push({ id: String(e.id || "n" + Date.now().toString(36) + en), yol: String(e.yol), baslik: String(e.baslik || ""), alinti: String(e.alinti || ""), metin: String(e.metin).slice(0, 800), t: +e.t || Date.now(), etiketler: etiketTemizle(e.etiketler) }); en++;
+      }
+    });
+    (y.vurgular || []).forEach(function (e) {
+      if (e && e.yol && e.metin && e.alinti && !vg.some(function (x) { return x.yol === e.yol && x.alinti === e.alinti && x.bas === e.bas && x.son === e.son; })) {
+        vg.push({ id: String(e.id || "v" + Date.now().toString(36) + ev), yol: String(e.yol), baslik: String(e.baslik || ""), alinti: String(e.alinti), bas: +e.bas || 0, son: +e.son || 0, metin: String(e.metin).slice(0, 300), renk: ["altin", "mavi", "yesil"].indexOf(e.renk) >= 0 ? e.renk : "altin", t: +e.t || Date.now(), etiketler: etiketTemizle(e.etiketler) }); ev++;
+      }
+    });
+    var aySay = 0;
+    if (y.ayarlar && typeof y.ayarlar === "object") AYARLAR.forEach(function (k) { if (typeof y.ayarlar[k] === "string") { gk(function () { localStorage.setItem(k, y.ayarlar[k]); }); aySay++; } });
+    yaz(DEFTER, d); yaz(NOTLAR, n); yaz(VURGULAR, vg);
+    gk(function () { window.dispatchEvent(new Event("dost-notlar")); window.dispatchEvent(new Event("storage")); });
+    return { kayit: ed, not: en, vurgu: ev, ayar: aySay };
+  }
 
-`+(d.metin||"")+D(d)+`
-`}));var l=L(),y=Object.keys(l).sort().reverse();return y.length&&(o+=`
-## `+i("Okuma g\xFCnl\xFC\u011F\xFCm","My reading log","Meu di\xE1rio de leitura")+`
-`,y.forEach(function(d){o+=`
-### `+d+`
+  // ── Pencere ────────────────────────────────────────────────────────────
+  var kutu = null, durumEl = null, oncekiOdak = null;
+  function durum(metin) { if (durumEl) durumEl.textContent = metin; }
+  function indir(ad, metin, tur) {
+    var u = URL.createObjectURL(new Blob([metin], { type: tur }));
+    var a = document.createElement("a"); a.href = u; a.download = ad; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+  }
+  function kopyala(metin) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(metin).then(function () { return true; }, function () { return false; });
+    return Promise.resolve(false);
+  }
+  function kapat() {
+    if (!kutu) return false;
+    kutu.remove(); kutu = null; durumEl = null;
+    if (oncekiOdak && oncekiOdak.focus) gk(function () { oncekiOdak.focus(); });
+    return true;
+  }
+  function ac() {
+    if (kutu) return;
+    oncekiOdak = document.activeElement;
+    kutu = document.createElement("section");
+    kutu.className = "defter-yedek"; kutu.setAttribute("role", "dialog"); kutu.setAttribute("aria-modal", "true");
+    kutu.setAttribute("aria-label", t3("Yedek ve taşıma", "Backup and transfer", "Backup e transferência"));
+    var d = oku(DEFTER).length, n = oku(NOTLAR).length;
+    kutu.innerHTML = '<div class="defter-yedek__kart">'
+      + '<header class="defter-yedek__bas"><h2></h2><button type="button" class="defter-yedek__kapat" data-e="kapat">×</button></header>'
+      + '<p class="defter-yedek__ozet"></p>'
+      + '<div class="defter-yedek__grup"><h3 data-y="md"></h3><div class="defter-yedek__sira"><button type="button" data-e="md-kopya"></button><button type="button" data-e="md-indir"></button></div></div>'
+      + '<div class="defter-yedek__grup"><h3 data-y="json"></h3><div class="defter-yedek__sira"><button type="button" data-e="json-indir"></button><button type="button" data-e="json-yukle"></button><input type="file" accept="application/json,.json" hidden></div></div>'
+      + '<div class="defter-yedek__grup"><h3 data-y="kod"></h3><textarea class="defter-yedek__kod" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>'
+      + '<div class="defter-yedek__sira"><button type="button" data-e="kod-uret"></button><button type="button" data-e="kod-kopya"></button><button type="button" data-e="kod-al"></button></div></div>'
+      + '<p class="defter-yedek__durum" role="status" aria-live="polite"></p></div>';
+    var T = {
+      h2: t3("Yedek ve taşıma", "Backup and transfer", "Backup e transferência"),
+      ozet: t3(d + " kayıt, " + n + " not — hepsi yalnız bu cihazda; buradan çıkardığın şey senin elinde.", d + " items, " + n + " notes — all on this device only; whatever you export is in your hands.", d + " itens, " + n + " notas — tudo apenas neste dispositivo; o que você exporta fica com você."),
+      md: t3("Okunur döküm (Markdown)", "Readable copy (Markdown)", "Cópia legível (Markdown)"),
+      json: t3("Yedek dosyası", "Backup file", "Arquivo de backup"),
+      kod: t3("Başka cihaza taşı: taşıma kodu", "Move to another device: transfer code", "Levar para outro dispositivo: código de transferência"),
+      "md-kopya": t3("Panoya kopyala", "Copy to clipboard", "Copiar"), "md-indir": t3("Dosya olarak indir (.md)", "Download as file (.md)", "Baixar arquivo (.md)"),
+      "json-indir": t3("Yedeği indir (.json)", "Download backup (.json)", "Baixar backup (.json)"), "json-yukle": t3("Yedekten yükle", "Restore from backup", "Restaurar do backup"),
+      "kod-uret": t3("Kodu üret", "Generate code", "Gerar código"), "kod-kopya": t3("Kodu kopyala", "Copy code", "Copiar código"), "kod-al": t3("Kodu yapıştırdım, al", "I pasted a code, import it", "Colei um código, importar"),
+    };
+    kutu.querySelector("h2").textContent = T.h2;
+    kutu.querySelector(".defter-yedek__ozet").textContent = T.ozet;
+    kutu.querySelectorAll("h3[data-y]").forEach(function (h) { h.textContent = T[h.dataset.y]; });
+    kutu.querySelectorAll("button[data-e]").forEach(function (b) { if (T[b.dataset.e]) b.textContent = T[b.dataset.e]; });
+    kutu.querySelector(".defter-yedek__kapat").setAttribute("aria-label", t3("Kapat", "Close", "Fechar"));
+    kutu.querySelector(".defter-yedek__kod").placeholder = t3("Başka cihazdan aldığın kodu buraya yapıştır…", "Paste the code from your other device here…", "Cole aqui o código do seu outro dispositivo…");
+    durumEl = kutu.querySelector(".defter-yedek__durum");
+    var kod = kutu.querySelector(".defter-yedek__kod"), dosya = kutu.querySelector('input[type="file"]');
 
-`,l[d].forEach(function(n){o+="- ["+(n.baslik||n.yol)+"]("+_(n.yol)+`)
-`})})),r.length&&(o+=`
-## `+i("Vurgular\u0131m","My highlights","Meus destaques")+`
-`,r.forEach(function(d){o+=`
-- [`+(d.baslik||d.yol)+"]("+_(d.yol)+"): \u201C"+(d.metin||"")+"\u201D"+D(d)+`
-`})),o}function z(e){for(var a="",r=0;r<e.length;r++)a+=String.fromCharCode(e[r]);return btoa(a).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}function M(e){for(var a=e.replace(/-/g,"+").replace(/_/g,"/");a.length%4;)a+="=";for(var r=atob(a),o=new Uint8Array(r.length),l=0;l<r.length;l++)o[l]=r.charCodeAt(l);return o}function q(e){return new Response(e).arrayBuffer().then(function(a){return new Uint8Array(a)})}function x(){var e=new TextEncoder().encode(JSON.stringify(O()));if(typeof CompressionStream=="function"){var a=new CompressionStream("deflate-raw"),r=a.writable.getWriter();return r.write(e),r.close(),q(a.readable).then(function(o){return"DOST1z."+z(o)})}return Promise.resolve("DOST1."+z(e))}function T(e){e=(e||"").trim().replace(/\s+/g,"");var a=e.match(/^DOST1(z?)\.(.+)$/);if(!a)return Promise.reject(new Error("bi\xE7im"));var r=k(function(){return M(a[2])},null);if(!r)return Promise.reject(new Error("bi\xE7im"));if(a[1]){if(typeof DecompressionStream!="function")return Promise.reject(new Error("s\u0131k\u0131\u015Ft\u0131rma"));var o=new DecompressionStream("deflate-raw"),l=o.writable.getWriter();return l.write(r),l.close(),q(o.readable).then(function(y){return JSON.parse(new TextDecoder().decode(y))})}return Promise.resolve(JSON.parse(new TextDecoder().decode(r)))}function C(e){if(!e||e.dost!=="defterim")throw new Error("bi\xE7im");var a=f(m),r=f(h),o=f(g),l=0,y=0,d=0;function n(t){return Array.isArray(t)?t.map(function(s){return String(s).slice(0,24)}).slice(0,8):void 0}(e.defter||[]).forEach(function(t){t&&t.href&&t.title&&!a.some(function(s){return s.href===t.href})&&(a.push({href:String(t.href),title:String(t.title),eyebrow:String(t.eyebrow||""),addedAt:+t.addedAt||Date.now(),etiketler:n(t.etiketler)}),l++)}),(e.notlar||[]).forEach(function(t){t&&t.yol&&t.metin&&!r.some(function(s){return s.yol===t.yol&&s.alinti===t.alinti})&&(r.push({id:String(t.id||"n"+Date.now().toString(36)+y),yol:String(t.yol),baslik:String(t.baslik||""),alinti:String(t.alinti||""),metin:String(t.metin).slice(0,800),t:+t.t||Date.now(),etiketler:n(t.etiketler)}),y++)}),(e.vurgular||[]).forEach(function(t){t&&t.yol&&t.metin&&t.alinti&&!o.some(function(s){return s.yol===t.yol&&s.alinti===t.alinti&&s.bas===t.bas&&s.son===t.son})&&(o.push({id:String(t.id||"v"+Date.now().toString(36)+d),yol:String(t.yol),baslik:String(t.baslik||""),alinti:String(t.alinti),bas:+t.bas||0,son:+t.son||0,metin:String(t.metin).slice(0,300),renk:["altin","mavi","yesil"].indexOf(t.renk)>=0?t.renk:"altin",t:+t.t||Date.now(),etiketler:n(t.etiketler)}),d++)});var c=0;return e.ayarlar&&typeof e.ayarlar=="object"&&j.forEach(function(t){typeof e.ayarlar[t]=="string"&&(k(function(){localStorage.setItem(t,e.ayarlar[t])}),c++)}),S(m,a),S(h,r),S(g,o),k(function(){window.dispatchEvent(new Event("dost-notlar")),window.dispatchEvent(new Event("storage"))}),{kayit:l,not:y,vurgu:d,ayar:c}}var u=null,v=null,b=null;function p(e){v&&(v.textContent=e)}function B(e,a,r){var o=URL.createObjectURL(new Blob([a],{type:r})),l=document.createElement("a");l.href=o,l.download=e,document.body.appendChild(l),l.click(),l.remove(),setTimeout(function(){URL.revokeObjectURL(o)},4e3)}function R(e){return navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(e).then(function(){return!0},function(){return!1}):Promise.resolve(!1)}function A(){return u?(u.remove(),u=null,v=null,b&&b.focus&&k(function(){b.focus()}),!0):!1}function N(){if(u)return;b=document.activeElement,u=document.createElement("section"),u.className="defter-yedek",u.setAttribute("role","dialog"),u.setAttribute("aria-modal","true"),u.setAttribute("aria-label",i("Yedek ve ta\u015F\u0131ma","Backup and transfer","Backup e transfer\xEAncia"));var e=f(m).length,a=f(h).length;u.innerHTML='<div class="defter-yedek__kart"><header class="defter-yedek__bas"><h2></h2><button type="button" class="defter-yedek__kapat" data-e="kapat">\xD7</button></header><p class="defter-yedek__ozet"></p><div class="defter-yedek__grup"><h3 data-y="md"></h3><div class="defter-yedek__sira"><button type="button" data-e="md-kopya"></button><button type="button" data-e="md-indir"></button></div></div><div class="defter-yedek__grup"><h3 data-y="json"></h3><div class="defter-yedek__sira"><button type="button" data-e="json-indir"></button><button type="button" data-e="json-yukle"></button><input type="file" accept="application/json,.json" hidden></div></div><div class="defter-yedek__grup"><h3 data-y="kod"></h3><textarea class="defter-yedek__kod" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea><div class="defter-yedek__sira"><button type="button" data-e="kod-uret"></button><button type="button" data-e="kod-kopya"></button><button type="button" data-e="kod-al"></button></div></div><p class="defter-yedek__durum" role="status" aria-live="polite"></p></div>';var r={h2:i("Yedek ve ta\u015F\u0131ma","Backup and transfer","Backup e transfer\xEAncia"),ozet:i(e+" kay\u0131t, "+a+" not \u2014 hepsi yaln\u0131z bu cihazda; buradan \xE7\u0131kard\u0131\u011F\u0131n \u015Fey senin elinde.",e+" items, "+a+" notes \u2014 all on this device only; whatever you export is in your hands.",e+" itens, "+a+" notas \u2014 tudo apenas neste dispositivo; o que voc\xEA exporta fica com voc\xEA."),md:i("Okunur d\xF6k\xFCm (Markdown)","Readable copy (Markdown)","C\xF3pia leg\xEDvel (Markdown)"),json:i("Yedek dosyas\u0131","Backup file","Arquivo de backup"),kod:i("Ba\u015Fka cihaza ta\u015F\u0131: ta\u015F\u0131ma kodu","Move to another device: transfer code","Levar para outro dispositivo: c\xF3digo de transfer\xEAncia"),"md-kopya":i("Panoya kopyala","Copy to clipboard","Copiar"),"md-indir":i("Dosya olarak indir (.md)","Download as file (.md)","Baixar arquivo (.md)"),"json-indir":i("Yede\u011Fi indir (.json)","Download backup (.json)","Baixar backup (.json)"),"json-yukle":i("Yedekten y\xFCkle","Restore from backup","Restaurar do backup"),"kod-uret":i("Kodu \xFCret","Generate code","Gerar c\xF3digo"),"kod-kopya":i("Kodu kopyala","Copy code","Copiar c\xF3digo"),"kod-al":i("Kodu yap\u0131\u015Ft\u0131rd\u0131m, al","I pasted a code, import it","Colei um c\xF3digo, importar")};u.querySelector("h2").textContent=r.h2,u.querySelector(".defter-yedek__ozet").textContent=r.ozet,u.querySelectorAll("h3[data-y]").forEach(function(n){n.textContent=r[n.dataset.y]}),u.querySelectorAll("button[data-e]").forEach(function(n){r[n.dataset.e]&&(n.textContent=r[n.dataset.e])}),u.querySelector(".defter-yedek__kapat").setAttribute("aria-label",i("Kapat","Close","Fechar")),u.querySelector(".defter-yedek__kod").placeholder=i("Ba\u015Fka cihazdan ald\u0131\u011F\u0131n kodu buraya yap\u0131\u015Ft\u0131r\u2026","Paste the code from your other device here\u2026","Cole aqui o c\xF3digo do seu outro dispositivo\u2026"),v=u.querySelector(".defter-yedek__durum");var o=u.querySelector(".defter-yedek__kod"),l=u.querySelector('input[type="file"]');function y(n){p(i(n.kayit+" kay\u0131t, "+n.not+" not ve "+n.vurgu+" vurgu eklendi"+(n.ayar?"; "+n.ayar+" ayar yaz\u0131ld\u0131 (sayfay\u0131 yenile).":"."),n.kayit+" items, "+n.not+" notes and "+n.vurgu+" highlights added"+(n.ayar?"; "+n.ayar+" setting(s) written (reload the page).":"."),n.kayit+" itens, "+n.not+" notas e "+n.vurgu+" destaques adicionados"+(n.ayar?"; "+n.ayar+" ajuste(s) gravado(s) (recarregue a p\xE1gina).":".")))}function d(){p(i("Bu bir Defterim yede\u011Fi ya da ta\u015F\u0131ma kodu gibi g\xF6r\xFCnm\xFCyor.","This does not look like a notebook backup or transfer code.","Isto n\xE3o parece um backup ou c\xF3digo de transfer\xEAncia do caderno."))}u.addEventListener("click",function(n){var c=n.target.closest("button[data-e]");if(!c){n.target===u&&A();return}var t=c.dataset.e;if(t==="kapat")A();else if(t==="md-kopya")R(E()).then(function(s){p(s?i("Kopyaland\u0131.","Copied.","Copiado."):i("Kopyalanamad\u0131; dosya olarak indirmeyi dene.","Could not copy; try downloading the file.","N\xE3o foi poss\xEDvel copiar; tente baixar o arquivo."))});else if(t==="md-indir")B("dost-defterim.md",E(),"text/markdown"),p(i("\u0130ndirme ba\u015Flat\u0131ld\u0131 (dosya yoksa panoya kopyalamay\u0131 dene).","Download started (if no file appears, try copying instead).","Download iniciado (se nenhum arquivo aparecer, tente copiar)."));else if(t==="json-indir")B("dost-defterim.json",JSON.stringify(O(),null,2),"application/json"),p(i("\u0130ndirme ba\u015Flat\u0131ld\u0131.","Download started.","Download iniciado."));else if(t==="json-yukle")l.click();else if(t==="kod-uret")x().then(function(s){o.value=s,o.select(),p(i("Kod haz\u0131r; kopyalay\u0131p di\u011Fer cihazda yap\u0131\u015Ft\u0131r.","Code ready; copy it and paste on the other device.","C\xF3digo pronto; copie e cole no outro dispositivo."))});else if(t==="kod-kopya"){if(!o.value){p(i("\xD6nce kodu \xFCret.","Generate the code first.","Gere o c\xF3digo primeiro."));return}R(o.value).then(function(s){s||o.select(),p(s?i("Kopyaland\u0131.","Copied.","Copiado."):i("Kod se\xE7ildi; elle kopyala.","Code selected; copy it by hand.","C\xF3digo selecionado; copie manualmente."))})}else t==="kod-al"&&T(o.value).then(function(s){y(C(s))}).catch(d)}),l.addEventListener("change",function(){var n=l.files&&l.files[0];n&&(n.text().then(function(c){y(C(JSON.parse(c)))}).catch(d),l.value="")}),u.addEventListener("keydown",function(n){if(n.key==="Tab"){var c=Array.prototype.filter.call(u.querySelectorAll("button, textarea"),function(t){return t.offsetParent!==null});c.length&&(n.shiftKey&&document.activeElement===c[0]?(n.preventDefault(),c[c.length-1].focus()):!n.shiftKey&&document.activeElement===c[c.length-1]&&(n.preventDefault(),c[0].focus()))}}),document.body.appendChild(u),k(function(){u.querySelector('button[data-e="md-kopya"]').focus({preventScroll:!0})})}w&&w.registerStepBack&&w.registerStepBack(null,function(){return A()},{oncelikli:!0}),window.DostDefterYedek={ac:N,_markdown:E,_kodUret:x,_kodCoz:T,_birlestir:C}})();
+    function sonuc(r) { durum(t3(r.kayit + " kayıt, " + r.not + " not ve " + r.vurgu + " vurgu eklendi" + (r.ayar ? "; " + r.ayar + " ayar yazıldı (sayfayı yenile)." : "."), r.kayit + " items, " + r.not + " notes and " + r.vurgu + " highlights added" + (r.ayar ? "; " + r.ayar + " setting(s) written (reload the page)." : "."), r.kayit + " itens, " + r.not + " notas e " + r.vurgu + " destaques adicionados" + (r.ayar ? "; " + r.ayar + " ajuste(s) gravado(s) (recarregue a página)." : "."))); }
+    function hata() { durum(t3("Bu bir Defterim yedeği ya da taşıma kodu gibi görünmüyor.", "This does not look like a notebook backup or transfer code.", "Isto não parece um backup ou código de transferência do caderno.")); }
+    kutu.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-e]");
+      if (!b) { if (ev.target === kutu) kapat(); return; }
+      var e = b.dataset.e;
+      if (e === "kapat") kapat();
+      else if (e === "md-kopya") kopyala(markdown()).then(function (ok) { durum(ok ? t3("Kopyalandı.", "Copied.", "Copiado.") : t3("Kopyalanamadı; dosya olarak indirmeyi dene.", "Could not copy; try downloading the file.", "Não foi possível copiar; tente baixar o arquivo.")); });
+      else if (e === "md-indir") { indir("dost-defterim.md", markdown(), "text/markdown"); durum(t3("İndirme başlatıldı (dosya yoksa panoya kopyalamayı dene).", "Download started (if no file appears, try copying instead).", "Download iniciado (se nenhum arquivo aparecer, tente copiar).")); }
+      else if (e === "json-indir") { indir("dost-defterim.json", JSON.stringify(yedek(), null, 2), "application/json"); durum(t3("İndirme başlatıldı.", "Download started.", "Download iniciado.")); }
+      else if (e === "json-yukle") dosya.click();
+      else if (e === "kod-uret") kodUret().then(function (k) { kod.value = k; kod.select(); durum(t3("Kod hazır; kopyalayıp diğer cihazda yapıştır.", "Code ready; copy it and paste on the other device.", "Código pronto; copie e cole no outro dispositivo.")); });
+      else if (e === "kod-kopya") { if (!kod.value) { durum(t3("Önce kodu üret.", "Generate the code first.", "Gere o código primeiro.")); return; } kopyala(kod.value).then(function (ok) { if (!ok) kod.select(); durum(ok ? t3("Kopyalandı.", "Copied.", "Copiado.") : t3("Kod seçildi; elle kopyala.", "Code selected; copy it by hand.", "Código selecionado; copie manualmente.")); }); }
+      else if (e === "kod-al") kodCoz(kod.value).then(function (y) { sonuc(birlestir(y)); }).catch(hata);
+    });
+    dosya.addEventListener("change", function () {
+      var f = dosya.files && dosya.files[0]; if (!f) return;
+      f.text().then(function (m) { sonuc(birlestir(JSON.parse(m))); }).catch(hata);
+      dosya.value = "";
+    });
+    kutu.addEventListener("keydown", function (ev) {
+      if (ev.key !== "Tab") return;
+      var f = Array.prototype.filter.call(kutu.querySelectorAll("button, textarea"), function (x) { return x.offsetParent !== null; });
+      if (!f.length) return;
+      if (ev.shiftKey && document.activeElement === f[0]) { ev.preventDefault(); f[f.length - 1].focus(); }
+      else if (!ev.shiftKey && document.activeElement === f[f.length - 1]) { ev.preventDefault(); f[0].focus(); }
+    });
+    document.body.appendChild(kutu);
+    gk(function () { kutu.querySelector('button[data-e="md-kopya"]').focus({ preventScroll: true }); });
+  }
+  if (GU && GU.registerStepBack) GU.registerStepBack(null, function () { return kapat(); }, { oncelikli: true });
+  window.DostDefterYedek = { ac: ac, _markdown: markdown, _kodUret: kodUret, _kodCoz: kodCoz, _birlestir: birlestir };
+})();

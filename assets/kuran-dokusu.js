@@ -1,18 +1,682 @@
-window.__kuranDokusuApp=(function(){"use strict";const ht=window.DostI18n,l=window.DostGraphUtils,gt=window.matchMedia("(prefers-reduced-motion: reduce)").matches,g=d3.select("#kuran-dokusu-graph"),K=g.node(),f=document.getElementById("kuran-dokusu-wrap"),k=document.getElementById("kuran-dokusu-tooltip"),I=document.getElementById("detail-panel"),j=document.getElementById("detail-content");if(!K||!f)return{activate(){},onLangChange(){},goToNode(){}};const r=ht.pick3;let st=null,S=[],B=[],L=[],v=new Map,M=new Map,F=null,T=null,w=null,m=null;function it(){return!!(l.telefonMu&&l.telefonMu()&&f.classList.contains("mg-telefon")&&l.telefonSigdir)}let z=null;function V(){z||(z=document.createElement("p"),z.className="kuran-dokusu-kunye",z.setAttribute("aria-hidden","true"),f.appendChild(z));let t="",e=!1;if(w!=null&&v.get(w)){const n=v.get(w);t=`${r(n.ad)} \xB7 ${n.atifSayisi} ${r({tr:"at\u0131f",en:n.atifSayisi===1?"citation":"citations",pt:n.atifSayisi===1?"cita\xE7\xE3o":"cita\xE7\xF5es"})}`,e=!0}else if(m!=null&&M.get(m)){const n=M.get(m);t=`${r(n.title)} \xB7 ${n.atifSayisi} ${r({tr:"at\u0131f",en:n.atifSayisi===1?"citation":"citations",pt:n.atifSayisi===1?"cita\xE7\xE3o":"cita\xE7\xF5es"})}`,e=!0}else t=`${S.length} ${r({tr:"s\xFBre",en:"s\xFBrahs",pt:"suratas"})} \xB7 ${B.length} ${r({tr:"bap",en:"chapters",pt:"cap\xEDtulos"})}`;z.textContent=t,z.classList.toggle("kuran-dokusu-kunye--secili",e)}function mt(){const t=f.getBoundingClientRect(),e=it()?200:360;return{w:Math.max(e,t.width),h:Math.max(e,t.height)}}function ot(){const t=g.append("text").attr("class","kuran-dokusu-sure__etiket").attr("visibility","hidden"),e=getComputedStyle(t.node()),n=e.fontSize?`${e.fontStyle} ${e.fontWeight} ${e.fontSize} ${e.fontFamily}`:'400 10.56px "Source Sans Dost", system-ui, -apple-system, "Segoe UI", sans-serif',s=parseFloat(e.letterSpacing)||0;t.remove();const u=document.createElement("canvas").getContext("2d");return u?(u.font=n,d=>u.measureText(d).width+s*d.length):()=>0}function wt(){const t=ot();let e=0;return S.forEach(n=>{e=Math.max(e,t(r(n.ad))||0)}),e||(e=S.reduce((n,s)=>Math.max(n,r(s.ad).length),0)*6),e}let P=1/0;function rt(t){const e=/^c(\d+)k(\d+)$/.exec(t.id);if(t.view==="futuhat"&&e)return[0,+e[1],+e[2]];const n=/(\d+)/.exec(t.id);return[t.view==="miskat"?2:1,0,n?+n[1]:0]}const C=.2;let U=0,H=0,G=0;function yt(t){const e=document.getElementById("kuran-dokusu-legend");if(!e||e.classList.contains("legend--collapsed"))return 0;const n=e.getBoundingClientRect(),s=f.getBoundingClientRect();if(!n.width)return 0;const u=n.right-s.left;return u<t*.4?u:0}function vt(){const{w:t,h:e}=mt(),n=t<560,s=n?22:wt()+12+7+10,u=n?0:Math.max(0,yt(t)-4),d=t-u,p=d/2-s-(n?4:12),$=(e-56-s)/2,i=Math.max(Math.min(t,e)*.2,Math.min(p,$));G=i,U=u+d/2,H=Math.max(i+34,(e-(2*i+s+24))/2+i+24),P=n?12:Math.max(40,Math.min(s-29,e-H-i-26,d/2-i-26));const E=n?.6:1,R=S.slice().sort((c,x)=>c.no-x.no),N=Math.max(...S.map(c=>c.atifSayisi)),A=R.length,b=A>1?i*(Math.PI-2*C)/(A-1):99,a=Math.max(1,Math.ceil(13/b));R.forEach((c,x)=>{const y=Math.PI-C-(A>1?x/(A-1):.5)*(Math.PI-2*C);c.aci=y,c.sira=x,c.x=Math.cos(y)*i,c.y=Math.sin(y)*i,c.r=(4+c.atifSayisi/N*8)*E,c.etiketGizli=n||x%a!==0});const o=B.slice().sort((c,x)=>{const y=rt(c),nt=rt(x);return y[0]-nt[0]||y[1]-nt[1]||y[2]-nt[2]}),_=o.length,Q=Math.max(...B.map(c=>c.atifSayisi));return o.forEach((c,x)=>{const y=Math.PI+C+(_>1?x/(_-1):.5)*(Math.PI-2*C);c.aci=y,c.sira=x,c.x=Math.cos(y)*i,c.y=Math.sin(y)*i,c.r=(2.5+c.atifSayisi/Q*4)*(n?.75:1)}),{w:t,h:e,R:i}}function ut(t){const e=v.get(t.sureNo),n=M.get(t.view+"/"+t.id);if(!e||!n)return"";const s=(e.x+n.x)/2,u=(e.y+n.y)/2,d=s*.35,p=u*.35;return`M${e.x.toFixed(1)},${e.y.toFixed(1)} Q${d.toFixed(1)},${p.toFixed(1)} ${n.x.toFixed(1)},${n.y.toFixed(1)}`}const lt=t=>t.sureNo+"|"+t.view+"|"+t.id,X=t=>"kd-isik-"+t;function O(){const{w:t,h:e,R:n}=vt();g.selectAll("*").remove(),g.attr("viewBox",`0 0 ${t} ${e}`);const s=g.append("defs");T=g.append("g").attr("class","kuran-dokusu-scene");const u=T.append("g").attr("transform",`translate(${U}, ${H})`);L.forEach((a,o)=>{a.__i=o});const d=u.append("g").attr("class","kuran-dokusu-kenarler");d.selectAll("path.kuran-dokusu-kenar").data(L,lt).join("path").attr("class","kuran-dokusu-kenar").attr("d",ut).attr("fill","none").attr("pointer-events","none").attr("stroke-width",a=>1+a.agirlik*.6);const p=d.selectAll("path.link-hit").data(L,lt).join("path").attr("class","link-hit").attr("d",ut).attr("fill","none");p.on("mouseenter",function(a,o){Y()||(h(o.sureNo,null,!0,o),dt(a,o))}).on("mousemove",a=>l.moveTooltip(k,f,a)).on("mouseleave",function(){D(),l.hideTooltip(k)}),l.wireEdgeAccessibility(p,{role:"img",label:a=>_t(a),onFocus:(a,o)=>{h(a.sureNo,null,!0,a),dt(o,a)},onBlur:()=>{D(),l.hideTooltip(k)}});const i=u.append("g").attr("class","kuran-dokusu-sureler").selectAll("g.kuran-dokusu-sure").data(S,a=>a.no).join("g").attr("class","kuran-dokusu-sure").attr("transform",a=>`translate(${a.x}, ${a.y})`).attr("tabindex",0).attr("role","button").attr("aria-label",a=>`${a.no}. ${r(a.ad)} \u2014 ${a.atifSayisi} ${r({tr:"at\u0131f",en:"citations",pt:"cita\xE7\xF5es"})}`);i.append("circle").attr("class","kuran-dokusu-sure__vurus").attr("r",14).attr("fill","transparent"),i.append("circle").attr("class","kuran-dokusu-sure__nokta").attr("r",a=>a.r);const E=ot(),R=a=>E(a)||a.length*5.9;function N(a){const o=R(a);if(!o||o<=P)return a;let _=1,Q=a.length;for(;_<Q;){const c=Math.ceil((_+Q)/2);R(a.slice(0,c)+"\u2026")<=P?_=c:Q=c-1}return a.slice(0,_).trim()+"\u2026"}i.append("text").attr("class",a=>"kuran-dokusu-sure__etiket"+(a.etiketGizli?" kuran-dokusu-sure__etiket--gizli":"")).attr("transform",a=>{const o=a.aci*180/Math.PI,_=a.r+7;return Math.cos(a.aci)<0?`rotate(${o+180}) translate(${-_},0)`:`rotate(${o}) translate(${_},0)`}).attr("text-anchor",a=>Math.cos(a.aci)<0?"end":"start").attr("dy","0.32em").text(a=>N(r(a.ad))),i.on("mouseenter",function(a,o){Y()||(h(o.no,null,!0),$t(a,o))}).on("mousemove",a=>l.moveTooltip(k,f,a)).on("mouseleave",function(){D(),l.hideTooltip(k)}).on("focus",function(a,o){Y()&&!this.matches(":focus-visible")||h(o.no,null,!0)}).on("blur",function(){D()}).on("click",(a,o)=>W(o)).on("keydown",function(a,o){a.key==="Enter"||a.key===" "?(a.preventDefault(),W(o)):ct(a,i,o)});const b=u.append("g").attr("class","kuran-dokusu-bablar").selectAll("g.kuran-dokusu-bab").data(B,a=>a.view+"/"+a.id).join("g").attr("class","kuran-dokusu-bab").attr("transform",a=>`translate(${a.x}, ${a.y})`).attr("tabindex",0).attr("role","button").attr("aria-label",a=>r(a.title));b.append("circle").attr("class","kuran-dokusu-bab__vurus").attr("r",10).attr("fill","transparent"),b.append("circle").attr("class","kuran-dokusu-bab__nokta").attr("r",a=>a.r),b.on("mouseenter",function(a,o){Y()||(h(null,o.view+"/"+o.id,!0),bt(a,o))}).on("mousemove",a=>l.moveTooltip(k,f,a)).on("mouseleave",function(){D(),l.hideTooltip(k)}).on("focus",function(a,o){Y()&&!this.matches(":focus-visible")||h(null,o.view+"/"+o.id,!0)}).on("blur",function(){D()}).on("click",(a,o)=>tt(o)).on("keydown",function(a,o){a.key==="Enter"||a.key===" "?(a.preventDefault(),tt(o)):ct(a,b,o)}),F=l.createZoomBehavior(g,T,[.6,3.5]),et(!1),V(),D()}function ct(t,e,n){const s=t.key==="ArrowRight"||t.key==="ArrowDown",u=t.key==="ArrowLeft"||t.key==="ArrowUp";if(!s&&!u)return;t.preventDefault();const d=e.nodes().slice().sort((i,E)=>d3.select(i).datum().sira-d3.select(E).datum().sira),p=d.findIndex(i=>d3.select(i).datum()===n),$=Math.max(0,Math.min(d.length-1,p+(s?1:-1)));d[$]&&d[$].focus()}function D(){w!=null?h(w,null,!0):m!=null?h(null,m,!0):h(null,null,!1)}function h(t,e,n,s){if(!T)return;const u=new Set,d=new Set,p=new Set;n&&(L.forEach(i=>{const E=i.view+"/"+i.id;if(!(s?i===s:t!=null&&i.sureNo===t||e!=null&&E===e))return;u.add(i),d.add(i.sureNo),p.add(E);const N=v.get(i.sureNo),A=M.get(E);if(!N||!A)return;const b=e!=null&&!s?A:N,a=b===N?A:N;let o=g.select("#"+X(i.__i));o.empty()&&(o=g.select("defs").append("linearGradient").attr("id",X(i.__i)).attr("gradientUnits","userSpaceOnUse"),o.append("stop").attr("offset","0%").attr("style","stop-color:var(--series-theme);stop-opacity:0.95"),o.append("stop").attr("offset","65%").attr("style","stop-color:var(--series-theme);stop-opacity:0.32"),o.append("stop").attr("offset","100%").attr("style","stop-color:var(--series-theme);stop-opacity:0.04")),o.attr("x1",b.x).attr("y1",b.y).attr("x2",a.x).attr("y2",a.y)}),t!=null&&d.add(t),e!=null&&p.add(e));const $=n&&(d.size||p.size);T.classed("kuran-dokusu-scene--odak",!!$),T.selectAll("path.kuran-dokusu-kenar").classed("kuran-dokusu-kenar--isik",i=>u.has(i)).style("stroke",i=>u.has(i)?`url(#${X(i.__i)})`:null),T.selectAll("g.kuran-dokusu-sure").classed("kuran-dokusu-sure--deginiliyor",i=>n&&t!=null&&i.no===t).classed("kuran-dokusu--perdeli",i=>!!$&&!d.has(i.no)),T.selectAll("g.kuran-dokusu-bab").classed("kuran-dokusu-bab--deginiliyor",i=>n&&e!=null&&i.view+"/"+i.id===e).classed("kuran-dokusu-bab--yanan",i=>!!$&&p.has(i.view+"/"+i.id)).classed("kuran-dokusu--perdeli",i=>!!$&&!p.has(i.view+"/"+i.id))}function Z(t){return t.map(e=>`<span class="ayet-ref" data-ayet="${window.DostGraphUtils.escapeHtml(e)}" tabindex="0">${window.DostGraphUtils.escapeHtml(e)}</span>`).join(" ")}function $t(t,e){k.innerHTML=`<strong>${r(e.ad)}</strong><span class="node-hover-tip__meta">${e.atifSayisi} ${r({tr:"at\u0131f",en:"citation",pt:"cita\xE7\xE3o"})}</span>`,k.hidden=!1,l.moveTooltip(k,f,t)}function bt(t,e){k.innerHTML=`<strong>${r(e.title)}</strong><span class="node-hover-tip__meta">${e.atifSayisi} ${r({tr:"at\u0131f",en:"citation",pt:"cita\xE7\xE3o"})}</span>`,k.hidden=!1,l.moveTooltip(k,f,t)}function _t(t){const e=v.get(t.sureNo),n=M.get(t.view+"/"+t.id),s=e?r(e.ad):t.sureNo,u=n?r(n.title):t.id;return`${s} \u2192 ${u} (${t.ayetler.length} ${r({tr:"\xE2yet atf\u0131",en:"verse citations",pt:"cita\xE7\xF5es de vers\xEDculo"})})`}function dt(t,e){const n=v.get(e.sureNo),s=M.get(e.view+"/"+e.id);k.innerHTML=l.edgeReasonHtml({title:(n?r(n.ad):e.sureNo)+" \u2192 "+(s?r(s.title):e.id),kindLabel:r({tr:"\xE2yet atf\u0131",en:"verse citation",pt:"cita\xE7\xE3o de vers\xEDculo"}),reason:Z(e.ayetler)}),k.hidden=!1,l.moveTooltip(k,f,t)}function ft(t,e){window.__dostNav&&window.__dostNav.goTo(t,e)}function W(t){window.__dostNav&&window.__dostNav.setHash("kuran-dokusu",String(t.no)),w=t.no,m=null;const e=L.filter(s=>s.sureNo===t.no),n=e.map(s=>{const u=M.get(s.view+"/"+s.id);return`<button type="button" class="kuran-dokusu-satir" data-view="${s.view}" data-id="${s.id}">
-        <span class="kuran-dokusu-satir__baslik">${u?r(u.title):s.id}</span>
-        <span class="kuran-dokusu-satir__ayet">${Z(s.ayetler)}</span>
-      </button>`}).join("");j.innerHTML=`
-      <p class="detail-eyebrow">${r({tr:"S\xFBre",en:"S\xFBrah",pt:"Surata"})} ${t.no}</p>
-      <h2 class="detail-title">${r(t.ad)}</h2>
-      <p class="eser-agi-kimlik">${t.atifSayisi} ${r({tr:"at\u0131f, ",en:"citations, ",pt:"cita\xE7\xF5es, "})}${e.length} ${r({tr:"bapta",en:"chapters",pt:"cap\xEDtulos"})}</p>
-      <div class="kuran-dokusu-satirlar">${n}</div>`,I.hidden=!1,j.querySelectorAll(".kuran-dokusu-satir").forEach(s=>{s.addEventListener("click",()=>ft(s.dataset.view,s.dataset.id))}),V(),h(t.no,null,!0)}function tt(t){m=t.view+"/"+t.id,w=null;const n=L.filter(s=>s.view===t.view&&s.id===t.id).map(s=>{const u=v.get(s.sureNo);return`<div class="kuran-dokusu-satir kuran-dokusu-satir--statik">
-        <span class="kuran-dokusu-satir__baslik">${u?r(u.ad):s.sureNo}</span>
-        <span class="kuran-dokusu-satir__ayet">${Z(s.ayetler)}</span>
-      </div>`}).join("");j.innerHTML=`
-      <p class="detail-eyebrow">${t.view==="futuhat"?r({tr:"F\xFCt\xFBh\xE2t",en:"Fut\xFBh\xE2t",pt:"Fut\xFBh\xE2t"}):t.view==="miskat"?r({tr:"Mi\u015Fk\xE2t\xFC'l-Env\xE2r",en:"Mishkat al-Anwar",pt:"Mishkat al-Anwar"}):r({tr:"F\xFCs\xFBs",en:"Fus\xFBs",pt:"Fus\xFBs"})}</p>
-      <h2 class="detail-title">${r(t.title)}</h2>
-      <div class="kuran-dokusu-satirlar">${n}</div>
-      <button type="button" class="kuran-dokusu-git">${r({tr:"Bu b\xF6l\xFCme git \u2192",en:"Go to this part \u2192",pt:"Ir para esta parte \u2192"})}</button>`,I.hidden=!1,j.querySelector(".kuran-dokusu-git").addEventListener("click",()=>ft(t.view,t.id)),V(),h(null,m,!0)}function J(){w=null,m=null,j.innerHTML=`
-      <p class="detail-eyebrow">${r({tr:"Kur'\xE2n Dokusu",en:"The Qur'\xE2nic Weave",pt:"A Trama Alcor\xE2nica"})}</p>
-      <h2 class="detail-title">${S.length} ${r({tr:"s\xFBre",en:"s\xFBrahs",pt:"suratas"})}, ${B.length} ${r({tr:"bap",en:"chapters",pt:"cap\xEDtulos"})}</h2>
-      <div class="detail-block detail-block--soru"><p>${r(st.not)}</p></div>`,I.hidden=!1,V(),h(null,null,!1)}function Y(){return!!(l.telefonMu&&l.telefonMu())}function et(t){if(!F)return;const e=t&&!gt?g.transition().duration(420):g;if(it()&&G){e.call(F.transform,l.telefonSigdir(f,K,{x0:U-G-(P+14),x1:U+G+(P+14),y0:H-G-14,y1:H+G+58},.6,3.5,4));return}e.call(F.transform,d3.zoomIdentity)}function xt(t){const e=t&&t.__data__;if(!e||!F)return;const n=Math.max(2.2,d3.zoomTransform(K).k),s=U+e.x,u=H+e.y;l.telefonOdakla(f,g,F,{x0:s-1,x1:s+1,y0:u-1,y1:u+1},n,n)}let q=!1;function kt(){if(q)return Promise.resolve();const t=window.__dostRouteBase||"",e=(t?t+"/":"")+"data/ibn-arabi/kuran-dokusu.json";return l.fetchJson(e).then(n=>{st=n,S=(n.sureler||[]).map(s=>Object.assign({},s)),B=(n.bablar||[]).map(s=>Object.assign({},s)),L=n.kenarlar||[],v=new Map(S.map(s=>[s.no,s])),M=new Map(B.map(s=>[s.view+"/"+s.id,s])),q=!0,O()})}let pt=!1;function St(){if(pt)return;pt=!0,l.wireRecenter("kuran-dokusu-recenter",()=>et(!0)),l.setupDetailPanelFocus&&l.setupDetailPanelFocus(),l.registerStepBack("kuran-dokusu-wrap",()=>{if(w!=null||m!=null){J(),I.hidden=!0;const e=document.activeElement;return e&&f.contains(e)&&e.blur&&e.blur(),h(null,null,!1),et(!0),window.__dostNav&&window.__dostNav.setHash("kuran-dokusu"),!0}return!1}),window.addEventListener("resize",l.debounceResize(()=>{!q||f.hidden||O()}));const t=document.querySelector("#kuran-dokusu-legend .legend__toggle");t&&t.addEventListener("click",()=>{setTimeout(()=>{q&&!f.hidden&&O()},360)})}const at=l.createMobileListFallback({wrapEl:f,listEl:document.getElementById("kuran-dokusu-mobil-liste"),fetchUrl:(window.__dostRouteBase?window.__dostRouteBase+"/":"")+"data/ibn-arabi/kuran-dokusu.json",extractNodes:t=>(t.sureler||[]).map(e=>({id:String(e.no),name:{tr:`${e.no}. ${e.ad.tr}`,en:`${e.no}. ${e.ad.en}`,pt:`${e.no}. ${e.ad.pt}`},short:{tr:`${e.atifSayisi} at\u0131f`,en:`${e.atifSayisi} reference${e.atifSayisi===1?"":"s"}`,pt:`${e.atifSayisi} refer\xEAncia${e.atifSayisi===1?"":"s"}`}})),title:{tr:"Kur'\xE2n Dokusu",en:"Qur'anic Texture",pt:"Textura Cor\xE2nica"},graphButtonLabel:{tr:"Haritay\u0131 a\xE7 (dokuyu g\xF6ster)",en:"Open the map (show the texture)",pt:"Abrir o mapa (mostrar a textura)"},goTo:t=>window.__kuranDokusuApp.goToNode(t)});return l.telefonHaritasi&&l.telefonHaritasi({wrapEl:f,liste:at,dugumSecici:"g.kuran-dokusu-sure, g.kuran-dokusu-bab",isaret:"circle.kuran-dokusu-sure__nokta, circle.kuran-dokusu-bab__nokta",merkezle:t=>xt(t)}),{activate(){St(),kt().then(()=>{O()}).catch(()=>{window.DostViewStatus&&window.DostViewStatus.showError("kuran-dokusu-wrap",()=>window.__kuranDokusuApp.activate())})},onLangChange(){if(at&&at.onLangChange(),!!q)if(O(),w!=null){const t=v.get(w);t?W(t):I.hidden||J()}else if(m!=null){const t=M.get(m);t?tt(t):I.hidden||J()}else I.hidden||J()},goToNode(t){this.activate(),kt().then(()=>{const e=v.get(parseInt(t,10));e?W(e):t&&window.__dostNav&&(window.__dostNav.setHash("kuran-dokusu"),window.__dostNav.kayitYok&&window.__dostNav.kayitYok("kuran-dokusu",t))})}}})();
+// Kur'ân Dokusu — sûre↔bab atıf grafı (docs/icerik-yol-haritasi.md D10).
+//
+// KAPSAM (bkz. data/ibn-arabi/kuran-dokusu.json'un "not" alanı, aynı metin
+// giriş panelinde de gösteriliyor): bu graf Fütûhât'ın orijinal Arapça
+// metninin tam taramasından değil, sitenin kendi özet metinlerinde
+// işaretlediğimiz âyet atıflarından üretildi -- Chodkiewicz'in tezinin bir
+// kanıtı değil, okuma sürecimizin küçük bir izi.
+//
+// YERLEŞIM. CLAUDE.md'nin daire/merkez ilkesi + roadmap'in kendi isteği
+// ("sûreler dış halka, bablar iç halka, kenarlar merkeze doğru"). 2026-10-09:
+// iç içe iki halka yerine tek dairenin karşılıklı iki yayı -- bkz. yerlestir().
+//
+// Sûre düğümleri KUR'ÂN SIRASINDA ama EŞİT ARALIKLA diziliyor. Önceki iki
+// deneme de başarısızdı ve ikisi de aynı nedenden:
+//   1) Düğümler gerçek Kur'ân açılarındaydı (no/114). Atıflar ilk yarıdaki
+//      uzun sûrelerde toplandığı için 12 sûre çemberin tepesinde ~38
+//      dereceye sıkışıyor, ETİKETLERİ birbirinin üstüne biniyordu:
+//      "Fâtiha / …i İmrân / …âm / A'râf / fâl / Tevbe" okunmuyordu.
+//   2) Buna 114 konumun tamamını soluk iz olarak çizerek cevap vermiştim.
+//      Halka doldu ama asıl şikâyet -- okunmayan etiketler -- olduğu gibi
+//      kaldı. Yanlış problemi çözmüştüm.
+// Şimdi açı sıradan geliyor, aralık sabit. Kazanılan: 35 etiket de okunuyor.
+// KAYBEDİLEN, açıkça söylenmeli: aralık artık bilgi taşımıyor. İki komşu
+// düğüm arasındaki mesafe "aralarında kaç sûre var" demiyor; sıra doğru,
+// ölçek değil. Bu yüzden 114 konumun soluk izleri de kaldırıldı -- düğüm
+// kendi izinin üstünde durmadığı için o halka artık yanıltıcı olurdu.
+// Kapsam (114'ün 35'i) grafiğin ipucu metninde yazıyor; bir sayı olarak
+// söylemek, aralıktan göz kararı okutmaktan zaten daha dürüst.
+//
+// Etiketler yarıçap yönünde, düğümün açısına döndürülerek yazılıyor. Eşit
+// aralıkla birlikte çakışmayı bitiren şey bu: teğet yönde ~70 piksel yer
+// varken satır yüksekliği ~12 piksel.
+window.__kuranDokusuApp = (function () {
+  "use strict";
+
+  const I18n = window.DostI18n;
+  const GU = window.DostGraphUtils;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const svg = d3.select("#kuran-dokusu-graph");
+  const svgNode = svg.node();
+  const wrapEl = document.getElementById("kuran-dokusu-wrap");
+  const tooltip = document.getElementById("kuran-dokusu-tooltip");
+  const detailPanel = document.getElementById("detail-panel");
+  const detailContent = document.getElementById("detail-content");
+
+  if (!svgNode || !wrapEl) return { activate() {}, onLangChange() {}, goToNode() {} };
+
+  const tt = I18n.pick3;  // window.DostI18n.pick3 zaten (!obj) koruması yapıyor (2026-08-15: 26 dosyadaki tekrar buraya toplandı)
+
+  let data = null;
+  let sureler = [];
+  let bablar = [];
+  let kenarlar = [];
+  let sureByNo = new Map();
+  let babById = new Map();
+  let zoom = null;
+  let g = null;
+  let focusSureNo = null;
+  let focusBabId = null;
+
+  function telefonKipi() { return !!(GU.telefonMu && GU.telefonMu() && wrapEl.classList.contains("mg-telefon") && GU.telefonSigdir); }
+  // Telefon künyesi (2026-10-29, tasarım önerisi 3): üstteki boş alanda tek satır. Seçim yokken görünümün
+  // kendi sayıları (giriş paneliyle aynı), seçiliyken seçilenin adı ve atıf sayısı. Yeni metin değil: ad ve
+  // sayılar veride; yarım açık panel sahneyi örttüğünde de seçilen ne olduğu görünür kalsın diye.
+  let kunyeEl = null;
+  function kunyeYaz() {
+    if (!kunyeEl) {
+      kunyeEl = document.createElement("p");
+      kunyeEl.className = "kuran-dokusu-kunye";
+      kunyeEl.setAttribute("aria-hidden", "true");
+      wrapEl.appendChild(kunyeEl);
+    }
+    let metin = "", secili = false;
+    if (focusSureNo != null && sureByNo.get(focusSureNo)) {
+      const d = sureByNo.get(focusSureNo);
+      metin = `${tt(d.ad)} · ${d.atifSayisi} ${tt({ tr: "atıf", en: d.atifSayisi === 1 ? "citation" : "citations", pt: d.atifSayisi === 1 ? "citação" : "citações" })}`;
+      secili = true;
+    } else if (focusBabId != null && babById.get(focusBabId)) {
+      const d = babById.get(focusBabId);
+      metin = `${tt(d.title)} · ${d.atifSayisi} ${tt({ tr: "atıf", en: d.atifSayisi === 1 ? "citation" : "citations", pt: d.atifSayisi === 1 ? "citação" : "citações" })}`;
+      secili = true;
+    } else {
+      metin = `${sureler.length} ${tt({ tr: "sûre", en: "sûrahs", pt: "suratas" })} · ${bablar.length} ${tt({ tr: "bap", en: "chapters", pt: "capítulos" })}`;
+    }
+    kunyeEl.textContent = metin;
+    kunyeEl.classList.toggle("kuran-dokusu-kunye--secili", secili);
+  }
+  function boyut() {
+    const r = wrapEl.getBoundingClientRect();
+    // Telefonda harita: tuval alt gezinmenin üstünde biter (yatayda 305 px);
+    // 360'lık alt sınır sahneyi alt gezinmenin arkasına taşırıyordu.
+    const alt = telefonKipi() ? 200 : 360;
+    return { w: Math.max(alt, r.width), h: Math.max(alt, r.height) };
+  }
+
+  // Etiketler yarıçap yönünde uzadığı için yayın yarıçapı tek başına
+  // ekrana sığmaya yetmiyor: en uzun sûre adı dışarı taşıyor. En uzun
+  // etiketi ÖLÇÜP yayı ona göre daraltıyoruz -- dil değişince de doğru
+  // kalsın diye (İngilizce sûre adları Türkçelerden belirgin uzun).
+  // Ölçüm tuvalle yapılır: her etiket için getComputedTextLength() zorunlu yerleşim
+  // demekti (açılışta 269 yerleşim, 4x yavaş CPU'da ≈1,3 sn donma; 2026-10-21 taraması P1-1).
+  // Yazı tipi, etiketin kendi sınıfından bir kez okunur.
+  function etiketOlcer() {
+    const dugum = svg.append("text").attr("class", "kuran-dokusu-sure__etiket").attr("visibility", "hidden");
+    const cs = getComputedStyle(dugum.node());
+    // Görünüm gizliyken hesaplanan stil boş gelir; ölçüm 0 olup kısaltma atlanmasın diye etiketin gerçek yazı
+    // tipi (0.66rem, Source Sans Dost) yedek olarak kullanılır.
+    const font = cs.fontSize ? `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+      : '400 10.56px "Source Sans Dost", system-ui, -apple-system, "Segoe UI", sans-serif';
+    const aralik = parseFloat(cs.letterSpacing) || 0;
+    dugum.remove();
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx) return () => 0;
+    ctx.font = font;
+    return (metin) => ctx.measureText(metin).width + aralik * metin.length;
+  }
+  function enUzunEtiketGenisligi() {
+    const olc = etiketOlcer();
+    let en = 0;
+    sureler.forEach((s) => { en = Math.max(en, olc(tt(s.ad)) || 0); });
+    // Görünüm henüz gizliyken ölçüm 0 dönebiliyor; o durumda karakter
+    // başına kaba bir tahmine düşüyoruz. Kırpılmaktansa fazladan daralsın.
+    if (!en) en = sureler.reduce((a, s) => Math.max(a, tt(s.ad).length), 0) * 6;
+    return en;
+  }
+
+  // Etikete kalan yer (piksel). Dar ekranda yayı sonsuza kadar
+  // küçültemeyiz; taşmaktansa kısaltıyoruz -- tam ad `aria-label`de ve
+  // ipucunda duruyor.
+  let etiketAlani = Infinity;
+
+  // Bölümlerin okuma sırası: Fütûhât cilt/kısım sırasıyla, Füsûs sonda.
+  function bolumSirasi(b) {
+    const m = /^c(\d+)k(\d+)$/.exec(b.id);
+    if (b.view === "futuhat" && m) return [0, +m[1], +m[2]];
+    const f = /(\d+)/.exec(b.id);
+    return [b.view === "miskat" ? 2 : 1, 0, f ? +f[1] : 0];
+  }
+
+  // YERLEŞİM (2026-10-09, gorsel-gramer). Eskiden iki eşmerkezli nokta
+  // halkası + çevre çizgisi + 69 kesişen kiriş vardı (GORSEL_DIL: iç içe
+  // eşmerkezli çember yasağı; kirişler bir yumak). Şimdi tek bir dairenin
+  // KARŞILIKLI iki yayı: sûreler Mushaf sırasıyla alt yayda (soldan sağa),
+  // Fütûhât/Füsûs bölümleri okuma sırasıyla üst yayda (soldan sağa). İki
+  // yayın arasında sağda ve solda bir boşluk var -- iç içe değil, yüz yüze.
+  // Kirişler varsayılan hâlde neredeyse görünmez; bir sûreye (ya da
+  // bölüme) değinince/seçince ondan çıkan ışık yolları belirir ve
+  // ilerledikçe söner (zuhûr); geri kalan her şey perdelenir (matlık).
+  const BOSLUK = 0.2; // yayların iki ucundaki boşluk (radyan)
+  let merkezX = 0, merkezY = 0, sonR = 0;
+
+  // Açık lejant sol altta duruyor; geniş ekranda sahne onun sağında kalan
+  // alana ortalanır ki alt yayın sol ucu lejantın altında kalmasın.
+  function lejantSagKenari(w) {
+    const el = document.getElementById("kuran-dokusu-legend");
+    if (!el || el.classList.contains("legend--collapsed")) return 0;
+    const lr = el.getBoundingClientRect(), wr = wrapEl.getBoundingClientRect();
+    if (!lr.width) return 0;
+    const sag = lr.right - wr.left;
+    return sag < w * 0.4 ? sag : 0;
+  }
+
+  function yerlestir() {
+    const { w, h } = boyut();
+    // Dar ekran: tam etiket payı yayı küçücük bırakıyordu (390 pikselde
+    // 35 sûre ~10 piksel aralıkla üst üste). Orada pay sabit ve kısa,
+    // düğümler küçük, etiketler seyreltiliyor (aşağıda adim); gizli kalan
+    // etiket değinince/odakta görünür, tam ad aria-label ve ipucunda.
+    const darEkran = w < 560;
+    // 72 (eskiden 62): sahne ilk bakışta ~1.12 ölçekle oturuyor; uçtaki etiketler 360 px'te ekrana sığsın (etiket-testi.js).
+    // Telefonda (2026-10-29, mobil taslak 3-B): daire genişliğin ≈%87'sine büyür (R 104 → ≈154); sûre adları dışarı yazılmaz, seçilen
+    // sûrenin adı üstteki künyede ve panelde (etiket yeri yok). Masaüstü aynı.
+    const pay = darEkran ? 22 : enUzunEtiketGenisligi() + 12 + 7 + 10;
+    const sol = darEkran ? 0 : Math.max(0, lejantSagKenari(w) - 4);
+    const genislik = w - sol;
+    // Yatay: alt yayın uçlarındaki etiketler yana uzanıyor. Dikey: üstte
+    // yalnız düğüm, altta etiket payı.
+    const Ryatay = genislik / 2 - pay - (darEkran ? 4 : 12);
+    const Rdikey = (h - 56 - pay) / 2;
+    const R = Math.max(Math.min(w, h) * 0.2, Math.min(Ryatay, Rdikey));
+    sonR = R;
+    merkezX = sol + genislik / 2;
+    merkezY = Math.max(R + 34, (h - (2 * R + pay + 24)) / 2 + R + 24);
+    etiketAlani = darEkran ? 12
+      : Math.max(40, Math.min(pay - 29, h - merkezY - R - 26, genislik / 2 - R - 26));
+    const olcek = darEkran ? 0.6 : 1;
+
+    const sirali = sureler.slice().sort((a, b) => a.no - b.no);
+    const maxSureAtif = Math.max(...sureler.map((s) => s.atifSayisi));
+    const n = sirali.length;
+    const aralik = n > 1 ? (R * (Math.PI - 2 * BOSLUK)) / (n - 1) : 99;
+    const adim = Math.max(1, Math.ceil(13 / aralik));
+    sirali.forEach((s, i) => {
+      // Alt yay: sol uçtan (π - BOSLUK) sağ uca (BOSLUK), dipten geçerek.
+      const a = (Math.PI - BOSLUK) - (n > 1 ? i / (n - 1) : 0.5) * (Math.PI - 2 * BOSLUK);
+      s.aci = a;
+      s.sira = i;
+      s.x = Math.cos(a) * R;
+      s.y = Math.sin(a) * R;
+      s.r = (4 + (s.atifSayisi / maxSureAtif) * 8) * olcek;
+      s.etiketGizli = darEkran || i % adim !== 0;
+    });
+
+    const bSirali = bablar.slice().sort((a, b) => {
+      const x = bolumSirasi(a), y = bolumSirasi(b);
+      return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+    });
+    const m = bSirali.length;
+    const maxBabAtif = Math.max(...bablar.map((b) => b.atifSayisi));
+    bSirali.forEach((b, i) => {
+      // Üst yay: sol uçtan (π + BOSLUK) sağ uca (2π - BOSLUK), tepeden.
+      const a = (Math.PI + BOSLUK) + (m > 1 ? i / (m - 1) : 0.5) * (Math.PI - 2 * BOSLUK);
+      b.aci = a;
+      b.sira = i;
+      b.x = Math.cos(a) * R;
+      b.y = Math.sin(a) * R;
+      b.r = (2.5 + (b.atifSayisi / maxBabAtif) * 4) * (darEkran ? 0.75 : 1);
+    });
+
+    return { w, h, R };
+  }
+
+  // Kiriş, merkeze doğru çekilmiş bir kontrol noktasıyla eğiliyor: alttaki
+  // sûreden üstteki bölüme, dairenin içinden geçen yumuşak bir yol.
+  function kenarYolu(d) {
+    const s = sureByNo.get(d.sureNo), b = babById.get(d.view + "/" + d.id);
+    if (!s || !b) return "";
+    const mx = (s.x + b.x) / 2, my = (s.y + b.y) / 2;
+    const cx = mx * 0.35, cy = my * 0.35;
+    return `M${s.x.toFixed(1)},${s.y.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}`;
+  }
+  const kenarAnahtar = (d) => d.sureNo + "|" + d.view + "|" + d.id;
+  const gradId = (i) => "kd-isik-" + i;
+
+  function ciz() {
+    const { w, h, R } = yerlestir();
+    svg.selectAll("*").remove();
+    svg.attr("viewBox", `0 0 ${w} ${h}`);
+    const defs = svg.append("defs");
+    g = svg.append("g").attr("class", "kuran-dokusu-scene");
+    const kok = g.append("g").attr("transform", `translate(${merkezX}, ${merkezY})`);
+
+    // Her kirişin kendi ışık gradyanı: yönü değinilen uçtan öteki uca
+    // (vurgula() koordinatları yazıyor). stop-color style= içinde: CSS
+    // değişkeni yalnız öyle çözülüyor (hal.js'teki aynı not).
+    // Tarama 30 Ekim (P1): gradyanlar artık değinilince (vurgula) tembel kurulur; her kiriş için dört DOM
+    // düğümü açılışta oluşmuyordu → ilk çizim ≈%65 daha az düğüm. Yalnız sıra numarası verilir.
+    kenarlar.forEach((k, i) => { k.__i = i; });
+
+    const kenarG = kok.append("g").attr("class", "kuran-dokusu-kenarler");
+    kenarG.selectAll("path.kuran-dokusu-kenar").data(kenarlar, kenarAnahtar).join("path")
+      .attr("class", "kuran-dokusu-kenar")
+      .attr("d", kenarYolu)
+      .attr("fill", "none")
+      .attr("pointer-events", "none")
+      .attr("stroke-width", (d) => 1 + d.agirlik * 0.6);
+
+    // İsabet şeridi (K-04/O-02, uzman paneli denetimi 2026-08-17): görünen
+    // çizgi ince, fareyle/parmakla tutturmak zor. ontology.js'teki
+    // path.link-hit deseniyle aynı -- görünmez, kalın; etkileşimi taşıyan
+    // asıl şerit bu.
+    const hitSel = kenarG.selectAll("path.link-hit").data(kenarlar, kenarAnahtar).join("path")
+      .attr("class", "link-hit")
+      .attr("d", kenarYolu)
+      .attr("fill", "none");
+
+    hitSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(d.sureNo, null, true, d); kenarIpucu(ev, d); })
+      .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
+      .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); });
+    // Ürün denetimi P2-6 (2026-09-02): role:"img" -- bu kenar tıklanamaz,
+    // yalnız bilgi taşır.
+    GU.wireEdgeAccessibility(hitSel, {
+      role: "img",
+      label: (d) => kenarAriaLabel(d),
+      onFocus: (d, ev) => { vurgula(d.sureNo, null, true, d); kenarIpucu(ev, d); },
+      onBlur: () => { secimeDon(); GU.hideTooltip(tooltip); },
+    });
+
+    // Sûre düğümleri (alt yay)
+    const sureG = kok.append("g").attr("class", "kuran-dokusu-sureler");
+    const sureSel = sureG.selectAll("g.kuran-dokusu-sure").data(sureler, (d) => d.no).join("g")
+      .attr("class", "kuran-dokusu-sure")
+      .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
+      .attr("tabindex", 0)
+      .attr("role", "button")
+      .attr("aria-label", (d) => `${d.no}. ${tt(d.ad)} — ${d.atifSayisi} ${tt({ tr: "atıf", en: "citations", pt: "citações" })}`);
+    sureSel.append("circle").attr("class", "kuran-dokusu-sure__vurus").attr("r", 14).attr("fill", "transparent");
+    sureSel.append("circle").attr("class", "kuran-dokusu-sure__nokta").attr("r", (d) => d.r);
+    // Tek bir gizli ölçüm düğümü: 35 etiketi tek tek düğüm yaratmadan
+    // ölçüyoruz. getComputedTextLength görünmeyen bir SVG'de 0 döner --
+    // o durumda kısaltma da yapmıyoruz (yanlış kısaltmaktansa kısaltmamak).
+    const olc2 = etiketOlcer();
+    // Ölçüm 0 dönerse (ilk çizimde görünüm gizli) karakter başına kaba tahmine düşülür: PT/EN'de uzun sûre adları
+    // ("Explicados em Detalhe") kısaltılmadığı için telefonda alt yayın uçlarında ekran dışına taşıyordu.
+    const genislik = (s) => olc2(s) || s.length * 5.9;
+    function sigdir(metin) {
+      const tam = genislik(metin);
+      if (!tam || tam <= etiketAlani) return metin;
+      let alt = 1, ust = metin.length;
+      while (alt < ust) {
+        const orta = Math.ceil((alt + ust) / 2);
+        if (genislik(metin.slice(0, orta) + "…") <= etiketAlani) alt = orta; else ust = orta - 1;
+      }
+      return metin.slice(0, alt).trim() + "…";
+    }
+
+    // Etiket yarıçap yönünde, dışa (aşağı) doğru. Sol yarıda metin ters
+    // duracağı için 180 derece çevirip "end" hizasıyla yazıyoruz.
+    sureSel.append("text").attr("class", (d) => "kuran-dokusu-sure__etiket" + (d.etiketGizli ? " kuran-dokusu-sure__etiket--gizli" : ""))
+      .attr("transform", (d) => {
+        const derece = (d.aci * 180) / Math.PI;
+        const uzaklik = d.r + 7;
+        return Math.cos(d.aci) < 0
+          ? `rotate(${derece + 180}) translate(${-uzaklik},0)`
+          : `rotate(${derece}) translate(${uzaklik},0)`;
+      })
+      .attr("text-anchor", (d) => (Math.cos(d.aci) < 0 ? "end" : "start"))
+      .attr("dy", "0.32em")
+      .text((d) => sigdir(tt(d.ad)));
+
+    sureSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(d.no, null, true); sureIpucu(ev, d); })
+      .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
+      .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); })
+      .on("focus", function (ev, d) { if (dokunmatik() && !this.matches(":focus-visible")) return; vurgula(d.no, null, true); })
+      .on("blur", function () { secimeDon(); })
+      .on("click", (ev, d) => surePaneli(d))
+      .on("keydown", function (ev, d) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); surePaneli(d); }
+        else yayGezin(ev, sureSel, d);
+      });
+
+    // Bölüm düğümleri (üst yay)
+    const babG = kok.append("g").attr("class", "kuran-dokusu-bablar");
+    const babSel = babG.selectAll("g.kuran-dokusu-bab").data(bablar, (d) => d.view + "/" + d.id).join("g")
+      .attr("class", "kuran-dokusu-bab")
+      .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
+      .attr("tabindex", 0)
+      .attr("role", "button")
+      .attr("aria-label", (d) => tt(d.title));
+    babSel.append("circle").attr("class", "kuran-dokusu-bab__vurus").attr("r", 10).attr("fill", "transparent");
+    babSel.append("circle").attr("class", "kuran-dokusu-bab__nokta").attr("r", (d) => d.r);
+
+    babSel.on("mouseenter", function (ev, d) { if (dokunmatik()) return; vurgula(null, d.view + "/" + d.id, true); babIpucu(ev, d); })
+      .on("mousemove", (ev) => GU.moveTooltip(tooltip, wrapEl, ev))
+      .on("mouseleave", function () { secimeDon(); GU.hideTooltip(tooltip); })
+      .on("focus", function (ev, d) { if (dokunmatik() && !this.matches(":focus-visible")) return; vurgula(null, d.view + "/" + d.id, true); })
+      .on("blur", function () { secimeDon(); })
+      .on("click", (ev, d) => babPaneli(d))
+      .on("keydown", function (ev, d) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); babPaneli(d); }
+        else yayGezin(ev, babSel, d);
+      });
+
+    zoom = GU.createZoomBehavior(svg, g, [0.6, 3.5]);
+    ortala(false);
+    kunyeYaz();
+    secimeDon();
+  }
+
+  // Klavye: ok tuşları aynı yay üzerinde bir sonraki/önceki düğüme geçer
+  // (odak = değinmek; ışık yolları odakla birlikte belirir).
+  function yayGezin(ev, sel, d) {
+    const ileri = ev.key === "ArrowRight" || ev.key === "ArrowDown";
+    const geri = ev.key === "ArrowLeft" || ev.key === "ArrowUp";
+    if (!ileri && !geri) return;
+    ev.preventDefault();
+    const liste = sel.nodes().slice().sort((a, b) => d3.select(a).datum().sira - d3.select(b).datum().sira);
+    const i = liste.findIndex((el) => d3.select(el).datum() === d);
+    const j = Math.max(0, Math.min(liste.length - 1, i + (ileri ? 1 : -1)));
+    if (liste[j]) liste[j].focus();
+  }
+
+  // Değinme bitince sahne seçili sûreye/bölüme (varsa) geri döner; yoksa
+  // varsayılan sönük hâle.
+  function secimeDon() {
+    if (focusSureNo != null) vurgula(focusSureNo, null, true);
+    else if (focusBabId != null) vurgula(null, focusBabId, true);
+    else vurgula(null, null, false);
+  }
+
+  // Işık yolları + perdelenme. `tekKenar` verilirse yalnız o kiriş yanar
+  // (kirişin kendisine değinme).
+  function vurgula(sureNo, babKey, on, tekKenar) {
+    if (!g) return;
+    const yanan = new Set();
+    const sureSet = new Set(), babSet = new Set();
+    if (on) {
+      kenarlar.forEach((k) => {
+        const bk = k.view + "/" + k.id;
+        const esle = tekKenar ? k === tekKenar
+          : ((sureNo != null && k.sureNo === sureNo) || (babKey != null && bk === babKey));
+        if (!esle) return;
+        yanan.add(k);
+        sureSet.add(k.sureNo); babSet.add(bk);
+        // Işık değinilen uçtan çıkar, öteki uca doğru söner.
+        const s = sureByNo.get(k.sureNo), b = babById.get(bk);
+        if (!s || !b) return;
+        const kaynak = (babKey != null && !tekKenar) ? b : s;
+        const hedef = kaynak === s ? b : s;
+        let gr = svg.select("#" + gradId(k.__i));
+        if (gr.empty()) {
+          gr = svg.select("defs").append("linearGradient").attr("id", gradId(k.__i)).attr("gradientUnits", "userSpaceOnUse");
+          gr.append("stop").attr("offset", "0%").attr("style", "stop-color:var(--series-theme);stop-opacity:0.95");
+          gr.append("stop").attr("offset", "65%").attr("style", "stop-color:var(--series-theme);stop-opacity:0.32");
+          gr.append("stop").attr("offset", "100%").attr("style", "stop-color:var(--series-theme);stop-opacity:0.04");
+        }
+        gr
+          .attr("x1", kaynak.x).attr("y1", kaynak.y).attr("x2", hedef.x).attr("y2", hedef.y);
+      });
+      if (sureNo != null) sureSet.add(sureNo);
+      if (babKey != null) babSet.add(babKey);
+    }
+    const odak = on && (sureSet.size || babSet.size);
+    g.classed("kuran-dokusu-scene--odak", !!odak);
+    g.selectAll("path.kuran-dokusu-kenar")
+      .classed("kuran-dokusu-kenar--isik", (d) => yanan.has(d))
+      .style("stroke", (d) => (yanan.has(d) ? `url(#${gradId(d.__i)})` : null));
+    g.selectAll("g.kuran-dokusu-sure")
+      .classed("kuran-dokusu-sure--deginiliyor", (d) => on && sureNo != null && d.no === sureNo)
+      .classed("kuran-dokusu--perdeli", (d) => !!odak && !sureSet.has(d.no));
+    g.selectAll("g.kuran-dokusu-bab")
+      .classed("kuran-dokusu-bab--deginiliyor", (d) => on && babKey != null && d.view + "/" + d.id === babKey)
+      .classed("kuran-dokusu-bab--yanan", (d) => !!odak && babSet.has(d.view + "/" + d.id))
+      .classed("kuran-dokusu--perdeli", (d) => !!odak && !babSet.has(d.view + "/" + d.id));
+  }
+
+  function ayetListHtml(ayetler) {
+    return ayetler.map((a) => `<span class="ayet-ref" data-ayet="${window.DostGraphUtils.escapeHtml(a)}" tabindex="0">${window.DostGraphUtils.escapeHtml(a)}</span>`).join(" ");
+  }
+
+  function sureIpucu(ev, d) {
+    tooltip.innerHTML = `<strong>${tt(d.ad)}</strong><span class="node-hover-tip__meta">${d.atifSayisi} ${tt({ tr: "atıf", en: "citation", pt: "citação" })}</span>`;
+    tooltip.hidden = false;
+    GU.moveTooltip(tooltip, wrapEl, ev);
+  }
+  function babIpucu(ev, d) {
+    tooltip.innerHTML = `<strong>${tt(d.title)}</strong><span class="node-hover-tip__meta">${d.atifSayisi} ${tt({ tr: "atıf", en: "citation", pt: "citação" })}</span>`;
+    tooltip.hidden = false;
+    GU.moveTooltip(tooltip, wrapEl, ev);
+  }
+  function kenarAriaLabel(d) {
+    const s = sureByNo.get(d.sureNo), b = babById.get(d.view + "/" + d.id);
+    const sureAdi = s ? tt(s.ad) : d.sureNo;
+    const babBaslik = b ? tt(b.title) : d.id;
+    return `${sureAdi} → ${babBaslik} (${d.ayetler.length} ${tt({ tr: "âyet atfı", en: "verse citations", pt: "citações de versículo" })})`;
+  }
+  function kenarIpucu(ev, d) {
+    const s = sureByNo.get(d.sureNo), b = babById.get(d.view + "/" + d.id);
+    tooltip.innerHTML = GU.edgeReasonHtml({
+      title: (s ? tt(s.ad) : d.sureNo) + " → " + (b ? tt(b.title) : d.id),
+      kindLabel: tt({ tr: "âyet atfı", en: "verse citation", pt: "citação de versículo" }),
+      reason: ayetListHtml(d.ayetler),
+    });
+    tooltip.hidden = false;
+    GU.moveTooltip(tooltip, wrapEl, ev);
+  }
+
+  function nav(view, id) {
+    window.__dostNav && window.__dostNav.goTo(view, id);
+  }
+
+  function surePaneli(d) {
+    // Seçim adrese yazılır (/kuran-dokusu/<id>): Paylaş düğmesi location.href'i
+    // paylaşıyor ve seçili kayıt yerine görünümün kökünü veriyordu
+    // (2026-10-08 taraması). Derin bağlantı goToNode ile zaten çalışıyordu.
+    if (window.__dostNav) window.__dostNav.setHash("kuran-dokusu", String(d.no));
+    focusSureNo = d.no;
+    focusBabId = null;
+    const ilgiliKenarlar = kenarlar.filter((k) => k.sureNo === d.no);
+    const satirlar = ilgiliKenarlar.map((k) => {
+      const b = babById.get(k.view + "/" + k.id);
+      return `<button type="button" class="kuran-dokusu-satir" data-view="${k.view}" data-id="${k.id}">
+        <span class="kuran-dokusu-satir__baslik">${b ? tt(b.title) : k.id}</span>
+        <span class="kuran-dokusu-satir__ayet">${ayetListHtml(k.ayetler)}</span>
+      </button>`;
+    }).join("");
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow">${tt({ tr: "Sûre", en: "Sûrah", pt: "Surata" })} ${d.no}</p>
+      <h2 class="detail-title">${tt(d.ad)}</h2>
+      <p class="eser-agi-kimlik">${d.atifSayisi} ${tt({ tr: "atıf, ", en: "citations, ", pt: "citações, " })}${ilgiliKenarlar.length} ${tt({ tr: "bapta", en: "chapters", pt: "capítulos" })}</p>
+      <div class="kuran-dokusu-satirlar">${satirlar}</div>`;
+    detailPanel.hidden = false;
+    detailContent.querySelectorAll(".kuran-dokusu-satir").forEach((btn) => {
+      btn.addEventListener("click", () => nav(btn.dataset.view, btn.dataset.id));
+    });
+    kunyeYaz();
+    vurgula(d.no, null, true);
+  }
+
+  function babPaneli(d) {
+    focusBabId = d.view + "/" + d.id;
+    focusSureNo = null;
+    const ilgiliKenarlar = kenarlar.filter((k) => k.view === d.view && k.id === d.id);
+    const satirlar = ilgiliKenarlar.map((k) => {
+      const s = sureByNo.get(k.sureNo);
+      return `<div class="kuran-dokusu-satir kuran-dokusu-satir--statik">
+        <span class="kuran-dokusu-satir__baslik">${s ? tt(s.ad) : k.sureNo}</span>
+        <span class="kuran-dokusu-satir__ayet">${ayetListHtml(k.ayetler)}</span>
+      </div>`;
+    }).join("");
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow">${d.view === "futuhat" ? tt({ tr: "Fütûhât", en: "Futûhât", pt: "Futûhât" }) : d.view === "miskat" ? tt({ tr: "Mişkâtü'l-Envâr", en: "Mishkat al-Anwar", pt: "Mishkat al-Anwar" }) : tt({ tr: "Füsûs", en: "Fusûs", pt: "Fusûs" })}</p>
+      <h2 class="detail-title">${tt(d.title)}</h2>
+      <div class="kuran-dokusu-satirlar">${satirlar}</div>
+      <button type="button" class="kuran-dokusu-git">${tt({ tr: "Bu bölüme git →", en: "Go to this part →", pt: "Ir para esta parte →" })}</button>`;
+    detailPanel.hidden = false;
+    detailContent.querySelector(".kuran-dokusu-git").addEventListener("click", () => nav(d.view, d.id));
+    kunyeYaz();
+    vurgula(null, focusBabId, true);
+  }
+
+  function girisPaneli() {
+    focusSureNo = null;
+    focusBabId = null;
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow">${tt({ tr: "Kur'ân Dokusu", en: "The Qur'ânic Weave", pt: "A Trama Alcorânica" })}</p>
+      <h2 class="detail-title">${sureler.length} ${tt({ tr: "sûre", en: "sûrahs", pt: "suratas" })}, ${bablar.length} ${tt({ tr: "bap", en: "chapters", pt: "capítulos" })}</h2>
+      <div class="detail-block detail-block--soru"><p>${tt(data.not)}</p></div>`;
+    detailPanel.hidden = false;
+    kunyeYaz();
+    vurgula(null, null, false);
+  }
+
+  // Telefonda değinmek yok (ETKILESIM_DILI "Telefonda harita"): dokunuşun
+  // uyumluluk fare olayları ışık yolunu seçimden sonra da yakık tutuyordu.
+  function dokunmatik() { return !!(GU.telefonMu && GU.telefonMu()); }
+  function ortala(animate) {
+    if (!zoom) return;
+    const hedef = animate && !reduceMotion ? svg.transition().duration(420) : svg;
+    // Telefonda harita: daire (iki yay + sûre adları) odak alanına sığar.
+    if (telefonKipi() && sonR) {
+      hedef.call(zoom.transform, GU.telefonSigdir(wrapEl, svgNode,
+        { x0: merkezX - sonR - (etiketAlani + 14), x1: merkezX + sonR + (etiketAlani + 14), y0: merkezY - sonR - 14, y1: merkezY + sonR + 58 }, 0.6, 3.5, 4));
+      return;
+    }
+    hedef.call(zoom.transform, d3.zoomIdentity);
+  }
+
+  // Odak + bağlam (telefon): 88 nokta 377 px'te 6,5 px aralıklıydı
+  // (ölçüldü); bağlı uçlar yayın iki ucuna dağıldığı için hepsini sığdırmak
+  // hiç yaklaştırmıyordu. Panel bağlı bâbları zaten listeliyor.
+  function telefonOdak(el) {
+    const d = el && el.__data__;
+    if (!d || !zoom) return;
+    // Seçilenin yay üzerindeki çevresi büyür (en az 2,2 kat): komşu sûreler
+    // ve bâblar parmak aralığına açılır, seçilen yarım panelin üstündeki
+    // alanın ortasında kalır; ışık yolları bağlı uçlara doğru yükselir.
+    const k = Math.max(2.2, d3.zoomTransform(svgNode).k);
+    const x = merkezX + d.x, y = merkezY + d.y;
+    GU.telefonOdakla(wrapEl, svg, zoom, { x0: x - 1, x1: x + 1, y0: y - 1, y1: y + 1 }, k, k);
+  }
+
+
+  let yuklendi = false;
+  function yukle() {
+    if (yuklendi) return Promise.resolve();
+    const base = window.__dostRouteBase || "";
+    const url = (base ? base + "/" : "") + "data/ibn-arabi/kuran-dokusu.json";
+    return GU.fetchJson(url).then((d) => {
+      data = d;
+      sureler = (d.sureler || []).map((s) => Object.assign({}, s));
+      bablar = (d.bablar || []).map((b) => Object.assign({}, b));
+      kenarlar = d.kenarlar || [];
+      sureByNo = new Map(sureler.map((s) => [s.no, s]));
+      babById = new Map(bablar.map((b) => [b.view + "/" + b.id, b]));
+      yuklendi = true;
+      ciz();
+    });
+  }
+
+  let baglandi = false;
+  function baglaBirKez() {
+    if (baglandi) return;
+    baglandi = true;
+    GU.wireRecenter("kuran-dokusu-recenter", () => ortala(true));
+    if (GU.setupDetailPanelFocus) GU.setupDetailPanelFocus();
+    GU.registerStepBack("kuran-dokusu-wrap", () => {
+      if (focusSureNo != null || focusBabId != null) {
+        // Esc sözleşmesi: önce açık panel kapanır (ETKILESIM_DILI.md).
+        // Eskiden kaydın paneli kullanıcının hiç görmediği giriş paneliyle
+        // değişiyor, ancak ikinci Esc kapatıyordu (2026-10-08 taraması).
+        girisPaneli();
+        detailPanel.hidden = true;
+        // Seçimin kurduğu odak (ışık yolu + telefonda yaklaşan kamera) da
+        // aynı adımda geri alınır (2026-10-11, K3): eskiden kamera seçilende
+        // kalıyor, Esc bir şey yapmıyor, geri tuşu bölümden çıkıyordu.
+        const a = document.activeElement;
+        if (a && wrapEl.contains(a) && a.blur) a.blur();
+        vurgula(null, null, false);
+        ortala(true);
+        if (window.__dostNav) window.__dostNav.setHash("kuran-dokusu");
+        return true;
+      }
+      return false;
+    });
+    window.addEventListener("resize", GU.debounceResize(() => {
+      if (!yuklendi || wrapEl.hidden) return;
+      ciz();
+    }));
+    // Lejant açılıp kapanınca sahnenin kullanabileceği genişlik değişiyor
+    // (bkz. lejantSagKenari): geçiş bitince yeniden yerleştir.
+    const lejantDugme = document.querySelector("#kuran-dokusu-legend .legend__toggle");
+    if (lejantDugme) lejantDugme.addEventListener("click", () => {
+      setTimeout(() => { if (yuklendi && !wrapEl.hidden) ciz(); }, 360);
+    });
+  }
+
+  // 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı -- Dalga 2.5): sûre-bab
+  // dokusu dar ekranda okunmuyor. Liste sûreleri gösteriyor (bablara her
+  // sûrenin kendi panelinden zaten geçilebiliyor); atıf sayısı kısa özet
+  // olarak veriliyor.
+  const kuranMobilListe = GU.createMobileListFallback({
+    wrapEl: wrapEl,
+    listEl: document.getElementById("kuran-dokusu-mobil-liste"),
+    // yukle() ile AYNI url dizesi -- GU.fetchJson url-anahtarlı önbellek
+    // kullandığı için fark, önizleme dağıtımında çift indirme olurdu.
+    fetchUrl: ((window.__dostRouteBase || "") ? (window.__dostRouteBase + "/") : "") + "data/ibn-arabi/kuran-dokusu.json",
+    extractNodes: (d) => (d.sureler || []).map((s) => ({
+      id: String(s.no),
+      name: { tr: `${s.no}. ${s.ad.tr}`, en: `${s.no}. ${s.ad.en}`, pt: `${s.no}. ${s.ad.pt}` },
+      short: {
+        tr: `${s.atifSayisi} atıf`,
+        en: `${s.atifSayisi} reference${s.atifSayisi === 1 ? "" : "s"}`,
+        pt: `${s.atifSayisi} referência${s.atifSayisi === 1 ? "" : "s"}`,
+      },
+    })),
+    title: { tr: "Kur'ân Dokusu", en: "Qur'anic Texture", pt: "Textura Corânica" },
+    graphButtonLabel: {
+      tr: "Haritayı aç (dokuyu göster)",
+      en: "Open the map (show the texture)",
+      pt: "Abrir o mapa (mostrar a textura)",
+    },
+    goTo: (id) => window.__kuranDokusuApp.goToNode(id),
+  });
+
+  // Telefonda harita (2026-10-11): grafik önce, liste hapın ikinci kipi.
+  // Dokununca odak + bağlam (telefonOdak); yakın dokunuş 30 px içindeki en
+  // yakın noktayı seçer.
+  if (GU.telefonHaritasi) {
+    GU.telefonHaritasi({
+      wrapEl: wrapEl,
+      liste: kuranMobilListe,
+      dugumSecici: "g.kuran-dokusu-sure, g.kuran-dokusu-bab",
+      isaret: "circle.kuran-dokusu-sure__nokta, circle.kuran-dokusu-bab__nokta",
+      merkezle: (el) => telefonOdak(el),
+    });
+  }
+
+  return {
+    activate() {
+      // 2026-08-06 kullanıcı bulgusu: girisPaneli() burada çağrılıp panel
+      // her açılışta otomatik gösteriliyordu -- artık yalnız bir sûre/bab
+      // seçildiğinde açılıyor (bkz. hocalar.js'teki aynı düzeltme).
+      baglaBirKez();
+      yukle().then(() => { ciz(); }).catch(() => {
+        if (window.DostViewStatus) window.DostViewStatus.showError("kuran-dokusu-wrap", () => window.__kuranDokusuApp.activate());
+      });
+    },
+    onLangChange() {
+      if (kuranMobilListe) kuranMobilListe.onLangChange();
+      if (!yuklendi) return;
+      ciz();
+      if (focusSureNo != null) {
+        const d = sureByNo.get(focusSureNo);
+        if (d) surePaneli(d); else if (!detailPanel.hidden) girisPaneli();
+      } else if (focusBabId != null) {
+        const d = babById.get(focusBabId);
+        if (d) babPaneli(d); else if (!detailPanel.hidden) girisPaneli();
+      } else if (!detailPanel.hidden) girisPaneli();
+    },
+    goToNode(id) {
+      this.activate();
+      yukle().then(() => {
+        const d = sureByNo.get(parseInt(id, 10));
+        if (d) surePaneli(d);
+        // Bulunamayan kimlik adres çubuğunda kalmasın (2026-10-08 taraması).
+        else if (id && window.__dostNav) { window.__dostNav.setHash("kuran-dokusu"); if (window.__dostNav.kayitYok) window.__dostNav.kayitYok("kuran-dokusu", id); }
+      });
+    },
+  };
+})();
