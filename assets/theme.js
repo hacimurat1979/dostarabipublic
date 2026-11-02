@@ -1,1 +1,56 @@
-(function(){"use strict";const a=document.getElementById("theme-toggle");if(!a)return;function c(){return document.body.getAttribute("data-theme")==="dark"?"dark":"light"}const n={light:"#f9f9f7",dark:"#0d0d0d"};function r(t){document.body.setAttribute("data-theme",t),a.setAttribute("aria-pressed",t==="dark"?"true":"false"),document.querySelectorAll('meta[name="theme-color"]').forEach(e=>e.setAttribute("content",n[t]))}r(c());try{const t=window.matchMedia("(prefers-color-scheme: dark)"),e=o=>{let d=null;try{d=localStorage.getItem("dost-theme")}catch{}d==="light"||d==="dark"||r(o.matches?"dark":"light")};t.addEventListener?t.addEventListener("change",e):t.addListener&&t.addListener(e)}catch{}window.addEventListener("dost-tema-sistem",()=>{try{localStorage.removeItem("dost-theme")}catch{}r(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}),a.addEventListener("click",()=>{const t=c()==="dark"?"light":"dark";try{localStorage.setItem("dost-theme",t)}catch{}r(t)})})();
+(function () {
+  "use strict";
+
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+
+  function currentTheme() {
+    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  }
+
+  // Durum çubuğu rengi (2026-10-15, mobil kabuk taraması K06): index.html'deki
+  // iki <meta name="theme-color"> yalnız cihazın temasına (prefers-color-scheme)
+  // bağlıydı; uygulama içinden tema değiştirilince başlık #0d0d0d olurken
+  // çubuk açık kalıyordu. Artık ikisi de seçilen temanın sayfa zemini
+  // (--page-plane) renginde: açık #f9f9f7, karanlık #0d0d0d.
+  const TEMA_RENGI = { light: "#f9f9f7", dark: "#0d0d0d" };
+
+  function applyTheme(theme) {
+    document.body.setAttribute("data-theme", theme);
+    btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", TEMA_RENGI[theme]));
+  }
+
+  applyTheme(currentTheme());
+
+  // Mobil teknik dalga 1 (E-06, 2026-10-15): kullanıcı temayı elle seçmediyse
+  // (localStorage "dost-theme" yok) sistemin karanlık/aydınlık modu uygulama
+  // AÇIKKEN değişince sayfa da değişir (Android'in akşam otomatik karanlık
+  // modu: durum çubuğu koyulaşıyor, sayfa açık kalıyordu). Elle seçim
+  // (düğme) kalıcıdır, sistem değişimi onu ezmez.
+  try {
+    const sistemMq = window.matchMedia("(prefers-color-scheme: dark)");
+    const sistemDegisti = (e) => {
+      let kayit = null;
+      try { kayit = localStorage.getItem("dost-theme"); } catch (err) {}
+      if (kayit === "light" || kayit === "dark") return;
+      applyTheme(e.matches ? "dark" : "light");
+    };
+    if (sistemMq.addEventListener) sistemMq.addEventListener("change", sistemDegisti);
+    else if (sistemMq.addListener) sistemMq.addListener(sistemDegisti);
+  } catch (e) {}
+
+  // Ayarlar → "Cihazı izle" (tarama 30 Ekim, G7): elle seçimi siler, sistem ayarına döner.
+  window.addEventListener("dost-tema-sistem", () => {
+    try { localStorage.removeItem("dost-theme"); } catch (e) {}
+    applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  });
+
+  btn.addEventListener("click", () => {
+    const next = currentTheme() === "dark" ? "light" : "dark";
+    try {
+      localStorage.setItem("dost-theme", next);
+    } catch (e) {}
+    applyTheme(next);
+  });
+})();

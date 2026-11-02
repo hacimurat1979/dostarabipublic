@@ -1,27 +1,495 @@
-(function(){"use strict";const p=window.DostI18n,l=d3.select("#graph");if(!l.node())return;const E=document.getElementById("detail-panel"),z=document.getElementById("detail-content"),C=p.pick3;let y=null,I=null,R=!1,L=!1,M=0;function j(){const t=l.node();return!!(t&&t.clientWidth>0&&t.clientHeight>0)}function H(){L||!y||!j()||(L=!0,M=l.node().clientWidth,X(y.themes,y.conceptById))}function F(){if(!L||!j())return;const t=l.node().clientWidth;Math.abs(t-M)<24||(M=t,g&&g.stop(),l.selectAll("*").remove(),X(y.themes,y.conceptById))}function O(){window.DostViewStatus&&window.DostViewStatus.showLoading("compare-wrap"),Promise.all([window.DostGraphUtils.fetchJson("data/themes.json"),window.DostGraphUtils.fetchJson("data/ibn-arabi/concepts.json")]).then(([t,o])=>{const r=new Map(o.map(s=>[s.id,s]));window.DostViewStatus&&window.DostViewStatus.hide("compare-wrap"),y={themes:t,conceptById:r},H()}).catch(t=>{console.error("Veri y\xFCklenemedi / Failed to load data",t),window.DostViewStatus&&window.DostViewStatus.showError("compare-wrap",O)})}window.__dostOrtakTemalarApp={activate:function(){if(R){H();return}R=!0,O()},render:function(){ee()}},window.addEventListener("resize",window.DostGraphUtils.debounceResize(F,200)),window.addEventListener("orientationchange",window.DostGraphUtils.debounceResize(F,300));let g,b,v,$,T,d,W;function X(t,o){const r=l.node().clientWidth,s=l.node().clientHeight;let n=0;const h=Array.from(new Set(t.map(e=>e.ibn_arabi_concept))),i=[];d=[],i.push({id:"hub-ibnarabi",type:"hub-ibnarabi",label:"\u0130bn Arab\xEE"}),i.push({id:"hub-daphne",type:"hub-daphne",label:"Daphne"}),h.forEach(e=>{const a=o.get(e);a&&(i.push({id:"concept-"+e,type:"concept",concept:a,sira:i.length}),d.push({source:"hub-ibnarabi",target:"concept-"+e,kind:"ibnarabi"}))}),t.forEach(e=>{o.has(e.ibn_arabi_concept)&&(i.push({id:"theme-"+e.id,type:"theme",theme:e,sira:n++}),d.push({source:"concept-"+e.ibn_arabi_concept,target:"theme-"+e.id,kind:"bridge"}),d.push({source:"theme-"+e.id,target:"hub-daphne",kind:"daphne"}))});const u=r*.32,_=r*.68,f=s/2,A=_-u,N=A*.62,q=A*.3;g=d3.forceSimulation(i).force("link",d3.forceLink(d).id(e=>e.id).distance(e=>e.kind==="bridge"?90:110).strength(.35)).force("charge",d3.forceManyBody().strength(-420)).force("hubx",d3.forceX(e=>e.type==="hub-ibnarabi"?u:_).strength(e=>e.type.startsWith("hub")?.35:0)).force("huby",d3.forceY(f).strength(e=>e.type.startsWith("hub")?.35:0)).force("orbit-concept",d3.forceRadial(q,u,f).strength(e=>e.type==="concept"?.5:0)).force("orbit-theme-ibn",d3.forceRadial(N,u,f).strength(e=>e.type==="theme"?.2:0)).force("orbit-theme-daphne",d3.forceRadial(N,_,f).strength(e=>e.type==="theme"?.2:0)).force("collide",d3.forceCollide().radius(e=>m(e)+46)),i.forEach(e=>{if(e.type==="hub-ibnarabi"&&(e.x=u,e.y=f),e.type==="hub-daphne"&&(e.x=_,e.y=f),e.type==="concept"){const a=e.sira*137.508*Math.PI/180;e.x=u+Math.cos(a)*q,e.y=f+Math.sin(a)*q}if(e.type==="theme"){const a=(u+_)/2,c=n>1?e.sira/(n-1):.5;e.x=a+(e.sira*.618%1-.5)*A*.2,e.y=f+(c-.5)*A*.5}});const B=l.append("g").attr("class","compare-zoom-layer");v=B.append("g").attr("class","links").selectAll("line").data(d).join("line").attr("class","link"),b=B.append("g").attr("class","nodes").selectAll("g.node").data(i).join("g").attr("class","node").attr("tabindex","0").attr("role","button").attr("aria-label",e=>w(e)).call(ie(g)).on("click",(e,a)=>Y(a)).on("keydown",(e,a)=>{(e.key==="Enter"||e.key===" ")&&(e.preventDefault(),Y(a))}).on("mouseenter",(e,a)=>G(a)).on("mouseleave",()=>G(null)).on("focus",(e,a)=>G(a)).on("blur",()=>G(null)),b.append("circle").attr("r",e=>m(e)).attr("fill",e=>te(e)),$=b.append("text").attr("class",e=>e.type.startsWith("hub")?"node-label node-label--hub":"node-label").attr("dy",e=>m(e)+12).attr("text-anchor","middle").text(e=>w(e));const ae=window.DostGraphUtils.createLabelDeconflictor();function Z(){const e=[];$.each(function(c){e.push({lbl:d3.select(this),txt:w(c),x:c.x,y:c.y+m(c)+12,baseY:0,priority:c.type.startsWith("hub")?1:0})});const a=i.map(c=>({x:c.x,y:c.y,half:m(c)+3,h:m(c)*2+6}));ae(e,a)}g.on("tick",()=>{v.attr("x1",e=>e.source.x).attr("y1",e=>e.source.y).attr("x2",e=>e.target.x).attr("y2",e=>e.target.y),b.attr("transform",e=>`translate(${e.x},${e.y})`),Z()});let x=!1;function oe(){const e=B.node().getBBox();if(!e.width||!e.height)return d3.zoomIdentity;const a=l.node().clientWidth||r,c=l.node().clientHeight||s,Q=24,V=Math.max(.2,Math.min(1,(a-Q*2)/e.width,(c-Q*2)/e.height));return d3.zoomIdentity.translate(a/2-V*(e.x+e.width/2),c/2-V*(e.y+e.height/2)).scale(V)}function U(e){if(!l.node().clientWidth)return;const a=oe();(e?l.transition().duration(420):l).call(T.transform,a)}g.on("end",()=>{const e=()=>{Z(),x||U(!0)};document.fonts&&document.fonts.ready?document.fonts.ready.then(e):e()}),T=window.DostGraphUtils.createZoomBehavior(l,B,[.2,3]),T.on("start.sigdir",e=>{e.sourceEvent&&(x=!0)}),b.on("pointerdown.sigdir",()=>{x=!0}),setTimeout(()=>{x||U(!1)},700),I=()=>{x=!1,U(!0)},window.DostGraphUtils.wireRecenter("compare-recenter",()=>I&&I()),W={nodes:i,links:d,conceptById:o,themes:t}}function ee(){$&&($.text(t=>w(t)),b.attr("aria-label",t=>w(t)),k?P(k):D&&J(D))}function m(t){return t.type==="hub-ibnarabi"||t.type==="hub-daphne"?26:t.type==="theme"?14:10}function te(t){return t.type==="hub-ibnarabi"?S("--series-ibnarabi"):t.type==="hub-daphne"?S("--series-daphne"):t.type==="theme"?S("--series-theme"):S("--series-ibnarabi-text")}function S(t){return window.DostGraphUtils.getVar(t)}function w(t){return t.type==="hub-ibnarabi"?p.getLang()==="tr"?"\u0130bn Arab\xEE":"Ibn Arab\xEE":t.type==="hub-daphne"?"Daphne":t.type==="theme"?p.pick(t.theme,"title"):t.type==="concept"?p.pick(t.concept,"name"):""}function G(t){if(!t){v.classed("link--highlight",!1),b.style("opacity",1).classed("node--bagli",!1);return}const o=new Set([t.id]),r=new Set;function s(n){r.add(n),o.add(n.source.id),o.add(n.target.id)}if(t.type==="theme"){const n=d.find(i=>i.kind==="bridge"&&i.target.id===t.id);if(n){s(n);const i=d.find(u=>u.kind==="ibnarabi"&&u.target.id===n.source.id);i&&s(i)}const h=d.find(i=>i.kind==="daphne"&&i.source.id===t.id);h&&s(h)}else if(t.type==="concept"){const n=d.find(h=>h.kind==="ibnarabi"&&h.target.id===t.id);n&&s(n),d.filter(h=>h.kind==="bridge"&&h.source.id===t.id).forEach(h=>{s(h);const i=d.find(u=>u.kind==="daphne"&&u.source.id===h.target.id);i&&s(i)})}else d.forEach(n=>{(n.source.id===t.id||n.target.id===t.id)&&s(n)});v.classed("link--highlight",n=>r.has(n)),b.style("opacity",n=>o.has(n.id)?1:.25).classed("node--bagli",n=>o.has(n.id))}let k=null,D=null;function Y(t){t.type==="theme"?(k=t.theme,D=null,P(t.theme)):t.type==="concept"?(k=null,D=t.concept,J(t.concept)):(E.hidden=!0,k=null,D=null)}function ne(t){const o=p.getLang();return o==="pt"&&t.daphne_quote_pt?t.daphne_quote_pt:o==="tr"&&t.daphne_quote_tr?t.daphne_quote_tr:t.daphne_quote}function K(t,o){const r=W.conceptById.get(t.ibn_arabi_concept),s=ne(t);return`
-      ${o?`<h3 class="detail-tema-baslik">${p.pick(t,"title")}</h3>`:""}
+/* Dost Arabî — "Ortak Temalar" grafiği (compare.html, Daphne bölümü).
+ *
+ * İbn Arabî kavramları (data/ibn-arabi/concepts.json) ile Daphne'nin
+ * alıntıları (data/themes.json) arasında BİZİM kurduğumuz köprüleri
+ * gösteriyor. themes.json'daki on yedi temanın hiçbirinde Daphne'nin
+ * alıntısı İbn Arabî'yi anmıyor; köprü (ibn_arabi_concept +
+ * ibn_arabi_note + resonance) bizim eşlememiz.
+ *
+ * Geçmiş: 2026-10-09'da "site yalnız okumaların özeti" kuralı gereği
+ * yayından kaldırılmıştı (görsel taraması madde 17; resonance alanları
+ * 2026-10-05 ayıklamasında boşalmıştı). 2026-10-10'da kullanıcı kararıyla
+ * ayrı bir sekme olarak, ayıklamadan önceki dolu hâliyle (git 986377784^)
+ * geri geldi -- kuralın bilinçli istisnası, bkz. CLAUDE.md.
+ *
+ * Geri gelirken düzeltilenler (docs/bekleyen-kullanici-kararlari.md'deki
+ * bilinen kusurlar): (1) graf yalnız sekmesi görünürken ve tuval ölçü
+ * verdiğinde kurulur (gizliyken genişlik 0 -> bütün düğümler aynı noktada,
+ * translate(NaN,NaN)); (2) başlangıç konumları rastgele değil, sıraya
+ * bağlı -- her yüklemede aynı yerleşim; (3) dar ekranda sığdırma
+ * (2026-10-09) korunuyor, genişlik değişince sahne yeniden kurulur.
+ */
+(function () {
+  "use strict";
+
+  const I18n = window.DostI18n;
+  const svg = d3.select("#graph");
+  if (!svg.node()) return;
+  const detailPanel = document.getElementById("detail-panel");
+  const detailContent = document.getElementById("detail-content");
+  const tt = I18n.pick3;
+
+  let veri = null, ortala = null;
+  let started = false, grafKuruldu = false, sonGenislik = 0;
+
+  function kurulabilirMi() {
+    const n = svg.node();
+    return !!(n && n.clientWidth > 0 && n.clientHeight > 0);
+  }
+  function grafiKur() {
+    if (grafKuruldu || !veri || !kurulabilirMi()) return;
+    grafKuruldu = true;
+    sonGenislik = svg.node().clientWidth;
+    buildGraph(veri.themes, veri.conceptById);
+  }
+  function yenidenKur() {
+    if (!grafKuruldu || !kurulabilirMi()) return;
+    const g = svg.node().clientWidth;
+    if (Math.abs(g - sonGenislik) < 24) return;
+    sonGenislik = g;
+    if (simulation) simulation.stop();
+    svg.selectAll("*").remove();
+    buildGraph(veri.themes, veri.conceptById);
+  }
+
+  function loadData() {
+    if (window.DostViewStatus) window.DostViewStatus.showLoading("compare-wrap");
+    Promise.all([
+      window.DostGraphUtils.fetchJson("data/themes.json"),
+      window.DostGraphUtils.fetchJson("data/ibn-arabi/concepts.json"),
+    ]).then(([themes, concepts]) => {
+      const conceptById = new Map(concepts.map((c) => [c.id, c]));
+      if (window.DostViewStatus) window.DostViewStatus.hide("compare-wrap");
+      veri = { themes, conceptById };
+      grafiKur();
+    }).catch((err) => {
+      console.error("Veri yüklenemedi / Failed to load data", err);
+      if (window.DostViewStatus) window.DostViewStatus.showError("compare-wrap", loadData);
+    });
+  }
+
+  // compare.js sekmesi açılınca çağırır (çift-RAF'tan sonra, tuval ölçü
+  // verdiğinde) -- daphne-profil.js / daphne-baglar.js ile aynı sözleşme.
+  window.__dostOrtakTemalarApp = {
+    activate: function () {
+      if (started) { grafiKur(); return; }
+      started = true;
+      loadData();
+    },
+    render: function () { render(); },
+  };
+  window.addEventListener("resize", window.DostGraphUtils.debounceResize(yenidenKur, 200));
+  window.addEventListener("orientationchange", window.DostGraphUtils.debounceResize(yenidenKur, 300));
+
+  let simulation, nodeSel, linkSel, labelSel, zoomBehavior, links;
+  // Önceden window.__daphneApp idi. Hiçbir dosya dışarıdan okumuyordu
+  // (grep ile doğrulandı) -- yalnız bu dosyanın kendi showThemeDetail'i
+  // kullanıyordu, yani global'e hiç gerek yoktu; modül kapsamında bir
+  // değişkene indirildi (2026-09-12 taraması).
+  let daphneApp;
+
+  function buildGraph(themes, conceptById) {
+    const width = svg.node().clientWidth;
+    const height = svg.node().clientHeight;
+
+    let themeCount = 0;
+    const usedConceptIds = Array.from(new Set(themes.map((th) => th.ibn_arabi_concept)));
+
+    const nodes = [];
+    links = [];
+
+    nodes.push({ id: "hub-ibnarabi", type: "hub-ibnarabi", label: "İbn Arabî" });
+    nodes.push({ id: "hub-daphne", type: "hub-daphne", label: "Daphne" });
+
+    usedConceptIds.forEach((cid) => {
+      const c = conceptById.get(cid);
+      if (!c) return;
+      nodes.push({ id: "concept-" + cid, type: "concept", concept: c, sira: nodes.length });
+      links.push({ source: "hub-ibnarabi", target: "concept-" + cid, kind: "ibnarabi" });
+    });
+
+    themes.forEach((th) => {
+      // concepts.forEach yukarıda aynı korumayı yapıyor (bulunamayan concept
+      // için düğüm eklemiyor) ama tema burada korumasızdı: concepts.json'da
+      // olmayan bir ibn_arabi_concept'e işaret eden bir tema, var olmayan
+      // "concept-<id>" düğümüne köprü kenarı açardı -- d3.forceLink bunu id
+      // bulamayınca hata verir, simülasyon hiç kurulmaz (2026-09-12
+      // taraması). Concept yoksa o temayı da eklemiyoruz.
+      if (!conceptById.has(th.ibn_arabi_concept)) return;
+      nodes.push({ id: "theme-" + th.id, type: "theme", theme: th, sira: themeCount++ });
+      links.push({ source: "concept-" + th.ibn_arabi_concept, target: "theme-" + th.id, kind: "bridge" });
+      links.push({ source: "theme-" + th.id, target: "hub-daphne", kind: "daphne" });
+    });
+
+    // Vesica piscis (2026-09-13): önceki kompozisyon iki hub'ı sabit bir x
+    // sütununa (0.24/0.76), temaları da ortada tek başka bir sabit sütuna
+    // (0.5) iğneliyordu -- dogrusal/eksen tabanlı bir yerleşim. Burada
+    // hub'lar vesica piscis'in iki merkezi gibi düşünülüyor: her biri
+    // kendi "alanının" (dairesinin) merkezi. Kavramlar (concept) yalnız
+    // hub-ibnarabi'nin dairesinde bir yörüngede kalıyor -- özel/tekil alan.
+    // Temalar (theme) ise HEM hub-ibnarabi'ye HEM hub-daphne'ye göre aynı
+    // yarıçapta tutulmaya çalışılıyor; bu iki kısıt birden ancak iki
+    // dairenin kesiştiği bölgede (vesica'nın "gözü") karşılanabildiği için
+    // temalar kendiliğinden oraya toplanıyor -- "Daire ve merkez" ilkesinin
+    // (CLAUDE.md) bu grafiğe uygulanışı, soyut ok ya da eşmerkezli statik
+    // çember yok, yalnız kuvvet dengesi.
+    const hubIbnX = width * 0.32;
+    const hubDaphneX = width * 0.68;
+    const hubY = height / 2;
+    const hubDist = hubDaphneX - hubIbnX;
+    // Klasik vesica piscis oranı, iki dairenin her biri diğerinin
+    // merkezinden geçer (yarıçap = merkezler arası mesafe); grafik
+    // dolup taşmasın diye 0.62 ile hafifçe daraltıldı -- yine de belirgin
+    // bir kesişim ("göz") bırakacak kadar örtüşüyorlar.
+    const vesicaR = hubDist * 0.62;
+    // Kavramların yörünge yarıçapı: hub-ibnarabi dairesinin İÇİNDE ama
+    // kesişime taşmayacak kadar dar (kesişimin en yakın sınırı ~0.38 *
+    // hubDist noktasında başlıyor, 0.30 güvenli payla altında kalıyor).
+    const conceptOrbitR = hubDist * 0.30;
+
+    simulation = d3
+      .forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id((d) => d.id).distance((l) => (l.kind === "bridge" ? 90 : 110)).strength(0.35))
+      .force("charge", d3.forceManyBody().strength(-420))
+      // Hub'lar vesica'nın iki sabit merkezinde kalsın (sürüklenebilir
+      // olma özelliği korunuyor: drag sırasında fx/fy devreye girip bu
+      // kuvveti geçici olarak geçersiz kılıyor, bkz. graph-utils.js
+      // createDragBehavior).
+      .force("hubx", d3.forceX((d) => (d.type === "hub-ibnarabi" ? hubIbnX : hubDaphneX)).strength((d) => (d.type.startsWith("hub") ? 0.35 : 0)))
+      .force("huby", d3.forceY(hubY).strength((d) => (d.type.startsWith("hub") ? 0.35 : 0)))
+      // Concept: yalnız hub-ibnarabi'ye göre sabit yarıçap -- açı serbest,
+      // birden çok concept birbirini charge/collide ile ittiği için
+      // yörünge boyunca kendiliğinden dağılıyor (dairesel "yörünge").
+      .force("orbit-concept", d3.forceRadial(conceptOrbitR, hubIbnX, hubY).strength((d) => (d.type === "concept" ? 0.5 : 0)))
+      // Theme: hem hub-ibnarabi hem hub-daphne'den aynı vesicaR uzaklıkta
+      // tutulmaya çalışılan iki yumuşak kuvvet -- ikisi birden ancak iki
+      // dairenin kesiştiği bölgede dengeye gelebiliyor.
+      .force("orbit-theme-ibn", d3.forceRadial(vesicaR, hubIbnX, hubY).strength((d) => (d.type === "theme" ? 0.2 : 0)))
+      .force("orbit-theme-daphne", d3.forceRadial(vesicaR, hubDaphneX, hubY).strength((d) => (d.type === "theme" ? 0.2 : 0)))
+      .force("collide", d3.forceCollide().radius((d) => radiusFor(d) + 46));
+
+    nodes.forEach((d) => {
+      if (d.type === "hub-ibnarabi") { d.x = hubIbnX; d.y = hubY; }
+      if (d.type === "hub-daphne") { d.x = hubDaphneX; d.y = hubY; }
+      if (d.type === "concept") {
+        // Başlangıçta da kendi yörüngesinin üstünde (rastgele açı) --
+        // d3'ün varsayılan spiral başlangıcı yerine, sahne ilk kareden
+        // itibaren zaten dairesel görünsün.
+        // Açı sıraya bağlı (altın açı adımı): her yüklemede aynı yerleşim
+        // (önceden Math.random -- her açılışta başka bir sahne).
+        const a = (d.sira * 137.508 * Math.PI) / 180;
+        d.x = hubIbnX + Math.cos(a) * conceptOrbitR;
+        d.y = hubY + Math.sin(a) * conceptOrbitR;
+      }
+      if (d.type === "theme") {
+        // Kesişim bölgesinin ortasına yakın bir başlangıç -- simülasyon
+        // oraya zaten yakın başlayınca daha az sıçrayarak yerleşiyor.
+        const midX = (hubIbnX + hubDaphneX) / 2;
+        // Kesişim bölgesinde, sıraya bağlı sabit bir dağılım.
+        const t = themeCount > 1 ? d.sira / (themeCount - 1) : 0.5;
+        d.x = midX + (((d.sira * 0.618) % 1) - 0.5) * hubDist * 0.2;
+        d.y = hubY + (t - 0.5) * hubDist * 0.5;
+      }
+    });
+
+    // Siteki diğer 12 grafik görünümünün hepsi yakınlaştırma/geri-merkezleme
+    // taşırken bu ikisi (Ortak Temalar + Daphne'nin Profili) hiç taşımıyordu
+    // -- yoğun bir kümede etiketler okunamıyor, ve okumak için yakınlaşmanın
+    // hiçbir yolu yoktu (UI denetimi bulgusu, ETKILESIM_DILI.md'nin "bir
+    // hareket her yerde aynı anlam taşır" ilkesiyle çelişiyordu).
+    const zoomLayer = svg.append("g").attr("class", "compare-zoom-layer");
+    linkSel = zoomLayer
+      .append("g")
+      .attr("class", "links")
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("class", "link");
+
+    const nodeGroup = zoomLayer.append("g").attr("class", "nodes");
+
+    nodeSel = nodeGroup
+      .selectAll("g.node")
+      .data(nodes)
+      .join("g")
+      .attr("class", "node")
+      .attr("tabindex", "0")
+      .attr("role", "button")
+      .attr("aria-label", (d) => labelFor(d))
+      .call(drag(simulation))
+      .on("click", (event, d) => onNodeClick(d))
+      .on("keydown", (event, d) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onNodeClick(d);
+        }
+      })
+      .on("mouseenter", (event, d) => highlight(d))
+      .on("mouseleave", () => highlight(null))
+      .on("focus", (event, d) => highlight(d))
+      .on("blur", () => highlight(null));
+
+    nodeSel
+      .append("circle")
+      .attr("r", (d) => radiusFor(d))
+      .attr("fill", (d) => colorFor(d));
+
+    labelSel = nodeSel
+      .append("text")
+      .attr("class", (d) => (d.type.startsWith("hub") ? "node-label node-label--hub" : "node-label"))
+      .attr("dy", (d) => radiusFor(d) + 12)
+      .attr("text-anchor", "middle")
+      .text((d) => labelFor(d));
+
+    // H-09 / Çatışma-1 kararı (uzman paneli denetimi 2026-08-17): bu graf,
+    // sitenin merkezi etiket-çakışma çözücüsünden muaf tek kalanlardandı --
+    // iki merkez + onlarca tema düğümünde etiketler üst üste binebiliyordu.
+    // Desen ontology.js'in pend dizisiyle aynı; baseY=0 çünkü etiketin
+    // dikey ofseti zaten dy özniteliğinde, deconflict yalnız EK kaymayı
+    // y'ye yazıyor.
+    const deconflictLabels = window.DostGraphUtils.createLabelDeconflictor();
+
+    function etiketleriYerlestir() {
+      const pend = [];
+      labelSel.each(function (d) {
+        pend.push({
+          lbl: d3.select(this), txt: labelFor(d),
+          x: d.x, y: d.y + radiusFor(d) + 12, baseY: 0,
+          priority: d.type.startsWith("hub") ? 1 : 0,
+        });
+      });
+      // Engeller: düğüm dairelerinin kendisi (ontology.js'teki aynı ders --
+      // yalnız yazı-yazı çakışmasına bakmak, yazıyı komşu dairenin üstüne
+      // oturtabiliyor).
+      const engeller = nodes.map((d) => ({ x: d.x, y: d.y, half: radiusFor(d) + 3, h: radiusFor(d) * 2 + 6 }));
+      deconflictLabels(pend, engeller);
+    }
+
+    simulation.on("tick", () => {
+      linkSel
+        .attr("x1", (d) => d.source.x)
+        .attr("y1", (d) => d.source.y)
+        .attr("x2", (d) => d.target.x)
+        .attr("y2", (d) => d.target.y);
+
+      nodeSel.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      etiketleriYerlestir();
+    });
+    // Simülasyonun İLK karelerinde getBBox metin daha boyanmadan 0 genişlik
+    // döndürebiliyor (ölçüldü: üç etiket aynı satırda donmuş kalmıştı) --
+    // sahne durulunca, fontlar da yüklüyken, SON bir tam yerleşim geçişi.
+    // Sığdırma (2026-10-09 görsel taraması): dar ekranda sahne kuvvet
+    // simülasyonunun kurduğu genişlikte kalıyor, düğüm ve etiketlerin bir
+    // kısmı tuvalin dışına taşıyordu. Başlangıç bakışı artık bütün sahneyi
+    // (etiketler dahil) tuvale sığdıran çerçeve; büyütmez, yalnız küçültür.
+    // Kullanıcı kendisi kaydırıp yakınlaştırdıysa simülasyonun sonraki
+    // durulmaları (sürükleme sonrası) bakışı geri almaz.
+    let kullaniciOynadi = false;
+    function sigdirTransform() {
+      const bb = zoomLayer.node().getBBox();
+      if (!bb.width || !bb.height) return d3.zoomIdentity;
+      const W = svg.node().clientWidth || width, H = svg.node().clientHeight || height;
+      const pad = 24;
+      const k = Math.max(0.2, Math.min(1, (W - pad * 2) / bb.width, (H - pad * 2) / bb.height));
+      return d3.zoomIdentity
+        .translate(W / 2 - k * (bb.x + bb.width / 2), H / 2 - k * (bb.y + bb.height / 2))
+        .scale(k);
+    }
+    function sigdir(animate) {
+      if (!svg.node().clientWidth) return;   // sekme gizliyken sığdırma NaN üretir
+      const t = sigdirTransform();
+      (animate ? svg.transition().duration(420) : svg).call(zoomBehavior.transform, t);
+    }
+    simulation.on("end", () => {
+      const sonra = () => { etiketleriYerlestir(); if (!kullaniciOynadi) sigdir(true); };
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(sonra);
+      else sonra();
+    });
+
+    zoomBehavior = window.DostGraphUtils.createZoomBehavior(svg, zoomLayer, [0.2, 3]);
+    zoomBehavior.on("start.sigdir", (ev) => { if (ev.sourceEvent) kullaniciOynadi = true; });
+    nodeSel.on("pointerdown.sigdir", () => { kullaniciOynadi = true; });
+    // Simülasyon durulmadan önce de (ilk ~2 sn) sahne taşmasın: kısa bir
+    // ısınmadan sonra bir kez sığdır.
+    setTimeout(() => { if (!kullaniciOynadi) sigdir(false); }, 700);
+    // Düğme bir kez bağlanır (wireRecenter ikinci çağrıyı yok sayar);
+    // sahne yeniden kurulunca (genişlik değişimi) güncel sığdırmayı çağırsın
+    // diye işlev modül değişkeninde tutuluyor.
+    ortala = () => { kullaniciOynadi = false; sigdir(true); };
+    window.DostGraphUtils.wireRecenter("compare-recenter", () => ortala && ortala());
+
+    daphneApp = { nodes, links, conceptById, themes };
+  }
+
+  function render() {
+    if (!labelSel) return;
+    labelSel.text((d) => labelFor(d));
+    // Görünen etiketle birlikte ekran okuyucunun okuduğu ad da güncellenmeli
+    // -- yalnız labelSel.text() güncellenirse dil değişiminden sonra
+    // aria-label eski dilde donuk kalıyordu (2026-09-12 taraması).
+    nodeSel.attr("aria-label", (d) => labelFor(d));
+    if (currentDetailTheme) showThemeDetail(currentDetailTheme);
+    else if (currentDetailConcept) showConceptDetail(currentDetailConcept);
+  }
+
+  function radiusFor(d) {
+    if (d.type === "hub-ibnarabi" || d.type === "hub-daphne") return 26;
+    if (d.type === "theme") return 14;
+    return 10;
+  }
+
+  function colorFor(d) {
+    if (d.type === "hub-ibnarabi") return getVar("--series-ibnarabi");
+    if (d.type === "hub-daphne") return getVar("--series-daphne");
+    if (d.type === "theme") return getVar("--series-theme");
+    // Concept düğümleri lejantta "İbn Arabî kavramları" olarak --series-ibnarabi
+    // rengiyle vaat ediliyor (legend__dot--ibnarabi); burası önceden çizgi
+    // rengini (--series-ibnarabi-line, çok açık bir mavi) kullanıyordu -- hem
+    // lejantla uyuşmuyordu hem zemine karşı WCAG'nin 3:1 grafik-nesnesi
+    // eşiğinin altında kalıyordu. --series-ibnarabi-text, aynı renk ailesinin
+    // kontrast için koyulaştırılmış hâli (2026-09-12 taraması).
+    return getVar("--series-ibnarabi-text");
+  }
+
+  function getVar(name) {
+    return window.DostGraphUtils.getVar(name);
+  }
+
+  function labelFor(d) {
+    if (d.type === "hub-ibnarabi") return I18n.getLang() === "tr" ? "İbn Arabî" : "Ibn Arabî";   // EN/PT'de noktalı İ kalmasın (2026-10-20 taraması F35)
+    if (d.type === "hub-daphne") return "Daphne";
+    if (d.type === "theme") return I18n.pick(d.theme, "title");
+    if (d.type === "concept") return I18n.pick(d.concept, "name");
+    return "";
+  }
+
+  // Bir "tema" (Daphne tarafı) ya da "concept" (İbn Arabî tarafı) düğümüne
+  // gelindiğinde, yalnız o düğümün bir komşusunu değil -- iki ana düğüme
+  // (hub-ibnarabi, hub-daphne) kadar uzanan TÜM zinciri öne çıkarır. Zincir
+  // her zaman iki ana düğümde son buluyor: kullanıcı isteği (2026-08-26)
+  // "öne alınan bağlantının son noktası her seferinde her iki tarafın ana
+  // düğümleri de olsun" -- yani hub-ibnarabi ve hub-daphne, ne kadar ara
+  // düğüm (concept/tema) katılırsa katılsın, vurgulanan yolun uçları hep
+  // sabit kalır. Bir concept'e birden çok tema bağlıysa hepsinin
+  // hub-daphne'ye giden kolu birlikte öne çıkar (tek bir yol değil, o
+  // concept'ten yayılan bütün yelpaze).
+  function highlight(d) {
+    if (!d) {
+      linkSel.classed("link--highlight", false);
+      nodeSel.style("opacity", 1).classed("node--bagli", false);
+      return;
+    }
+    const connectedNodes = new Set([d.id]);
+    const connectedLinks = new Set();
+    function add(l) {
+      connectedLinks.add(l);
+      connectedNodes.add(l.source.id);
+      connectedNodes.add(l.target.id);
+    }
+    if (d.type === "theme") {
+      const bridge = links.find((l) => l.kind === "bridge" && l.target.id === d.id);
+      if (bridge) {
+        add(bridge);
+        const ibn = links.find((l) => l.kind === "ibnarabi" && l.target.id === bridge.source.id);
+        if (ibn) add(ibn);
+      }
+      const daphne = links.find((l) => l.kind === "daphne" && l.source.id === d.id);
+      if (daphne) add(daphne);
+    } else if (d.type === "concept") {
+      const ibn = links.find((l) => l.kind === "ibnarabi" && l.target.id === d.id);
+      if (ibn) add(ibn);
+      links.filter((l) => l.kind === "bridge" && l.source.id === d.id).forEach((bridge) => {
+        add(bridge);
+        const daphne = links.find((l) => l.kind === "daphne" && l.source.id === bridge.target.id);
+        if (daphne) add(daphne);
+      });
+    } else {
+      // Ana düğümler (hub-ibnarabi / hub-daphne): mevcut, tek-adımlık davranış
+      // korunuyor -- bir hub'a gelince zaten kendi tarafındaki bütün doğrudan
+      // komşuları öne çıkıyor.
+      links.forEach((l) => {
+        if (l.source.id === d.id || l.target.id === d.id) add(l);
+      });
+    }
+    linkSel.classed("link--highlight", (l) => connectedLinks.has(l));
+    nodeSel.style("opacity", (n) => (connectedNodes.has(n.id) ? 1 : 0.25))
+      .classed("node--bagli", (n) => connectedNodes.has(n.id));   // dar ekranda adı yalnız bağlı düğümler açar (CSS)
+  }
+
+  let currentDetailTheme = null;
+  let currentDetailConcept = null;
+
+  function onNodeClick(d) {
+    if (d.type === "theme") {
+      currentDetailTheme = d.theme;
+      currentDetailConcept = null;
+      showThemeDetail(d.theme);
+    } else if (d.type === "concept") {
+      currentDetailTheme = null;
+      currentDetailConcept = d.concept;
+      showConceptDetail(d.concept);
+    } else {
+      detailPanel.hidden = true;
+      currentDetailTheme = null;
+      currentDetailConcept = null;
+    }
+  }
+
+  function daphneAlinti(theme) {
+    const lang = I18n.getLang();
+    return lang === "pt" && theme.daphne_quote_pt
+      ? theme.daphne_quote_pt
+      : lang === "tr" && theme.daphne_quote_tr
+        ? theme.daphne_quote_tr
+        : theme.daphne_quote;
+  }
+
+  // Bir temanın İbn Arabî + Daphne blokları (tema düğümü ve kavram düğümü AYNI içeriği gösterir:
+  // 2026-10-31 kullanıcı notu -- "arabi düğümüne tıklama da daphne düğümüyle aynı işlevi görsün").
+  function temaBloklari(theme, baslikGoster) {
+    const concept = daphneApp.conceptById.get(theme.ibn_arabi_concept);
+    const quote = daphneAlinti(theme);
+    return `
+      ${baslikGoster ? `<h3 class="detail-tema-baslik">${I18n.pick(theme, "title")}</h3>` : ""}
       <div class="detail-block detail-block--ibnarabi">
-        <h3>\u0130bn Arab\xEE \u2014 ${r?p.pick(r,"name"):""}</h3>
-        <p>${p.pick(t,"ibn_arabi_note")}</p>
+        <h3>İbn Arabî — ${concept ? I18n.pick(concept, "name") : ""}</h3>
+        <p>${I18n.pick(theme, "ibn_arabi_note")}</p>
       </div>
 
       <div class="detail-block detail-block--daphne">
         <h3>Daphne</h3>
-        <blockquote>&ldquo;${s}&rdquo;</blockquote>
-        <cite><a href="${t.daphne_url}" target="_blank" rel="noopener">${t.daphne_source}</a></cite>
+        <blockquote>&ldquo;${quote}&rdquo;</blockquote>
+        <cite><a href="${theme.daphne_url}" target="_blank" rel="noopener">${theme.daphne_source}</a></cite>
       </div>
 
-      <p class="detail-resonance">${p.pick(t,"resonance")}</p>`}function P(t){z.innerHTML=`
-      <p class="detail-eyebrow">${C({tr:"Ortak Tema",en:"Shared Theme",pt:"Tema Compartilhado"})}</p>
-      <h2 class="detail-title">${p.pick(t,"title")}</h2>
-      ${K(t,!1)}
-    `,E.hidden=!1}function J(t){const o=(W.themes||[]).filter(r=>r.ibn_arabi_concept===t.id);z.innerHTML=`
-      <p class="detail-eyebrow">\u0130bn Arab\xEE</p>
-      <h2 class="detail-title">${p.pick(t,"name")}</h2>
+      <p class="detail-resonance">${I18n.pick(theme, "resonance")}</p>`;
+  }
+
+  function showThemeDetail(theme) {
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow">${tt({ tr: "Ortak Tema", en: "Shared Theme", pt: "Tema Compartilhado" })}</p>
+      <h2 class="detail-title">${I18n.pick(theme, "title")}</h2>
+      ${temaBloklari(theme, false)}
+    `;
+    detailPanel.hidden = false;
+  }
+
+  function showConceptDetail(concept) {
+    const bagli = (daphneApp.themes || []).filter((th) => th.ibn_arabi_concept === concept.id);
+    detailContent.innerHTML = `
+      <p class="detail-eyebrow">İbn Arabî</p>
+      <h2 class="detail-title">${I18n.pick(concept, "name")}</h2>
       <div class="detail-block detail-block--ibnarabi">
-        <p>${p.pick(t,"summary")}</p>
-        <cite>${(t.sources||[]).join(" \xB7 ")}</cite>
+        <p>${I18n.pick(concept, "summary")}</p>
+        <cite>${(concept.sources || []).join(" · ")}</cite>
       </div>
-      ${o.length?`<p class="detail-eyebrow detail-eyebrow--tema">${C({tr:"Bu kavramla ili\u015Fkili ortak temalar",en:"Shared themes tied to this concept",pt:"Temas compartilhados ligados a este conceito"})}</p>`:""}
-      ${o.map(r=>K(r,!0)).join("")}
-    `,E.hidden=!1}function ie(t){return window.DostGraphUtils.createDragBehavior(t)}})();
+      ${bagli.length ? `<p class="detail-eyebrow detail-eyebrow--tema">${tt({ tr: "Bu kavramla ilişkili ortak temalar", en: "Shared themes tied to this concept", pt: "Temas compartilhados ligados a este conceito" })}</p>` : ""}
+      ${bagli.map((th) => temaBloklari(th, true)).join("")}
+    `;
+    detailPanel.hidden = false;
+  }
+
+  function drag(sim) {
+    return window.DostGraphUtils.createDragBehavior(sim);
+  }
+})();
