@@ -2281,6 +2281,38 @@ window.DostGraphUtils = (function () {
   }
   paragrafKurali();
 
+  // Kayan satır ipucu (kural, 2026-11-03: "menüler sağda gözden kayboluyor, nasıl kaydıracağımı bilemedim"):
+  // yatay kayan ve içinde ≥ 3 bağlantı/düğme olan her satırda, içerik taşıyorsa kayan kenar solar (mask) ve ok kullanmadan
+  // "devamı var" söyler; baştayken yalnız sağ, sondayken yalnız sol, ortadayken iki kenar solar. Veri/anlam yok, yalnız taşma ölçülür.
+  function kayarKurali() {
+    if (window.__dostKayarKurali) return;
+    window.__dostKayarKurali = true;
+    const durum = (e) => {
+      const bas = e.scrollLeft <= 2, son = e.scrollLeft + e.clientWidth >= e.scrollWidth - 2;
+      e.toggleAttribute("data-kayar-bas", bas); e.toggleAttribute("data-kayar-son", son);
+    };
+    const bagla = (e) => {
+      if (e.__kayar) { durum(e); return; }
+      e.__kayar = true; e.setAttribute("data-kayar", "");
+      e.addEventListener("scroll", () => durum(e), { passive: true });
+      durum(e);
+    };
+    const tara = () => {
+      document.querySelectorAll("nav, ul, ol, div, header, section").forEach((e) => {
+        if (e.scrollWidth <= e.clientWidth + 4 || e.clientWidth < 80) { if (e.__kayar) { e.removeAttribute("data-kayar"); e.__kayar = false; } return; }
+        const c = getComputedStyle(e);
+        if (c.overflowX !== "auto" && c.overflowX !== "scroll") return;
+        if (e.querySelectorAll("a, button").length < 3) return;
+        bagla(e);
+      });
+    };
+    let plan = false;
+    const iste = () => { if (plan) return; plan = true; (window.requestIdleCallback || ((f) => setTimeout(f, 120)))(() => { plan = false; tara(); }, { timeout: 800 }); };
+    const basla = () => { iste(); window.addEventListener("resize", iste, { passive: true }); if (window.MutationObserver) new MutationObserver(iste).observe(document.body, { childList: true, subtree: true }); };
+    if (document.body) basla(); else document.addEventListener("DOMContentLoaded", basla);
+  }
+  kayarKurali();
+
   // Paragraf içi alıntı vurgusu (kural, 2026-11-03): çift tırnaklı bir parça (≥ 12 karakter) kaynağın kendi sözü olarak
   // yumuşak bir zeminle işaretlenir. Yalnız tırnak işaretine bakar, anlam yorumu yapmaz; <em>/<a>/<strong>/<code> içine dokunmaz.
   function alintiVurgu(html) {
