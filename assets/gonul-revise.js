@@ -82,7 +82,7 @@
   // Sayfanın kendi dil bağlantıları varsa (Gönül, Gizlilik) dokunmaz. <link rel="alternate" hreflang> varsa oraya gider; yoksa
   // (Yan Yana yalnız Türkçe) EN/PT pasif ve nedeni başlıkta yazılı. Seçim "dost-lang" tercihine de yazılır.
   function dilSecici() {
-    var ust = document.querySelector(".ust");
+    var ust = document.querySelector(".ust") || document.querySelector("header.ustbar nav.icin");
     if (!ust || ust.querySelector("a[hreflang]") || document.querySelector("a[hreflang][aria-current]")) return;
     var alt = {};
     [].forEach.call(document.querySelectorAll('link[rel="alternate"][hreflang]'), function (l) {
@@ -91,7 +91,7 @@
     });
     var kap = document.createElement("span");
     kap.setAttribute("role", "group"); kap.setAttribute("aria-label", "Dil / Language / Idioma");
-    kap.style.cssText = "display:inline-flex;gap:4px;margin-left:auto";
+    kap.style.cssText = "display:inline-flex;gap:4px;margin-left:auto;flex:none";
     [["tr", "TR", "Türkçe"], ["en", "EN", "English"], ["pt", "PT", "Português (Brasil)"]].forEach(function (d) {
       var gecerli = d[0] === dil, yol = alt[d[0]] || (d[0] === "tr" && !Object.keys(alt).length ? location.pathname : "");
       var e = document.createElement(gecerli || !yol ? "span" : "a");
@@ -107,7 +107,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", dilSecici); else dilSecici();
   // Telefon: "Dost Arabî" bağlantısına 700 ms basılı tutmak.
   var zaman = null, x0 = 0, y0 = 0, yut = false;
-  var kap = document.querySelector(".ust a");
+  var kap = document.querySelector(".ust a") || document.querySelector("header.ustbar nav.icin a.ana");
   if (kap) {
     kap.addEventListener("pointerdown", function (e) {
       if (e.button !== 0) return;

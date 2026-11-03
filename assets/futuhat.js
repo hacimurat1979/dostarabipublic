@@ -1849,7 +1849,7 @@
           const p = document.createElement("p");
           p.className = "futuhat-section__p";
           p.dataset.dostAlan = `sections[${si}].blocks[${bi}].text`;
-          p.innerHTML = linkify(tt(block.text));
+          p.innerHTML = window.DostGraphUtils.alintiVurgu(linkify(tt(block.text)));
           secEl.appendChild(p);
         } else if (block.type === "diagram") {
           const dCard = document.createElement("div");

@@ -50,15 +50,17 @@
   .kartlar { list-style:none; padding:0; margin:18px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(15rem,1fr)); gap:12px; }
   .kartlar a { display:block; height:100%; padding:14px 16px; border:1px solid var(--gridline); border-radius:14px; color:inherit; text-decoration:none; background:var(--surface-1); }
   .kartlar a:hover { border-color: var(--accent-interactive); } .kartlar b { font-family:"Fraunces Dost", Georgia, serif; font-size:1.15rem; display:block; } .kartlar span { font-size:.9rem; color:var(--text-secondary); }
-  nav.icin { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; } nav.icin a { min-height:40px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid var(--gridline); border-radius:20px; text-decoration:none; font-size:.93rem; }
+  header.ustbar { position:sticky; top:0; z-index:30; margin:0 -16px 18px; padding:6px 16px; background:var(--page-plane); border-bottom:1px solid var(--gridline); }
+  nav.icin { display:flex; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; gap:8px; margin:0; align-items:center; } nav.icin::-webkit-scrollbar { display:none; } nav.icin a { flex:none; white-space:nowrap; } nav.icin a.ana { color:var(--text-secondary); } nav.icin .ayrac { flex:none; width:1px; height:22px; background:var(--gridline); } nav.icin a { min-height:40px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid var(--gridline); border-radius:20px; text-decoration:none; font-size:.93rem; }
   nav.icin a[aria-current="page"] { border-color:var(--accent-interactive); color:var(--text-primary); }
   a.terim { color:inherit; text-decoration:underline dotted; text-underline-offset:3px; text-decoration-color:var(--text-muted); } a.terim:hover, a.terim:focus-visible { text-decoration-color:var(--accent-interactive); }
   figure.sekil { margin:18px 0 24px; } figure.sekil img { max-width:100%; height:auto; display:block; } figure.sekil figcaption { font-size:.9rem; color:var(--text-secondary); margin-top:6px; }
   .par-ara { display:block; height:.7em; }
+  .alinti-v { background:color-mix(in srgb, var(--accent-interactive) 11%, transparent); border-bottom:1px solid color-mix(in srgb, var(--accent-interactive) 40%, transparent); border-radius:3px; padding:0 .15em; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   .sitede-gor { font-size:.9rem; color:var(--text-secondary); margin:-4px 0 10px; } .sitede-gor a { color:var(--accent-interactive); }
   .mk-suz { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 4px; } .mk-suz button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:var(--text-secondary); font:inherit; cursor:pointer; } .mk-suz button[aria-pressed="true"] { border-color:var(--accent-interactive); color:var(--text-primary); font-weight:600; } article.makale[hidden] { display:none; }
   main:has(#paralel) { max-width:1240px; }
-  html.yy-ic .ust, html.yy-ic .icin, html.yy-ic .mini-kabuk, html.yy-ic .kunye-kutu { display:none !important; } html.yy-ic main { padding-top:8px; padding-bottom:24px; max-width:none; }
+  html.yy-ic .ust, html.yy-ic .ustbar, html.yy-ic .icin, html.yy-ic .mini-kabuk, html.yy-ic .kunye-kutu { display:none !important; } html.yy-ic main { padding-top:8px; padding-bottom:24px; max-width:none; }
   .pl-sec { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0; } @media (max-width:900px) { .pl-sec { grid-template-columns:1fr; } }
   .pl-kol { display:flex; flex-direction:column; gap:4px; font-size:.85rem; color:var(--text-muted); min-width:0; } .pl-kol select, .pl-notlu textarea { font:inherit; font-size:1rem; color:var(--text-primary); background:var(--surface-1); border:1px solid var(--gridline); border-radius:10px; padding:8px 10px; min-height:44px; max-width:100%; }
   .pl-masa { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:min(70vh,760px); } .pl-masa iframe { width:100%; height:100%; border:1px solid var(--gridline); border-radius:12px; background:var(--page-plane); }
@@ -90,8 +92,7 @@
 </head>
 <body>
 <main>
-  <div class="ust"><a href="/">Dost Arabî</a><a href="/yan-yana/">Yan Yana</a></div>
-  <nav class="icin" aria-label="Yan Yana bölümleri"><a href="/yan-yana/">Giriş</a><a href="/yan-yana/genel-sonuc/">Genel sonuç</a><a href="/yan-yana/yeni-olgular/">Yeni olgular</a><a href="/yan-yana/yeni-kaliplar/">Başka kalıplar</a><a href="/yan-yana/hayal-berzah/">Hayal ve berzah</a><a href="/yan-yana/hesapla-gor/">Hesapla gör</a><a href="/yan-yana/denetim-durumu/">Denetim</a><a href="/yan-yana/sirli/">Sırlı anlatımlar</a><a href="/yan-yana/makaleler/">Fizik makaleleri</a><a href="/yan-yana/paralel/">Paralel okuma</a><a href="/yan-yana/hazine/">Sığmayanlar</a><a href="/yan-yana/fusus/">Füsûs</a><a href="/yan-yana/sozluk/" aria-current="page">Sözlük</a><a href="/yan-yana/yontem/">Yöntem</a><a href="/yan-yana/ceviri-sinamasi/">Çeviri sınaması</a><a href="/yan-yana/kaynaklar/">Kaynaklar</a></nav>
+  <header class="ustbar"><nav class="icin" aria-label="Yan Yana bölümleri"><a class="ana" href="/">Dost Arabî</a><a class="ana" href="/yan-yana/">Yan Yana</a><span class="ayrac" aria-hidden="true"></span><a href="/yan-yana/">Giriş</a><a href="/yan-yana/genel-sonuc/">Genel sonuç</a><a href="/yan-yana/yeni-olgular/">Yeni olgular</a><a href="/yan-yana/yeni-kaliplar/">Başka kalıplar</a><a href="/yan-yana/hayal-berzah/">Hayal ve berzah</a><a href="/yan-yana/hesapla-gor/">Hesapla gör</a><a href="/yan-yana/denetim-durumu/">Denetim</a><a href="/yan-yana/sirli/">Sırlı anlatımlar</a><a href="/yan-yana/makaleler/">Fizik makaleleri</a><a href="/yan-yana/paralel/">Paralel okuma</a><a href="/yan-yana/hazine/">Sığmayanlar</a><a href="/yan-yana/fusus/">Füsûs</a><a href="/yan-yana/sozluk/" aria-current="page">Sözlük</a><a href="/yan-yana/yontem/">Yöntem</a><a href="/yan-yana/ceviri-sinamasi/">Çeviri sınaması</a><a href="/yan-yana/kaynaklar/">Kaynaklar</a></nav></header>
   <h1>Sözlük</h1>
   <aside class="kunye"><span class="muhur" aria-hidden="true"></span><p>Bu bölüm bir okuma özeti değildir. Dost&#x27;un sözlerini, fiziğin akla sığmayan bulgularıyla yan yana okuma denemesidir; bizim okuma çerçevemizdir. “Aynıdır” ya da “doğrulandı” demiyoruz: yalnız soruyoruz, ayrıldıkları yeri de söylüyoruz.</p></aside>
 <article data-dost-dosya="research/kuantum/site/sozluk.md" data-dost-kaynak="sozluk"><p class="gonul-duzenle" data-dost-alan="b1">Burada, sayfalarda takılabilecek sözleri kısaca açıyoruz. Dost tarafındaki açıklamalar genel ve yorumsuzdur: Dost&#x27;un ne dediğini değil, söz tasavvufta genelde ne anlama gelir onu söylüyor. Fizik tarafındakiler ise sayfalarda ve kaynak özetlerinde geçtiği düzeyde, genel kabul gören anlamlarıyla yazıldı. Sayfalardaki kısaltmaları (Hem-hem, Tekrarsızlık…) giriş sayfası açıyor.</p>
@@ -99,34 +100,34 @@
 <p class="gonul-duzenle" data-dost-alan="b3">Tasavvufta ve İslâm geleneğinde Tanrı&#x27;nın özel adıdır. Bu sayfalarda adı daha çok Dost&#x27;un kendi cümlelerinde, Tanrı&#x27;dan doğrudan söz edilen yerde görürsünüz.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/esma/allah/">Allah (Esmâ)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b4">Hak</h3>
-<p class="gonul-duzenle" data-dost-alan="b5">Tasavvufta Tanrı&#x27;ya verilen adlardan biridir; &quot;gerçek, var olan&quot; demektir. Çoğu zaman halkın, yani yaratılmışların karşısında söylenir. Sayfalarda &quot;Hak&quot; ile &quot;Hakk&#x27;ın&quot; aynı sözdür; ikincisi tamlamalı hâlidir. Allah adı daha çok Tanrı&#x27;dan doğrudan söz edilen yerde, Hak ise Hak–halk, Hak–kul gibi karşılıklı söylenen çiftlerde geçer.</p>
+<p class="gonul-duzenle" data-dost-alan="b5">Tasavvufta Tanrı&#x27;ya verilen adlardan biridir; <span class="alinti-v">&quot;gerçek, var olan&quot;</span> demektir. Çoğu zaman halkın, yani yaratılmışların karşısında söylenir. Sayfalarda &quot;Hak&quot; ile <span class="alinti-v">&quot;Hakk&#x27;ın&quot;</span> aynı sözdür; ikincisi tamlamalı hâlidir. Allah adı daha çok Tanrı&#x27;dan doğrudan söz edilen yerde, Hak ise Hak–halk, Hak–kul gibi karşılıklı söylenen çiftlerde geçer.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b6">Halk</h3>
-<p class="gonul-duzenle" data-dost-alan="b7">Tasavvufta Hak&#x27;ın karşısında söylenen &quot;yaratılmışlar, yaratılmış âlem&quot; anlamına gelir. &quot;Hak ile halk&quot; çifti, sayfalarda sık geçen bir karşılıklı söyleyiş kalıbıdır.</p>
+<p class="gonul-duzenle" data-dost-alan="b7">Tasavvufta Hak&#x27;ın karşısında söylenen <span class="alinti-v">&quot;yaratılmışlar, yaratılmış âlem&quot;</span> anlamına gelir. <span class="alinti-v">&quot;Hak ile halk&quot;</span> çifti, sayfalarda sık geçen bir karşılıklı söyleyiş kalıbıdır.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b8">Rab</h3>
 <p class="gonul-duzenle" data-dost-alan="b9">Tasavvufta Tanrı&#x27;nın, bir varlığı yetiştiren, terbiye eden, ona yön veren yönünü anlatan adıdır. Sayfalarda hep kulla birlikte, &quot;Rab–kul&quot; ilişkisi olarak geçer. Yan Yana sayfaları bu ilişkinin hangi mertebede söylendiğini her yerde ayrıca belirtir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b10">Kul</h3>
 <p class="gonul-duzenle" data-dost-alan="b11">Tasavvufta Tanrı&#x27;nın karşısında, O&#x27;na kulluk eden varlık olarak insana verilen addır. Sayfalarda &quot;Hak ile kul&quot; ya da &quot;Rab ile kul&quot; ikilisinin bir tarafı olarak geçer.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b12">İlâh</h3>
-<p class="gonul-duzenle" data-dost-alan="b13">Tasavvuf dilinde Tanrı&#x27;nın, kendisine tapılan olma yönünü anlatan addır. Sayfalarda Rab ve kulla birlikte, &quot;ilâh–Rab–kul nispetleri&quot; diye anılır.</p>
+<p class="gonul-duzenle" data-dost-alan="b13">Tasavvuf dilinde Tanrı&#x27;nın, kendisine tapılan olma yönünü anlatan addır. Sayfalarda Rab ve kulla birlikte, <span class="alinti-v">&quot;ilâh–Rab–kul nispetleri&quot;</span> diye anılır.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b14">Zât</h3>
-<p class="gonul-duzenle" data-dost-alan="b15">Tasavvufta Tanrı&#x27;nın adlarından, sıfatlarından ve tecellîlerinden ayrı olarak düşünülen kendi özüdür. Yan Yana sayfaları bir karşılıklılık ya da ilişkiden söz ederken çoğunlukla &quot;Zât düzeyinde değil&quot; diye not düşer.</p>
+<p class="gonul-duzenle" data-dost-alan="b15">Tasavvufta Tanrı&#x27;nın adlarından, sıfatlarından ve tecellîlerinden ayrı olarak düşünülen kendi özüdür. Yan Yana sayfaları bir karşılıklılık ya da ilişkiden söz ederken çoğunlukla <span class="alinti-v">&quot;Zât düzeyinde değil&quot;</span> diye not düşer.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/ontoloji/dhat/">Zât (Ontoloji)</a> · <a href="/kavram/esma/zat/">Zât (Esmâ)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b16">Vâcib</h3>
-<p class="gonul-duzenle" data-dost-alan="b17">Kelâm ve tasavvufta varlığı kendinden olan, yani var olması başka bir şeye bağlı olmayan demektir. &quot;Mümkün&quot;ün karşıtıdır; sayfalarda &quot;Vâcib ile mümkün arasındaki asimetri&quot; diye geçer.</p>
+<p class="gonul-duzenle" data-dost-alan="b17">Kelâm ve tasavvufta varlığı kendinden olan, yani var olması başka bir şeye bağlı olmayan demektir. &quot;Mümkün<span class="alinti-v">&quot;ün karşıtıdır; sayfalarda &quot;</span>Vâcib ile mümkün arasındaki asimetri&quot; diye geçer.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/terimler/vacib/">Vâcib (Vâcibü&#x27;l-Vücûd) (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b18">Mümkün</h3>
-<p class="gonul-duzenle" data-dost-alan="b19">Kelâm ve tasavvufta hem var hem yok olabilen, varlığını başkasından alan demektir. &quot;Vâcib&quot;in karşıtıdır. Gündelik dildeki &quot;olabilir&quot; anlamından ayrıdır; sayfalarda bu terim anlamıyla geçer.</p>
+<p class="gonul-duzenle" data-dost-alan="b19">Kelâm ve tasavvufta hem var hem yok olabilen, varlığını başkasından alan demektir. &quot;Vâcib<span class="alinti-v">&quot;in karşıtıdır. Gündelik dildeki &quot;</span>olabilir&quot; anlamından ayrıdır; sayfalarda bu terim anlamıyla geçer.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/terimler/mumkun/">Mümkün (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b20">Nispet</h3>
-<p class="gonul-duzenle" data-dost-alan="b21">Tasavvufta iki şey arasındaki bağıntı, bir şeyin başka bir şeye göre durumu demektir. &quot;Nispetler düzeyinde söyleniyor&quot; demek, bir sözün Zât&#x27;ı değil, adlar arasındaki ilişkiyi anlattığı anlamına gelir.</p>
+<p class="gonul-duzenle" data-dost-alan="b21">Tasavvufta iki şey arasındaki bağıntı, bir şeyin başka bir şeye göre durumu demektir. <span class="alinti-v">&quot;Nispetler düzeyinde söyleniyor&quot;</span> demek, bir sözün Zât&#x27;ı değil, adlar arasındaki ilişkiyi anlattığı anlamına gelir.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/esma/nisbi-grup/">Nispet ve İzafet İsimleri (Esmâ)</a> · <a href="/kavram/terimler/nispet/">Nispet (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b22">Mertebe</h3>
-<p class="gonul-duzenle" data-dost-alan="b23">Tasavvufta varlığın ya da bilginin basamaklarından biridir. Bir sözün &quot;hangi mertebede söylendiği&quot;, hangi basamaktan konuşulduğunu gösterir.</p>
+<p class="gonul-duzenle" data-dost-alan="b23">Tasavvufta varlığın ya da bilginin basamaklarından biridir. Bir sözün <span class="alinti-v">&quot;hangi mertebede söylendiği&quot;</span>, hangi basamaktan konuşulduğunu gösterir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b24">Tecellî</h3>
-<p class="gonul-duzenle" data-dost-alan="b25">Tasavvufta Hak&#x27;ın kendini bir sûret ya da isim içinde göstermesi demektir. Kelime &quot;ışımak, görünmek&quot; kökündendir. Dost&#x27;un anlatımında en sık geçen sözlerden biridir.</p>
+<p class="gonul-duzenle" data-dost-alan="b25">Tasavvufta Hak&#x27;ın kendini bir sûret ya da isim içinde göstermesi demektir. Kelime <span class="alinti-v">&quot;ışımak, görünmek&quot;</span> kökündendir. Dost&#x27;un anlatımında en sık geçen sözlerden biridir.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/ontoloji/tecelli/">Tecellî ve Nefesü&#x27;r-Rahmân (Ontoloji)</a> · <a href="/kavram/terimler/tecelli/">Tecellî (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b26">Tenzih</h3>
-<p class="gonul-duzenle" data-dost-alan="b27">Tasavvufta Tanrı&#x27;yı yaratılmışlara benzemekten uzak tutma, &quot;O hiçbir şeye benzemez&quot; deme tavrıdır. &quot;Teşbih&quot;in karşıtıdır; Dost iki tavrı birlikte tutar.</p>
+<p class="gonul-duzenle" data-dost-alan="b27">Tasavvufta Tanrı&#x27;yı yaratılmışlara benzemekten uzak tutma, <span class="alinti-v">&quot;O hiçbir şeye benzemez&quot;</span> deme tavrıdır. &quot;Teşbih&quot;in karşıtıdır; Dost iki tavrı birlikte tutar.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/terimler/tenzih-tesbih/">Tenzih ve Teşbih (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b28">Teşbih</h3>
 <p class="gonul-duzenle" data-dost-alan="b29">Tasavvufta Tanrı&#x27;yı, yaratılmışlardaki izlerinden hareketle bir benzerlikle anlatma tavrıdır. &quot;Tenzih&quot;in karşıtıdır; ikisi birlikte Dost&#x27;un anlatımında sık görülür.</p>
@@ -135,12 +136,12 @@
 <p class="gonul-duzenle" data-dost-alan="b31">Tasavvufta iki âlem ya da iki hâl arasında duran perde, ara bölge demektir. Bu sayfalarda gündelik algı ile görünmeyen âlem arasındaki yer olarak anılır.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/terimler/berzah/">Berzah (Ara Bölge) (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b32">Hayal</h3>
-<p class="gonul-duzenle" data-dost-alan="b33">Tasavvufta &quot;hayâl&quot;, gündelikteki &quot;gerçek olmayan şey&quot; demek değildir. Sûretlerin göründüğü, duyu ile akıl arasındaki ara alanı da anlatır. Sayfalarda bu terim anlamıyla geçer; rüya da bu alanın bir örneği olarak sayılır.</p>
+<p class="gonul-duzenle" data-dost-alan="b33">Tasavvufta &quot;hayâl<span class="alinti-v">&quot;, gündelikteki &quot;</span>gerçek olmayan şey&quot; demek değildir. Sûretlerin göründüğü, duyu ile akıl arasındaki ara alanı da anlatır. Sayfalarda bu terim anlamıyla geçer; rüya da bu alanın bir örneği olarak sayılır.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/ontoloji/alem-misal/">Âlem-i Misâl (Hayal) (Ontoloji)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b34">Âlem</h3>
 <p class="gonul-duzenle" data-dost-alan="b35">Tasavvufta Hak&#x27;tan başka bütün varlık, yani yaratılmışlar bütünü demektir. Çoğul kullanımla (âlemler) birden çok varlık düzeyi de anlatılabilir; bu sayfalarda ikisi de geçer.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b36">Sûret</h3>
-<p class="gonul-duzenle" data-dost-alan="b37">Tasavvufta bir şeyin görünen biçimi, kendini gösterdiği kalıptır. Aynadaki yansıma da bir sûrettir; &quot;sûret&quot; çoğu zaman &quot;içindeki gerçeklik&quot; ile karşı karşıya söylenir.</p>
+<p class="gonul-duzenle" data-dost-alan="b37">Tasavvufta bir şeyin görünen biçimi, kendini gösterdiği kalıptır. Aynadaki yansıma da bir sûrettir; &quot;sûret<span class="alinti-v">&quot; çoğu zaman &quot;</span>içindeki gerçeklik&quot; ile karşı karşıya söylenir.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/terimler/suret-madde/">Sûret ve Mâdde (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b38">Perde</h3>
 <p class="gonul-duzenle" data-dost-alan="b39">Tasavvufta bir şeyi başka bir şeyden ayıran, onu örten ya da görünür kılan şeydir. Dost&#x27;un anlatımında perde çoğu zaman yalnız örtmez, aynı zamanda gösterir.</p>
@@ -149,7 +150,7 @@
 <p class="gonul-duzenle" data-dost-alan="b41">Tasavvufta varlıkların, dış dünyada var olmadan önce Hak&#x27;ın ilmindeki sabit hakikatleri demektir. Kelimenin kendisi &quot;sabit özler&quot; anlamına gelir; Dost&#x27;tan okunan kısımlarda sonsuzluğu ile varlığa girenlerin sonluluğu karşı karşıya söylenir.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/ontoloji/ayan-sabite/">A&#x27;yân-ı Sâbite (Ontoloji)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b42">Nefes-i rahmânî</h3>
-<p class="gonul-duzenle" data-dost-alan="b43">Tasavvufta &quot;Rahmân&#x27;ın nefesi&quot;; âlemin Hak&#x27;tan, bir nefes gibi çıkarak var oluşunu anlatan bir imgedir.</p>
+<p class="gonul-duzenle" data-dost-alan="b43">Tasavvufta <span class="alinti-v">&quot;Rahmân&#x27;ın nefesi&quot;</span>; âlemin Hak&#x27;tan, bir nefes gibi çıkarak var oluşunu anlatan bir imgedir.</p>
 <p class="sitede-gor">Sitede gör: <a href="/kavram/terimler/nefes-i-rahmani/">Nefes-i Rahmânî (Rahmân&#x27;ın Nefesi) (Terimler)</a></p>
 <h3 class="gonul-duzenle" data-dost-alan="b44">Vakit</h3>
 <p class="gonul-duzenle" data-dost-alan="b45">Tasavvufta sâlikin içinde bulunduğu hâl, yaşadığı &quot;şimdi&quot; demektir. Gündelikteki saat ya da zaman dilimi anlamından ayrıdır; bu sayfalarda kısmın kendi cümlesinde nasıl geçiyorsa öyle anılır.</p>
@@ -158,7 +159,7 @@
 <h3 class="gonul-duzenle" data-dost-alan="b48">Kutsî hadis</h3>
 <p class="gonul-duzenle" data-dost-alan="b49">İslâm geleneğinde anlamı Tanrı&#x27;ya, sözü Peygamber&#x27;e ait kabul edilen hadistir; Allah&#x27;ın kendi ağzından aktarılır. Bu sayfalarda bir kutsî hadis geçtiğinde, biz onun senedini ya da varyantlarını incelemedik.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b50">Rivayet</h3>
-<p class="gonul-duzenle" data-dost-alan="b51">İslâm geleneğinde bir sözün ya da haberin kimden kime aktarıldığını belirten zincirle nakledilmesidir. &quot;Rivayete göre&quot; demek, sözün sahibine aktaran zincir üzerinden ulaşıldığını söylemektir.</p>
+<p class="gonul-duzenle" data-dost-alan="b51">İslâm geleneğinde bir sözün ya da haberin kimden kime aktarıldığını belirten zincirle nakledilmesidir. <span class="alinti-v">&quot;Rivayete göre&quot;</span> demek, sözün sahibine aktaran zincir üzerinden ulaşıldığını söylemektir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b52">Şârih</h3>
 <p class="gonul-duzenle" data-dost-alan="b53">Bir eseri açıklayan, şerh yazan kişidir. Fütûhât ve Füsûs üzerine yazılmış şerhlerin yazarları bu sayfalarda &quot;şârihler&quot; diye anılır.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b54">Fütûhât</h3>
@@ -172,13 +173,13 @@
 <h3 class="gonul-duzenle" data-dost-alan="b62">Sırlı madde</h3>
 <p class="gonul-duzenle" data-dost-alan="b63">Okurken tuttuğumuz notlarda, aklı zorlayan bir yer olarak işaretlediğimiz tek bir cümle ya da pasaj demektir. Bizim çalışma etiketimizdir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b64">Zorluk puanı</h3>
-<p class="gonul-duzenle" data-dost-alan="b65">Her sırlı maddeye verdiğimiz 1 ile 3 arasında bir not. 1, &quot;kolay benzetilir&quot;; 3, &quot;benzetme bulmakta çok zorlanırız&quot; demektir. Bizim çalışma etiketimizdir.</p>
+<p class="gonul-duzenle" data-dost-alan="b65">Her sırlı maddeye verdiğimiz 1 ile 3 arasında bir not. 1, <span class="alinti-v">&quot;kolay benzetilir&quot;</span>; 3, <span class="alinti-v">&quot;benzetme bulmakta çok zorlanırız&quot;</span> demektir. Bizim çalışma etiketimizdir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b66">Süperpozisyon</h3>
-<p class="gonul-duzenle" data-dost-alan="b67">Bir kuantum sistemin, ölçmeden önce, birden çok olasılığın birlikte hesaba girdiği hâlidir. Süperpozisyon &quot;hem şuradadır hem buradadır&quot; demenin yalın bir kısaltması gibi söylenir, ama kuram bunu olasılık genliklerinin belli bir hesapla toplanması olarak yazar.</p>
+<p class="gonul-duzenle" data-dost-alan="b67">Bir kuantum sistemin, ölçmeden önce, birden çok olasılığın birlikte hesaba girdiği hâlidir. Süperpozisyon <span class="alinti-v">&quot;hem şuradadır hem buradadır&quot;</span> demenin yalın bir kısaltması gibi söylenir, ama kuram bunu olasılık genliklerinin belli bir hesapla toplanması olarak yazar.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b68">Dolanıklık</h3>
 <p class="gonul-duzenle" data-dost-alan="b69">Ayrı yerlerdeki iki parçacığın sonuçları tek tek bakıldığında rastgele görünür, ama birlikte bakılınca aralarında bir ilişki çıkar. Bu ilişki, parçacıklar önceden belirlenmiş bir şey taşıyormuş gibi anlatılarak açıklanamıyor; deneylerle gösterildi.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b70">Dekoherans</h3>
-<p class="gonul-duzenle" data-dost-alan="b71">Bir kuantum sistem çevresiyle etkileştiğinde, olasılıkların birlikte oluşunun izlerinin, yani girişimin, çok hızlı silinmesidir. Sonuçların neden klasik göründüğünü açıklar; &quot;neden yalnız biri&quot; çıktığı sorusu ise kendi başına çözülmüş değildir.</p>
+<p class="gonul-duzenle" data-dost-alan="b71">Bir kuantum sistem çevresiyle etkileştiğinde, olasılıkların birlikte oluşunun izlerinin, yani girişimin, çok hızlı silinmesidir. Sonuçların neden klasik göründüğünü açıklar; <span class="alinti-v">&quot;neden yalnız biri&quot;</span> çıktığı sorusu ise kendi başına çözülmüş değildir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b72">Ölçüm problemi</h3>
 <p class="gonul-duzenle" data-dost-alan="b73">Kuram, ölçüm anına kadar olasılıkları birlikte tutar; ölçümde ise tek bir sonuç görürüz. Bu geçişin ne zaman ve nasıl olduğu sorusuna denir. Hâlâ tartışılan bir sorudur.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b74">Çöküş</h3>
@@ -188,7 +189,7 @@
 <h3 class="gonul-duzenle" data-dost-alan="b78">Gizli değişken</h3>
 <p class="gonul-duzenle" data-dost-alan="b79">Kuramın söylemediği, ama sonuçları önceden belirlediği varsayılan gizli bir ayrıntıdır. Bell deneyleri, yerel türden gizli değişkenlerle bu sonuçların açıklanamadığını gösterdi.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b80">Yerellik</h3>
-<p class="gonul-duzenle" data-dost-alan="b81">Bir şeyin yalnız yakınındakilerden etkilenebileceği, uzaktan anında etkilenemeyeceği düşüncesidir. Bell deneyleri &quot;yerel gizli değişken&quot; resminin tutmadığını gösterir.</p>
+<p class="gonul-duzenle" data-dost-alan="b81">Bir şeyin yalnız yakınındakilerden etkilenebileceği, uzaktan anında etkilenemeyeceği düşüncesidir. Bell deneyleri <span class="alinti-v">&quot;yerel gizli değişken&quot;</span> resminin tutmadığını gösterir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b82">Kopyalanamazlık</h3>
 <p class="gonul-duzenle" data-dost-alan="b83">Bilinmeyen bir kuantum durumunun aynen kopyalanamamasıdır. Bu, kuramın bir sonucudur; dolanıklıkla ışıktan hızlı haberleşme önerilerini de engeller.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b84">Işınlama</h3>
@@ -220,13 +221,13 @@
 <h3 class="gonul-duzenle" data-dost-alan="b110">İlişkisel yorum</h3>
 <p class="gonul-duzenle" data-dost-alan="b111">Bir sistemin özelliklerinin mutlak değil, onunla etkileşen başka bir sisteme göre değer taşıdığını söyleyen yorumdur. Rovelli önerdi; bir yorum önerisidir, deney sonucu değildir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b112">Kuantum Zeno etkisi</h3>
-<p class="gonul-duzenle" data-dost-alan="b113">Bir kuantum sistemi yeterince sık gözlendiğinde ilk hâlinde kalması, bozunmaması durumudur. &quot;Kuantum Zenon paradoksu&quot; diye de anılır.</p>
+<p class="gonul-duzenle" data-dost-alan="b113">Bir kuantum sistemi yeterince sık gözlendiğinde ilk hâlinde kalması, bozunmaması durumudur. <span class="alinti-v">&quot;Kuantum Zenon paradoksu&quot;</span> diye de anılır.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b114">Tünelleme</h3>
 <p class="gonul-duzenle" data-dost-alan="b115">Bir parçacığın, klasik olarak aşamayacağı bir engelin ötesinde görünmesi olgusudur. Kuantum mekaniğinin en eski öngörülerinden biridir.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b116">Zaman genişlemesi</h3>
 <p class="gonul-duzenle" data-dost-alan="b117">Özel göreliliğe göre hareketli bir saatin, duran gözlemciye göre daha yavaş işlemesidir. Atom saatleriyle yapılan uçak deneyleri bunu ölçmüştür.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b118">Göreli eşzamanlılık</h3>
-<p class="gonul-duzenle" data-dost-alan="b119">Görelilikte iki olayın &quot;aynı anda&quot; olup olmadığının gözlemciden gözlemciye değişebilmesidir. Bu yüzden herkesin paylaştığı bir &quot;evrensel şimdi&quot; yoktur.</p>
+<p class="gonul-duzenle" data-dost-alan="b119">Görelilikte iki olayın &quot;aynı anda<span class="alinti-v">&quot; olup olmadığının gözlemciden gözlemciye değişebilmesidir. Bu yüzden herkesin paylaştığı bir &quot;</span>evrensel şimdi&quot; yoktur.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b120">Evrensel şimdi</h3>
 <p class="gonul-duzenle" data-dost-alan="b121">Herkes için aynı olan tek bir &quot;şimdi&quot; düşüncesidir. Görelilik böyle bir ortak şimdiyi desteklemez.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b122">Gözlemci</h3>
@@ -234,7 +235,7 @@
 <h3 class="gonul-duzenle" data-dost-alan="b124">Nedensellik</h3>
 <p class="gonul-duzenle" data-dost-alan="b125">Bir olayın başka bir olayın sonucu olması, sebep–sonuç zincirleridir. Fizikte nedensellik ihlali bulunmamıştır; bazı durumlarda yalnız &quot;önce–sonra&quot; sırası tanımsız kalır.</p>
 <h3 class="gonul-duzenle" data-dost-alan="b126">Einselection</h3>
-<p class="gonul-duzenle" data-dost-alan="b127">Zurek&#x27;in, çevrenin bozmadığı birkaç kararlı hâlin kalmasını anlatmak için kullandığı addır (&quot;çevrenin yaptığı seçme&quot;). Dekoherans anlatımının bir parçasıdır.</p></article>
+<p class="gonul-duzenle" data-dost-alan="b127">Zurek&#x27;in, çevrenin bozmadığı birkaç kararlı hâlin kalmasını anlatmak için kullandığı addır (<span class="alinti-v">&quot;çevrenin yaptığı seçme&quot;</span>). Dekoherans anlatımının bir parçasıdır.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[{"yol": "/yan-yana/", "ad": "Giriş"}, {"yol": "/yan-yana/bil/", "ad": "Bilgi perdedir; bilinene değil bilgiye erişirsin"}, {"yol": "/yan-yana/zam/", "ad": "Zaman herkes için aynı değil; zaman bir bağıntı"}, {"yol": "/yan-yana/akl/", "ad": "Akıl — Aklın sınırı: imkânsız sayılan gerçektir"}, {"yol": "/yan-yana/hem/", "ad": "Hem-hem — Birbirini dışlayan iki tanım aynı şeye birden"}, {"yol": "/yan-yana/but/", "ad": "Bütünlük — Parça bütünden ayrı tanımlanamaz"}, {"yol": "/yan-yana/ili/", "ad": "İlişki önce: şey, ilişkisinden bağımsız tanımlanamaz"}, {"yol": "/yan-yana/bak/", "ad": "Bakış, görüleni belirler"}, {"yol": "/yan-yana/seb/", "ad": "Sebep — Bağ var, sebep-sonuç aracı yok"}, {"yol": "/yan-yana/tek/", "ad": "Tekrarsızlık — Aynısı ikinci kez gelmez; her şey yenidir"}, {"yol": "/yan-yana/sur/", "ad": "Süreklilik, altta başka yapının görünümü"}, {"yol": "/yan-yana/sig/", "ad": "Sığma — Kapsayan, kapsananın içine sığar"}, {"yol": "/yan-yana/icd/", "ad": "İçeride-dışarıda — İçeride de dışarıda da değil"}, {"yol": "/yan-yana/ayr/", "ad": "Ayırt edilemezlik — Ayırt edilemeyen iki şey"}, {"yol": "/yan-yana/hay/", "ad": "Hayret — Son söz anlamak değil, hayret (ortak zemin)"}, {"yol": "/yan-yana/cok/", "ad": "Çokluk — Çok dünya, benzer varlıklar: aynı örüntünün başka yerlerde de bulunması"}, {"yol": "/yan-yana/kar/", "ad": "Karşılıklı dönüşüm: A B'ye dönüyorsa B de A'ya döner"}, {"yol": "/yan-yana/genel-sonuc/", "ad": "Genel sonuç"}, {"yol": "/yan-yana/yeni-olgular/", "ad": "Yeni olgular"}, {"yol": "/yan-yana/yeni-kaliplar/", "ad": "Başka kalıplar"}, {"yol": "/yan-yana/hayal-berzah/", "ad": "Hayal ve berzah"}, {"yol": "/yan-yana/hesapla-gor/", "ad": "Hesapla gör"}, {"yol": "/yan-yana/denetim-durumu/", "ad": "Denetim durumu"}, {"yol": "/yan-yana/hazine/", "ad": "Sayfalara sığmayanlar"}, {"yol": "/yan-yana/fusus/", "ad": "Füsûs'ta biçimler"}, {"yol": "/yan-yana/sozluk/", "ad": "Sözlük"}, {"yol": "/yan-yana/yontem/", "ad": "Yöntem"}, {"yol": "/yan-yana/ceviri-sinamasi/", "ad": "Çeviri sınaması"}, {"yol": "/yan-yana/kaynaklar/", "ad": "Kaynaklar"}, {"yol": "", "ad": "Genel / bölüme bağlı değil"}]</script>
 <nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/">Harita</a><a href="/futuhat/">Fütûhât</a><a href="/fusus/">Füsûs</a><a href="/miskat/">Mişkât</a><a href="/dizin/">Dizin</a></nav>

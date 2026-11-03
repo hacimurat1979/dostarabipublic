@@ -71,17 +71,17 @@
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-cRFOT8V9tJhD1WDQyXJ0YGWTCji0kr394/o472QeXeO0rjfMQQU6mF6tx3a8+6jS", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-mbMH/kDeJr2TaMhBzIA+jZpo+BYWHd68rPPwNSc/IhtJ6iEW/Z1rFgnaikf9ced8", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-P8B7I98ssPTCstj/rbumfgWiNwzxYS9yIMyeyciWjav8NCNGkCJiNwQp/TOP1M8q", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-bcj0jzGt7p9fJPluDNzod/HlMd7m65/BDoFf18tGccvlnl87YYPszb6wEOMbE+kC", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-T0MhBLmlG+BSpzP8C5AVZhk5DU2nEoq8xbPuJScCpqd7gKrM2ayhIACrjcHhS2WP", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
     __semalarApp: { src: "assets/semalar.js", integrity: "sha384-KTTAJoCGIfGirT8jgTjh0vEWD3i+jjssk2Wk2TIMYAe7U05GiHFyXN2UK20omAeX", wrap: "semalar-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-eV2jKPoFJzZa7CQxupPmYvuzmMpYQo9pX8YzlMIL7z2r/PCYvEZEWDm2SurMXT8n", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-AOP5aDLS2dC8w8sffn6nZaVsbeevPni77ovb5yWgoca5rRLKlPwYZV6ELOvWjuHE", wrap: "tasiyicilar-wrap" },
-    __fususApp: { src: "assets/fusus.js", integrity: "sha384-o6X48xj1eJL9IXHbytgoHpLeXRJZ3/IfgoJDEQE9XZZwJncsHDkYLhSjkPkDzAae", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
-    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-lXI8/7546JWbknqdEIJSEhtj1ncX4y7r8ehXzDlDF/4pp9AhEr9VQSu+rg5hl4I+", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
+    __fususApp: { src: "assets/fusus.js", integrity: "sha384-/XdAQ4L/gpE14zMM1ROi3Y4iqsnunGmsACRqPUKJIUidoV5EoGCdb93ghb+cjL2E", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
+    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-omecVk9IuvZURAvXWdG639eNw14dQS+BgzPiAo0sd4smupgxf95lvZJSn80W841E", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
   };
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
   var KIPLER = {
-    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-2GgS8MPiO4VMaegBkzE2IpI7nFxV50foV8iMHn5lXy+YsOAI6AWdmTO9rYWemEMJ" },
+    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-gJJ8p1Ikx0AiZUSwkHHAA90pueh4IhIUu6ZknoRXShETGe9t1CsAGzT8xK97JHXJ" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-NDS9XPXNHNu+nD/CqJ+eZY9g09LC8CZOV+iwH0CaZvML9GTNQxfx8MonL4kfjUt2" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-JgPIHdHSscPiJZ/iUzOjMa3p2zSjY+cPVybIhSz7lKviXDhE0U5XIVL8KNfucvbP" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-vnaK/EBe4CgpVI1vCtjK18iRkNG4xOFQN/R3k9wTHmpKrJ2LHoXcDjgEctp+bvuM" },

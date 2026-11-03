@@ -377,7 +377,7 @@
 
     (h.blocks || []).forEach(function (b, i) {
       if (b.type === "p") {
-        html += '<p data-dost-alan="blocks[' + i + '].text">' + linkify(t(b.text)) + "</p>";
+        html += '<p data-dost-alan="blocks[' + i + '].text">' + window.DostGraphUtils.alintiVurgu(linkify(t(b.text))) + "</p>";
       } else if (b.type === "helix") {
         var k = "s" + (idx++);
         helixes[k] = Object.assign({}, b.helix, { title: h.title });

@@ -377,7 +377,7 @@
         // @revise adresi: sections[i].blocks[j].<alan> (2026-10-09).
         var adr = "sections[" + si + "].blocks[" + bi + "].";
         if (b.type === "p") {
-          html += '<p data-dost-alan="' + adr + 'text">' + linkify(t(b.text)) + "</p>";
+          html += '<p data-dost-alan="' + adr + 'text">' + window.DostGraphUtils.alintiVurgu(linkify(t(b.text))) + "</p>";
         } else if (b.type === "serh") {
           html += '<div class="fusus-serh">'
             + '<div class="fusus-serh__col fusus-serh__col--konuk">'

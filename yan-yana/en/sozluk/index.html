@@ -50,15 +50,17 @@
   .kartlar { list-style:none; padding:0; margin:18px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(15rem,1fr)); gap:12px; }
   .kartlar a { display:block; height:100%; padding:14px 16px; border:1px solid var(--gridline); border-radius:14px; color:inherit; text-decoration:none; background:var(--surface-1); }
   .kartlar a:hover { border-color: var(--accent-interactive); } .kartlar b { font-family:"Fraunces Dost", Georgia, serif; font-size:1.15rem; display:block; } .kartlar span { font-size:.9rem; color:var(--text-secondary); }
-  nav.icin { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; } nav.icin a { min-height:40px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid var(--gridline); border-radius:20px; text-decoration:none; font-size:.93rem; }
+  header.ustbar { position:sticky; top:0; z-index:30; margin:0 -16px 18px; padding:6px 16px; background:var(--page-plane); border-bottom:1px solid var(--gridline); }
+  nav.icin { display:flex; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; gap:8px; margin:0; align-items:center; } nav.icin::-webkit-scrollbar { display:none; } nav.icin a { flex:none; white-space:nowrap; } nav.icin a.ana { color:var(--text-secondary); } nav.icin .ayrac { flex:none; width:1px; height:22px; background:var(--gridline); } nav.icin a { min-height:40px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid var(--gridline); border-radius:20px; text-decoration:none; font-size:.93rem; }
   nav.icin a[aria-current="page"] { border-color:var(--accent-interactive); color:var(--text-primary); }
   a.terim { color:inherit; text-decoration:underline dotted; text-underline-offset:3px; text-decoration-color:var(--text-muted); } a.terim:hover, a.terim:focus-visible { text-decoration-color:var(--accent-interactive); }
   figure.sekil { margin:18px 0 24px; } figure.sekil img { max-width:100%; height:auto; display:block; } figure.sekil figcaption { font-size:.9rem; color:var(--text-secondary); margin-top:6px; }
   .par-ara { display:block; height:.7em; }
+  .alinti-v { background:color-mix(in srgb, var(--accent-interactive) 11%, transparent); border-bottom:1px solid color-mix(in srgb, var(--accent-interactive) 40%, transparent); border-radius:3px; padding:0 .15em; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
   .sitede-gor { font-size:.9rem; color:var(--text-secondary); margin:-4px 0 10px; } .sitede-gor a { color:var(--accent-interactive); }
   .mk-suz { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 4px; } .mk-suz button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:var(--text-secondary); font:inherit; cursor:pointer; } .mk-suz button[aria-pressed="true"] { border-color:var(--accent-interactive); color:var(--text-primary); font-weight:600; } article.makale[hidden] { display:none; }
   main:has(#paralel) { max-width:1240px; }
-  html.yy-ic .ust, html.yy-ic .icin, html.yy-ic .mini-kabuk, html.yy-ic .kunye-kutu { display:none !important; } html.yy-ic main { padding-top:8px; padding-bottom:24px; max-width:none; }
+  html.yy-ic .ust, html.yy-ic .ustbar, html.yy-ic .icin, html.yy-ic .mini-kabuk, html.yy-ic .kunye-kutu { display:none !important; } html.yy-ic main { padding-top:8px; padding-bottom:24px; max-width:none; }
   .pl-sec { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0; } @media (max-width:900px) { .pl-sec { grid-template-columns:1fr; } }
   .pl-kol { display:flex; flex-direction:column; gap:4px; font-size:.85rem; color:var(--text-muted); min-width:0; } .pl-kol select, .pl-notlu textarea { font:inherit; font-size:1rem; color:var(--text-primary); background:var(--surface-1); border:1px solid var(--gridline); border-radius:10px; padding:8px 10px; min-height:44px; max-width:100%; }
   .pl-masa { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:min(70vh,760px); } .pl-masa iframe { width:100%; height:100%; border:1px solid var(--gridline); border-radius:12px; background:var(--page-plane); }
@@ -90,53 +92,52 @@
 </head>
 <body>
 <main>
-  <div class="ust"><a href="/en/">Dost Arabî</a><a href="/yan-yana/en/">Side by Side</a></div>
-  <nav class="icin" aria-label="Side by Side sections"><a href="/yan-yana/en/">Introduction</a><a href="/yan-yana/en/genel-sonuc/">Overall result</a><a href="/yan-yana/en/yeni-olgular/">New phenomena</a><a href="/yan-yana/en/yeni-kaliplar/">Other patterns</a><a href="/yan-yana/en/hayal-berzah/">Imagination and barzakh</a><a href="/yan-yana/en/hesapla-gor/">Compute and see</a><a href="/yan-yana/denetim-durumu/">Audit (TR)</a><a href="/yan-yana/sirli/">Mystery passages (TR)</a><a href="/yan-yana/en/makaleler/">Physics papers</a><a href="/yan-yana/en/paralel/">Parallel reading</a><a href="/yan-yana/hazine/">What did not fit (TR)</a><a href="/yan-yana/fusus/">Fusus (TR)</a><a href="/yan-yana/en/sozluk/" aria-current="page">Glossary</a><a href="/yan-yana/en/yontem/">Method</a><a href="/yan-yana/en/ceviri-sinamasi/">Translation check</a><a href="/yan-yana/en/kaynaklar/">Sources</a></nav>
+  <header class="ustbar"><nav class="icin" aria-label="Side by Side sections"><a class="ana" href="/en/">Dost Arabî</a><a class="ana" href="/yan-yana/en/">Side by Side</a><span class="ayrac" aria-hidden="true"></span><a href="/yan-yana/en/">Introduction</a><a href="/yan-yana/en/genel-sonuc/">Overall result</a><a href="/yan-yana/en/yeni-olgular/">New phenomena</a><a href="/yan-yana/en/yeni-kaliplar/">Other patterns</a><a href="/yan-yana/en/hayal-berzah/">Imagination and barzakh</a><a href="/yan-yana/en/hesapla-gor/">Compute and see</a><a href="/yan-yana/denetim-durumu/">Audit (TR)</a><a href="/yan-yana/sirli/">Mystery passages (TR)</a><a href="/yan-yana/en/makaleler/">Physics papers</a><a href="/yan-yana/en/paralel/">Parallel reading</a><a href="/yan-yana/hazine/">What did not fit (TR)</a><a href="/yan-yana/fusus/">Fusus (TR)</a><a href="/yan-yana/en/sozluk/" aria-current="page">Glossary</a><a href="/yan-yana/en/yontem/">Method</a><a href="/yan-yana/en/ceviri-sinamasi/">Translation check</a><a href="/yan-yana/en/kaynaklar/">Sources</a></nav></header>
   <h1>Glossary</h1>
   <aside class="kunye"><span class="muhur" aria-hidden="true"></span><p>This section is not a reading summary. It is an attempt to read Dost&#x27;s words side by side with the findings of physics that do not fit reason; it is our own reading frame. We do not say “the same” or “confirmed”: we only ask, and we say where they part ways. The text is our own rendering of a Turkish original.</p></aside>
 <article><p>Here we briefly explain words you may stumble on in the pages. The explanations on the Dost side are general and carry no interpretation: they say not what Dost says, but what the word generally means in Sufism. Those on the physics side are written at the level in which they appear in the pages and in the source summaries, with their generally accepted meanings. The names of the forms on the pages (Both-and, Non-repetition…) are explained by the introduction page.</p>
 <h3>Allah</h3>
 <p>In Sufism and the Islamic tradition, the proper name of God. In these pages you see the name mostly in Dost&#x27;s own sentences, where God is spoken of directly.</p>
 <h3>al-Haqq (Hak)</h3>
-<p>In Sufism, one of the names given to God; it means &quot;the real, the existent.&quot; It is most often said over against the creation, that is, the created. In the pages, &quot;Hak&quot; and &quot;Hakk&#x27;ın&quot; are the same word; the second is its possessive form. The name Allah mostly appears where God is spoken of directly, while Hak appears in paired expressions said in relation, such as Hak–creation and Hak–servant.</p>
+<p>In Sufism, one of the names given to God; it means <span class="alinti-v">&quot;the real, the existent.&quot;</span> It is most often said over against the creation, that is, the created. In the pages, &quot;Hak&quot; and <span class="alinti-v">&quot;Hakk&#x27;ın&quot;</span> are the same word; the second is its possessive form. The name Allah mostly appears where God is spoken of directly, while Hak appears in paired expressions said in relation, such as Hak–creation and Hak–servant.</p>
 <h3>Creation (halk)</h3>
-<p>In Sufism, said over against al-Haqq, it means &quot;the created, the created world.&quot; The pair &quot;al-Haqq and creation&quot; is a frequent paired way of speaking in the pages.</p>
+<p>In Sufism, said over against al-Haqq, it means <span class="alinti-v">&quot;the created, the created world.&quot;</span> The pair <span class="alinti-v">&quot;al-Haqq and creation&quot;</span> is a frequent paired way of speaking in the pages.</p>
 <h3>Lord (Rabb)</h3>
-<p>In Sufism, the name that describes the aspect of God that nurtures, educates, and gives direction to a being. In the pages it always appears together with the servant, as the &quot;Lord–servant&quot; relation. The Side by Side pages state everywhere separately at which level this relation is spoken of.</p>
+<p>In Sufism, the name that describes the aspect of God that nurtures, educates, and gives direction to a being. In the pages it always appears together with the servant, as the <span class="alinti-v">&quot;Lord–servant&quot;</span> relation. The Side by Side pages state everywhere separately at which level this relation is spoken of.</p>
 <h3>Servant (kul)</h3>
-<p>In Sufism, the name given to the human being as the being who serves God, over against God. In the pages it appears as one side of the pair &quot;al-Haqq and servant&quot; or &quot;Lord and servant.&quot;</p>
+<p>In Sufism, the name given to the human being as the being who serves God, over against God. In the pages it appears as one side of the pair <span class="alinti-v">&quot;al-Haqq and servant&quot;</span> or <span class="alinti-v">&quot;Lord and servant.&quot;</span></p>
 <h3>Ilah (ilâh)</h3>
-<p>In the language of Sufism, the name that describes the aspect of God as the one who is worshipped. In the pages it is mentioned together with the Lord and the servant, as &quot;the relations of ilah–Lord–servant.&quot;</p>
+<p>In the language of Sufism, the name that describes the aspect of God as the one who is worshipped. In the pages it is mentioned together with the Lord and the servant, as <span class="alinti-v">&quot;the relations of ilah–Lord–servant.&quot;</span></p>
 <h3>Essence (Dhat, Zât)</h3>
-<p>In Sufism, God&#x27;s own essence, thought of apart from His names, attributes, and self-disclosures. When speaking of a reciprocity or a relation, the Side by Side pages mostly add the note &quot;not at the level of the Essence.&quot;</p>
+<p>In Sufism, God&#x27;s own essence, thought of apart from His names, attributes, and self-disclosures. When speaking of a reciprocity or a relation, the Side by Side pages mostly add the note <span class="alinti-v">&quot;not at the level of the Essence.&quot;</span></p>
 <h3>Necessary (Vâcib)</h3>
-<p>In kalam and Sufism, that whose existence is from itself, that is, whose being does not depend on anything else. It is the opposite of &quot;possible&quot;; in the pages it appears as &quot;the asymmetry between the Necessary and the possible.&quot;</p>
+<p>In kalam and Sufism, that whose existence is from itself, that is, whose being does not depend on anything else. It is the opposite of &quot;possible<span class="alinti-v">&quot;; in the pages it appears as &quot;</span>the asymmetry between the Necessary and the possible.&quot;</p>
 <h3>Possible (Mümkün)</h3>
-<p>In kalam and Sufism, that which can both be and not be, that which takes its existence from another. It is the opposite of &quot;Necessary.&quot; It is distinct from the everyday sense of &quot;might be&quot;; in the pages this term appears with its own meaning.</p>
+<p>In kalam and Sufism, that which can both be and not be, that which takes its existence from another. It is the opposite of &quot;Necessary.<span class="alinti-v">&quot; It is distinct from the everyday sense of &quot;</span>might be&quot;; in the pages this term appears with its own meaning.</p>
 <h3>Relation (Nispet)</h3>
-<p>In Sufism, the connection between two things, the situation of one thing in relation to another. &quot;It is said at the level of relations&quot; means that a statement describes not the Essence but the relation among the names.</p>
+<p>In Sufism, the connection between two things, the situation of one thing in relation to another. <span class="alinti-v">&quot;It is said at the level of relations&quot;</span> means that a statement describes not the Essence but the relation among the names.</p>
 <h3>Level (Mertebe)</h3>
-<p>In Sufism, one of the steps of being or of knowledge. &quot;At which level a statement is said&quot; shows from which step it speaks.</p>
+<p>In Sufism, one of the steps of being or of knowledge. <span class="alinti-v">&quot;At which level a statement is said&quot;</span> shows from which step it speaks.</p>
 <h3>Self-disclosure (Tajalli, Tecellî)</h3>
-<p>In Sufism, it means that al-Haqq shows Himself in a form or a name. The word comes from the root &quot;to shine, to appear.&quot; It is one of the words that appear most often in Dost&#x27;s account.</p>
+<p>In Sufism, it means that al-Haqq shows Himself in a form or a name. The word comes from the root <span class="alinti-v">&quot;to shine, to appear.&quot;</span> It is one of the words that appear most often in Dost&#x27;s account.</p>
 <h3>Declaring incomparability (Tanzih, Tenzih)</h3>
-<p>In Sufism, the stance of keeping God far from resembling the created, of saying &quot;He is like nothing.&quot; It is the opposite of &quot;tashbih&quot;; Dost holds the two stances together.</p>
+<p>In Sufism, the stance of keeping God far from resembling the created, of saying <span class="alinti-v">&quot;He is like nothing.&quot;</span> It is the opposite of &quot;tashbih&quot;; Dost holds the two stances together.</p>
 <h3>Likening (Tashbih, Teşbih)</h3>
 <p>In Sufism, the stance of describing God through a likeness, starting from His traces in the created. It is the opposite of &quot;tanzih&quot;; the two together are often seen in Dost&#x27;s account.</p>
 <h3>Barzakh (Berzah)</h3>
 <p>In Sufism, it means the veil, the intermediate region standing between two worlds or two states. In these pages it is mentioned as the place between everyday perception and the unseen world.</p>
 <h3>Imagination (Hayal)</h3>
-<p>In Sufism, &quot;khayal&quot; does not mean the everyday &quot;thing that is not real.&quot; It also describes the intermediate realm, between sense and reason, in which forms appear. In the pages this term appears with this meaning; the dream is also counted as an example of this realm.</p>
+<p>In Sufism, &quot;khayal<span class="alinti-v">&quot; does not mean the everyday &quot;</span>thing that is not real.&quot; It also describes the intermediate realm, between sense and reason, in which forms appear. In the pages this term appears with this meaning; the dream is also counted as an example of this realm.</p>
 <h3>World (Âlem)</h3>
 <p>In Sufism, it means everything other than al-Haqq, that is, the whole of the created. With plural use (worlds), several levels of being can also be described; in these pages both appear.</p>
 <h3>Form (Sûret)</h3>
-<p>In Sufism, a thing&#x27;s visible shape, the mold in which it shows itself. A reflection in a mirror is also a form; &quot;form&quot; is often said over against &quot;the reality within.&quot;</p>
+<p>In Sufism, a thing&#x27;s visible shape, the mold in which it shows itself. A reflection in a mirror is also a form; &quot;form<span class="alinti-v">&quot; is often said over against &quot;</span>the reality within.&quot;</p>
 <h3>Veil (Perde)</h3>
 <p>In Sufism, that which separates one thing from another, that which covers it or makes it visible. In Dost&#x27;s account the veil often does not only cover; it also shows.</p>
 <h3>The immutable entities (A&#x27;yân-ı sâbite)</h3>
-<p>In Sufism, it means the fixed realities of beings in al-Haqq&#x27;s knowledge before they exist in the outer world. The word itself means &quot;fixed essences&quot;; in the sections read from Dost, their endlessness and the finitude of those who enter existence are said against each other.</p>
+<p>In Sufism, it means the fixed realities of beings in al-Haqq&#x27;s knowledge before they exist in the outer world. The word itself means <span class="alinti-v">&quot;fixed essences&quot;</span>; in the sections read from Dost, their endlessness and the finitude of those who enter existence are said against each other.</p>
 <h3>The Breath of the All-Merciful (Nefes-i rahmânî)</h3>
-<p>In Sufism, &quot;the breath of the Rahman&quot;; an image describing the world&#x27;s coming into being from al-Haqq, issuing like a breath.</p>
+<p>In Sufism, <span class="alinti-v">&quot;the breath of the Rahman&quot;</span>; an image describing the world&#x27;s coming into being from al-Haqq, issuing like a breath.</p>
 <h3>The moment (Vakit)</h3>
 <p>In Sufism, it means the state the seeker is in, the &quot;now&quot; he lives. It is distinct from the everyday sense of clock or time period; in these pages it is mentioned as it appears in the section&#x27;s own sentence.</p>
 <h3>Seeker (Salik, Sâlik)</h3>
@@ -144,9 +145,9 @@
 <h3>Sacred hadith (Hadith qudsi, Kutsî hadis)</h3>
 <p>In the Islamic tradition, a hadith whose meaning is held to belong to God and whose wording to the Prophet; it is conveyed in Allah&#x27;s own voice. When a sacred hadith appears in these pages, we have not examined its chain of transmission or its variants.</p>
 <h3>Transmission (Rivayet)</h3>
-<p>In the Islamic tradition, the passing on of a saying or report through a chain that states from whom to whom it was conveyed. &quot;According to the transmission&quot; means that the saying has reached us through the transmitting chain of its owner.</p>
+<p>In the Islamic tradition, the passing on of a saying or report through a chain that states from whom to whom it was conveyed. <span class="alinti-v">&quot;According to the transmission&quot;</span> means that the saying has reached us through the transmitting chain of its owner.</p>
 <h3>Commentator (Şârih)</h3>
-<p>One who explains a work, who writes a commentary. In these pages the authors of commentaries written on the Futuhat and the Fusus are called &quot;commentators.&quot;</p>
+<p>One who explains a work, who writes a commentary. In these pages the authors of commentaries written on the Futuhat and the Fusus are called <span class="alinti-v">&quot;commentators.&quot;</span></p>
 <h3>Futuhat (Fütûhât)</h3>
 <p>Ibn Arabi&#x27;s great work; its full name is al-Futuhat al-Makkiyya. On the site it stands as 18 volumes, 226 sections. These pages rest on its Turkish section summaries.</p>
 <h3>Dost</h3>
@@ -158,9 +159,9 @@
 <h3>Enigmatic item</h3>
 <p>In the notes we kept while reading, a single sentence or passage that we marked as a place that strains reason. It is our working label.</p>
 <h3>Difficulty score</h3>
-<p>A grade from 1 to 3 that we gave each enigmatic item. 1 means &quot;easily likened&quot;; 3 means &quot;we struggle greatly to find a likeness.&quot; It is our working label.</p>
+<p>A grade from 1 to 3 that we gave each enigmatic item. 1 means <span class="alinti-v">&quot;easily likened&quot;</span>; 3 means <span class="alinti-v">&quot;we struggle greatly to find a likeness.&quot;</span> It is our working label.</p>
 <h3>Superposition</h3>
-<p>The state in which, before measurement, several possibilities enter the calculation together for a quantum system. Superposition is said as a plain shorthand for &quot;it is both here and there,&quot; but the theory writes it as the adding of probability amplitudes by a particular calculation.</p>
+<p>The state in which, before measurement, several possibilities enter the calculation together for a quantum system. Superposition is said as a plain shorthand for <span class="alinti-v">&quot;it is both here and there,&quot;</span> but the theory writes it as the adding of probability amplitudes by a particular calculation.</p>
 <h3>Entanglement</h3>
 <p>The results of two particles in separate places look random when each is looked at alone, but when looked at together a relation emerges between them. This relation cannot be explained by narrating the particles as carrying something determined beforehand; it has been shown by experiments.</p>
 <h3>Decoherence</h3>
@@ -174,11 +175,11 @@
 <h3>Hidden variable</h3>
 <p>A hidden detail that the theory does not state but is assumed to determine the results beforehand. Bell experiments showed that these results cannot be explained with local-type hidden variables.</p>
 <h3>Locality</h3>
-<p>The idea that a thing can be affected only by what is near it, and cannot be affected instantly from a distance. Bell experiments show that the &quot;local hidden variable&quot; picture does not hold.</p>
+<p>The idea that a thing can be affected only by what is near it, and cannot be affected instantly from a distance. Bell experiments show that the <span class="alinti-v">&quot;local hidden variable&quot;</span> picture does not hold.</p>
 <h3>No-cloning</h3>
 <p>That an unknown quantum state cannot be copied exactly. This is a consequence of the theory; it also blocks proposals for faster-than-light communication through entanglement.</p>
 <h3>Teleportation</h3>
-<p>The process in which a quantum state, while being measured in one place, ceases to exist and is rebuilt in another place. Unlike the everyday &quot;teleportation,&quot; it does not carry matter; it carries the information of the state.</p>
+<p>The process in which a quantum state, while being measured in one place, ceases to exist and is rebuilt in another place. Unlike the everyday <span class="alinti-v">&quot;teleportation,&quot;</span> it does not carry matter; it carries the information of the state.</p>
 <h3>Uncertainty principle</h3>
 <p>The position and the momentum of a particle cannot be known at the same time with the desired precision; the product of the uncertainties cannot fall below a lower bound. Heisenberg set this out in 1927. It is a limit that comes not from the crudeness of the measuring instrument but from the structure of the theory.</p>
 <h3>Complementarity</h3>
@@ -206,21 +207,21 @@
 <h3>Relational interpretation</h3>
 <p>The interpretation that says a system&#x27;s properties take value not absolutely but relative to another system interacting with it. Rovelli proposed it; it is a proposal of an interpretation, not an experimental result.</p>
 <h3>Quantum Zeno effect</h3>
-<p>The situation in which a quantum system, when observed often enough, stays in its initial state and does not decay. It is also referred to as the &quot;quantum Zeno paradox.&quot;</p>
+<p>The situation in which a quantum system, when observed often enough, stays in its initial state and does not decay. It is also referred to as the <span class="alinti-v">&quot;quantum Zeno paradox.&quot;</span></p>
 <h3>Tunneling</h3>
 <p>The phenomenon of a particle appearing beyond a barrier that it could not classically pass. It is one of the oldest predictions of quantum mechanics.</p>
 <h3>Time dilation</h3>
 <p>According to special relativity, a moving clock runs slower relative to a stationary observer. Airplane experiments with atomic clocks have measured this.</p>
 <h3>Relativity of simultaneity</h3>
-<p>In relativity, that whether two events are &quot;at the same time&quot; can change from observer to observer. For this reason there is no &quot;universal now&quot; shared by everyone.</p>
+<p>In relativity, that whether two events are <span class="alinti-v">&quot;at the same time&quot;</span> can change from observer to observer. For this reason there is no <span class="alinti-v">&quot;universal now&quot;</span> shared by everyone.</p>
 <h3>Universal now</h3>
 <p>The idea of a single &quot;now&quot; that is the same for everyone. Relativity does not support such a common now.</p>
 <h3>Observer</h3>
 <p>In physics, anything that makes a measurement or interacts with a system; it need not be a human. Interpretations give the observer different roles.</p>
 <h3>Causality</h3>
-<p>One event&#x27;s being the consequence of another event, chains of cause and effect. No violation of causality has been found in physics; in some cases only the &quot;before–after&quot; order remains undefined.</p>
+<p>One event&#x27;s being the consequence of another event, chains of cause and effect. No violation of causality has been found in physics; in some cases only the <span class="alinti-v">&quot;before–after&quot;</span> order remains undefined.</p>
 <h3>Einselection</h3>
-<p>The name Zurek uses to describe the remaining of a few stable states that the environment does not disturb (&quot;selection made by the environment&quot;). It is a part of the account of decoherence.</p></article>
+<p>The name Zurek uses to describe the remaining of a few stable states that the environment does not disturb (<span class="alinti-v">&quot;selection made by the environment&quot;</span>). It is a part of the account of decoherence.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
 <nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/">Map</a><a href="/futuhat/">Futuhat</a><a href="/fusus/">Fusus</a><a href="/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
