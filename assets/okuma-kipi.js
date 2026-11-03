@@ -602,6 +602,12 @@
   // ── Panel ───────────────────────────────────────────────────────────────
   var panel = null, dugme = null, katman = null;
   function acikMi() { return !!panel && !panel.hidden; }
+  function vurguYaz() {
+    var b = panel && panel.querySelector('[data-a="vurgu"]'); if (!b) return;
+    var kapali = document.documentElement.classList.contains("vurgu-kapali");
+    b.setAttribute("aria-pressed", kapali ? "true" : "false");
+    b.textContent = kapali ? t({ tr: "Metin vurgularını aç", en: "Turn text highlights on", pt: "Ativar destaques no texto" }) : t({ tr: "Metin vurgularını kapat", en: "Turn text highlights off", pt: "Desativar destaques no texto" });
+  }
   function kurPanel() {
     panel = document.createElement("section");
     panel.className = "okuma-arac";
@@ -620,9 +626,11 @@
     h += '<div class="okuma-arac__bol" data-bol="isaret"></div><div class="okuma-arac__bol" data-bol="capa"></div>';
     if (window.matchMedia && window.matchMedia("(min-width: 1000px)").matches) h += '<div class="okuma-arac__bol" data-bol="yan"><h3 class="okuma-arac__alt"></h3><button type="button" class="okuma-arac__cal okuma-arac__not-ac" data-a="yan"></button></div>';
     h += '<div class="okuma-arac__bol" data-bol="alinti"><h3 class="okuma-arac__alt"></h3><button type="button" class="okuma-arac__cal okuma-arac__not-ac" data-a="alinti"></button><p class="okuma-arac__not okuma-arac__alinti-not" role="status"></p></div>';
+    h += '<div class="okuma-arac__bol" data-bol="vurgu"><button type="button" class="okuma-arac__cal" data-a="vurgu" aria-pressed="false"></button></div>';
     h += '<div class="okuma-arac__bol" data-bol="kip"><h3 class="okuma-arac__alt"></h3><div class="okuma-arac__kipler" role="group"></div><p class="okuma-arac__not okuma-arac__kip-not"></p></div>';
     h += '<div class="okuma-arac__bol" data-bol="yazi"><details class="okuma-arac__ac"><summary class="okuma-arac__alt"></summary><div class="okuma-arac__yazi-gruplar"></div><button type="button" class="okuma-arac__oge okuma-arac__sifirla" data-a="yazi-sifirla"></button></details></div>';
     panel.innerHTML = h;
+    vurguYaz();
     panel.querySelector(".okuma-arac__baslik").textContent = t(Y.baslik);
     panel.addEventListener("click", function (e) {
       var b = e.target.closest("button");
@@ -634,6 +642,7 @@
       else if (a === "sonraki") { if (!sesListe.length) baslat(); else ilerle(1); }
       else if (a && a.indexOf("not-") === 0) notEylem(a);
       else if (a === "alinti") alintiAc();
+      else if (a === "vurgu") { var kapali = !document.documentElement.classList.contains("vurgu-kapali"); if (window.DostGraphUtils && window.DostGraphUtils.vurguAyar) window.DostGraphUtils.vurguAyar(kapali); vurguYaz(); }
       else if (a === "yan") {
         paneliKapat();
         window.__dostOnceYukle("yan-yana").then(function () { return window.DostYanYana.ac(location.pathname); }).catch(function () { if (dugme) dugme.focus(); });

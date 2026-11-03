@@ -192,7 +192,7 @@
   function temizKlon(el) {
     const c = el.cloneNode(true);
     c.querySelectorAll(".durus-rozet-grup, bdi.honorific, .dost-revise-arac, .par-ara").forEach((n) => n.remove()); // .par-ara: paragraf kuralı işareti (graph-utils), veride yok
-    c.querySelectorAll("a.cross-link, span.glossary-hint, mark.durus-vurgu-es, span.alinti-v, font, span[style]").forEach(unwrap);
+    c.querySelectorAll("a.cross-link, span.glossary-hint, mark.durus-vurgu-es, span.alinti-v, span.kunye-v, font, span[style]").forEach(unwrap);
     c.querySelectorAll("[style]").forEach((n) => n.removeAttribute("style"));
     c.querySelectorAll("[contenteditable]").forEach((n) => n.removeAttribute("contenteditable"));
     // "Üç ses" işareti (graph-utils dostSozIsaretle) çizimde eklenir, veride

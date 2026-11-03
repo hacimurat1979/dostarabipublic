@@ -2294,8 +2294,26 @@ window.DostGraphUtils = (function () {
       return p.replace(/(["\u201c])([^"\u201c\u201d<>]{12,400}?)(["\u201d])/g, '<span class="alinti-v">$1$2$3</span>');
     }).join("");
   }
+  // Vurguları kapatma anahtarı (localStorage dost-vurgu=kapali; html.vurgu-kapali). Okuma araçları panelinden değişir.
+  try { if (localStorage.getItem("dost-vurgu") === "kapali") document.documentElement.classList.add("vurgu-kapali"); } catch (e) { /* depolama kapalı */ }
+  function vurguAyar(kapali) {
+    document.documentElement.classList.toggle("vurgu-kapali", !!kapali);
+    try { if (kapali) localStorage.setItem("dost-vurgu", "kapali"); else localStorage.removeItem("dost-vurgu"); } catch (e) { /* depolama kapalı */ }
+  }
+  // Künye/sayı işaretleri (kural, 2026-11-03): "(s. 211)", "(pp. 3–5)", "831/1428" tek biçimli, sönük, sabit genişlikli rakamla yazılır.
+  // Yalnız biçime bakar; anlam yorumu yok. <em>/<a>/<strong>/<code> içine dokunmaz.
+  function kunyeVurgu(html) {
+    if (html == null) return html;
+    const kapsa = { em: 0, a: 0, strong: 0, code: 0, mark: 0, button: 0, bdi: 0 };
+    return String(html).split(/(<[^>]+>)/).map((p) => {
+      const t = /^<(\/?)([a-z0-9]+)/i.exec(p);
+      if (t) { const ad = t[2].toLowerCase(); if (ad in kapsa) kapsa[ad] += t[1] ? -1 : 1; return p; }
+      if (Object.keys(kapsa).some((k) => kapsa[k] > 0)) return p;
+      return p.replace(/\((?:ss?\.|pp?\.) ?\d[\d\u2013\-, ]*\)|\b\d{3,4}\/\d{4}\b/g, '<span class="kunye-v">$&</span>');
+    }).join("");
+  }
 
-  return { alintiVurgu, paragrafAra, paragrafTara, gonulIzleri, gonulIzi, zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, daireAcilis, gezildi, defterOdagi, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
+  return { vurguAyar, kunyeVurgu, alintiVurgu, paragrafAra, paragrafTara, gonulIzleri, gonulIzi, zenginParagraflar, zenginDuz, yaz, kareAraligi, kareIste, telefonMu, telefonHaritasi, _telefonBekleyen, _telefonlar, wakeViews, dostSozIsaretle, getVar, has3, edgeKimligiCoz, orderKeepFocus, sortKeepFocus, analogyHtml, readingNavHtml, wireReadingNav, moveTooltip, hideTooltip, LAYER_COLOR, LAYER_COLOR_DARK, ZAT_FILL, zatFill, CONFIDENCE_LABEL, confSlug, isDark, setupLegendToggles, createDragBehavior, setupDetailPanelFocus, createZoomBehavior, wireRecenter, registerStepBack, stepBackView, tarihAdimi, tarihOncekiYol, tarihKatmani, yuzeyKatmani, tarihGorunumAdimi, gorunumAdimi, gorunumAdimiBitti, edgeReasonHtml, gateTransition, daireAcilis, gezildi, defterOdagi, fetchJson, isViewActive, onViewWake, createFrameLoop, createTilt, createLabelDeconflictor, attachLeaderLines, debounceResize, createMobileListFallback, baslangicCipiHtml, cipOrtala, wireEdgeAccessibility, escapeHtml, sayiEki, FCA_SHOW_LABEL, fcaCaption, wireFcaButton };
 })();
 
 // DostMeta (2026-10-09, dalga-web): sekme başlığı, açıklama, canonical,

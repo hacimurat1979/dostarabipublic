@@ -71,17 +71,17 @@
     __terimlerApp: { src: "assets/terimler.js", integrity: "sha384-cRFOT8V9tJhD1WDQyXJ0YGWTCji0kr394/o472QeXeO0rjfMQQU6mF6tx3a8+6jS", wrap: "terimler-wrap" },
     __sorularApp: { src: "assets/sorular.js", integrity: "sha384-mbMH/kDeJr2TaMhBzIA+jZpo+BYWHd68rPPwNSc/IhtJ6iEW/Z1rFgnaikf9ced8", wrap: "sorular-wrap" },
     __menzillerApp: { src: "assets/menziller.js", integrity: "sha384-P8B7I98ssPTCstj/rbumfgWiNwzxYS9yIMyeyciWjav8NCNGkCJiNwQp/TOP1M8q", wrap: "menziller-wrap" },
-    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-T0MhBLmlG+BSpzP8C5AVZhk5DU2nEoq8xbPuJScCpqd7gKrM2ayhIACrjcHhS2WP", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
+    __futuhatApp: { src: "assets/futuhat.js", integrity: "sha384-zOEs3vtGbkWPXbBY0kFLJgV6+TfxCyeGfcZj1X0Vnm/q5dgtrxm3C+7OXY8/YuuX", wrap: "futuhat-wrap", once: "okuma-yuzeyi" },
     __semalarApp: { src: "assets/semalar.js", integrity: "sha384-KTTAJoCGIfGirT8jgTjh0vEWD3i+jjssk2Wk2TIMYAe7U05GiHFyXN2UK20omAeX", wrap: "semalar-wrap" },
     __cizimlerApp: { src: "assets/cizimler.js", integrity: "sha384-eV2jKPoFJzZa7CQxupPmYvuzmMpYQo9pX8YzlMIL7z2r/PCYvEZEWDm2SurMXT8n", wrap: "cizimler-wrap" },
     __tasiyicilarApp: { src: "assets/tasiyicilar.js", integrity: "sha384-AOP5aDLS2dC8w8sffn6nZaVsbeevPni77ovb5yWgoca5rRLKlPwYZV6ELOvWjuHE", wrap: "tasiyicilar-wrap" },
-    __fususApp: { src: "assets/fusus.js", integrity: "sha384-/XdAQ4L/gpE14zMM1ROi3Y4iqsnunGmsACRqPUKJIUidoV5EoGCdb93ghb+cjL2E", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
-    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-omecVk9IuvZURAvXWdG639eNw14dQS+BgzPiAo0sd4smupgxf95lvZJSn80W841E", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
+    __fususApp: { src: "assets/fusus.js", integrity: "sha384-7LEywSWdC1ZavBetoq+01f7rViSTA/jMXbWBeWOToJYHdqcn1gMPj1REB6ZM5SQP", wrap: "fusus-wrap", once: "okuma-yuzeyi" },
+    __miskatApp: { src: "assets/miskat.js", integrity: "sha384-OkJa4ZVuLK9E4bfdrxlu5RiR9IVHwg8RVGD7TTNANWjoJScxllKhjSI+uu64L5Mo", wrap: "miskat-wrap", once: "okuma-yuzeyi" },
   };
 
   // Gizli kipler (bkz. dosya başı). Sıra önemsiz; @revise üçünü birlikte ister.
   var KIPLER = {
-    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-gJJ8p1Ikx0AiZUSwkHHAA90pueh4IhIUu6ZknoRXShETGe9t1CsAGzT8xK97JHXJ" },
+    "edit-mode": { src: "assets/edit-mode.js", integrity: "sha384-PkbnTtcMELg6ac/rOoFVjp45WeLd5zySuowBeZNdc+cqrY9lI2yQVxxii8khIo1v" },
     "durus-kontrol": { src: "assets/durus-kontrol.js", integrity: "sha384-NDS9XPXNHNu+nD/CqJ+eZY9g09LC8CZOV+iwH0CaZvML9GTNQxfx8MonL4kfjUt2" },
     "tahkik-tarama": { src: "assets/tahkik-tarama.js", integrity: "sha384-JgPIHdHSscPiJZ/iUzOjMa3p2zSjY+cPVybIhSz7lKviXDhE0U5XIVL8KNfucvbP" },
     "share-mode": { src: "assets/share-mode.js", integrity: "sha384-vnaK/EBe4CgpVI1vCtjK18iRkNG4xOFQN/R3k9wTHmpKrJ2LHoXcDjgEctp+bvuM" },
@@ -109,7 +109,7 @@
     "okuma-yuzeyi": { src: "assets/okuma-yuzeyi.js", integrity: "sha384-4DiJyZTa/SVo311GRyyM3118nmUThZYm0LoeRSNIw5Ay80xJAHn6NRcspV/P0qTX" },
     // Okuma araçları (2026-10-29): Dinle + Okuma kipi; okuma-yuzeyi.js düğmeye ilk dokunuşta
     // (ya da kayıtlı kip varsa ilk çizimde) window.__dostOnceYukle("okuma-kipi") ile indirir.
-    "okuma-kipi": { src: "assets/okuma-kipi.js", integrity: "sha384-Z51LzS3X01UIqV62f/UaKVaQahffaWHkP42oyDvG31iBNycWLY3a4Rbny9qVkocF" },
+    "okuma-kipi": { src: "assets/okuma-kipi.js", integrity: "sha384-kkLzhTPdTl8P3j1O/zOfOmbIHCO2s3JPcYgF0hF1dRrS31siVM5PX77psfY6IMSP" },
     // Defterim yedeği/taşıma kodu (2026-10-29): kavram-defteri.js "Yedek ve taşıma" düğmesinde indirir.
     "defter-yedek": { src: "assets/defter-yedek.js", integrity: "sha384-xI2Ly3nAgUVyiXfidie9mNvOQDba0lkConfZmuOicY/jQnzEwK2ppVUDL16do3WT" },
     // Alıntı ve atıf (2026-10-29): okuma-kipi.js panelindeki "Alıntı ve atıf" düğmesinde iner.
