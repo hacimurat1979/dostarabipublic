@@ -88,6 +88,8 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
 - **Yan Yana üç dilli (2026-11-02):** `/yan-yana/en/` ve `/yan-yana/pt/` (Türkçe kaynağın çevirisi, bizim aktarımımız); sırlı dizini, Sığmayanlar, Füsûs ve Denetim yalnız Türkçe.
   Fizik makaleleri 63 konu; kısaltmalar (HEM…) tam adla yazılır; sözlükte sitedeki düğümlere köprü. Kaynak özel repoda; burada elle değişiklik yapılmaz.
 
+- **Yan Yana gezinme ve araçlar (2026-11-03):** Bölümler menüsü + arama, biçimler arası ileri/geri, içindekiler, cihazda "okudum" işareti, terim kutusu, Kaynaklar süzgeci, Genel sonuçta yakınlık haritası; sayfalar aramaya ve sitemap'e açıldı. Kaynak özel repoda.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.

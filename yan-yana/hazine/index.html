@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- scripts/yanyana-uret.py üretir (elle düzenlenmez). Bizim okuma çerçevemiz, okuma özeti DEĞİL. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
-<meta name="robots" content="noindex, follow">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <title>Sayfalara sığmayanlar — Dost Arabî</title>
 <meta name="description" content="Fütûhât okumasında biçim sayfalarına girmemiş en zor maddelerin dökümü; yorum yok.">
 <link rel="canonical" href="https://dostarabi.com/yan-yana/hazine/">
@@ -74,6 +74,23 @@
   article.sirli { border-top:1px solid var(--gridline); padding:10px 0 4px; } article.sirli h4 { margin:0 0 4px; font-size:.95rem; color:var(--text-secondary); } .sirli-rozet { margin:0 0 6px; } .sirli-isaret, .sirli-konu { font-size:.93rem; color:var(--text-secondary); margin:2px 0; }
   .kaynak-liste { list-style:none; padding:0; } .kaynak-liste li { margin:0 0 14px; padding:12px 14px; border:1px solid var(--gridline); border-radius:12px; } details summary { cursor:pointer; color:var(--accent-interactive); margin-top:6px; } .belirsiz { font-size:.88rem; color:var(--text-muted); }
   .sinama { padding:10px 14px; border:1px solid var(--gridline); border-radius:12px; font-size:.93rem; color:var(--text-secondary); margin:6px 0 22px; }
+  /* 3 Kasım: okuma ölçüsü, içindekiler, biçim gezintisi, yakınlık haritası, terim kutusu, arama, kaynak süzgeci */
+  main > h1, main > .kunye, main > article > :is(p, ul, ol, blockquote, h2, h3, h4, details, figure), main > .yh-fig, main > .onsonra, main > .icerik, main > .okundu { max-width:46rem; }
+  main:has(.yy-yanyana) > article > .yy-yanyana { max-width:none; }
+  main:has(.yy-yanyana) { max-width:1240px; }
+  .icerik { margin:0 0 18px; border:1px solid var(--gridline); border-radius:14px; padding:2px 14px; } .icerik > summary { min-height:44px; display:flex; align-items:center; margin:0; } .icerik ol { margin:0 0 12px; padding-left:1.2rem; font-size:.95rem; } .icerik li { margin:3px 0; } .icerik li.alt { margin-left:1rem; list-style:circle; } .icerik a { display:inline-block; min-height:32px; line-height:32px; }
+  nav.onsonra { display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin:34px 0 8px; padding-top:18px; border-top:1px solid var(--gridline); } nav.onsonra a { display:flex; flex-direction:column; min-height:44px; justify-content:center; padding:8px 14px; border:1px solid var(--gridline); border-radius:14px; text-decoration:none; color:var(--text-primary); } nav.onsonra a small { color:var(--text-muted); } nav.onsonra a[rel=next] { text-align:right; align-items:flex-end; } nav.onsonra a.tum { align-items:center; text-align:center; } @media (max-width:560px) { nav.onsonra { grid-template-columns:1fr 1fr; } nav.onsonra a.tum { grid-column:1 / -1; order:3; } }
+  ul.yollar { list-style:none; padding:0; margin:0 0 8px; } ul.yollar li { margin:0 0 10px; padding:10px 14px; border:1px solid var(--gridline); border-radius:12px; }
+  figure.yh-fig { margin:22px 0 28px; } figure.yh-fig h2 { margin:0 0 6px; } .yh-not { font-size:.92rem; color:var(--text-secondary); } svg.yh { width:100%; max-width:680px; height:auto; display:block; margin:8px auto; }
+  svg.yh .yh-m { fill:var(--text-muted); font-size:20px; font-family:"Fraunces Dost", Georgia, serif; } svg.yh .yh-e { fill:var(--text-primary); font-size:19px; } svg.yh a { cursor:pointer; text-decoration:none; } svg.yh a:hover .yh-e, svg.yh a:focus-visible .yh-e { fill:var(--accent-interactive); font-weight:600; } svg.yh a:focus-visible { outline:2px solid var(--accent-interactive); outline-offset:3px; }
+  svg.yh .yh-c { stroke:var(--gridline); stroke-width:1.5; } svg.yh .yh-d, .yh-i { stroke-width:1.5; } .yh-d1 { fill:var(--accent-interactive); stroke:var(--accent-interactive); } .yh-d2 { fill:color-mix(in srgb, var(--accent-interactive) 40%, transparent); stroke:var(--accent-interactive); } .yh-d3 { fill:var(--mavi); stroke:var(--mavi); } .yh-d4 { fill:none; stroke:var(--text-muted); }
+  @media (max-width:560px) { svg.yh .yh-e { font-size:27px; } svg.yh .yh-m { font-size:26px; } }
+  ul.yh-lej { list-style:none; padding:0; font-size:.95rem; } ul.yh-lej li { display:flex; gap:10px; align-items:baseline; } .yh-i { display:inline-block; flex:none; width:14px; height:14px; border-radius:50%; border:1.5px solid; transform:translateY(2px); } .yh-i.yh-d1 { background:var(--accent-interactive); } .yh-i.yh-d2 { background:color-mix(in srgb, var(--accent-interactive) 40%, transparent); border-color:var(--accent-interactive); } .yh-i.yh-d3 { background:var(--mavi); } .yh-i.yh-d4 { background:none; border-color:var(--text-muted); }
+  .terim-kutu { position:absolute; z-index:60; max-width:min(22rem, calc(100vw - 24px)); padding:12px 14px; border:1px solid var(--gridline); border-radius:12px; background:var(--page-plane); box-shadow:0 10px 28px rgba(0,0,0,.18); font-size:.93rem; line-height:1.55; } .terim-kutu b { display:block; font-family:"Fraunces Dost", Georgia, serif; font-size:1rem; margin-bottom:4px; } .terim-kutu a { display:inline-flex; min-height:44px; align-items:center; }
+  .bolum-ara { width:100%; flex:0 0 100%; display:block; } .bolum-ara input { width:100%; min-height:44px; padding:0 14px; border:1px solid var(--gridline); border-radius:22px; background:var(--surface-1); color:inherit; font:inherit; } .bolum-sonuc { flex:0 0 100%; list-style:none; margin:0; padding:0; } .bolum-sonuc li a { display:block; min-height:44px; padding:8px 4px; border:0; border-bottom:1px solid var(--gridline); border-radius:0; } .bolum-sonuc small { color:var(--text-muted); display:block; }
+  a.okundu-i::after { content:" ✓"; color:var(--accent-interactive); } .okundu { margin:22px 0 4px; } .okundu button { min-height:44px; padding:0 18px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .okundu button[aria-pressed=true] { border-color:var(--accent-interactive); }
+  .kay-ara { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; align-items:center; } .kay-ara input { flex:1 1 14rem; min-height:44px; padding:0 14px; border:1px solid var(--gridline); border-radius:22px; background:var(--surface-1); color:inherit; font:inherit; } .kay-ara button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .kay-ara button[aria-pressed=true] { border-color:var(--accent-interactive); } .kay-say { color:var(--text-muted); font-size:.9rem; }
+  html.yy-ic .icerik, html.yy-ic .okundu, html.yy-ic nav.onsonra { display:none; }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
@@ -87,6 +104,7 @@
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
 </style>
 <script src="/assets/gonul-revise.js" defer></script>
+<script src="/assets/yy-gezin.js" defer></script>
 </head>
 <body>
 <main>
@@ -95,7 +113,7 @@
   <aside class="kunye"><span class="muhur" aria-hidden="true"></span><p>Bu bölüm bir okuma özeti değildir. Dost&#x27;un sözlerini, fiziğin akla sığmayan bulgularıyla yan yana okuma denemesidir; bizim okuma çerçevemizdir. “Aynıdır” ya da “doğrulandı” demiyoruz: yalnız soruyoruz, ayrıldıkları yeri de söylüyoruz.</p></aside>
 <article data-dost-dosya="research/kuantum/site/hazine.md" data-dost-kaynak="hazine"><p class="gonul-duzenle" data-dost-alan="b1">Bu sayfa bir yorum değil, bir döküm. Fütûhât&#x27;ı okurken akla sığmaz bulduğumuz yerlerin en zorlarından, biçim sayfalarına girmemiş olanları, en yoğun sekiz kısımda topladık. Her satırda Dost&#x27;un cümlesi (ya da onun kısa özeti) ve o cümleye verdiğimiz biçim etiketi var. Hiçbirini fizikle yan yana okumadık, hiçbiri hakkında bir şey söylemiyoruz.</p>
 <p class="gonul-duzenle" data-dost-alan="b2">Etiketlerin açılımı giriş sayfasında. <a class="terim" href="/yan-yana/sozluk/#kisim-numarasi" title="c10k133 gibi bir gösterim, 10. cilt 133. kısım demektir; &quot;s.&quot; sayfa numarasını gösterir.">Kısım numarası</a> <code><a href="/futuhat/c12k147/">c12k147</a></code> = 12. cilt, 147. kısım; numaraya basınca kısmın sayfasına gidersiniz.</p>
-<h3 class="gonul-duzenle" data-dost-alan="b3"><a href="/futuhat/c12k147/">c12k147</a> — Nokta ve Çevre: Dost&#x27;un Kendi Çizdiği Daire Şeması</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b3" id="c12k147--nokta-ve-cevre-dostun-kendi-cizdigi-daire-semasi"><a href="/futuhat/c12k147/">c12k147</a> — Nokta ve Çevre: Dost&#x27;un Kendi Çizdiği Daire Şeması</h3>
 <ul><li class="gonul-duzenle" data-dost-alan="b4.0">Ol ayetinde üç harften ikisi görünür, biri gizlidir; sözdeki takdim, tehir ve tertibi ed-Dehr ortaya çıkarır; Dost Hz. Peygamber&#x27;in Zamana sövmeyin, zaman Allah&#x27;tır dediğini aktarıyor. <span class="kunye-v">(s. 332-334)</span> (biçim: Zaman, İlişki)</li></ul>
 <blockquote class="gonul-duzenle" data-dost-alan="b5">«Bu sebepler, ortaya çıkan mertebe yönüyle senden üstün olsalar bile, maksat varlık sensin; o sebepler senden dolayı ve sen ortaya çıkasın diye vardır.» (<a href="/futuhat/c12k147/">c12k147</a>, s. 286-287)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b6">Biçim: Sebep, Zaman.</p>
@@ -117,7 +135,7 @@
 <p class="gonul-duzenle" data-dost-alan="b22">Biçim: Hem-hem, Bütünlük, İlişki.</p>
 <ul><li class="gonul-duzenle" data-dost-alan="b23.0">Hayvanlar, bitkiler ve cansız varlıklar gerçekte natıktır (idrak eder, konuşur); bunu keşif ve iman ehli müşahede eder. Canlılığı görünene canlı, canlılığı gizli kalana bitki ya da donuk denmiştir. <span class="kunye-v">(s. 264-266)</span> (biçim: Bakış, Hem-hem)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b24.0"><a class="terim" href="/yan-yana/sozluk/#mumkun" title="Kelâm ve tasavvufta var da olabilen yok da olabilen, varlığını başkasından alan demektir; &quot;vâcib&quot;in karşıtıdır.">Mümkün</a>ler dış varlığı olmayan sübûtî bir duyma ve görmeyle duyulur ve görülür; Hakk&#x27;ın ol emri kendilerine duyurulunca emre koşar. <span class="kunye-v">(s. 265)</span> (biçim: Hem-hem, Zaman)</li></ul>
-<h3 class="gonul-duzenle" data-dost-alan="b25"><a href="/futuhat/c16k222/">c16k222</a> — Velilerin Mührü ve İlahi İsimlerin Mertebeleri — Cilt XVI&#x27;nın Kapanışı</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b25" id="c16k222--velilerin-muhru-ve-ilahi-isimlerin-mertebeleri--cil"><a href="/futuhat/c16k222/">c16k222</a> — Velilerin Mührü ve İlahi İsimlerin Mertebeleri — Cilt XVI&#x27;nın Kapanışı</h3>
 <blockquote class="gonul-duzenle" data-dost-alan="b26">«Binaenaleyh ilahi isimler, yine ilahi isimlere dayanmış, bağlanmıştır; isimler ise isimlendirilenin kendisidir. O halde iş ve emir, Allah&#x27;tan Allah&#x27;adır.» (<a href="/futuhat/c16k222/">c16k222</a>, s. 305)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b27">Biçim: Hem-hem, Bütünlük, Ayırt edilemezlik.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b28">«Çünkü her suretin bir ruhu var olduğu gibi duymanın ruhu da duyulan hakkındaki anlayıştır.» (<a href="/futuhat/c16k222/">c16k222</a>, s. 306)</blockquote>
@@ -142,7 +160,7 @@
 <p class="gonul-duzenle" data-dost-alan="b47">Biçim: Bakış, Ayırt edilemezlik, Sığma.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b48">«Bu mertebe bilgi ve cehalet arasındaki mertebedir.» (<a href="/futuhat/c16k222/">c16k222</a>, s. 359)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b49">Biçim: Hem-hem, İçeride-dışarıda, Bütünlük.</p>
-<h3 class="gonul-duzenle" data-dost-alan="b50"><a href="/futuhat/c17k224/">c17k224</a> — Otuz Dördüncü Sifr: Çeşitli Menzillerden Hakikatler ve Sırlar</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b50" id="c17k224--otuz-dorduncu-sifr-cesitli-menzillerden-hakikatler"><a href="/futuhat/c17k224/">c17k224</a> — Otuz Dördüncü Sifr: Çeşitli Menzillerden Hakikatler ve Sırlar</h3>
 <ul><li class="gonul-duzenle" data-dost-alan="b51.0">102. bölümden: Bilgi bilinenin değişmesiyle değişirken bilinen de ancak bilgi sayesinde başkalaşır. <span class="kunye-v">(s. 279)</span> (biçim: Bilgi, İlişki)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b52.0">113. bölümden: Muvahhidin tevhidi şirktir. Her kim &#x27;birledim&#x27; derse, hiç kuşkusuz, mutlak birliği, yani ahadiyeti bozmuştur. <span class="kunye-v">(s. 288)</span> (biçim: Hem-hem, Akıl)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b53.0">148. bölümden: Âlemde ortaya çıkmış en kuvvetli doğruluk yaratılmışın Hakkın üzerinde hüküm vermesidir. <span class="kunye-v">(s. 317)</span> (biçim: İlişki, Sebep)</li></ul>
@@ -155,7 +173,7 @@
 <ul><li class="gonul-duzenle" data-dost-alan="b60.0">211. bölümden: Kime baktığını bilmen gerektiği gibi kimin baktığını da öğrenmen gerekir. <span class="kunye-v">(s. 360)</span>; Bu nedenle Allah&#x27;a delil ancak Allah&#x27;tır <span class="kunye-v">(s. 360)</span> (biçim: Bakış, Bilgi, Ayırt edilemezlik)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b61.0">229. bölümden: Müminin kalbi en genişi kendinde barındırır. <span class="kunye-v">(s. 368)</span> (biçim: Sığma)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b62.0">237. bölümden (gurbet): Leyla&#x27;nın Kays&#x27;a sen kimsin? diye sorduğu, Kays&#x27;ın Leyla diye cevap verdiği anlatılıyor <span class="kunye-v">(s. 374)</span>. (biçim: Ayırt edilemezlik)</li></ul>
-<h3 class="gonul-duzenle" data-dost-alan="b63"><a href="/futuhat/c9k124/">c9k124</a> — &#x27;Araştırmak Sana Kalmış&#x27;: Cilt IX&#x27;un En Uzun Kısmı ve Sessiz Kapanışı</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b63" id="c9k124--arastirmak-sana-kalmis-cilt-ixun-en-uzun-kismi-ve-se"><a href="/futuhat/c9k124/">c9k124</a> — &#x27;Araştırmak Sana Kalmış&#x27;: Cilt IX&#x27;un En Uzun Kısmı ve Sessiz Kapanışı</h3>
 <ul><li class="gonul-duzenle" data-dost-alan="b64.0">Zaman ve mekânın dışta varlığı olmayan mevhum nitelikte olduğu tartışılıyor; felek ile unsurun hareket–durağanlık farkı. (biçim: Zaman, Akıl)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b65.0">255. Bölüm: Mahk, senin O&#x27;nda fani olman demek iken mahku&#x27;l-mahk ise senin O&#x27;nda sabit olman demektir <span class="kunye-v">(s. 400)</span>; mahk halifelik ve vekillik yoluyla oluşta O&#x27;nunla zuhur etmek; halifelik surelerin başındaki harflerin (Elif, Lâm, Mîm) anlamlarını öğrenmeye bağlanıyor <span class="kunye-v">(s. 401-402)</span>. Bir zamanda yalnız bir kişi (Gavs, Kutub) <a class="terim" href="/yan-yana/sozluk/#hak" title="Tasavvufta Tanrı&#x27;ya verilen adlardan biridir; &quot;gerçek, var olan&quot; anlamına gelir ve çoğu zaman halk (yaratılmışlar) karşısında söylenir; sayfalarda &quot;Hak&quot; ve &quot;Hakk&#x27;ın&quot; (Hak sözünün tamlamalı hâli) aynı sözdür.">Hak</a> ile baş başa kalır <span class="kunye-v">(s. 402)</span>. (biçim: Hem-hem, Ayırt edilemezlik, Hayret)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b66.0">260–261. Bölümler: kurb bir çizgiyle kesilen dairenin iki ucu veya daha yakın olma halidir <span class="kunye-v">(s. 411)</span>; Gerçekte ise Allah&#x27;tan uzaklığa imkân yoktur. Uzaklık göreli bir durumdur <span class="kunye-v">(s. 415)</span>; Yakınlık toplanma, uzaklık ise dağılma ve ayrılmadır; âlemden Allah&#x27;tan daha uzağı yoktur <span class="kunye-v">(s. 418)</span>. (biçim: Hem-hem, Bakış)</li></ul>
@@ -168,7 +186,7 @@
 <ul><li class="gonul-duzenle" data-dost-alan="b73.0">213. Bölüm: çokluğu sabitlik bakımından kabul et, varlıktan ise olumsuzla! Birliği ise varlıkta olumla, sübuttan dışla! <span class="kunye-v">(s. 256)</span>. (biçim: Hem-hem, İçeride-dışarıda)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b74.0">214. Bölüm: Bize göre hürriyet ise, Hakkın niteliğiyle kulun niteliğini ortadan kaldırmasıdır <span class="kunye-v">(s. 257)</span>; Gerçekte Hak için &#x27;hür&#x27; denilemez, fakat &#x27;köle değildir&#x27; denilebilir <span class="kunye-v">(s. 258)</span>; Gerçekte hürriyet bir varlığa sahip değildir <span class="kunye-v">(s. 259)</span>. (biçim: Hem-hem, Sebep)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b75.0">218. Bölüm: ilahi mertebede kabz, Beni mümin kulumun kalbi sığdırdı hadisine ve Hakk&#x27;ın inanç suretlerindeki tecellisine bağlanıyor <span class="kunye-v">(s. 278)</span>. (biçim: Sığma, Hem-hem)</li></ul>
-<h3 class="gonul-duzenle" data-dost-alan="b76"><a href="/futuhat/c13k151/">c13k151</a> — İş Devridir: Cilt XIII&#x27;ün Kapanışı</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b76" id="c13k151--is-devridir-cilt-xiiiun-kapanisi"><a href="/futuhat/c13k151/">c13k151</a> — İş Devridir: Cilt XIII&#x27;ün Kapanışı</h3>
 <blockquote class="gonul-duzenle" data-dost-alan="b77">«Bilmelisin ki, bütün eşyada ve bütün olaylardaki hikmet, varlıkların kendilerine değil, mertebelere aittir.» (<a href="/futuhat/c13k151/">c13k151</a>)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b78">Biçim: İlişki, Sebep.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b79">«Aşağıdakinin üsttekine yükselmesi mümkün değildir» (<a href="/futuhat/c13k151/">c13k151</a>)</blockquote>
@@ -193,7 +211,7 @@
 <p class="gonul-duzenle" data-dost-alan="b98">Biçim: Hem-hem, Ayırt edilemezlik, Zaman.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b99">«Kuran kendisini okuyan herkese yeniden gelir ve nüzul eder.» (<a href="/futuhat/c13k151/">c13k151</a>)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b100">Biçim: Tekrarsızlık, Zaman.</p>
-<h3 class="gonul-duzenle" data-dost-alan="b101"><a href="/futuhat/c11k135/">c11k135</a> — Hayal Hazreti: Gayb ile Şehadetin Buluştuğu Yer</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b101" id="c11k135--hayal-hazreti-gayb-ile-sehadetin-bulustugu-yer"><a href="/futuhat/c11k135/">c11k135</a> — Hayal Hazreti: Gayb ile Şehadetin Buluştuğu Yer</h3>
 <blockquote class="gonul-duzenle" data-dost-alan="b102">«Allah ruhları üç mertebede yarattı ve bu mertebelerin bir dördüncüsü yoktur. Birinci kısım, işleri sadece Hakkın mertebesini yüceltmek olan ruhlardır. Onların âleme veya kendilerine dönük bir yüzleri yoktur» (<a href="/futuhat/c11k135/">c11k135</a>, s. 43)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b103">Biçim: Hayret, İçeride-dışarıda.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b104">«Allah hayal mertebesini şehadet âleminden daha geniş yaratmış, orada &#x27;hayal&#x27; diye isimlendirilen bir güç meydana getirmiştir» (<a href="/futuhat/c11k135/">c11k135</a>, s. 43)</blockquote>
@@ -216,7 +234,7 @@
 <p class="gonul-duzenle" data-dost-alan="b121">Biçim: İçeride-dışarıda, Bilgi, Ayırt edilemezlik.</p>
 <ul><li class="gonul-duzenle" data-dost-alan="b122.0">Mümkünlerin halden hale dönmesi iradeye bağlı mıdır: Hayır, çünkü iradenin seçimi ve ihtiyarı yoktur... O, meşiyete aittir. Dilerse olur dilemezse olmaz. Bilgi zata ait olduğundan bilgiyle birlikte zorunluluk kokusu gerçekleşir, ihtiyar ise meşiyetle birlikte ortaya çıkar... hüküm veren bilgidir <span class="kunye-v">(s. 67-68)</span>. (biçim: Sebep, Hem-hem)</li></ul>
 <ul><li class="gonul-duzenle" data-dost-alan="b123.0">Fihristte: kıyamet günü besmelenin her harfinin Bakara ve Âl-i İmran gibi bir suret olarak gelip gelmeyeceği ve bu suretlerin rakamları yönünden mi telaffuz edeni yönünden mi var olacağı soruluyor <span class="kunye-v">(s. 48-49)</span>. (biçim: Hayret, Akıl)</li></ul>
-<h3 class="gonul-duzenle" data-dost-alan="b124"><a href="/futuhat/c11k136/">c11k136</a> — Hakkın Yolunun Dairesel Doğruluğu</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b124" id="c11k136--hakkin-yolunun-dairesel-dogrulugu"><a href="/futuhat/c11k136/">c11k136</a> — Hakkın Yolunun Dairesel Doğruluğu</h3>
 <blockquote class="gonul-duzenle" data-dost-alan="b125">«herhangi bir şeyin inişi, âlemde bulunanlar için &#x27;iniş&#x27; iken Hakka nispetle &#x27;yükselme&#x27; olabilir» (<a href="/futuhat/c11k136/">c11k136</a>, s. 83)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b126">Biçim: Bakış, İlişki.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b127">«Kalemlerin mertebesi, Yüce Kalem mertebesinin ve Levh-i mahfuzun aşağısındadır, çünkü kalemin yazdığı şeyler değişmez» (<a href="/futuhat/c11k136/">c11k136</a>)</blockquote>
@@ -241,7 +259,7 @@
 <p class="gonul-duzenle" data-dost-alan="b146">Biçim: Hem-hem, İçeride-dışarıda, Hayret.</p>
 <blockquote class="gonul-duzenle" data-dost-alan="b147">«Herkes nasıl soru soracağını bilemez. Soru soranın içinde bir şey bulunur, fakat onu sorması uygun düşmez. Sorduğunda ise, sorusu o şeyi bozar ve içinde bulunduğundan başka bir halde kendisine cevap verilir» (<a href="/futuhat/c11k136/">c11k136</a>, s. 88-89)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b148">Biçim: Bakış, İlişki.</p>
-<h3 class="gonul-duzenle" data-dost-alan="b149"><a href="/futuhat/c18k225/">c18k225</a> — Sifr 35 — Açık Şirkten Büyük Hastalığa</h3>
+<h3 class="gonul-duzenle" data-dost-alan="b149" id="c18k225--sifr-35--acik-sirkten-buyuk-hastaliga"><a href="/futuhat/c18k225/">c18k225</a> — Sifr 35 — Açık Şirkten Büyük Hastalığa</h3>
 <blockquote class="gonul-duzenle" data-dost-alan="b150">«İktisap meselesinde kapının kapanması» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
 <p class="gonul-duzenle" data-dost-alan="b151">Biçim: Zaman, Tekrarsızlık.</p>
 <ul><li class="gonul-duzenle" data-dost-alan="b152.0">Gayede bir gaye yoktur: Âlemin gayesi Hakkı talep iken Hakkın gayesi yaratılmışlardır <span class="kunye-v">(s. 132)</span> (biçim: İlişki, Hem-hem)</li></ul>
