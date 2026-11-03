@@ -85,7 +85,7 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
   okuduğu masa; site eşleştirme önermez, çiftler cihazda durur), Hesapla gör on hesap, zaman çizgisi. Kaynak özel repoda; burada elle değişiklik yapılmaz.
 - **Arayüz (2026-11-02):** detay panellerinde Ayrıntı katmanı, Oku araçları tek halkada, @revise menüsü sadeleşti, `@daphne`/`@share` düz sayfalarda da çalışır.
 
-- **Yan Yana üç dilli (2026-11-02):** `/yan-yana/en/` ve `/yan-yana/pt/` (Türkçe kaynağın çevirisi, bizim aktarımımız); sırlı dizini, Sığmayanlar, Füsûs ve Denetim yalnız Türkçe.
+- **Yan Yana üç dilli (2026-11-02):** `/yan-yana/en/` ve `/yan-yana/pt/` (Türkçe kaynağın çevirisi, bizim aktarımımız); yalnız sırlı anlatımlar dizini Türkçe (Sığmayanlar, Füsûs, Denetim 2026-11-03'te çevrildi).
   Fizik makaleleri 63 konu; kısaltmalar (HEM…) tam adla yazılır; sözlükte sitedeki düğümlere köprü. Kaynak özel repoda; burada elle değişiklik yapılmaz.
 
 - **Yan Yana gezinme ve araçlar (2026-11-03):** Bölümler menüsü + arama, biçimler arası ileri/geri, içindekiler, cihazda "okudum" işareti, terim kutusu, Kaynaklar süzgeci, Genel sonuçta yakınlık haritası; sayfalar aramaya ve sitemap'e açıldı. Kaynak özel repoda.
