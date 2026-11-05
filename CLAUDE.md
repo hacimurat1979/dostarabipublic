@@ -94,9 +94,9 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-05).
   (haritalar, metafizik çizimler) görsel dil kurallarına aynen tabidir;
   *okuma ve keşif yüzeyinde* (giriş, kısım okuması, kavram, arama) yorum
   yasağı, üç dil ve erişilebilirlik geçerli, kompozisyon ve tipografi
-  serbest. Yön: müze kapısı + dergi okuması; salonlar ana sayfa olacak
-  (henüz uygulanmadı, bayrakla yanında kurulacak). Kaynak özel repoda;
-  burada elle değişiklik yapılmaz.
+  serbest. Bayraklı salon girişi ve dergi görünümü denendi, **kullanıcı
+  kararıyla kaldırıldı**; ana sayfa ve kısım sayfaları değişmedi. Kaynak
+  özel repoda; burada elle değişiklik yapılmaz.
 
 ## Yayın akışı (2026-10-06)
 
