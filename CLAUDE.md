@@ -7,7 +7,7 @@ ve `scripts/sync-to-live.py` ile buraya kopyalanır.
 Burada yapılan bir değişiklik bir sonraki senkronda kaybolur.
 
 Kuralların tam ve güncel hâli özel repodaki `CLAUDE.md`'dedir.
-Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
+Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-05).
 
 ## Geçerli temel kurallar
 
@@ -89,6 +89,14 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-10-21).
   Fizik makaleleri 63 konu; kısaltmalar (HEM…) tam adla yazılır; sözlükte sitedeki düğümlere köprü. Kaynak özel repoda; burada elle değişiklik yapılmaz.
 
 - **Yan Yana gezinme ve araçlar (2026-11-03):** Bölümler menüsü + arama, biçimler arası ileri/geri, içindekiler, cihazda "okudum" işareti, terim kutusu, Kaynaklar süzgeci, Genel sonuçta yakınlık haritası; sayfalar aramaya ve sitemap'e açıldı. Kaynak özel repoda.
+
+- **Tasarım felsefesi (2026-11-05, kullanıcı onayı):** iki kapsam: *sahne*
+  (haritalar, metafizik çizimler) görsel dil kurallarına aynen tabidir;
+  *okuma ve keşif yüzeyinde* (giriş, kısım okuması, kavram, arama) yorum
+  yasağı, üç dil ve erişilebilirlik geçerli, kompozisyon ve tipografi
+  serbest. Yön: müze kapısı + dergi okuması; salonlar ana sayfa olacak
+  (henüz uygulanmadı, bayrakla yanında kurulacak). Kaynak özel repoda;
+  burada elle değişiklik yapılmaz.
 
 ## Yayın akışı (2026-10-06)
 
