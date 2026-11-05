@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Salon girişi: scripts/salon-uret.py üretir (elle düzenlenmez). Bayraklı deneme (?kabuk=salon); noindex. Okuma özeti değildir. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'">
+<meta name="robots" content="noindex">
+<title>Salonlar — Dost Arabî</title>
+<meta name="description" content="Dost Arabî&#x27;ye bir kapıdan girilir: tek alıntı, sonra sekiz salon. Deneme aşamasındaki giriş düzeni.">
+<link rel="canonical" href="https://dostarabi.com/salon/">
+<link rel="alternate" hreflang="tr" href="https://dostarabi.com/salon/">
+<link rel="alternate" hreflang="en" href="https://dostarabi.com/salon/en/">
+<link rel="alternate" hreflang="pt-BR" href="https://dostarabi.com/salon/pt/">
+<link rel="alternate" hreflang="x-default" href="https://dostarabi.com/salon/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#8a6100">
+<script src="/assets/gonul-tema.js"></script>
+<style>
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Medium-static.woff2") format("woff2"); font-weight: 500 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-SemiBold-static.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: swap; }
+  :root {
+    --page-plane: #f9f9f7; --surface-1: #fcfcfb; --text-primary: #1a1a1a;
+    --text-secondary: #52514e; --text-muted: #6f6d65; --gridline: #e1e0d9;
+    --accent-interactive: #8a6100; --ink: #1a1a1a;
+    /* @revise paneli (assets/gonul-revise.css) site değişkenlerinin adlarını kullanır */
+    --series-theme: var(--accent-interactive); --series-theme-text: var(--accent-interactive); --border: var(--gridline);
+    --dur-kisa: 0.15s; --helix-gold: #ffc233;
+    color-scheme: light dark;
+  }
+  /* Tema: elle seçim (assets/gonul-tema.js → html[data-theme]) sistem temasından önce gelir */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+      --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+      --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+    --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+    --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  
+  * { box-sizing: border-box; }
+  html { scroll-snap-type: y proximity; scroll-behavior: smooth; scrollbar-width: none; } html::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  body { margin: 0; background: var(--page-plane); color: var(--text-primary); font: 400 1.0625rem/1.6 "Source Sans Dost", system-ui, sans-serif; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; border-radius: 4px; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .ust { position: fixed; top: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px clamp(12px, 3vw, 44px); background: linear-gradient(var(--page-plane), transparent); font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
+  .ust a, .ust button { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; padding: 0 8px; letter-spacing: inherit; text-transform: inherit; justify-content: center; }
+  .ust a:hover, .ust button:hover { color: var(--text-primary); }
+  .ust .marka { font: 400 1.3rem "Fraunces Dost", Georgia, serif; letter-spacing: 0; text-transform: none; color: var(--text-primary); }
+  .ust nav { display: flex; align-items: center; gap: 2px; }
+  .ust nav a[aria-current="page"] { color: var(--text-primary); }
+  section.salon { min-height: 100vh; scroll-snap-align: start; position: relative; padding: 110px clamp(20px, 6vw, 96px) 80px; display: flex; flex-direction: column; justify-content: center; }
+  .no { font-size: .78rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent-interactive); margin: 0 0 22px; font-weight: 600; }
+  h2 { font: 400 clamp(40px, 8vw, 128px)/.97 "Fraunces Dost", Georgia, serif; letter-spacing: -.03em; margin: 0; text-wrap: balance; }
+  .kapilar a { display: block; padding: 18px 0; border-top: 1px solid var(--gridline); transition: color .25s, padding .25s; }
+  .kapilar a .ad { display: block; font: 400 clamp(1.25rem, 2.2vw, 1.9rem)/1.25 "Fraunces Dost", Georgia, serif; }
+  .kapilar a small { display: block; color: var(--text-muted); font-size: .9rem; line-height: 1.5; margin-top: 6px; max-width: 34rem; }
+  .kapilar a:hover, .kapilar a:focus-visible { color: var(--accent-interactive); padding-left: 14px; }
+  .kapilar { width: min(640px, 100%); margin-top: 40px; }
+  /* 0 giriş */
+  #giris { align-items: center; text-align: center; }
+  #giris blockquote { margin: 0; max-width: min(980px, 100%); font: 400 clamp(1.6rem, 4.2vw, 3.7rem)/1.22 "Fraunces Dost", Georgia, serif; letter-spacing: -.012em; text-wrap: balance; animation: belir 2.4s ease both; }
+  #giris .kunye { margin: 34px 0 0; padding: 0; border: 0; display: block; font-size: .85rem; line-height: 1.6; color: var(--text-muted); animation: belir 2.4s .9s ease both; }
+  #giris .kunye b { color: var(--text-primary); font-weight: 600; }
+  #giris .kunye a { text-decoration: underline; text-underline-offset: 3px; }
+  #giris .gir { position: absolute; bottom: 34px; left: 0; right: 0; font-size: .75rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; animation: belir 2.4s 1.8s ease both; }
+  @keyframes belir { from { opacity: 0; } to { opacity: 1; } }
+  /* 1 oku */
+  .oku3 { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 56px; border-top: 1px solid var(--gridline); }
+  .oku3 a { padding: 32px 28px 34px 0; border-right: 1px solid var(--gridline); margin-right: 28px; transition: color .25s; }
+  .oku3 a:last-child { border: 0; margin: 0; }
+  .oku3 a:hover, .oku3 a:focus-visible { color: var(--accent-interactive); }
+  .oku3 .ad { display: block; font: 400 clamp(2.2rem, 5.4vw, 5.6rem)/1 "Fraunces Dost", Georgia, serif; letter-spacing: -.03em; }
+  .oku3 i { display: block; font-style: normal; font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-interactive); margin: 0 0 14px; font-weight: 600; }
+  .oku3 small { color: var(--text-muted); font-size: .9rem; display: block; margin-top: 14px; line-height: 1.5; }
+  /* 2 kavram */
+  #kavram .dev { display: block; font: 400 clamp(60px, 14vw, 230px)/.88 "Fraunces Dost", Georgia, serif; letter-spacing: -.045em; margin: 6px 0 24px; transition: color .3s; }
+  #kavram .dev:hover, #kavram .dev:focus-visible { color: var(--accent-interactive); }
+  #kavram .not { max-width: 34rem; color: var(--text-muted); margin: 0; }
+  /* 3 haritalar */
+  .iki { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(24px, 6vw, 100px); align-items: center; }
+  .iki .not { margin: 22px 0 0; max-width: 30rem; color: var(--text-muted); }
+  .halka { position: relative; width: min(540px, 86vw); aspect-ratio: 1; margin: 30px auto 0; border-radius: 50%; border: 1px solid var(--gridline); }
+  .halka .orta { position: absolute; inset: 30%; display: flex; align-items: center; justify-content: center; text-align: center; font: italic 1.05rem/1.4 "Fraunces Dost", Georgia, serif; color: var(--text-muted); padding: 10px; }
+  .halka a { position: absolute; transform: translate(-50%, -50%); background: var(--page-plane); padding: 6px 12px; white-space: nowrap; text-align: center; transition: color .25s; }
+  .halka a .ad { display: block; font: 400 clamp(1.2rem, 2.2vw, 1.8rem)/1.2 "Fraunces Dost", Georgia, serif; }
+  .halka a small { display: block; font-size: .72rem; color: var(--text-muted); }
+  .halka a:hover, .halka a:focus-visible { color: var(--accent-interactive); }
+  /* 4 hayat */
+  .cizgi { position: relative; margin-top: 70px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .cizgi::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 1px; background: var(--gridline); }
+  .cizgi a { position: relative; padding-top: 42px; transition: color .25s; }
+  .cizgi a::before { content: ""; position: absolute; top: 2px; left: 0; width: 15px; height: 15px; border-radius: 50%; background: var(--page-plane); border: 1px solid var(--text-muted); transition: .25s; }
+  .cizgi a:hover::before, .cizgi a:focus-visible::before { background: var(--accent-interactive); border-color: var(--accent-interactive); }
+  .cizgi a:hover, .cizgi a:focus-visible { color: var(--accent-interactive); }
+  .cizgi .ad { display: block; font: 400 clamp(1.4rem, 2.8vw, 2.4rem)/1.08 "Fraunces Dost", Georgia, serif; letter-spacing: -.02em; }
+  .cizgi small { display: block; margin-top: 10px; color: var(--text-muted); font-size: .9rem; line-height: 1.5; }
+  #bilmeyen h2 { max-width: 11ch; }
+  .kunye7 { max-width: 42rem; color: var(--text-muted); margin: 26px 0 0; padding-left: 18px; border-left: 2px solid var(--accent-interactive); }
+  .altnot { position: relative; z-index: 1; padding: 40px clamp(20px, 6vw, 96px) 96px; font-size: .85rem; color: var(--text-muted); }
+  .altnot a { text-decoration: underline; text-underline-offset: 3px; }
+  /* ilerleme halkası ve dizin */
+  #ilerle { position: fixed; right: clamp(12px, 2.4vw, 34px); bottom: clamp(12px, 3vh, 32px); z-index: 20; display: flex; align-items: center; gap: 12px; font-size: .75rem; letter-spacing: .16em; color: var(--text-muted); }
+  #ilerle svg { width: 42px; height: 42px; transform: rotate(-90deg); }
+  #ilerle circle { fill: none; stroke-width: 2; }
+  #ilerle .iz { stroke: var(--gridline); } #ilerle .yay { stroke: var(--accent-interactive); stroke-dasharray: 106.8; stroke-dashoffset: 106.8; transition: stroke-dashoffset .4s; }
+  #salon-dizin { position: fixed; inset: 0; z-index: 40; background: var(--page-plane); overflow: auto; padding: 90px clamp(20px, 6vw, 96px); display: none; }
+  #salon-dizin.acik, #salon-dizin:target { display: block; }
+  #salon-dizin a.s { display: grid; grid-template-columns: 70px 1fr; padding: 16px 0; border-top: 1px solid var(--gridline); font: 400 clamp(1.6rem, 3.6vw, 3rem)/1.1 "Fraunces Dost", Georgia, serif; letter-spacing: -.02em; }
+  #salon-dizin a.s small { font: 600 .75rem "Source Sans Dost", system-ui, sans-serif; letter-spacing: .16em; color: var(--accent-interactive); padding-top: .9em; }
+  #salon-dizin a.s:hover, #salon-dizin a.s:focus-visible { color: var(--accent-interactive); }
+  #salon-dizin .kapat { position: fixed; top: 6px; right: clamp(12px, 3vw, 44px); min-height: 44px; min-width: 44px; padding: 0 10px; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
+  @media (max-width: 860px) {
+    .oku3, .cizgi, .iki { grid-template-columns: 1fr; }
+    .oku3 a { border: 0; border-top: 1px solid var(--gridline); margin: 0; padding: 22px 0; }
+    .cizgi::before { display: none; } .cizgi a { padding: 14px 0 14px 34px; border-top: 1px solid var(--gridline); } .cizgi a::before { top: 20px; }
+    .halka { width: 100%; aspect-ratio: auto; border: 0; border-radius: 0; margin-top: 30px; }
+    .halka .orta { display: none; }
+    .halka a { position: static; transform: none; display: block; padding: 16px 0; border-top: 1px solid var(--gridline); text-align: left; }
+    section.salon { padding-top: 96px; }
+    .ust nav a:not([aria-current]) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+<script src="/assets/salon.js" defer></script>
+</head>
+<body data-dil="tr">
+<header class="ust"><button type="button" id="salon-ac" aria-controls="salon-dizin" aria-label="Salonlar dizini">☰ Salonlar</button>
+<a class="marka" href="#giris">Dost Arabî</a>
+<nav aria-label="Dil / Language / Idioma"><a href="/?ara=" aria-label="Ara">Ara</a><a href="/salon/" lang="tr" aria-current="page">TR</a><a href="/salon/en/" lang="en">EN</a><a href="/salon/pt/" lang="pt-BR">PT</a></nav></header>
+<main>
+<section class="salon" id="giris"><blockquote id="aq">“Hamd, şeyleri bir yokluktan ve yokluğun yokluğundan var eden ve şeylerin varlığını kelimelerinin yönelişine dayandıran Allah'a mahsustur.”</blockquote><p class="kunye" id="ak"><b>Bugünün parçası</b> · <a href="/futuhat/c1k1/">Fütûhât, Cilt 1, Kısım 1, s. 15</a><br>Kitaba Başlangıç · Dost&#x27;un alıntısı</p><div class="gir">Salonlara gir ↓</div></section>
+<section class="salon" id="oku"><p class="no">Salon I · Oku</p><h2>Üç metin,<br>kısım kısım</h2><div class="oku3"><a href="/futuhat/"><i>226 kısım</i><span class="ad">Fütûhât</span><small>Fütûhât-ı Mekkiyye, kısım kısım.</small></a><a href="/fusus/"><i>27 fass</i><span class="ad">Füsûs</span><small>Füsûsu&#x27;l-Hikem, fass fass.</small></a><a href="/miskat/"><i>101 hadîs-i kudsî</i><span class="ad">Mişkât</span><small>İbn Arabî&#x27;nin kendi seçtiği 101 hadîs-i kudsî, hadis hadis.</small></a></div></section>
+<section class="salon" id="kavram"><p class="no">Salon II · Kavramlar</p><a class="dev" href="/kavram/">Kavram</a><p class="not">Her kavramın Fütûhât ve Füsûs boyunca izinin, veriden türetilmiş hayat özeti.</p><div class="kapilar"><a href="/terimler/"><span class="ad">Terimler</span><small>İbn Arabî&#x27;nin terimleri, tek tek.</small></a>
+<a href="/sorular/"><span class="ad">Sorular</span><small>Sık sorulan sorular, kısa cevaplarla.</small></a>
+<a href="/hakkinda/okuma-yollari/"><span class="ad">Okuma Yolları</span><small>Konuya göre okuma yolları: nereden başlanır, hangi sırayla.</small></a>
+</div></section>
+<section class="salon" id="haritalar"><div class="iki"><div><p class="no">Salon III · Haritalar</p><h2>Beş harita</h2><p class="not">Site bugüne kadar haritayla açılıyordu. Burada harita, girilecek salonlardan biri.</p></div><div class="halka"><div class="orta">varlık mertebelerinden Arş&#x27;ı taşıyanlara</div><a href="/" style="left:50.0%;top:0.0%"><span class="ad">Ontoloji</span><small>Varlık mertebeleri</small></a><a href="/esma/" style="left:97.6%;top:34.5%"><span class="ad">Esmâ</span><small>Allah&#x27;ın güzel isimleri</small></a><a href="/hal/" style="left:79.4%;top:90.5%"><span class="ad">Hâller</span><small>Manevi yolculuğun basamakları</small></a><a href="/menziller/" style="left:20.6%;top:90.5%"><span class="ad">Menziller</span><small>Ayın yirmi sekiz konağı</small></a><a href="/tasiyicilar/" style="left:2.4%;top:34.5%"><span class="ad">Taşıyanlar</span><small>Arşı taşıyan melekler</small></a></div></div></section>
+<section class="salon" id="hayat"><p class="no">Salon IV · Dost&#x27;un hayatı</p><h2>Dört durak</h2><div class="cizgi"><a href="/hocalar/"><span class="ad">Hocalar</span><small>Ruhu&#x27;l-Kuds&#x27;ta adı geçen 55 hocanın son ikisi; ikisi de kadın.</small></a><a href="/eser-agi/"><span class="ad">Eser Ağı</span><small>Eserlerinin zaman çizgisi.</small></a><a href="/seyahat-atlasi/"><span class="ad">Seyahat Atlası</span><small>Mürsiye&#x27;den Şam&#x27;a; her durakta yazdığı eserlerle.</small></a><a href="/elestiri-arkeolojisi/"><span class="ad">Eleştiri Arkeolojisi</span><small>Dost&#x27;a yöneltilen eleştiri ve savunmaların haritası: kim, ne zaman, hangi şehirde yazdı.</small></a></div></section>
+<section class="salon" id="bilmeyen"><p class="no">Salon V · Bilmediklerimiz</p><h2>Bilmediğimizi söylediğimiz yerler</h2><div class="kapilar"><a href="/bilmiyoruz/"><span class="ad">Bilmiyoruz</span><small>Sitenin açıkça bilmediğini ya da tartışmalı olduğunu ilan ettiği maddeler.</small></a>
+<a href="/sirlar/"><span class="ad">Sırlar</span><small>İşaret edilen ama açıklanmayan konular.</small></a>
+</div></section>
+<section class="salon" id="cizim"><p class="no">Salon VI · Çizimler</p><h2>Şemalar ve çizimler</h2><div class="kapilar"><a href="/semalar/"><span class="ad">Şemalar Arşivi</span><small>Sitedeki şemalar tek yerde, her birinin kökeni belirtilerek.</small></a>
+<a href="/cizimler/"><span class="ad">Çizimler</span><small>Kavramlar arası ilişkileri gösteren şemalar.</small></a>
+<a href="/ayethadis/"><span class="ad">Âyet &amp; Hadis</span><small>Anılan âyet ve hadislerin dizini, tekrar sayısına göre.</small></a>
+</div></section>
+<section class="salon" id="ayri"><p class="no">Salon VII · Ayrı sesler</p><h2>Okuma özeti olmayanlar</h2><p class="kunye7">Bu salondaki iki yer okuma özeti değildir. Biri sitenin sahibinin kendi sesidir, öteki bizim okuma çerçevemizdir; ikisi de özetlerden ayrı tutulur.</p><div class="kapilar"><a href="/gonul/"><span class="ad">Gönül Defteri</span><small>Sitenin sahibinin kendi sesiyle yazıları; okuma özeti değildir.</small></a>
+<a href="/yan-yana/"><span class="ad">Yan Yana: Dost ve Fizik</span><small>Dost&#x27;u kuantum fiziğiyle yan yana okuma denemesi; okuma özeti değil, bizim okuma çerçevemiz.</small></a>
+</div></section>
+</main>
+<p class="altnot">Bu salon düzeni deneme aşamasındadır; adresine yalnız ?kabuk=salon ile gelinir. Her zamanki girişe dön: <a href="/">Harita</a></p>
+<div id="ilerle" aria-hidden="true"><span id="isay"></span><svg viewBox="0 0 42 42"><circle class="iz" cx="21" cy="21" r="17"/><circle class="yay" id="iyay" cx="21" cy="21" r="17"/></svg></div>
+<nav id="salon-dizin" aria-label="Salonlar dizini"><a class="s" href="#giris"><small>—</small>Giriş</a><a class="s" href="#oku"><small>S1</small>Oku</a><a class="s" href="#kavram"><small>S2</small>Kavramlar</a><a class="s" href="#haritalar"><small>S3</small>Haritalar</a><a class="s" href="#hayat"><small>S4</small>Dost&#x27;un hayatı</a><a class="s" href="#bilmeyen"><small>S5</small>Bilmediklerimiz</a><a class="s" href="#cizim"><small>S6</small>Çizimler</a><a class="s" href="#ayri"><small>S7</small>Ayrı sesler</a><a class="kapat" id="salon-kapat" href="#giris">Kapat ✕</a></nav>
+</body>
+</html>
