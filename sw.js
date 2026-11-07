@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-46a173f539d9";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-ebcaf9e19d8e";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -46,8 +46,8 @@ const SHELL_SONRA = [
   "./assets/fonts/SourceSans3-Italic-static.woff2",
   "./assets/fonts/SourceSans3-Medium-static.woff2",
   "./assets/fonts/SourceSans3-SemiBold-static.woff2",
-  "./assets/vendor/d3-custom.min.js",
   "./assets/helix.js",
+  "./assets/vendor/d3-custom.min.js",
   "./assets/graph-hint.js",
   "./assets/lightbox.js",
   "./assets/kademe.js",
@@ -64,6 +64,37 @@ const SHELL_SONRA = [
   "./assets/ontoloji-mobil-liste.js",
   "./assets/secret-nav.js",
   "./assets/sessiz-mod.js",
+  "./assets/kabuk-genis.css",
+  "./assets/okuma-ek.css",
+  "./assets/ek-paket-c.css",
+  "./assets/css/ayet-hadis.css",
+  "./assets/css/bilmiyoruz.css",
+  "./assets/css/cizimler.css",
+  "./assets/css/daphne.css",
+  "./assets/css/duzenle.css",
+  "./assets/css/elestiri.css",
+  "./assets/css/eser-agi.css",
+  "./assets/css/esma.css",
+  "./assets/css/fusus.css",
+  "./assets/css/futuhat.css",
+  "./assets/css/hakkinda.css",
+  "./assets/css/hal.css",
+  "./assets/css/helix.css",
+  "./assets/css/hocalar.css",
+  "./assets/css/kavram.css",
+  "./assets/css/kuran-dokusu.css",
+  "./assets/css/menziller.css",
+  "./assets/css/miskat.css",
+  "./assets/css/okuma.css",
+  "./assets/css/ortak.css",
+  "./assets/css/semalar.css",
+  "./assets/css/seyahat-atlasi.css",
+  "./assets/css/share.css",
+  "./assets/css/sirlar.css",
+  "./assets/css/sorular.css",
+  "./assets/css/tasiyicilar.css",
+  "./assets/css/terimler.css",
+  "./assets/css/yolculuk.css",
   "./assets/fonts/Fraunces-SemiBold-static.woff2",
 ];
 
