@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-4b5fd1b14d10";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-46a173f539d9";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -152,7 +152,20 @@ function indirmeTamam() {
 function uygulamaAdresi(url) {
   const p = url.pathname;
   if (/\.[a-z0-9]+$/i.test(p) && !/\/index\.html$/.test(p)) return false;
-  return !/^\/(gizlilik|gonul|yan-yana|iletisim|dizin|arastirma|\.well-known)(\/|$)/.test(p);
+  return !/^\/(gizlilik|gonul|yan-yana|iletisim|dizin|arastirma|yenilikler|\.well-known)(\/|$)/.test(p);
+}
+
+// Y3 (2026-11-07): veri önbelleği (stale-while-revalidate, isDataRequest) sınırsız büyüyordu (98 giriş, ≈4 MB ölçüldü). Basit giriş tavanı:
+// her 8. yazımda veri girdileri sayılır, VERI_TAVAN'ı aşan en eski girdiler silinir (kabuk dosyalarına dokunulmaz).
+const VERI_TAVAN = 120;
+let veriYazim = 0;
+function veriTavani(cache) {
+  if (++veriYazim % 8) return;
+  return cache.keys().then((keys) => {
+    const veri = keys.filter((k) => { try { return isDataRequest(new URL(k.url)); } catch (e) { return false; } });
+    const fazla = veri.length - VERI_TAVAN;
+    for (let i = 0; i < fazla; i++) cache.delete(veri[i]);
+  }).catch(() => {});
 }
 
 function yedekSayfa() {
@@ -215,7 +228,7 @@ self.addEventListener("fetch", (event) => {
       caches.open(CACHE_VERSION).then((cache) =>
         cache.match(req).then((cached) => {
           const network = fetch(req)
-            .then((resp) => { if (resp.ok) cache.put(req, resp.clone()).catch(() => {}); return resp; })
+            .then((resp) => { if (resp.ok) cache.put(req, resp.clone()).then(() => veriTavani(cache)).catch(() => {}); return resp; })
             .catch(() => cached || cevrimdisiKaynak(req));
           if (cached) return cached;
           // Fikir 15 (2026-11-07): önbellekte yok ve ağ ~10 sn yanıt vermiyorsa (lie-fi) indirilmiş çevrimdışı kopya varsa o verilir;
