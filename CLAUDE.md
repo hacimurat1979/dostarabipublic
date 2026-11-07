@@ -98,6 +98,11 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-05).
   kararıyla kaldırıldı**; ana sayfa ve kısım sayfaları değişmedi. Kaynak
   özel repoda; burada elle değişiklik yapılmaz.
 
+- **Gizli kipler parola kapısının ardında (2026-11-07, kullanıcı kararı):** `@revise`, `@share`, geliştirici modu ve `?gelistirici=1` bu cihazda Daphne
+  parolası bir kez girilmeden açılmaz (`assets/sahip-kapisi.js`); açıkken sayfanın üstünde kırmızı kemer ve sahibe özel öğelerde kırmızı çerçeve çıkar.
+  `@revise` her sayfada açık kalır, kapatınca gizli kip de kapanır. Gönül Defteri ve Yan Yana Keşfet'te "Yazılar ve denemeler" grubundadır.
+  Kaynak özel repoda; burada elle değişiklik yapılmaz.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
