@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-844061b489ea";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-41d84e99121e";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 const SHELL_URLS = [
   "./",
   "./index.html",
@@ -227,8 +227,17 @@ self.addEventListener("fetch", (event) => {
   // sayfada her açılışta kabuğu (~430 KB) baştan indirmek yerine yalnız
   // başlıklar iner.
   const isNavOrAsset = req.destination === "script" || req.destination === "style" || req.mode === "navigate";
+  // Y1 (2026-11-07): ağ ~4 sn içinde yanıt vermezse (zayıf bağlantı) ve
+  // önbellekte kopya varsa onu ver; ağ isteği arka planda sürer ve önbelleği tazeler.
+  const ag = fetch(isNavOrAsset ? new Request(req, { cache: "no-cache" }) : req);
+  const bekle = isNavOrAsset
+    ? Promise.race([
+        ag,
+        new Promise((coz) => setTimeout(() => coz(null), 4000)),
+      ]).then((r) => r || caches.match(req).then((c) => c || ag))
+    : ag;
   event.respondWith(
-    fetch(isNavOrAsset ? new Request(req, { cache: "no-cache" }) : req)
+    bekle
       .then((resp) => {
         if (resp.ok && (req.destination === "script" || req.destination === "style" || req.mode === "navigate")) {
           // clone() HEMEN burada, senkron olarak: caches.open() bekleyen bir
