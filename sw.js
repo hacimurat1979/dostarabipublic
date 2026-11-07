@@ -11,51 +11,59 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-41d84e99121e";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-4b5fd1b14d10";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+// F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
+// indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
+// boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
+// o durumda sayfa gezildikçe betikler zaten fetch işleyicisiyle önbelleğe girer.
 const SHELL_URLS = [
   "./",
   "./index.html",
   "./assets/style.css",
   "./manifest.json",
   "./assets/favicon.svg",
+  "./assets/fonts/Fraunces-Regular-static.woff2",
+  "./assets/welcome.js",
+  "./assets/theme.js",
+  "./assets/i18n.js",
+  "./assets/view-status.js",
+  "./assets/graph-utils.js",
+  "./assets/nav-drawer.js",
+  "./assets/search.js",
+  "./assets/uygulama-kabugu.js",
+  "./assets/view-loader.js",
+  "./assets/cevrimdisi.js",
+  "./assets/kavram-defteri.js",
+  "./assets/fonts/SourceSans3-Regular-static.woff2",
+];
+const SHELL_SONRA = [
   "./data/ibn-arabi/ontology.json",
   "./assets/vendor/use-gesture.min.js",
   "./assets/telefon-haritasi.js",
   "./assets/fonts/Fraunces-Italic-static.woff2",
   "./assets/fonts/AmiriQuran-Arabic-400.woff2",
   "./assets/fonts/Dost-065E-Mark.woff2",
-  "./assets/fonts/Fraunces-Regular-static.woff2",
   "./assets/fonts/SourceSans3-Italic-static.woff2",
   "./assets/fonts/SourceSans3-Medium-static.woff2",
   "./assets/fonts/SourceSans3-SemiBold-static.woff2",
-  "./assets/welcome.js",
-  "./assets/theme.js",
   "./assets/vendor/d3-custom.min.js",
-  "./assets/i18n.js",
-  "./assets/view-status.js",
-  "./assets/graph-utils.js",
-  "./assets/nav-drawer.js",
   "./assets/helix.js",
   "./assets/graph-hint.js",
   "./assets/lightbox.js",
   "./assets/kademe.js",
-  "./assets/search.js",
-  "./assets/uygulama-kabugu.js",
   "./assets/font-scale.js",
   "./assets/reading-mode.js",
   "./assets/honorifics.js",
   "./assets/anlamsal-yakin.js",
-  "./assets/view-loader.js",
   "./assets/ontology.js",
+  "./assets/hareket.js",
+  "./assets/harita-erisim.js",
   "./assets/crosslink-preview.js",
   "./assets/ayet-onizleme.js",
   "./assets/start-hint.js",
   "./assets/ontoloji-mobil-liste.js",
   "./assets/secret-nav.js",
   "./assets/sessiz-mod.js",
-  "./assets/cevrimdisi.js",
-  "./assets/kavram-defteri.js",
-  "./assets/fonts/SourceSans3-Regular-static.woff2",
   "./assets/fonts/Fraunces-SemiBold-static.woff2",
 ];
 
@@ -209,7 +217,13 @@ self.addEventListener("fetch", (event) => {
           const network = fetch(req)
             .then((resp) => { if (resp.ok) cache.put(req, resp.clone()).catch(() => {}); return resp; })
             .catch(() => cached || cevrimdisiKaynak(req));
-          return cached || network;
+          if (cached) return cached;
+          // Fikir 15 (2026-11-07): önbellekte yok ve ağ ~10 sn yanıt vermiyorsa (lie-fi) indirilmiş çevrimdışı kopya varsa o verilir;
+          // yoksa ağ beklenmeye devam eder (ağ isteği arka planda sürer ve önbelleği tazeler).
+          return Promise.race([
+            network,
+            new Promise((coz) => setTimeout(() => coz(null), 10000)),
+          ]).then((r) => r || cevrimdisiKaynak(req).then((c) => c || network));
         })
       )
     );
@@ -277,9 +291,26 @@ self.addEventListener("fetch", (event) => {
 // İstek "no-cache": tazelik doğrulanır, değişmemişse 304.
 self.addEventListener("message", (event) => {
   const d = event.data;
+  if (d && d.tip === "kabuk-tamamla") { event.waitUntil(kabuguTamamla()); return; }
   if (!d || d.tip !== "goruntu-betikleri" || !Array.isArray(d.liste)) return;
   event.waitUntil(goruntuBetikleriniOnbellegeAl(d.liste));
 });
+
+// Çekirdek dışı kabuk dosyaları (SHELL_SONRA): üç işçiyle, zaten önbellekte olanı atlayarak.
+function kabuguTamamla() {
+  return caches.open(CACHE_VERSION).then((cache) => {
+    const kuyruk = SHELL_SONRA.slice();
+    function isci() {
+      const url = kuyruk.shift();
+      if (!url) return Promise.resolve();
+      return cache.match(url)
+        .then((m) => (m ? undefined : fetch(new Request(url, { cache: "no-cache" })).then((r) => { if (r.ok) return cache.put(url, r); })))
+        .catch(() => {})
+        .then(isci);
+    }
+    return Promise.all([isci(), isci(), isci()]);
+  });
+}
 
 function goruntuBetikleriniOnbellegeAl(liste) {
   const isler = [];

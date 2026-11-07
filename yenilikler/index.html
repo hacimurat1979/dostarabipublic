@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- scripts/yenilikler-uret.py üretir (elle düzenlenmez; kaynak data/yenilikler.json). Olgusal değişiklik kaydı. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
+<title>Yenilikler — Dost Arabî</title>
+<meta name="description" content="Sitede neyin ne zaman eklendiğinin kısa, olgusal kaydı.">
+<link rel="canonical" href="https://dostarabi.com/yenilikler/">
+<link rel="alternate" hreflang="tr" href="https://dostarabi.com/yenilikler/">
+<link rel="alternate" hreflang="en" href="https://dostarabi.com/yenilikler/en/">
+<link rel="alternate" hreflang="pt-BR" href="https://dostarabi.com/yenilikler/pt/">
+<link rel="alternate" hreflang="x-default" href="https://dostarabi.com/yenilikler/">
+<meta property="og:site_name" content="Dost Arabî">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Yenilikler — Dost Arabî">
+<meta property="og:description" content="Sitede neyin ne zaman eklendiğinin kısa, olgusal kaydı.">
+<meta property="og:url" content="https://dostarabi.com/yenilikler/">
+<meta property="og:image" content="https://dostarabi.com/assets/og-image.png">
+<meta property="og:image:alt" content="Yenilikler — Dost Arabî">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Yenilikler — Dost Arabî">
+<meta name="twitter:description" content="Sitede neyin ne zaman eklendiğinin kısa, olgusal kaydı.">
+<meta name="twitter:image" content="https://dostarabi.com/assets/og-image.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#8a6100">
+<link rel="alternate" type="application/atom+xml" title="Yenilikler" href="/yenilikler/feed.xml">
+<script src="/assets/gonul-tema.js"></script>
+<style>
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Medium-static.woff2") format("woff2"); font-weight: 500 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Fraunces Dost"; src: url("/assets/fonts/Fraunces-SemiBold-static.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: swap; }
+  :root {
+    --page-plane: #f9f9f7; --surface-1: #fcfcfb; --text-primary: #1a1a1a;
+    --text-secondary: #52514e; --text-muted: #6f6d65; --gridline: #e1e0d9;
+    --accent-interactive: #8a6100; --ink: #1a1a1a;
+    /* @revise paneli (assets/gonul-revise.css) site değişkenlerinin adlarını kullanır */
+    --series-theme: var(--accent-interactive); --series-theme-text: var(--accent-interactive); --border: var(--gridline);
+    --dur-kisa: 0.15s; --helix-gold: #ffc233;
+    color-scheme: light dark;
+  }
+  /* Tema: elle seçim (assets/gonul-tema.js → html[data-theme]) sistem temasından önce gelir */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+      --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+      --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-plane: #0d0d0d; --surface-1: #1a1a19; --text-primary: #ede9e2;
+    --text-secondary: #c3c2b7; --text-muted: #898781; --gridline: #2c2c2a;
+    --accent-interactive: #c98500; --ink: #ede9e2; color-scheme: dark;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html { scrollbar-width: none; } html::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  body { margin: 0; background: var(--page-plane); color: var(--text-primary); font: 400 1.0625rem/1.7 "Source Sans Dost", system-ui, sans-serif; }
+  main { max-width: 40rem; margin: 0 auto; padding: 24px 16px 72px; }
+  .ust { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+  .ust a { color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 14px; border: 1px solid var(--gridline); border-radius: 999px; text-decoration: none; }
+  .diller { display: flex; gap: 6px; }
+  .diller a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 10px; border-radius: 22px; border: 1px solid var(--gridline); color: var(--text-secondary); text-decoration: none; }
+  .diller a[aria-current="page"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  a { color: var(--accent-interactive); }
+  a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; border-radius: 4px; }
+  h1, h2, h3 { font-family: "Fraunces Dost", Georgia, serif; font-weight: 600; line-height: 1.25; text-wrap: balance; }
+  h1 { font-size: 1.9rem; margin: 8px 0 12px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 10px; }
+  .giris { color: var(--text-secondary); margin: 0 0 24px; }
+  .meta { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.9rem; }
+  /* Mühür: mürekkep halka + nokta = yazarın kendi sesi (altın halka okuma özetidir) */
+  .muhur { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1.6px solid var(--ink); position: relative; flex: none; }
+  .muhur::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ink); }
+  figure { margin: 22px 0; }
+  figure.kapak { margin: 0 0 14px; }
+  figure img, .kapak img { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--gridline); }
+  figcaption { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  /* Müzik kartı: dış bağlantı kartı; halka+nokta nötr renkte (mühür ve köken halkalarının anlamlarıyla karışmasın) */
+  .muzik { display: flex; gap: 14px; align-items: flex-start; margin: 24px 0; padding: 16px; border: 1px solid var(--gridline); border-radius: 14px; }
+  .muzik__halka { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1.6px solid var(--text-muted); position: relative; }
+  .muzik__halka::after { content: ""; position: absolute; inset: 15px; border-radius: 50%; background: var(--text-muted); }
+  .muzik__govde { min-width: 0; }
+  .muzik p { margin: 0; }
+  .muzik__ad { font-family: "Fraunces Dost", Georgia, serif; font-weight: 600; font-size: 1.15rem; line-height: 1.3; overflow-wrap: anywhere; }
+  .muzik__sanatci { color: var(--text-secondary); }
+  .muzik__not { margin-top: 10px; }
+  .muzik__dinle { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; padding: 0 16px; border: 1px solid var(--accent-interactive); border-radius: 22px; text-decoration: none; }
+  .muzik__dipnot { margin-top: 4px; font-size: 0.82rem; color: var(--text-muted); }
+  .galeri { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 8px; margin: 22px 0; }
+  .galeri figure { margin: 0; }
+  /* Serif gövde Regular (400); kalın yalnız yazarın işaretlediği yerde (strong, 600) */
+  .dize { font-family: "Fraunces Dost", Georgia, serif; font-weight: 400; font-size: 1.15rem; line-height: 1.75; margin: 22px 0; }
+  .dize strong, blockquote strong { font-weight: 600; }
+  strong { font-weight: 600; }
+  blockquote { font-family: "Fraunces Dost", Georgia, serif; font-weight: 400; font-size: 1.2rem; line-height: 1.4; margin: 24px 0; padding-left: 16px; border-left: 2px solid var(--ink); }
+  .kunye { margin-top: 40px; padding: 12px 14px; border: 1px dashed var(--gridline); border-radius: 12px; font-size: 0.9rem; color: var(--text-secondary); display: flex; gap: 10px; align-items: flex-start; }
+  .kunye .muhur { margin-top: 4px; }
+  .kunye p { margin: 0; }
+  .kunye p + p { margin-top: 4px; }
+  .muhur--altin { border-color: var(--accent-interactive); }
+  .muhur--altin::after { display: none; }
+  .atif { margin-top: 28px; display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; color: var(--text-secondary); }
+  .atif .muhur { margin-top: 5px; }
+  .atif p { margin: 0; }
+  .atif__etiket { color: var(--text-muted); }
+  .kart-eylem { margin: 26px 0 0; }
+  .kart-btn { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 18px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-primary); cursor: pointer; }
+  .kart-btn:hover { border-color: var(--accent-interactive); }
+  .kart-btn:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kart-btn[disabled] { opacity: 0.6; cursor: progress; }
+  .abone { margin: 32px 0 0; font-size: 0.95rem; color: var(--text-secondary); }
+  .abone code { display: inline-block; max-width: 100%; overflow-wrap: anywhere; font-size: 0.85rem; padding: 2px 6px; border-radius: 6px; background: var(--surface-1); border: 1px solid var(--gridline); }
+  .kartlar { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
+  .kart a { display: block; color: inherit; text-decoration: none; }
+  .kart .kapak { margin-bottom: 10px; }
+  .kart h2 { margin: 6px 0 6px; font-size: 1.25rem; }
+  .kart p { margin: 0; color: var(--text-secondary); }
+  .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+
+  body { padding-bottom: 72px; }
+  .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
+  .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
+    color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; }
+  /* Halka noktası kaldırıldı: yatay ekranda seçim düğmesi (radyo) gibi okunuyordu (tarama 30 Ekim, D26). */
+  .mini-kabuk a:hover { color: var(--text-primary); }
+  .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
+  @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+
+  body { padding-bottom: 72px; }
+  .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
+  .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
+    color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; }
+  /* Halka noktası kaldırıldı: yatay ekranda seçim düğmesi (radyo) gibi okunuyordu (tarama 30 Ekim, D26). */
+  .mini-kabuk a:hover { color: var(--text-primary); }
+  .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
+  @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+
+  .yenilikler { list-style: none; margin: 24px 0; padding: 0; display: grid; gap: 18px; }
+  .yenilikler li { padding-bottom: 18px; border-bottom: 1px solid var(--gridline); }
+  .yenilikler h2 { font-family: "Fraunces Dost", Georgia, serif; font-size: 1.15rem; margin: 2px 0 6px; }
+  .yenilikler time { color: var(--text-muted); font-size: 0.9rem; }
+  .yenilikler p { margin: 0 0 8px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<main>
+  <div class="ust">
+    <a href="/">Dost Arabî</a>
+    <nav class="diller" aria-label="Dil / Language / Idioma">
+      <a href="/yenilikler/" lang="tr" hreflang="tr" aria-current="page">TR</a>
+      <a href="/yenilikler/en/" lang="en" hreflang="en">EN</a>
+      <a href="/yenilikler/pt/" lang="pt-BR" hreflang="pt-BR">PT</a>
+    </nav>
+  </div>
+  <h1>Yenilikler</h1>
+  <p class="giris">Sitede neyin ne zaman eklendiğinin kısa, olgusal kaydı.</p>
+  <ol class="yenilikler"><li><time datetime="2026-11-03">3 Kasım 2026</time><h2>Yan Yana aramaya açıldı</h2><p>Yan Yana sayfaları arama motorlarına ve site dizinine açıldı; bölüm menüsü, içindekiler ve cihazda tutulan okundu işareti eklendi.</p><p><a href="/yan-yana/">Sayfayı aç</a></p></li><li><time datetime="2026-11-02">2 Kasım 2026</time><h2>Yan Yana İngilizce ve Portekizce</h2><p>Yan Yana bölümü İngilizce ve Brezilya Portekizcesi olarak da okunabilir; çeviri bizim aktarımımızdır ve her sayfada söylenir.</p><p><a href="/yan-yana/en/">Sayfayı aç</a></p></li><li><time datetime="2026-11-01">1 Kasım 2026</time><h2>Yan Yana: Dost ve Kuantum Fiziği</h2><p>Dost&#x27;tan alıntıların fizik literatürüyle yan yana okunduğu yeni bölüm eklendi. Bizim okuma çerçevemizdir; okuma özeti değildir.</p><p><a href="/yan-yana/">Sayfayı aç</a></p></li><li><time datetime="2026-10-31">31 Ekim 2026</time><h2>Şemalar Arşivi</h2><p>Sitedeki şemalar, kökeni belirtilerek tek sayfada toplandı: Dost&#x27;un eli, bizim çizdiğimiz ve bizim okuma çerçevemiz ayrı işaretlerle gösterilir.</p><p><a href="/semalar/">Sayfayı aç</a></p></li><li><time datetime="2026-10-29">29 Ekim 2026</time><h2>Okuma araçları</h2><p>Fütûhât, Füsûs ve Mişkât okumalarına Dinle, Okuma kipi ve paragraf notu eklendi. Hepsi okuyucunun kendi cihazında çalışır.</p><p><a href="/futuhat/">Sayfayı aç</a></p></li><li><time datetime="2026-10-27">27 Ekim 2026</time><h2>Gönül Defteri</h2><p>Yazarın kendi sesiyle, resimli kısa yazıların yer aldığı yeni bölüm eklendi. Okuma özeti değildir; her sayfada bu söylenir.</p><p><a href="/gonul/">Sayfayı aç</a></p></li></ol>
+  <p class="abone"><a href="/yenilikler/feed.xml">Yeni eklemelerden haberdar ol</a><br><span>Okuyucu uygulamanıza (RSS/Atom) şu adresi ekleyin; hesap, e-posta ya da izleme yoktur.</span> <code>https://dostarabi.com/yenilikler/feed.xml</code></p>
+  <aside class="kunye"><p>Bu sayfa sitedeki değişikliklerin olgusal kaydıdır; bir okuma özeti ya da yorum değildir.</p></aside>
+</main>
+<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/">Harita</a><a href="/futuhat/">Fütûhât</a><a href="/fusus/">Füsûs</a><a href="/miskat/">Mişkât</a><a href="/dizin/">Dizin</a></nav>
+<script src="/assets/mini-ust.js" defer></script>
+</body>
+</html>
