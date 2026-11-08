@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -142,7 +148,7 @@
 <p>Two sides in two separate windows: on the left a summary of a physics paper, on the right a passage from Dost or a form page. You choose the pair; the site proposes no matching. Below you write your note and save the pair on your device. If you wish you put the pair and your note among the things to be sent to Claude; if you press <b>Try to refute</b>, Claude tries to refute the resemblance (does it appear in other texts too, on what grounds might it be wrong) and brings you the result. None of it is written to the site.</p><div id="paralel" data-veri="/yan-yana/en/paralel/veri.json"><noscript><p>This section needs scripts. For physics summaries see <a href="/yan-yana/en/makaleler/">Physics papers</a>, for the veiled passages see <a href="/yan-yana/sirli/">Mystery passages (TR)</a>.</p></noscript></div><script src="/assets/paralel.js" defer></script>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

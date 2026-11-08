@@ -118,6 +118,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -226,7 +232,7 @@
 <article class="sirli" data-dost-dosya="research/kuantum/sirli/sirli.json" data-dost-kaynak="c2k28-03"><h4 id="c2k28-03--s-451">c2k28-03 · s. 451</h4><p class="sirli-rozet"><span class="rozet">Tarif edilemez diyor</span></p><blockquote>Hangi nedenle ateşten çıkmayacağını ise en iyi Allah bilir</blockquote><p class="sirli-isaret">İşaret: <q>en iyi Allah bilir</q></p><p class="sirli-konu">İblis&#x27;in şirk koşarak ölmesi ve ateşten çıkmaması.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[{"yol": "/yan-yana/", "ad": "Giriş"}, {"yol": "/yan-yana/bil/", "ad": "Bilgi perdedir; bilinene değil bilgiye erişirsin"}, {"yol": "/yan-yana/zam/", "ad": "Zaman herkes için aynı değil; zaman bir bağıntı"}, {"yol": "/yan-yana/akl/", "ad": "Akıl — Aklın sınırı: imkânsız sayılan gerçektir"}, {"yol": "/yan-yana/hem/", "ad": "Hem-hem — Birbirini dışlayan iki tanım aynı şeye birden"}, {"yol": "/yan-yana/but/", "ad": "Bütünlük — Parça bütünden ayrı tanımlanamaz"}, {"yol": "/yan-yana/ili/", "ad": "İlişki önce: şey, ilişkisinden bağımsız tanımlanamaz"}, {"yol": "/yan-yana/bak/", "ad": "Bakış, görüleni belirler"}, {"yol": "/yan-yana/seb/", "ad": "Sebep — Bağ var, sebep-sonuç aracı yok"}, {"yol": "/yan-yana/tek/", "ad": "Tekrarsızlık — Aynısı ikinci kez gelmez; her şey yenidir"}, {"yol": "/yan-yana/sur/", "ad": "Süreklilik, altta başka yapının görünümü"}, {"yol": "/yan-yana/sig/", "ad": "Sığma — Kapsayan, kapsananın içine sığar"}, {"yol": "/yan-yana/icd/", "ad": "İçeride-dışarıda — İçeride de dışarıda da değil"}, {"yol": "/yan-yana/ayr/", "ad": "Ayırt edilemezlik — Ayırt edilemeyen iki şey"}, {"yol": "/yan-yana/hay/", "ad": "Hayret — Son söz anlamak değil, hayret (ortak zemin)"}, {"yol": "/yan-yana/cok/", "ad": "Çokluk — Çok dünya, benzer varlıklar: aynı örüntünün başka yerlerde de bulunması"}, {"yol": "/yan-yana/kar/", "ad": "Karşılıklı dönüşüm: A B'ye dönüyorsa B de A'ya döner"}, {"yol": "/yan-yana/genel-sonuc/", "ad": "Genel sonuç"}, {"yol": "/yan-yana/yeni-olgular/", "ad": "Yeni olgular"}, {"yol": "/yan-yana/yeni-kaliplar/", "ad": "Başka kalıplar"}, {"yol": "/yan-yana/hayal-berzah/", "ad": "Hayal ve berzah"}, {"yol": "/yan-yana/hesapla-gor/", "ad": "Hesapla gör"}, {"yol": "/yan-yana/denetim-durumu/", "ad": "Denetim durumu"}, {"yol": "/yan-yana/hazine/", "ad": "Sayfalara sığmayanlar"}, {"yol": "/yan-yana/fusus/", "ad": "Füsûs'ta biçimler"}, {"yol": "/yan-yana/sozluk/", "ad": "Sözlük"}, {"yol": "/yan-yana/yontem/", "ad": "Yöntem"}, {"yol": "/yan-yana/ceviri-sinamasi/", "ad": "Çeviri sınaması"}, {"yol": "/yan-yana/kaynaklar/", "ad": "Kaynaklar"}, {"yol": "", "ad": "Genel / bölüme bağlı değil"}]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/">Harita</a><a href="/futuhat/">Fütûhât</a><a href="/fusus/">Füsûs</a><a href="/miskat/">Mişkât</a><a href="/dizin/">Dizin</a></nav>
+<nav class="mini-kabuk" aria-label="Bölümler"><a href="/">Harita</a><a href="/futuhat/">Fütûhât</a><a href="/fusus/">Füsûs</a><a href="/miskat/">Mişkât</a><a href="/dizin/">Dizin</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

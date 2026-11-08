@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -169,7 +175,7 @@
 <article class="makale" data-tur="deney" id="m63-greiner-2002"><h3 id="greiner-2002--quantum-phase-transition-from-a-superfluid-to">Greiner 2002 — <a class="kaynak" href="https://doi.org/10.1038/415039a" target="_blank" rel="noopener">Quantum phase transition from a superfluid to a Mott insulator in a gas of ultracold atoms</a></h3><p class="mk-kunye">Nature 415, 39 <span class="rozet">experiment</span></p><p class="mk-bu">Greiner and colleagues observed the transition from a superfluid to a Mott insulator in ultracold atoms in an optical lattice.</p><p>This experiment is cited as one of the first strong examples of the idea of carrying out quantum simulation not with a computer but with a quantum system itself. The question is whether the behavior of a model known from solid-state physics can be reproduced in a controllable assembly of atoms.</p><p>In the work rubidium atoms are cooled to a very low temperature and placed in a standing-wave lattice formed by laser beams, that is, an ‘optical lattice’. The depth of the lattice can be changed with the laser intensity. When the lattice is shallow, the atoms form a coherent superfluid that can flow along the lattice. When the lattice is deepened, the repulsion between atoms becomes dominant and a fixed number of atoms remains at each lattice site; this state is the Mott insulator, and the atoms can no longer flow.</p><p>The authors show that as the lattice depth is changed the two states turn into each other as a phase transition; this is called a quantum phase transition because the transition is driven not by temperature but by quantum fluctuations. The result points to an assembly of atoms being able to imitate this model with adjustable parameters.</p><p>The importance of this work is that the simulation here is not a ‘program’ but a ‘physical set-up’: the atoms in the lattice take the place of the model’s electrons. Such devices are sometimes called an ‘analog quantum simulator’, and they are a narrow application of Feynman’s proposal; they imitate not every model but a particular model. For the paper’s detailed experimental measurements one has to look at the paper itself.</p><p class="mk-belirsiz">This summary was written without looking at the paper&#x27;s own abstract or text, relying on a known account; it should be checked against the source.</p><p class="mk-sonra"><strong>Afterwards:</strong> This approach was developed in the following years for the simulation of other models and of larger systems.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

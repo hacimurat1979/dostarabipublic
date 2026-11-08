@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -156,7 +162,7 @@
 <p>O resultado são 2.788 itens enigmáticos nas 226 seções. A cada um demos uma nota de dificuldade: 1, <span class="alinti-v">&quot;facilmente comparável&quot;</span>; 3, <span class="alinti-v">&quot;temos muita dificuldade em encontrar uma comparação&quot;</span>. 1.154 itens receberam dificuldade 3. Este é o principal conjunto em que nos apoiamos nas páginas.</p>
 <p>Depois agrupamos os itens por suas formas. A primeira leitura gerou catorze formas, todas vistas nos 18 volumes; na segunda leitura foram acrescentadas Multiplicidade e Transformação recíproca. Essas formas aparecem nas páginas com seus nomes curtos (as explicações estão na página de introdução): Tanto-quanto, Não repetição, Continuidade, Relação, Ponto de vista, Totalidade, Causa, Contenção, Tempo, Conhecimento, Razão, Indistinguibilidade, Dentro-fora, Perplexidade, Multiplicidade, Transformação recíproca.</p>
 <p>A segunda leitura foi feita assim: as 226 seções foram relidas todas, tendo em mente as formas Multiplicidade e Transformação recíproca, divididas entre dezenove agentes leitores. As citações foram comparadas automaticamente com o texto-fonte; os dois itens que não conferiram foram retirados. Na segunda leitura também foram marcados quarenta e quatro nomes de novos padrões; esses ainda não foram lidos lado a lado com a física.</p>
-<p>Onde citamos Dost, o número da seção e, quando possível, o número da página estão escritos. As citações foram tiradas do registro de leitura, comparadas automaticamente com o texto-fonte. As 16 citações que não conferiram na comparação deixamos de contar como &quot;citação<span class="alinti-v">&quot; e marcamos como &quot;</span>resumo<span class="alinti-v">&quot;. As explicações &quot;</span>Ou seja…&quot; do próprio site não foram contadas como palavra de Dost.</p>
+<p>Onde citamos Dost, o número da seção e, quando possível, o número da página estão escritos. As citações foram tiradas do registro de leitura, comparadas automaticamente com o texto-fonte. As 16 citações que não conferiram na comparação deixamos de contar como &quot;citação&quot; e marcamos como &quot;resumo&quot;. As explicações &quot;Ou seja…&quot; do próprio site não foram contadas como palavra de Dost.</p>
 <h2 id="como-lemos-a-fsica">Como lemos a física?</h2>
 <p>Ligamos cada frase de física a uma fonte. O número de fontes é 97 (para a ordem das fontes e a faixa de visão, veja os limites abaixo). Todas são fontes cujas referências foram verificadas uma a uma via Crossref, arXiv ou endereço. Não usamos nenhuma citação que não pudesse ser verificada; não inventamos citação.</p>
 <p>Nossa ordem de fontes: artigo e revisão revisados por pares, depois pré-publicação do arXiv, depois verbete de enciclopédia (como a Stanford Encyclopedia of Philosophy). Não usamos exposições populares como fonte. As fontes são literatura de física e verbetes de enciclopédia; a literatura dos especialistas em Ibn Arabi (os comentadores) e a literatura crítica das comparações entre física e sufismo não foram usadas.</p>
@@ -196,7 +202,7 @@
 <p>Isto não é um fracasso; é o estado honesto do trabalho: as maneiras como os dois campos deixam de caber na razão podem ser colocadas lado a lado, e algumas perguntas são comuns, mas não encontramos um pareamento sólido o bastante para chamar de <span class="alinti-v">&quot;a mesma estrutura&quot;</span>. As perguntas das páginas, por isso, continuam sendo perguntas.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

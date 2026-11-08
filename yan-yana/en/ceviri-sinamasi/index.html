@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -145,7 +151,7 @@
 <p>The answer to this question matters. On one side is the fear of <span class="alinti-v">&quot;did we transmit it wrongly&quot;</span>; on the other, that every word we use in the side-by-side reading should have its feet on the ground. Even if this is a work of the heart, we want to stand firm when we give our word.</p>
 <h2 id="how-we-looked">How we looked</h2>
 <p>We set apart the items we found surprising in our reading (those at degree 3, the highest in our own working label). Among them we looked at those carrying a quoted fragment, on condition that the fragment be at least twenty characters.</p>
-<p>Then we had a machine do the following. We put both the fragment in the summary and the relevant volume of the translation into the same mold, without regard to letters, accents, spaces, and punctuation. We cut the fragment into small windows of twenty-four characters and searched for each window in the text of the relevant volume. If we found at least eighty percent of the windows, we said &quot;found.<span class="alinti-v">&quot; Between forty and eighty percent was &quot;</span>partly<span class="alinti-v">&quot;; below forty percent was &quot;</span>not found.&quot;</p>
+<p>Then we had a machine do the following. We put both the fragment in the summary and the relevant volume of the translation into the same mold, without regard to letters, accents, spaces, and punctuation. We cut the fragment into small windows of twenty-four characters and searched for each window in the text of the relevant volume. If we found at least eighty percent of the windows, we said &quot;found.&quot; Between forty and eighty percent was &quot;partly&quot;; below forty percent was &quot;not found.&quot;</p>
 <p>The text of the translation itself (the scanned copy sitting in Murat&#x27;s Drive) did not enter the repository or the site; for copyright reasons we do not give a single sentence from the translation here either. Only the numbers remained.</p>
 <h2 id="what-came-out">What came out</h2>
 <p>There were 1087 items carrying a quoted fragment.</p>
@@ -166,13 +172,13 @@
 <p>The question also stands: who can make the comparison with the Arabic original, and how? We do not understand Dost; nor do we give up trying to understand.</p>
 <h2 id="arabic-check-the-first-thirty-quotations">Arabic check: the first thirty quotations</h2>
 <p>We were able to reach the Arabic text of the Futuhat: the text digitized by OpenITI (Dar Ihya al-Turath al-Arabi, Beirut 1998 edition; footnotes and table of contents cleaned). We searched in this text for the thirty quotations that stand foremost on the form pages: with the Arabic phrases we extracted from the Turkish sentences, according to the unvocalized writing, with several different attempts.</p>
-<p>Result: twenty-three quotations agree with the Arabic, three agree partly, four were not found. &quot;Not found<span class="alinti-v">&quot; does not mean that the Turkish is wrong: it may be an edition difference, a free rendering, or the limit of our search. For the four that were not found we noted the nearest passages, but those passages are not the same word; so we did not count them as &quot;</span>agree.&quot;</p>
+<p>Result: twenty-three quotations agree with the Arabic, three agree partly, four were not found. &quot;Not found&quot; does not mean that the Turkish is wrong: it may be an edition difference, a free rendering, or the limit of our search. For the four that were not found we noted the nearest passages, but those passages are not the same word; so we did not count them as &quot;agree.&quot;</p>
 <p>A few observations:</p>
 <ul><li>The couplet <span class="alinti-v">&quot;Had He not been, we would not have been / Had we not been, He would not have been&quot;</span> occurs in the Arabic exactly.</li><li>The first half of the sentence <span class="alinti-v">&quot;Every breath is construction and creation&quot;</span> is not in the Arabic as such; there is another sentence that gives the same idea (<span class="alinti-v">&quot;in every breath a new construction in us&quot;</span>).</li><li>The Arabic of the sentence <span class="alinti-v">&quot;Time and nature have no external existence&quot;</span> says <span class="alinti-v">&quot;time and place (hayyiz)&quot;</span>; the scope of &quot;nature&quot; in the Turkish is somewhat different.</li><li>The sentence <span class="alinti-v">&quot;by means of ... through the occasion of ...&quot;</span> on the Cause page appears in the Arabic in the form <span class="alinti-v">&quot;beside a thing&quot;</span>; the details are on the Cause page.</li></ul>
 <p>Limits: the Arabic text is from a single edition; our section numbering does not fit one-to-one with the edition&#x27;s chapter and page arrangement, so in most places we made the matching from the sentence itself. There may be digitization errors. More than these thirty quotations have not been compared with the Arabic.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

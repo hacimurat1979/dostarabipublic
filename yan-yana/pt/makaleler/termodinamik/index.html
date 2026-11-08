@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -157,7 +163,7 @@
 <article class="makale" data-tur="kuram" id="m34-crooks-1999"><h3 id="crooks-1999--entropy-production-fluctuation-theorem-and-the">Crooks 1999 — <a class="kaynak" href="https://doi.org/10.1103/PhysRevE.60.2721" target="_blank" rel="noopener">Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences</a></h3><p class="mk-kunye">Phys. Rev. E 60, 2721 <span class="rozet">teoria</span></p><p class="mk-bu">Crooks deduziu um teorema de flutuação mais geral e demonstrou brevemente a igualdade de Jarzynski como consequência dele.</p><p>Poucas relações exatas são conhecidas para processos fora do equilíbrio. Uma é o teorema de flutuação, que impõe uma condição à distribuição da produção de entropia; a outra é a igualdade de trabalho de Jarzynski. Este artigo reúne as duas sob o mesmo teto.</p><p>Crooks deduz uma versão generalizada do teorema de flutuação para dinâmicas aleatórias (estocásticas) microscopicamente reversíveis. O resultado geral liga a razão entre duas probabilidades: a de um processo ocorrer no sentido direto com um certo trabalho e a de o inverso temporal desse mesmo processo dar o mesmo trabalho no sentido contrário. Essa razão depende exponencialmente da diferença entre o trabalho e a diferença de energia livre.</p><p>Esse resultado fornece diretamente a igualdade de Jarzynski: somando a razão nos dois lados, a média exponencial da distribuição de trabalho direta se reduz à diferença de energia livre. Por isso o artigo diz que oferece uma &#x27;prova curta&#x27; da igualdade. Além da igualdade, o teorema também permite ler a diferença de energia livre a partir do ponto em que as duas distribuições se cruzam.</p><p>Este artigo também trata de sistemas clássicos e estocásticos; como definir a medição de trabalho em sistemas quânticos é uma questão à parte.</p><p>O artigo também mostra que essa relação liga não só a média, mas toda a distribuição de trabalho; por isso carrega mais informação do que a própria igualdade de Jarzynski. A prova se apoia em como os caminhos direto e inverso dos processos se emparelham sob a reversibilidade microscópica.</p><p class="mk-sonra"><strong>Depois:</strong> Depois desses dois artigos, o campo se expandiu na direção dos &#x27;teoremas de flutuação quânticos&#x27;, que incluem definições de medição e de trabalho quânticos.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

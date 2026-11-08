@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -156,7 +162,7 @@
 <p>The result is 2,788 enigmatic items across 226 sections. To each of them we gave a difficulty score: 1, <span class="alinti-v">&quot;easily likened&quot;</span>; 3, <span class="alinti-v">&quot;we struggle greatly to find a likeness.&quot;</span> 1,154 items received difficulty 3. This is the main pool we lean on in the pages.</p>
 <p>Then we grouped the items by their forms. The first reading yielded fourteen forms, all of which are seen across all 18 volumes; in the second reading Multiplicity and Reciprocal transformation were added. These forms appear on the pages under their short names (their expansions are in the introduction page): Both-and, Non-repetition, Continuity, Relation, Viewpoint, Wholeness, Cause, Containment, Time, Knowledge, Reason, Indistinguishability, Inside-outside, Bewilderment, Multiplicity, Reciprocal transformation.</p>
 <p>The second reading was done as follows: all 226 sections were read again, with the Multiplicity and Reciprocal transformation forms in mind, divided among nineteen reader agents. The quotations were automatically compared with the source text; the two items that did not match were removed. In the second reading we also flagged forty-four new patterns; these have not yet been read side by side with physics.</p>
-<p>Wherever we quote Dost, the section number and, where possible, the page number are given. The quotations were taken from the reading record, automatically compared with the source text. The 16 quotations that did not match in the comparison we stopped counting as &quot;quotation<span class="alinti-v">&quot; and marked as &quot;</span>summary.<span class="alinti-v">&quot; We did not count the site&#x27;s own &quot;</span>That is…&quot; explanations as Dost&#x27;s words.</p>
+<p>Wherever we quote Dost, the section number and, where possible, the page number are given. The quotations were taken from the reading record, automatically compared with the source text. The 16 quotations that did not match in the comparison we stopped counting as &quot;quotation&quot; and marked as &quot;summary.&quot; We did not count the site&#x27;s own &quot;That is…&quot; explanations as Dost&#x27;s words.</p>
 <h2 id="how-did-we-read-physics">How did we read physics?</h2>
 <p>We tied every physics sentence to a source. The number of sources is 97 (for the order of the sources and the range of view, see the limits below). All of them are sources whose bibliographic details were checked one by one through Crossref, arXiv, or the address. We used no citation that could not be verified; we invented no citation.</p>
 <p>Our order of sources: peer-reviewed articles and reviews, then arXiv preprints, then encyclopedia entries (such as the Stanford Encyclopedia of Philosophy). We did not use popular accounts as sources. The sources are physics literature and encyclopedia entries; the literature of Ibn Arabi specialists (the commentators) and the critical literature on physics–Sufism comparisons were not used.</p>
@@ -196,7 +202,7 @@
 <p>This is not a failure; it is the honest state of the work: the ways the two fields fail to fit reason can be placed side by side, and some questions are common, but we have not found a matching solid enough to call <span class="alinti-v">&quot;the same structure.&quot;</span> The questions on the pages therefore remain questions.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

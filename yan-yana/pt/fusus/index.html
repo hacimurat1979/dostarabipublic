@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -163,7 +169,7 @@
 <blockquote>«Pois al-Haqq, o Exaltado, é o companheiro de quem O menciona; e o companheiro é o testemunhado de quem menciona; e quem menciona não é quem menciona sempre que não testemunha al-Haqq, que é o seu companheiro.» (fs18, capítulo de Jonas, Fusus)</blockquote>
 <h2 id="continuidade--continuidade-a-aparncia-de-outra-estrutura-por">Continuidade — continuidade, a aparência de outra estrutura por baixo</h2>
 <blockquote>«Ao passo que a criação do mundo se renova a cada sopro pela autorrevelação divina.» (fs16, capítulo de Salomão, comentário de Konuk)</blockquote>
-<blockquote>«Isto não é aniquilação. Pois esse &quot;nome<span class="alinti-v">&quot; não se torna inexistente. Antes, o que se chama &quot;</span>morte&quot; consiste na separação dos elementos combinados.» (fs18, capítulo de Jonas, comentário de Konuk)</blockquote>
+<blockquote>«Isto não é aniquilação. Pois esse &quot;nome&quot; não se torna inexistente. Antes, o que se chama &quot;morte&quot; consiste na separação dos elementos combinados.» (fs18, capítulo de Jonas, comentário de Konuk)</blockquote>
 <h2 id="contenco--o-que-contm-cabe-dentro-do-contido">Contenção — o que contém cabe dentro do contido</h2>
 <blockquote>«Saiba que o mundo, de ponta a ponta, é um espelho, e que em cada átomo brilham cem sóis!» (fs16, capítulo de Salomão, comentário de Konuk)</blockquote>
 <h2 id="dentro-fora--nem-dentro-nem-fora">Dentro-fora — nem dentro nem fora</h2>
@@ -176,7 +182,7 @@
 <blockquote>«al-Haqq não faz a mesma autorrevelação a dois lugares de manifestação, nem duas autorrevelações idênticas a um só lugar de manifestação; isto é, não há repetição na autorrevelação» (fs16, capítulo de Salomão, comentário de Konuk)</blockquote></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

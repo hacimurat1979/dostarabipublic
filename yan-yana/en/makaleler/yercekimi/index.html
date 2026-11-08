@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -161,7 +167,7 @@
 <article class="makale" data-tur="kuram" id="m38-maldacena-1997"><h3 id="maldacena-1997--the-large-n-limit-of-superconformal-field-th">Maldacena 1997 — <a class="kaynak" href="https://arxiv.org/abs/hep-th/9711200" target="_blank" rel="noopener">The large N limit of superconformal field theories and supergravity</a></h3><p class="mk-kunye">Adv. Theor. Math. Phys. 2, 231 <span class="rozet">theory</span></p><p class="mk-bu">Maldacena proposed that the large-N limit of a certain superconformal field theory is dual to supergravity (string theory) in anti-de Sitter space.</p><p>The paper starts from the objects called &#x27;branes&#x27; in string theory. A stack of branes is considered and the low-energy limit is taken. Two descriptions emerge: on one side a field theory living on the branes (without gravity), on the other the curved geometry around the branes.</p><p>The author shows that when the number of branes N is large, the near-horizon geometry remains reliable. This geometry is the product of anti-de Sitter space with a sphere or with other compact manifolds. On the field theory side, the superconformal symmetries correspond to the enhanced symmetries of this geometry. The four-dimensional N=4 super Yang–Mills theory in the &#x27;t Hooft limit contains IIB strings.</p><p>From this the paper&#x27;s proposal follows: the compactification of M/string theory on AdS space is dual to the corresponding conformal field theory. This also means a new proposal for a definition of M theory.</p><p>Its limits: the proposal is a conjecture. Since AdS has negative curvature, the correspondence does not apply directly to our universe, and what it would mean for the real universe is not addressed in this paper.</p><p>The strength of the proposal is that the two sides complement each other in terms of computability: quantities that are hard to compute in the strongly interacting field theory can be computed more easily on the gravity side. For this reason the paper is regarded as the beginning of a program of creating a two-way dictionary.</p><p class="mk-sonra"><strong>Afterwards:</strong> After the paper, many tests of the correspondence were made; the detail is not a general proof but a large number of consistency checks. It became the most studied example of the holographic principle.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

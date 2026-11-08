@@ -124,6 +124,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -158,7 +164,7 @@
   <p class="kucuk">O botão “Escrever” abre o seu aplicativo de e-mail; o endereço não é exibido nesta página. Sua mensagem chega até nós só por e-mail e nunca é publicada no site.</p>
   <noscript><p class="kucuk">Você precisa de um aplicativo de e-mail para escrever; se nada abrir, tente esta página em um computador.</p></noscript>
 </main>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

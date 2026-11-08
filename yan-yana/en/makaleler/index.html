@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -142,7 +148,7 @@
 <p>Sixty-three topics from the basic papers of quantum physics: the main question of each topic and plain-language summaries of its key papers. The aim is to give what these papers say in our own words, staying close to the source and adding no commentary; reading them side by side with other texts is left to the reader.</p><p>Each summary states the paper&#x27;s question, what it did and its result; experiment, theory and interpretation are kept apart. Summaries written without looking at the paper&#x27;s own abstract or text are marked. Every paper&#x27;s citation is given with a source link; <a href="/yan-yana/en/kaynaklar/">Sources</a> page as well.</p><h2 id="groups">Groups</h2><ul class="kartlar"><li><a href="/yan-yana/en/makaleler/temeller/"><b>I. Foundations of quantum mechanics</b><span>5 topics · 12 papers</span></a></li><li><a href="/yan-yana/en/makaleler/dolasiklik/"><b>II. Entanglement and reality</b><span>5 topics · 6 papers</span></a></li><li><a href="/yan-yana/en/makaleler/bilgi/"><b>III. Quantum information</b><span>5 topics · 9 papers</span></a></li><li><a href="/yan-yana/en/makaleler/hesaplama/"><b>IV. Quantum computation</b><span>5 topics · 6 papers</span></a></li><li><a href="/yan-yana/en/makaleler/alan/"><b>V. Quantum field theory</b><span>3 topics · 4 papers</span></a></li><li><a href="/yan-yana/en/makaleler/istatistik/"><b>VI. Quantum statistics</b><span>3 topics · 5 papers</span></a></li><li><a href="/yan-yana/en/makaleler/topolojik/"><b>VII. Topological quantum systems</b><span>5 topics · 5 papers</span></a></li><li><a href="/yan-yana/en/makaleler/termodinamik/"><b>VIII. Quantum and thermodynamics</b><span>3 topics · 4 papers</span></a></li><li><a href="/yan-yana/en/makaleler/yercekimi/"><b>IX. Quantum and gravity</b><span>4 topics · 5 papers</span></a></li><li><a href="/yan-yana/en/makaleler/guncel/"><b>X. Current big problems</b><span>12 topics · 26 papers</span></a></li><li><a href="/yan-yana/en/makaleler/temelolgu/"><b>XI. Basic phenomena and the birth of the theory</b><span>7 topics · 21 papers</span></a></li><li><a href="/yan-yana/en/makaleler/yorum2/"><b>XII. Interpretations and collapse</b><span>2 topics · 4 papers</span></a></li><li><a href="/yan-yana/en/makaleler/madde/"><b>XIII. States of matter, the vacuum and particles</b><span>4 topics · 13 papers</span></a></li></ul><p>Total: 63 topics, 120 papers. <a href="/yan-yana/en/makaleler/zaman-cizgisi/">Timeline</a> · <a href="/yan-yana/en/paralel/">Parallel reading table</a></p>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

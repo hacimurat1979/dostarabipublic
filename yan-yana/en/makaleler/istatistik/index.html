@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -158,7 +164,7 @@
 <article class="makale" data-tur="deney" id="m26-anderson-1995"><h3 id="anderson-1995--observation-of-bose-einstein-condensation-in">Anderson 1995 — <a class="kaynak" href="https://doi.org/10.1126/science.269.5221.198" target="_blank" rel="noopener">Observation of Bose-Einstein Condensation in a Dilute Atomic Vapor</a></h3><p class="mk-kunye">Science 269, 198-201 <span class="rozet">experiment</span></p><p class="mk-bu">Anderson and colleagues observed Bose-Einstein condensation in a dilute vapor of rubidium atoms.</p><p>The condensation Einstein predicted around 1925 could not be observed directly for decades. In a dilute atomic gas this requires reaching a very low temperature: the temperature must fall so low that the average distance between atoms and the atom&#x27;s quantum wavelength are about the same.</p><p>The group first cooled rubidium atoms with a laser and placed them in a magnetic trap. Then, by removing the most energetic atoms from the trap (evaporative cooling), it cooled the remaining gas further. The velocity distribution of the atoms was measured after the trap was released. Below a certain temperature, a narrow, sharp peak appeared in the distribution above the broad thermal base: part of the atoms had accumulated with very small velocities, that is, in the lowest quantum state. The peak grew as the temperature fell.</p><p>This picture is accepted as the observation of the condensation predicted by Einstein&#x27;s calculation. There is interaction between the atoms, however weak; for this reason the real condensation is not an exact copy of the ideal-gas picture, and its theoretical details are studied separately.</p><p>The limit of the observation is the smallness and short life of the condensate: the cloud consists of very few atoms and can be observed in the trap only for a very short time. Moreover the temperature measurement is indirect; it is inferred from the shape of the velocity distribution. For this reason the paper gives the experiment&#x27;s result with numbers and leaves the detailed theoretical comparison to later work.</p><p class="mk-belirsiz">This summary was written without looking at the paper&#x27;s own abstract or text, relying on a known account; it should be checked against the source.</p><p class="mk-sonra"><strong>Afterwards:</strong> In the same year Ketterle&#x27;s group at MIT independently achieved condensation with sodium atoms. Cornell, Wieman and Ketterle shared the 2001 Nobel Prize in Physics. In later work, interference between condensates was observed and cold atomic gases began to be used for simulation purposes (see greiner-2002).</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

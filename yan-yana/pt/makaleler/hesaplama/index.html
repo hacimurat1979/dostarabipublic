@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -165,7 +171,7 @@
 <article class="makale" data-tur="kuram" id="m20-pednault-2019"><h3 id="pednault-2019--leveraging-secondary-storage-to-simulate-deep">Pednault 2019 — <a class="kaynak" href="https://arxiv.org/abs/1910.09534" target="_blank" rel="noopener">Leveraging Secondary Storage to Simulate Deep 54-qubit Sycamore Circuits</a></h3><p class="mk-kunye">arXiv:1910.09534 (önbaskı) <span class="rozet">teoria</span></p><p class="mk-bu">Resposta que argumenta que os circuitos Sycamore poderiam ser simulados em dias em um supercomputador clássico usando armazenamento secundário.</p><p>Um trabalho anterior dos autores havia mostrado que o armazenamento secundário (os discos) pode ampliar a faixa de circuitos quânticos que podem ser executados na prática em simulação clássica. Este artigo aprimora essas técnicas e as aplica a circuitos Sycamore de 53 e 54 qubits. O artigo saiu como pré-publicação pouco antes da publicação do artigo da Google na Nature.</p><p>O padrão de circuito de interesse (o padrão de emaranhamento chamado ABCDCDAB) é do tipo que se mostrou difícil de simular classicamente por outras abordagens. Segundo a análise dos autores, no supercomputador Summit, do Laboratório Nacional de Oak Ridge, esses circuitos podem ser simulados em alguns dias, até profundidade arbitrária, com alta fidelidade e com todas as amplitudes fornecidas como saída.</p><p>Isto não é um experimento, mas uma análise de cálculo. A estimativa de &quot;alguns dias&quot; do artigo é uma contraestimativa colocada diante da estimativa de &quot;cerca de 10.000 anos&quot; do artigo da Google. Como as duas estimativas se baseiam no custo da mesma tarefa com algoritmos clássicos diferentes, o debate não é sobre um resultado experimental, mas sobre qual método clássico é o melhor para essa tarefa e com que fidelidade ela precisa ser calculada.</p><p>Este trabalho contrário é citado como exemplo que mostra que as alegações de &quot;supremacia quântica&quot; são um limiar que pode ser deslocado pelo progresso dos algoritmos clássicos. Nota para o leitor: a profundidade do circuito é o número de camadas sucessivas de portas do circuito quântico; à medida que a profundidade aumenta, a simulação clássica geralmente fica mais difícil.</p><p class="mk-sonra"><strong>Depois:</strong> O debate prosseguiu nos anos seguintes com o desenvolvimento de técnicas de simulação clássica; seus detalhes não estão neste arquivo.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

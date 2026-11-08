@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -157,7 +163,7 @@
 <article class="makale" data-tur="kuram" id="m34-crooks-1999"><h3 id="crooks-1999--entropy-production-fluctuation-theorem-and-the">Crooks 1999 — <a class="kaynak" href="https://doi.org/10.1103/PhysRevE.60.2721" target="_blank" rel="noopener">Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences</a></h3><p class="mk-kunye">Phys. Rev. E 60, 2721 <span class="rozet">theory</span></p><p class="mk-bu">Crooks derived a more general fluctuation theorem and briefly proved the Jarzynski equality as a consequence of it.</p><p>Few exact relations are known for nonequilibrium processes. One is the fluctuation theorem, which places a condition on the distribution of entropy production; the other is Jarzynski&#x27;s work equality. This paper brings the two together under the same roof.</p><p>Crooks derives a generalized version of the fluctuation theorem for microscopically reversible, random (stochastic) dynamics. The general result links the ratio of two probabilities: that a process takes place in the forward direction with a certain work, and that the time-reverse of the same process gives the same work in the backward direction. This ratio depends exponentially on the difference between the work and the free-energy difference.</p><p>This result gives the Jarzynski equality directly: summing the ratio on both sides, the exponential average of the forward work distribution reduces to the free-energy difference. For this reason the paper says it offers a &#x27;short proof&#x27; of the equality. Beyond the equality, the theorem also makes it possible to read the free-energy difference from the point where the two distributions cross.</p><p>This paper too is for classical, stochastic systems; how to define the measurement of work in quantum systems is a separate question.</p><p>The paper also shows that this relation links not only the average but the whole work distribution; for this reason it carries more information than the Jarzynski equality itself. The proof rests on how the forward and backward paths of the processes pair up under microscopic reversibility.</p><p class="mk-sonra"><strong>Afterwards:</strong> After these two papers, the field expanded toward &#x27;quantum fluctuation theorems,&#x27; which include definitions of quantum measurement and work.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

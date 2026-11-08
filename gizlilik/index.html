@@ -104,6 +104,12 @@
   @media (forced-colors: active) { .olcum__hal { border-width: 2px; } .olcum__hal[aria-pressed="true"] { border-width: 6px; border-color: Highlight; background: transparent; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -131,7 +137,7 @@
     <p class="tarih">Son güncelleme: 7 Kasım 2026</p>
 
     <h2>Web sitesi (dostarabi.com)</h2>
-    <p>Sitede iki ziyaret ölçüm aracı var: Google Analytics ve Microsoft Clarity. İkisi de yalnız onayınla yüklenir. İlk ziyarette bir onam bandı görünür; “Kabul et” dersen bu iki araç yüklenir, “Reddet” dersen hiçbiri yüklenmez. Kararın tarayıcında saklanır ve bant bir daha sorulmaz. Bu araçların topladığı veri, <a href="https://policies.google.com/privacy">Google</a> ve <a href="https://privacy.microsoft.com/privacystatement">Microsoft</a> gizlilik bildirimlerine tabidir.</p>
+    <p>Sitede iki ziyaret ölçüm aracı var: Google Analytics ve Microsoft Clarity. İkisi de yalnız onayınızla yüklenir. İlk ziyarette bir onam bandı görünür; “Kabul et” derseniz bu iki araç yüklenir, “Reddet” derseniz hiçbiri yüklenmez. Kararınız tarayıcınızda saklanır ve bant bir daha sorulmaz. Bu araçların topladığı veri, <a href="https://policies.google.com/privacy">Google</a> ve <a href="https://privacy.microsoft.com/privacystatement">Microsoft</a> gizlilik bildirimlerine tabidir.</p>
     <p>Sitede üyelik, giriş, form ya da yorum yok. Site GitHub Pages üzerinde barındırılan statik dosyalardan oluşur; sunucu kayıtları <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub gizlilik bildirimi</a> çerçevesinde GitHub tarafından tutulur.</p>
 
     <div class="olcum" data-olcum hidden>
@@ -158,13 +164,13 @@
     <p>Düzenleme kipi (@revise) ziyaretçilere açık değildir: yalnız site sahibinin cihazında, parola girildikten sonra açılır. Orada tutulan notlar, o cihazda sahip anahtarı varsa, cihazlar arasında eşitlenebilir: notlar tarayıcıda şifrelenir ve Cloudflare Workers üzerindeki bir kayıt alanına yazılır; sunucu yalnız şifreli metni görür, anahtarı bilmez. Ziyaretçilerin cihazından hiçbir şey gönderilmez. Görüntülü notlar eşitlenmez.</p>
 
     <h2>Çevrimdışı okuma</h2>
-    <p>Menüdeki “Çevrimdışı okuma” satırından istersen sitenin dosyaları tarayıcının önbelleğine indirilir. Bu yalnız sen istediğinde olur; aynı satırdaki “Kaldır” ile silinir.</p>
+    <p>Menüdeki “Çevrimdışı okuma” satırından isterseniz sitenin dosyaları tarayıcının önbelleğine indirilir. Bu yalnız siz istediğinizde olur; aynı satırdaki “Kaldır” ile silinir.</p>
 
     <h2>İletişim</h2>
-    <p>Sorular için site sahibine <a href="/iletisim/">iletişim sayfasından</a> ulaşabilirsin (altbilgideki "İletişim" bağlantısı).</p>
+    <p>Sorular için site sahibine <a href="/iletisim/">iletişim sayfasından</a> ulaşabilirsiniz (altbilgideki "İletişim" bağlantısı).</p>
   </section>
 </main>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/">Harita</a><a href="/futuhat/">Fütûhât</a><a href="/fusus/">Füsûs</a><a href="/miskat/">Mişkât</a><a href="/dizin/">Dizin</a></nav>
+<nav class="mini-kabuk" aria-label="Bölümler"><a href="/">Harita</a><a href="/futuhat/">Fütûhât</a><a href="/fusus/">Füsûs</a><a href="/miskat/">Mişkât</a><a href="/dizin/">Dizin</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 <script src="/assets/gizlilik-olcum.js" defer></script>
 </body>

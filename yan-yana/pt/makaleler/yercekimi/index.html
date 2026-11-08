@@ -122,6 +122,12 @@
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
 
   body { padding-bottom: 72px; }
+  /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
+     Yan Yana kendi üst satırına ekler (header.ustbar): oraya dokunulmaz. */
+  @media (scripting: enabled) { html:not(.mini-ust-var) body:not(:has(header.ustbar)) { padding-top: 53px; } }
+  /* Çubuk, mini-ust.css inmeden eklenirse (87 px'e şişip 53'e dönmesin) aynı yükseklikte kalır. */
+  .mini-atla { position: absolute; left: 8px; top: -64px; }
+  .mini-ust { display: flex; align-items: center; box-sizing: border-box; height: 53px; overflow: hidden; }
   .mini-kabuk { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; justify-content: center; gap: 2px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--page-plane); border-top: 1px solid var(--gridline); }
   .mini-kabuk a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 12px; border-radius: 22px;
@@ -161,7 +167,7 @@
 <article class="makale" data-tur="kuram" id="m38-maldacena-1997"><h3 id="maldacena-1997--the-large-n-limit-of-superconformal-field-th">Maldacena 1997 — <a class="kaynak" href="https://arxiv.org/abs/hep-th/9711200" target="_blank" rel="noopener">The large N limit of superconformal field theories and supergravity</a></h3><p class="mk-kunye">Adv. Theor. Math. Phys. 2, 231 <span class="rozet">teoria</span></p><p class="mk-bu">Maldacena propôs que o limite de N grande de uma certa teoria de campos superconforme é dual à supergravidade (teoria das cordas) no espaço anti-de Sitter.</p><p>O artigo parte dos objetos chamados &#x27;branas&#x27; na teoria das cordas. Considera-se uma pilha de branas e toma-se o limite de baixa energia. Surgem duas descrições: de um lado, uma teoria de campos que vive sobre as branas (sem gravidade); do outro, a geometria curva em torno das branas.</p><p>O autor mostra que, quando o número de branas N é grande, a geometria próxima ao horizonte permanece confiável. Essa geometria é o produto do espaço anti-de Sitter com uma esfera ou com outras variedades compactas. Do lado da teoria de campos, as simetrias superconformes correspondem às simetrias ampliadas dessa geometria. A teoria super Yang–Mills N=4 em quatro dimensões, no limite de &#x27;t Hooft, contém cordas IIB.</p><p>Daí decorre a proposta do artigo: a compactificação da teoria M/de cordas no espaço AdS é dual à teoria de campos conforme correspondente. Isso também significa uma nova proposta de definição para a teoria M.</p><p>Seus limites: a proposta é uma conjectura. Como o AdS tem curvatura negativa, a correspondência não se aplica diretamente ao nosso universo, e o que ela significaria para o universo real não é tratado neste artigo.</p><p>A força da proposta está em que os dois lados se complementam quanto à calculabilidade: grandezas difíceis de calcular na teoria de campos fortemente interagente podem ser calculadas mais facilmente do lado da gravidade. Por isso o artigo é considerado o início de um programa de criação de um dicionário de mão dupla.</p><p class="mk-sonra"><strong>Depois:</strong> Depois do artigo, foram feitos muitos testes da correspondência; o detalhe não é uma demonstração geral, mas um grande número de verificações de consistência. Tornou-se o exemplo mais estudado do princípio holográfico.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Dost Arabî"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>
