@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- scripts/yanyana-uret.py üretir (elle düzenlenmez). Bizim okuma çerçevemiz, okuma özeti DEĞİL. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <title>What did not fit on the pages — Dost Arabî</title>
@@ -34,6 +34,7 @@
 <link rel="preload" href="/assets/fonts/Fraunces-SemiBold-static.woff2" as="font" type="font/woff2" crossorigin>
 <script src="/assets/gonul-tema.js"></script>
 <script src="/assets/yy-ic.js"></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -98,6 +99,8 @@
   /* 3 Kasım: okuma ölçüsü, içindekiler, biçim gezintisi, yakınlık haritası, terim kutusu, arama, kaynak süzgeci */
   main > h1, main > .kunye, main > article > :is(p, ul, ol, blockquote, h2, h3, h4, details, figure), main > .yh-fig, main > .onsonra, main > .icerik, main > .okundu { max-width:46rem; }
   main:has(.yy-yanyana) > article > .yy-yanyana { max-width:none; }
+  /* YS-07 (2026-11-08): iki sütunlu biçim sayfalarında üst çubuk 46rem'e sıkışıp "Bölümler · Hem-" diye kırpılıyordu */
+  main > header.ustbar { max-width:none; }
   main:has(.yy-yanyana) { max-width:1240px; }
   /* Tasarım laboratuvarı (2026-11-05): ≥1500 px'te içindekiler sağ sütunda yapışkan durur, metin ölçüsü korunur; ekranın yarısı boş kalmaz. */
   @media (min-width: 1500px) {
@@ -119,7 +122,20 @@
   a.okundu-i::after { content:" ✓"; color:var(--accent-interactive); } .okundu { margin:22px 0 4px; } .okundu button { min-height:44px; padding:0 18px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .okundu button[aria-pressed=true] { border-color:var(--accent-interactive); }
   .kay-ara { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; align-items:center; } .kay-ara input { flex:1 1 14rem; min-height:44px; padding:0 14px; border:1px solid var(--gridline); border-radius:22px; background:var(--surface-1); color:inherit; font:inherit; } .kay-ara button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .kay-ara button[aria-pressed=true] { border-color:var(--accent-interactive); } .kay-say { color:var(--text-muted); font-size:.9rem; } #kay-ara:empty { min-height:200px; } @media (min-width:700px) { #kay-ara:empty { min-height:112px; } }
   html.yy-ic .icerik, html.yy-ic .okundu, html.yy-ic nav.onsonra { display:none; }
-  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
+  .icerik > summary { white-space:nowrap; } .kay-parca a { display:inline-block; min-height:44px; line-height:44px; padding:0 6px; }
+  .yalniz-ozel { display:none; } html.dost-ozel .yalniz-ozel { display:inline; }
+  /* Telefon (YS-04/05/06, 2026-11-08): çubuklar kaydırırken çekilir (assets/yy-gezin.js), künye ikinci sayfadan itibaren iki satır, terim kutusu alt sayfa */
+  header.ustbar, nav.mini-kabuk { transition:transform .2s ease; } html.yy-aninda header.ustbar, html.yy-aninda nav.mini-kabuk { transition:none; }
+  @media (max-width:640px) {
+    html.yy-cekik header.ustbar { transform:translateY(-120%); } html.yy-cekik nav.mini-kabuk { transform:translateY(120%); }
+    main > aside.kunye { flex-wrap:wrap; } main > aside.kunye > p { flex:1 1 0; min-width:0; }
+    .kunye--kisa p { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; }
+    .kunye-ac { flex:1 0 100%; text-align:left; min-height:44px; padding:0 0 0 24px; border:0; background:none; color:var(--accent-interactive); font:inherit; font-size:.9rem; cursor:pointer; }
+    .terim-kutu { position:fixed; left:8px !important; right:8px; top:auto !important; bottom:calc(var(--mini-alt-h, 57px) + 8px); max-width:none; max-height:50vh; overflow:auto; }
+  }
+  .kunye-ac { display:none; } .kunye--kisa .kunye-ac, .kunye > .kunye-ac { display:block; }
+  @media (min-width:641px) { .kunye-ac { display:none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } header.ustbar, nav.mini-kabuk { transition:none; } }
 
   body { padding-bottom: 72px; }
   /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
@@ -136,6 +152,15 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 </style>
 <script src="/assets/gonul-revise.js" defer></script>
 <script src="/assets/yy-gezin.js" defer></script>
@@ -148,7 +173,7 @@
 <details class="icerik"><summary>On this page<span class="icerik__onizleme">c12k147 — Point and Circumference: The C · c16k222 — The Seal of the Saints and the · c17k224 — The Thirty-Fourth Sifr: Truths …</span></summary><ol><li><a href="#c12k147--point-and-circumference-the-circle-diagram-dost-dre">c12k147 — Point and Circumference: The Circle Diagram Dost Drew Himself</a></li><li><a href="#c16k222--the-seal-of-the-saints-and-the-ranks-of-the-divine">c16k222 — The Seal of the Saints and the Ranks of the Divine Names — Closing of Volume XVI</a></li><li><a href="#c17k224--the-thirty-fourth-sifr-truths-and-secrets-from-vari">c17k224 — The Thirty-Fourth Sifr: Truths and Secrets from Various Stations</a></li><li><a href="#c9k124--searching-is-left-to-you-the-longest-section-of-volu">c9k124 — &#x27;Searching Is Left to You&#x27;: The Longest Section of Volume IX and Its Silent Closi</a></li><li><a href="#c13k151--the-matter-is-a-cycle-closing-of-volume-xiii">c13k151 — The Matter Is a Cycle: Closing of Volume XIII</a></li><li><a href="#c11k135--the-presence-of-imagination-where-the-unseen-and-th">c11k135 — The Presence of Imagination: Where the Unseen and the Witnessed Meet</a></li><li><a href="#c11k136--the-circular-straightness-of-al-haqqs-path">c11k136 — The Circular Straightness of al-Haqq&#x27;s Path</a></li><li><a href="#c18k225--sifr-35--from-open-association-to-the-great-sicknes">c18k225 — Sifr 35 — From Open Association to the Great Sickness</a></li></ol></details><article><p>This page is not a commentary but a record. While reading the Futuhat we collected the hardest places that did not fit our reason, those that did not make it into the pages on the forms, in the eight densest sections. Each line carries Dost&#x27;s sentence (or a short summary of it) and the form label we gave that sentence. We have not read any of them side by side with physics, and we say nothing about any of them.</p>
 <p>The meaning of the labels is on the introduction page. The section number <code><a href="/futuhat/c12k147/">c12k147</a></code> = volume 12, section 147; if you click the number you go to the page of that section.</p>
 <h2 id="c12k147--point-and-circumference-the-circle-diagram-dost-dre"><a href="/futuhat/c12k147/">c12k147</a> — Point and Circumference: The Circle Diagram Dost Drew Himself</h2>
-<ul><li>Of the three letters in the verse &quot;Be&quot;, two are visible and one is hidden; al-Dahr (Time) brings out the precedence, delay and order in speech; Dost relays the Prophet&#x27;s words, <span class="alinti-v">&quot;Do not curse Time, for Time is Allah.&quot;</span> <span class="kunye-v">(p. 332-334)</span> (form: Time, Relation)</li></ul>
+<ul><li>Of the three letters in the verse &quot;Be&quot;, two are visible and one is hidden; al-Dahr (Time) brings out the precedence, delay and order in speech; Dost relays the Prophet&#x27;s words, &quot;Do not curse Time, for Time is Allah.&quot; <span class="kunye-v">(p. 332-334)</span> (form: Time, Relation)</li></ul>
 <blockquote>«Even if these causes are above you in terms of the rank that appears, the aim is you, the existent; those causes exist because of you and so that you may appear.» (<a href="/futuhat/c12k147/">c12k147</a>, p. 286-287)</blockquote>
 <p>Form: Cause, Time.</p>
 <blockquote>«al-Haqq conceals Himself in the form of the perfect human, that is, in the thingness of his fixity (ayn-ı sabite).» (<a href="/futuhat/c12k147/">c12k147</a>)</blockquote>
@@ -206,17 +231,17 @@
 <ul><li>From chapter 201: Weariness arises from not knowing how to create anew. <span class="kunye-v">(p. 354)</span>; one of the verses: Who knows Him: the one who accepts that the world is created at every moment <span class="kunye-v">(p. 354)</span> (form: Non-repetition, Continuity)</li></ul>
 <ul><li>From chapter 211: Just as you must know whom you are looking at, you must also learn who is looking. <span class="kunye-v">(p. 360)</span>; For this reason the only proof of Allah is Allah <span class="kunye-v">(p. 360)</span> (form: Viewpoint, Knowledge, Indistinguishability)</li></ul>
 <ul><li>From chapter 229: The believer&#x27;s heart holds the Widest within itself. <span class="kunye-v">(p. 368)</span> (form: Containment)</li></ul>
-<ul><li>From chapter 237 (exile): It is told that Layla asked Qays, <span class="alinti-v">&quot;Who are you?&quot;</span>, and Qays answered, &quot;Layla&quot; <span class="kunye-v">(p. 374)</span>. (form: Indistinguishability)</li></ul>
+<ul><li>From chapter 237 (exile): It is told that Layla asked Qays, &quot;Who are you?&quot;, and Qays answered, &quot;Layla&quot; <span class="kunye-v">(p. 374)</span>. (form: Indistinguishability)</li></ul>
 <h2 id="c9k124--searching-is-left-to-you-the-longest-section-of-volu"><a href="/futuhat/c9k124/">c9k124</a> — &#x27;Searching Is Left to You&#x27;: The Longest Section of Volume IX and Its Silent Closing</h2>
 <ul><li>It is discussed that time and space have no outer existence and are of an imagined (mevhum) nature; the difference in motion and rest between the sphere and the element. (form: Time, Reason)</li></ul>
 <ul><li>Chapter 255: Mahk means your becoming annihilated (fani) in Him, while mahku&#x27;l-mahk means your being fixed (sabit) in Him <span class="kunye-v">(p. 400)</span>; mahk is to appear with Him in becoming by way of caliphate and deputyship; the caliphate is tied to learning the meanings of the letters at the beginning of the surahs (Alif, Lam, Mim) <span class="kunye-v">(p. 401-402)</span>. At any one time only one person (the Ghawth, the Qutb) remains alone with al-Haqq <span class="kunye-v">(p. 402)</span>. (form: Both-and, Indistinguishability, Bewilderment)</li></ul>
 <ul><li>Chapters 260–261: nearness (qurb) is the state of the two ends of a circle cut by a line, or of being closer <span class="kunye-v">(p. 411)</span>; But in truth there is no possibility of distance from Allah. Distance is a relative state <span class="kunye-v">(p. 415)</span>; Nearness is gathering, and distance is dispersal and separation; there is nothing in the world farther from Allah <span class="kunye-v">(p. 418)</span>. (form: Both-and, Viewpoint)</li></ul>
 <ul><li>Chapter 264: All thoughts are divine addresses, not self-disclosures. For this reason Allah has constructed them as forms that come about in the Amā — which is the breath of the All-Merciful <span class="kunye-v">(p. 430)</span>. (form: Reason, Cause)</li></ul>
-<ul><li>Chapter 199: The saying of Sahl b. Abdullah, <span class="alinti-v">&quot;Lordship has a secret which, if it appeared, would make lordship void,&quot;</span> is explained <span class="kunye-v">(p. 195)</span>; the secret is at three ranks: the secret of knowledge, the secret of state, the secret of reality <span class="kunye-v">(p. 193)</span>. (form: Knowledge, Bewilderment)</li></ul>
+<ul><li>Chapter 199: The saying of Sahl b. Abdullah, &quot;Lordship has a secret which, if it appeared, would make lordship void,&quot; is explained <span class="kunye-v">(p. 195)</span>; the secret is at three ranks: the secret of knowledge, the secret of state, the secret of reality <span class="kunye-v">(p. 193)</span>. (form: Knowledge, Bewilderment)</li></ul>
 <ul><li>Chapter 202: the etiquette of reality is to see al-Haqq in things as the very self of things — not as them <span class="kunye-v">(p. 201)</span>. (form: Both-and, Indistinguishability, Viewpoint)</li></ul>
 <ul><li>Chapter 206: In the year 593, in Fez, at the afternoon prayer, he saw the light behind him more clearly than the light in front of him and could no longer tell the directions apart: Rather I was as if a sphere <span class="kunye-v">(p. 213-214)</span>. The lights are counted as front, right, left, back, above and below according to their sources. (form: Containment, Bewilderment, Inside-outside)</li></ul>
 <ul><li>Chapter 207: So the cause (&#x27;illa) is to take a reason to exist, while Allah is the reason itself <span class="kunye-v">(p. 223)</span>; Any reason that does not turn you back to Allah, warn you about Him or awaken a consciousness of Him is not a cause (&#x27;illa) <span class="kunye-v">(p. 224)</span>. (form: Cause, Reason)</li></ul>
-<ul><li>Chapter 209: we said that witnessing (muşâhede) is the seeing of the witness. That witness is what is in the heart from al-Haqq <span class="kunye-v">(p. 237)</span>; Bilqis&#x27;s throne, <span class="alinti-v">&quot;as if it is it,&quot;</span> and the Companions&#x27; saying of Gabriel in the form of Dihya, <span class="alinti-v">&quot;it is Dihya,&quot;</span> are compared. The chapter ends with You can never see al-Haqq and creation together <span class="kunye-v">(p. 238)</span>. (form: Viewpoint, Both-and, Inside-outside)</li></ul>
+<ul><li>Chapter 209: we said that witnessing (muşâhede) is the seeing of the witness. That witness is what is in the heart from al-Haqq <span class="kunye-v">(p. 237)</span>; Bilqis&#x27;s throne, &quot;as if it is it,&quot; and the Companions&#x27; saying of Gabriel in the form of Dihya, &quot;it is Dihya,&quot; are compared. The chapter ends with You can never see al-Haqq and creation together <span class="kunye-v">(p. 238)</span>. (form: Viewpoint, Both-and, Inside-outside)</li></ul>
 <ul><li>Chapter 213: accept multiplicity in respect of fixity, but negate it in respect of existence! Affirm unity in existence, but exclude it from fixity! <span class="kunye-v">(p. 256)</span>. (form: Both-and, Inside-outside)</li></ul>
 <ul><li>Chapter 214: For us freedom is the removal of the servant&#x27;s attribute by the attribute of al-Haqq <span class="kunye-v">(p. 257)</span>; In truth one cannot say &#x27;free&#x27; of al-Haqq, but one can say &#x27;not a slave&#x27; <span class="kunye-v">(p. 258)</span>; In truth freedom does not have an existence <span class="kunye-v">(p. 259)</span>. (form: Both-and, Cause)</li></ul>
 <ul><li>Chapter 218: the contraction (qabz) in the divine rank is tied to the hadith, My believing servant&#x27;s heart contained Me, and to al-Haqq&#x27;s self-disclosure in the forms of belief <span class="kunye-v">(p. 278)</span>. (form: Containment, Both-and)</li></ul>
@@ -297,7 +322,7 @@
 <blockquote>«The closing of the door on the matter of acquisition (iktisâb)» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
 <p>Form: Time, Non-repetition.</p>
 <ul><li>There is no goal in the goal: the goal of the world is to seek al-Haqq, while the goal of al-Haqq is the created <span class="kunye-v">(p. 132)</span> (form: Relation, Both-and)</li></ul>
-<ul><li>In the discussion <span class="alinti-v">&quot;Existence is in prostration,&quot;</span> the Prophet&#x27;s saying: If you were to let down a rope, it would fall upon Allah <span class="kunye-v">(p. 144)</span> (form: Containment, Inside-outside)</li></ul>
+<ul><li>In the discussion &quot;Existence is in prostration,&quot; the Prophet&#x27;s saying: If you were to let down a rope, it would fall upon Allah <span class="kunye-v">(p. 144)</span> (form: Containment, Inside-outside)</li></ul>
 <blockquote>«Open association (shirk) is the association brought about by one&#x27;s act through an instrument, while hidden association is relying on the instrument and the means in a matter that can be done with an instrument. In this respect everyone is an associator. For everyone has knowledge, and only knowledge brings about association, and knowledge is sought by al-Haqq.» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
 <p>Form: Knowledge, Both-and.</p>
 <blockquote>«The one who dies before dying rises» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
@@ -313,7 +338,7 @@
 <ul><li>Title of chapter 405: Time cannot limit the one whom space cannot contain. (form: Containment, Time)</li></ul></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/en/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

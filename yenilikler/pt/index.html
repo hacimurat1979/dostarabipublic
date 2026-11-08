@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- scripts/yenilikler-uret.py üretir (elle düzenlenmez; kaynak data/yenilikler.json). Olgusal değişiklik kaydı. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <title>Novidades — Dost Arabî</title>
 <meta name="description" content="Um registro curto e factual do que foi adicionado ao site e quando.">
@@ -30,6 +30,8 @@
 <meta name="theme-color" content="#8a6100">
 <link rel="alternate" type="application/atom+xml" title="Novidades" href="/yenilikler/pt/feed.xml">
 <script src="/assets/gonul-tema.js"></script>
+<script src="/assets/suzgec.js" defer></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -122,6 +124,21 @@
   .kartlar { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
   .kart a { display: block; color: inherit; text-decoration: none; }
   .kart .kapak { margin-bottom: 10px; }
+  /* YS-02: liste kartında sabit 3:2 çerçeve; portre fotoğrafta konu `kapak.odak` ile gösterilir (bulanık köşe değil) */
+  .kart .kapak img { aspect-ratio: 3 / 2; height: auto; object-fit: cover; object-position: var(--odak, 50% 50%); }
+  /* Portre görsel yazıda ilk ekranı kaplamasın (başlık görünsün) */
+  article img.dikey { width: auto; max-width: 100%; max-height: 50vh; margin-inline: auto; }
+  .onc-son { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 32px 0 0; }
+  .onc-son a { display: inline-flex; flex-direction: column; justify-content: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--gridline); border-radius: 14px; text-decoration: none; color: var(--text-primary); max-width: 100%; }
+  .onc-son a:hover { border-color: var(--accent-interactive); }
+  .onc-son small { color: var(--text-muted); font-size: 0.8rem; }
+  .onc-son .sonraki { margin-left: auto; text-align: right; }
+  .suzgec { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+  .suzgec[hidden] { display: none; }
+  .suzgec button { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .suzgec button[aria-pressed="true"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  .suzgec button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kartlar > li[hidden] { display: none; }
   .kart h2 { margin: 6px 0 6px; font-size: 1.25rem; }
   .kart p { margin: 0; color: var(--text-secondary); }
   .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
@@ -142,6 +159,15 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 
   body { padding-bottom: 72px; }
   /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
@@ -158,12 +184,27 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 
   .yenilikler { list-style: none; margin: 24px 0; padding: 0; display: grid; gap: 18px; }
   .yenilikler li { padding-bottom: 18px; border-bottom: 1px solid var(--gridline); }
   .yenilikler h2 { font-family: "Fraunces Dost", Georgia, serif; font-size: 1.15rem; margin: 2px 0 6px; }
   .yenilikler time { color: var(--text-muted); font-size: 0.9rem; }
   .yenilikler p { margin: 0 0 8px; color: var(--text-secondary); }
+  .suzgec { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; }
+  .suzgec[hidden] { display: none; }
+  .suzgec button { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .suzgec button[aria-pressed="true"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  .suzgec button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .yenilikler li[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -178,11 +219,12 @@
   </div>
   <h1>Novidades</h1>
   <p class="giris">Um registro curto e factual do que foi adicionado ao site e quando.</p>
-  <ol class="yenilikler"><li><time datetime="2026-11-07">7 novembro 2026</time><h2>“Textos e ensaios” no menu Explorar</h2><p>O Diário do Coração e o Lado a Lado agora ficam em um grupo próprio no menu Explorar, em vez de Configurações.</p><p><a href="/gonul/">Abrir a página</a></p></li><li><time datetime="2026-11-07">7 novembro 2026</time><h2>Páginas de registro em três idiomas</h2><p>As partes do Futuhat, os capítulos do Fusus e os hadiths do Mishkat também abrem como páginas próprias em endereços em inglês e em português do Brasil.</p><p><a href="/en/futuhat/">Abrir a página</a></p></li><li><time datetime="2026-11-06">6 novembro 2026</time><h2>Diário do Coração: dois novos textos</h2><p>“A montanha com a cabeça na nuvem” e “Com a pá, dentro da terra” foram publicados. As fotografias são do autor e o Claude escreveu as palavras; o crédito está na página de cada texto.</p><p><a href="/gonul/">Abrir a página</a></p></li><li><time datetime="2026-11-03">3 novembro 2026</time><h2>Lado a Lado aberto à busca</h2><p>As páginas de Lado a Lado foram abertas aos mecanismos de busca e ao índice do site; foram adicionados um menu de seções, um índice e uma marca de lido guardada no dispositivo.</p><p><a href="/yan-yana/">Abrir a página</a></p></li><li><time datetime="2026-11-02">2 novembro 2026</time><h2>Lado a Lado em inglês e português</h2><p>A seção Lado a Lado também pode ser lida em inglês e em português do Brasil; a tradução é a nossa transposição, e cada página diz isso.</p><p><a href="/yan-yana/en/">Abrir a página</a></p></li><li><time datetime="2026-11-01">1 novembro 2026</time><h2>Lado a Lado: Dost e a Física Quântica</h2><p>Foi adicionada uma nova seção em que citações de Dost são lidas lado a lado com a literatura da física. É o nosso quadro de leitura, não um resumo de leitura.</p><p><a href="/yan-yana/">Abrir a página</a></p></li><li><time datetime="2026-10-31">31 outubro 2026</time><h2>Arquivo de Diagramas</h2><p>Os diagramas do site foram reunidos em uma página, com a origem indicada: a mão do próprio Dost, os que desenhamos e o nosso quadro de leitura são marcados separadamente.</p><p><a href="/semalar/">Abrir a página</a></p></li><li><time datetime="2026-10-29">29 outubro 2026</time><h2>Ferramentas de leitura</h2><p>Ouvir, Modo de leitura e notas de parágrafo foram adicionados às leituras do Futuhat, do Fusus e do Mishkat. Tudo funciona no próprio dispositivo do leitor.</p><p><a href="/futuhat/">Abrir a página</a></p></li><li><time datetime="2026-10-27">27 outubro 2026</time><h2>Diário do Coração</h2><p>Foi adicionada uma nova seção com textos curtos ilustrados na voz própria do autor. Não é um resumo de leitura, e cada página diz isso.</p><p><a href="/gonul/">Abrir a página</a></p></li></ol>
+  <nav class="suzgec" aria-label="Filtro" hidden><button type="button" data-tur="hepsi" aria-pressed="true">Todas</button><button type="button" data-tur="gonul" aria-pressed="false">Diário do Coração</button><button type="button" data-tur="yan-yana" aria-pressed="false">Lado a Lado</button><button type="button" data-tur="okuma" aria-pressed="false">Leitura</button><button type="button" data-tur="arayuz" aria-pressed="false">Interface</button></nav>
+  <ol class="yenilikler" data-suzgec-liste><li data-tur="arayuz"><time datetime="2026-11-07">7 de novembro de 2026</time><h2>“Textos e ensaios” no menu Explorar</h2><p>O Diário do Coração e o Lado a Lado agora ficam em um grupo próprio no menu Explorar, em vez de Configurações.</p><p><a href="/gonul/pt/">Abrir a página</a></p></li><li data-tur="arayuz"><time datetime="2026-11-07">7 de novembro de 2026</time><h2>Páginas de registro em três idiomas</h2><p>As partes do Futuhat, os capítulos do Fusus e os hadiths do Mishkat também abrem como páginas próprias em endereços em inglês e em português do Brasil.</p><p><a href="/pt/futuhat/">Abrir a página</a></p></li><li data-tur="gonul"><time datetime="2026-11-06">6 de novembro de 2026</time><h2>Diário do Coração: dois novos textos</h2><p>“A montanha com a cabeça na nuvem” e “Com a pá, dentro da terra” foram publicados. As fotografias são do autor e o Claude escreveu as palavras; o crédito está na página de cada texto.</p><p><a href="/gonul/pt/">Abrir a página</a></p></li><li data-tur="yan-yana"><time datetime="2026-11-03">3 de novembro de 2026</time><h2>Lado a Lado aberto à busca</h2><p>As páginas de Lado a Lado foram abertas aos mecanismos de busca e ao índice do site; foram adicionados um menu de seções, um índice e uma marca de lido guardada no dispositivo.</p><p><a href="/yan-yana/pt/">Abrir a página</a></p></li><li data-tur="yan-yana"><time datetime="2026-11-02">2 de novembro de 2026</time><h2>Lado a Lado em inglês e português</h2><p>A seção Lado a Lado também pode ser lida em inglês e em português do Brasil; a tradução é a nossa transposição, e cada página diz isso.</p><p><a href="/yan-yana/pt/">Abrir a página</a></p></li><li data-tur="yan-yana"><time datetime="2026-11-01">1 de novembro de 2026</time><h2>Lado a Lado: Dost e a Física Quântica</h2><p>Foi adicionada uma nova seção em que citações de Dost são lidas lado a lado com a literatura da física. É o nosso quadro de leitura, não um resumo de leitura.</p><p><a href="/yan-yana/pt/">Abrir a página</a></p></li><li data-tur="okuma"><time datetime="2026-10-31">31 de outubro de 2026</time><h2>Arquivo de Diagramas</h2><p>Os diagramas do site foram reunidos em uma página, com a origem indicada: a mão do próprio Dost, os que desenhamos e o nosso quadro de leitura são marcados separadamente.</p><p><a href="/pt/semalar/">Abrir a página</a></p></li><li data-tur="okuma"><time datetime="2026-10-29">29 de outubro de 2026</time><h2>Ferramentas de leitura</h2><p>Ouvir, Modo de leitura e notas de parágrafo foram adicionados às leituras do Futuhat, do Fusus e do Mishkat. Tudo funciona no próprio dispositivo do leitor.</p><p><a href="/pt/futuhat/">Abrir a página</a></p></li><li data-tur="gonul"><time datetime="2026-10-27">27 de outubro de 2026</time><h2>Diário do Coração</h2><p>Foi adicionada uma nova seção com textos curtos ilustrados na voz própria do autor. Não é um resumo de leitura, e cada página diz isso.</p><p><a href="/gonul/pt/">Abrir a página</a></p></li></ol>
   <p class="abone"><a href="/yenilikler/pt/feed.xml">Acompanhar novas adições</a><br><span>Adicione este endereço ao seu leitor de feeds (RSS/Atom); não há conta, e-mail nem rastreamento.</span> <code>https://dostarabi.com/yenilikler/pt/feed.xml</code></p>
   <aside class="kunye"><p>Esta página é um registro factual das mudanças no site; não é um resumo de leitura nem um comentário.</p></aside>
 </main>
-<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/pt/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

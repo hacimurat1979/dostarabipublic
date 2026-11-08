@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- scripts/yanyana-uret.py üretir (elle düzenlenmez). Bizim okuma çerçevemiz, okuma özeti DEĞİL. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <title>Artigos de física — Dost Arabî</title>
@@ -34,6 +34,7 @@
 <link rel="preload" href="/assets/fonts/Fraunces-SemiBold-static.woff2" as="font" type="font/woff2" crossorigin>
 <script src="/assets/gonul-tema.js"></script>
 <script src="/assets/yy-ic.js"></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -98,6 +99,8 @@
   /* 3 Kasım: okuma ölçüsü, içindekiler, biçim gezintisi, yakınlık haritası, terim kutusu, arama, kaynak süzgeci */
   main > h1, main > .kunye, main > article > :is(p, ul, ol, blockquote, h2, h3, h4, details, figure), main > .yh-fig, main > .onsonra, main > .icerik, main > .okundu { max-width:46rem; }
   main:has(.yy-yanyana) > article > .yy-yanyana { max-width:none; }
+  /* YS-07 (2026-11-08): iki sütunlu biçim sayfalarında üst çubuk 46rem'e sıkışıp "Bölümler · Hem-" diye kırpılıyordu */
+  main > header.ustbar { max-width:none; }
   main:has(.yy-yanyana) { max-width:1240px; }
   /* Tasarım laboratuvarı (2026-11-05): ≥1500 px'te içindekiler sağ sütunda yapışkan durur, metin ölçüsü korunur; ekranın yarısı boş kalmaz. */
   @media (min-width: 1500px) {
@@ -119,7 +122,20 @@
   a.okundu-i::after { content:" ✓"; color:var(--accent-interactive); } .okundu { margin:22px 0 4px; } .okundu button { min-height:44px; padding:0 18px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .okundu button[aria-pressed=true] { border-color:var(--accent-interactive); }
   .kay-ara { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; align-items:center; } .kay-ara input { flex:1 1 14rem; min-height:44px; padding:0 14px; border:1px solid var(--gridline); border-radius:22px; background:var(--surface-1); color:inherit; font:inherit; } .kay-ara button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .kay-ara button[aria-pressed=true] { border-color:var(--accent-interactive); } .kay-say { color:var(--text-muted); font-size:.9rem; } #kay-ara:empty { min-height:200px; } @media (min-width:700px) { #kay-ara:empty { min-height:112px; } }
   html.yy-ic .icerik, html.yy-ic .okundu, html.yy-ic nav.onsonra { display:none; }
-  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
+  .icerik > summary { white-space:nowrap; } .kay-parca a { display:inline-block; min-height:44px; line-height:44px; padding:0 6px; }
+  .yalniz-ozel { display:none; } html.dost-ozel .yalniz-ozel { display:inline; }
+  /* Telefon (YS-04/05/06, 2026-11-08): çubuklar kaydırırken çekilir (assets/yy-gezin.js), künye ikinci sayfadan itibaren iki satır, terim kutusu alt sayfa */
+  header.ustbar, nav.mini-kabuk { transition:transform .2s ease; } html.yy-aninda header.ustbar, html.yy-aninda nav.mini-kabuk { transition:none; }
+  @media (max-width:640px) {
+    html.yy-cekik header.ustbar { transform:translateY(-120%); } html.yy-cekik nav.mini-kabuk { transform:translateY(120%); }
+    main > aside.kunye { flex-wrap:wrap; } main > aside.kunye > p { flex:1 1 0; min-width:0; }
+    .kunye--kisa p { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; }
+    .kunye-ac { flex:1 0 100%; text-align:left; min-height:44px; padding:0 0 0 24px; border:0; background:none; color:var(--accent-interactive); font:inherit; font-size:.9rem; cursor:pointer; }
+    .terim-kutu { position:fixed; left:8px !important; right:8px; top:auto !important; bottom:calc(var(--mini-alt-h, 57px) + 8px); max-width:none; max-height:50vh; overflow:auto; }
+  }
+  .kunye-ac { display:none; } .kunye--kisa .kunye-ac, .kunye > .kunye-ac { display:block; }
+  @media (min-width:641px) { .kunye-ac { display:none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } header.ustbar, nav.mini-kabuk { transition:none; } }
 
   body { padding-bottom: 72px; }
   /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
@@ -136,6 +152,15 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 </style>
 <script src="/assets/gonul-revise.js" defer></script>
 <script src="/assets/yy-gezin.js" defer></script>
@@ -148,7 +173,7 @@
 <p>Sessenta e três tópicos a partir dos artigos básicos da física quântica: a pergunta principal de cada tópico e resumos em linguagem simples de seus artigos-chave. O objetivo é dizer o que esses artigos dizem com as nossas palavras, fiel à fonte e sem acrescentar comentário; lê-los lado a lado com outros textos fica a cargo do leitor.</p><p>Cada resumo diz a pergunta do artigo, o que ele fez e seu resultado; experimento, teoria e interpretação são mantidos separados. Os resumos escritos sem consultar o resumo ou o texto do próprio artigo estão marcados. A referência de cada artigo vem com um link para a fonte; <a href="/yan-yana/pt/kaynaklar/">Fontes</a> também.</p><h2 id="grupos">Grupos</h2><ul class="kartlar"><li><a href="/yan-yana/pt/makaleler/temeller/"><b>I. Fundamentos da mecânica quântica</b><span>5 tópicos · 12 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/dolasiklik/"><b>II. Emaranhamento e realidade</b><span>5 tópicos · 6 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/bilgi/"><b>III. Informação quântica</b><span>5 tópicos · 9 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/hesaplama/"><b>IV. Computação quântica</b><span>5 tópicos · 6 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/alan/"><b>V. Teoria quântica de campos</b><span>3 tópicos · 4 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/istatistik/"><b>VI. Estatística quântica</b><span>3 tópicos · 5 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/topolojik/"><b>VII. Sistemas quânticos topológicos</b><span>5 tópicos · 5 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/termodinamik/"><b>VIII. Quântica e termodinâmica</b><span>3 tópicos · 4 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/yercekimi/"><b>IX. Quântica e gravidade</b><span>4 tópicos · 5 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/guncel/"><b>X. Grandes problemas atuais</b><span>12 tópicos · 26 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/temelolgu/"><b>XI. Fenômenos básicos e o nascimento da teoria</b><span>7 tópicos · 21 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/yorum2/"><b>XII. Interpretações e colapso</b><span>2 tópicos · 4 artigos</span></a></li><li><a href="/yan-yana/pt/makaleler/madde/"><b>XIII. Estados da matéria, vácuo e partículas</b><span>4 tópicos · 13 artigos</span></a></li></ul><p>Total: 63 tópicos, 120 artigos. <a href="/yan-yana/pt/makaleler/zaman-cizgisi/">Linha do tempo</a> · <a href="/yan-yana/pt/paralel/">Mesa de leitura paralela</a></p>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/pt/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

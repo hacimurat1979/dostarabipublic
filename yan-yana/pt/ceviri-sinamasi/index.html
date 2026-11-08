@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- scripts/yanyana-uret.py üretir (elle düzenlenmez). Bizim okuma çerçevemiz, okuma özeti DEĞİL. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <title>Verificação da tradução — Dost Arabî</title>
@@ -34,6 +34,7 @@
 <link rel="preload" href="/assets/fonts/Fraunces-SemiBold-static.woff2" as="font" type="font/woff2" crossorigin>
 <script src="/assets/gonul-tema.js"></script>
 <script src="/assets/yy-ic.js"></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -98,6 +99,8 @@
   /* 3 Kasım: okuma ölçüsü, içindekiler, biçim gezintisi, yakınlık haritası, terim kutusu, arama, kaynak süzgeci */
   main > h1, main > .kunye, main > article > :is(p, ul, ol, blockquote, h2, h3, h4, details, figure), main > .yh-fig, main > .onsonra, main > .icerik, main > .okundu { max-width:46rem; }
   main:has(.yy-yanyana) > article > .yy-yanyana { max-width:none; }
+  /* YS-07 (2026-11-08): iki sütunlu biçim sayfalarında üst çubuk 46rem'e sıkışıp "Bölümler · Hem-" diye kırpılıyordu */
+  main > header.ustbar { max-width:none; }
   main:has(.yy-yanyana) { max-width:1240px; }
   /* Tasarım laboratuvarı (2026-11-05): ≥1500 px'te içindekiler sağ sütunda yapışkan durur, metin ölçüsü korunur; ekranın yarısı boş kalmaz. */
   @media (min-width: 1500px) {
@@ -119,7 +122,20 @@
   a.okundu-i::after { content:" ✓"; color:var(--accent-interactive); } .okundu { margin:22px 0 4px; } .okundu button { min-height:44px; padding:0 18px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .okundu button[aria-pressed=true] { border-color:var(--accent-interactive); }
   .kay-ara { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; align-items:center; } .kay-ara input { flex:1 1 14rem; min-height:44px; padding:0 14px; border:1px solid var(--gridline); border-radius:22px; background:var(--surface-1); color:inherit; font:inherit; } .kay-ara button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .kay-ara button[aria-pressed=true] { border-color:var(--accent-interactive); } .kay-say { color:var(--text-muted); font-size:.9rem; } #kay-ara:empty { min-height:200px; } @media (min-width:700px) { #kay-ara:empty { min-height:112px; } }
   html.yy-ic .icerik, html.yy-ic .okundu, html.yy-ic nav.onsonra { display:none; }
-  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
+  .icerik > summary { white-space:nowrap; } .kay-parca a { display:inline-block; min-height:44px; line-height:44px; padding:0 6px; }
+  .yalniz-ozel { display:none; } html.dost-ozel .yalniz-ozel { display:inline; }
+  /* Telefon (YS-04/05/06, 2026-11-08): çubuklar kaydırırken çekilir (assets/yy-gezin.js), künye ikinci sayfadan itibaren iki satır, terim kutusu alt sayfa */
+  header.ustbar, nav.mini-kabuk { transition:transform .2s ease; } html.yy-aninda header.ustbar, html.yy-aninda nav.mini-kabuk { transition:none; }
+  @media (max-width:640px) {
+    html.yy-cekik header.ustbar { transform:translateY(-120%); } html.yy-cekik nav.mini-kabuk { transform:translateY(120%); }
+    main > aside.kunye { flex-wrap:wrap; } main > aside.kunye > p { flex:1 1 0; min-width:0; }
+    .kunye--kisa p { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; }
+    .kunye-ac { flex:1 0 100%; text-align:left; min-height:44px; padding:0 0 0 24px; border:0; background:none; color:var(--accent-interactive); font:inherit; font-size:.9rem; cursor:pointer; }
+    .terim-kutu { position:fixed; left:8px !important; right:8px; top:auto !important; bottom:calc(var(--mini-alt-h, 57px) + 8px); max-width:none; max-height:50vh; overflow:auto; }
+  }
+  .kunye-ac { display:none; } .kunye--kisa .kunye-ac, .kunye > .kunye-ac { display:block; }
+  @media (min-width:641px) { .kunye-ac { display:none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } header.ustbar, nav.mini-kabuk { transition:none; } }
 
   body { padding-bottom: 72px; }
   /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
@@ -136,6 +152,15 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 </style>
 <script src="/assets/gonul-revise.js" defer></script>
 <script src="/assets/yy-gezin.js" defer></script>
@@ -147,38 +172,38 @@
   <aside class="kunye"><span class="muhur" aria-hidden="true"></span><p>Esta seção não é um resumo de leitura. É uma tentativa de ler as palavras de Dost lado a lado com os achados da física que não cabem na razão; é o nosso próprio quadro de leitura. Não dizemos “o mesmo” nem “confirmado”: apenas perguntamos e dizemos onde seguem caminhos diferentes. O texto é a nossa própria transposição de um original em turco.</p></aside>
 <details class="icerik"><summary>Nesta página<span class="icerik__onizleme">O que quisemos saber · Como olhamos · O que resultou …</span></summary><ol><li><a href="#o-que-quisemos-saber">O que quisemos saber</a></li><li><a href="#como-olhamos">Como olhamos</a></li><li><a href="#o-que-resultou">O que resultou</a></li><li><a href="#o-que-podem-significar-os-no-encontrados">O que podem significar os não encontrados</a></li><li><a href="#o-que-isso-significa-e-o-que-no-significa">O que isso significa e o que não significa</a></li><li><a href="#o-que-nos-resta">O que nos resta</a></li><li><a href="#verificaco-do-rabe-as-primeiras-trinta-citaces">Verificação do árabe: as primeiras trinta citações</a></li></ol></details><article><p>Esta página não é um resumo de leitura; é uma perna do nosso quadro de leitura. Aqui não interpretamos Dost; apenas explicamos isto: estamos sendo fiéis às palavras da Futuhat que lemos, ou há um erro de transmissão se acumulando em nossas mãos? Perguntamos isso também a nós mesmos, porque cada linha deste trabalho se apoia em uma citação.</p>
 <h2 id="o-que-quisemos-saber">O que quisemos saber</h2>
-<p>Não lemos a Futuhat em árabe. Temos a tradução turca em 18 volumes de Ekrem Demirli. Nossas notas de leitura, por sua vez, saíram do resumo dessa tradução no site. De vez em quando aparece no resumo uma fala entre aspas, uma frase dada como <span class="alinti-v">&quot;Dost diz assim&quot;</span>. A dúvida era: essas falas postas entre aspas no resumo estão de fato nas páginas da própria tradução?</p>
-<p>A resposta a esta pergunta importa. De um lado há o medo de <span class="alinti-v">&quot;será que transmitimos errado&quot;</span>; de outro, que cada palavra que usamos na leitura lado a lado tenha os pés no chão. Mesmo sendo um trabalho do coração, queremos estar firmes ao dar a nossa palavra.</p>
+<p>Não lemos a Futuhat em árabe. Temos a tradução turca em 18 volumes de Ekrem Demirli. Nossas notas de leitura, por sua vez, saíram do resumo dessa tradução no site. De vez em quando aparece no resumo uma fala entre aspas, uma frase dada como &quot;Dost diz assim&quot;. A dúvida era: essas falas postas entre aspas no resumo estão de fato nas páginas da própria tradução?</p>
+<p>A resposta a esta pergunta importa. De um lado há o medo de &quot;será que transmitimos errado&quot;; de outro, que cada palavra que usamos na leitura lado a lado tenha os pés no chão. Mesmo sendo um trabalho do coração, queremos estar firmes ao dar a nossa palavra.</p>
 <h2 id="como-olhamos">Como olhamos</h2>
 <p>Separamos os itens que achamos surpreendentes em nossa leitura (os de grau 3, o mais alto em nosso rótulo de trabalho). Entre eles, olhamos os que traziam um trecho entre aspas, com a condição de que o trecho tivesse ao menos vinte caracteres.</p>
-<p>Depois pedimos a uma máquina o seguinte. Colocamos no mesmo molde tanto o trecho do resumo quanto o volume correspondente da tradução, sem considerar letras, acentos, espaços e pontuação. Cortamos o trecho em pequenas janelas de vinte e quatro caracteres e procuramos cada janela no texto do volume correspondente. Se encontrássemos pelo menos oitenta por cento das janelas, dizíamos &quot;encontrado&quot;. Entre quarenta e oitenta por cento, &quot;parcial&quot;; abaixo de quarenta por cento, <span class="alinti-v">&quot;não encontrado&quot;</span>.</p>
+<p>Depois pedimos a uma máquina o seguinte. Colocamos no mesmo molde tanto o trecho do resumo quanto o volume correspondente da tradução, sem considerar letras, acentos, espaços e pontuação. Cortamos o trecho em pequenas janelas de vinte e quatro caracteres e procuramos cada janela no texto do volume correspondente. Se encontrássemos pelo menos oitenta por cento das janelas, dizíamos &quot;encontrado&quot;. Entre quarenta e oitenta por cento, &quot;parcial&quot;; abaixo de quarenta por cento, &quot;não encontrado&quot;.</p>
 <p>O texto da própria tradução (a cópia digitalizada que está no Drive de Murat) não entrou no repositório nem no site; por causa dos direitos autorais, também não damos aqui nenhuma frase da tradução. Restaram apenas os números.</p>
 <h2 id="o-que-resultou">O que resultou</h2>
 <p>Havia 1087 itens com trecho entre aspas.</p>
 <ul><li>Em 937 itens, viu-se que a fala do resumo ocorre também no texto da própria tradução.</li><li>Em 71 itens foi encontrada parcialmente.</li><li>Em 79 itens não foi encontrada.</li></ul>
 <p>Olhando apenas os itens do tipo &quot;citação&quot; (922 itens), o quadro é um pouco melhor: 834 encontrados, 54 parciais, 34 não encontrados. Isso porque, no tipo citação, a tarefa principal é dar a própria fala; nos outros tipos o resumo usa a fala da tradução com mais liberdade.</p>
-<p>Ou seja, a esmagadora maioria das falas está no lugar na tradução. Isso nos tranquilizou, mas não nos fez dizer <span class="alinti-v">&quot;está tudo certo&quot;</span>; era preciso olhar os não encontrados um por um.</p>
+<p>Ou seja, a esmagadora maioria das falas está no lugar na tradução. Isso nos tranquilizou, mas não nos fez dizer &quot;está tudo certo&quot;; era preciso olhar os não encontrados um por um.</p>
 <h2 id="o-que-podem-significar-os-no-encontrados">O que podem significar os não encontrados</h2>
-<p><span class="alinti-v">&quot;Não encontrado&quot;</span> aponta não um erro, mas uma lista de possibilidades. As que nos ocorreram:</p>
+<p>&quot;Não encontrado&quot; aponta não um erro, mas uma lista de possibilidades. As que nos ocorreram:</p>
 <ul><li>O livro digitalizado se corromper na leitura. Uma palavra partida no fim da linha, uma letra lida errado, um número de página deslocado podem confundir a busca da máquina.</li><li>O resumo pôr entre aspas as suas próprias palavras. O resumo pode ter encurtado uma frase, mudado um sufixo ou juntado duas frases; o sentido continua o mesmo, mas a correspondência letra por letra se perde.</li><li>Um deslocamento no número do volume ou da página. A fala está certa, mas em outro lugar.</li><li>Diferença na versão do versículo. O resumo dá o versículo em uma versão, a tradução na própria versão de Demirli.</li></ul>
 <p>Olhamos um por um as 34 citações não encontradas. Para cada uma, achamos a passagem mais próxima na tradução e comparamos à mão. O resultado: não surgiu nenhuma citação realmente errada. A distribuição das trinta e quatro:</p>
 <ul><li>14 são por erro de digitalização e divisão no fim da linha. O texto é o mesmo; apenas no livro digitalizado as letras estão corrompidas.</li><li>17 são adaptação do resumo. O sentido é o mesmo da frase da tradução; o resumo encurtou a frase ou mudou o sufixo, mantendo as aspas.</li><li>2 são diferença de versão de versículo. O resumo deu uma versão, a tradução outra.</li><li>1 foi de fato encontrada na tradução; por ser curta, ficou abaixo do limite na primeira varredura.</li></ul>
 <p>Verificamos à mão, em especial, um exemplo: a frase do resumo que diz que até Moisés teve medo e fugiu. A tradução diz que, se a transformação do cajado em serpente fosse da determinação de Moisés, ele não teria se virado e fugido, e diz em muitos lugares que Moisés teve medo. A frase do resumo mostrou-se coerente com isso.</p>
 <h2 id="o-que-isso-significa-e-o-que-no-significa">O que isso significa e o que não significa</h2>
-<p>Isto não é uma verificação do árabe. Aqui olhamos a fidelidade do resumo à tradução; não olhamos a conformidade da tradução ao original árabe. Isso é um trabalho à parte. Enquanto não se fizer a comparação com o original árabe, nenhuma frase deste trabalho deve ser lida como <span class="alinti-v">&quot;palavra do próprio Dost&quot;</span>; deve ser lida como <span class="alinti-v">&quot;segundo o resumo, no site, da tradução de Demirli&quot;</span>.</p>
+<p>Isto não é uma verificação do árabe. Aqui olhamos a fidelidade do resumo à tradução; não olhamos a conformidade da tradução ao original árabe. Isso é um trabalho à parte. Enquanto não se fizer a comparação com o original árabe, nenhuma frase deste trabalho deve ser lida como &quot;palavra do próprio Dost&quot;; deve ser lida como &quot;segundo o resumo, no site, da tradução de Demirli&quot;.</p>
 <p>Digamos também abertamente uma coisa: esta verificação não testa de modo algum a interpretação do que é dito. Pergunta apenas se a fala entre aspas está de fato na tradução. As proximidades na leitura lado a lado são outra pergunta, e continuam como pergunta.</p>
 <h2 id="o-que-nos-resta">O que nos resta</h2>
 <p>É possível puxar as 19 aspas do resumo (o grupo de adaptação e o de versão de versículo) uma a uma para a frase da tradução. Isso estaria de acordo com o princípio de que a aspa é a própria palavra da fonte. Afetaria apenas as notas de pesquisa; não tocaria os resumos da Futuhat no site. Ainda não fizemos isso; aguardamos a aprovação de Murat.</p>
 <p>A pergunta também permanece: quem pode fazer a comparação com o original árabe, e como? Não entendemos Dost; também não desistimos de tentar entender.</p>
 <h2 id="verificaco-do-rabe-as-primeiras-trinta-citaces">Verificação do árabe: as primeiras trinta citações</h2>
 <p>Conseguimos chegar ao texto árabe da Futuhat: o texto digitalizado pelo OpenITI (Dar Ihya al-Turath al-Arabi, edição de Beirute, 1998; notas de rodapé e índice limpos). Procuramos neste texto as trinta citações que estão em primeiro plano nas páginas das formas: com as expressões árabes que extraímos das frases em turco, segundo a escrita sem vogais, com algumas tentativas diferentes.</p>
-<p>Resultado: vinte e três citações concordam com o árabe, três concordam parcialmente, quatro não foram encontradas. <span class="alinti-v">&quot;Não encontrado&quot;</span> não significa que o turco esteja errado: pode ser diferença de edição, versão livre ou o limite da nossa busca. Para as quatro não encontradas anotamos as passagens mais próximas, mas essas passagens não são a mesma fala; por isso não as contamos como &quot;concordam&quot;.</p>
+<p>Resultado: vinte e três citações concordam com o árabe, três concordam parcialmente, quatro não foram encontradas. &quot;Não encontrado&quot; não significa que o turco esteja errado: pode ser diferença de edição, versão livre ou o limite da nossa busca. Para as quatro não encontradas anotamos as passagens mais próximas, mas essas passagens não são a mesma fala; por isso não as contamos como &quot;concordam&quot;.</p>
 <p>Algumas observações:</p>
-<ul><li>O dístico <span class="alinti-v">&quot;Se Ele não existisse, nós não existiríamos / Se nós não existíssemos, Ele não existiria&quot;</span> ocorre no árabe exatamente.</li><li>A primeira metade da frase <span class="alinti-v">&quot;Cada sopro é construção e criação&quot;</span> não está no árabe tal qual; há outra frase que dá a mesma ideia (<span class="alinti-v">&quot;a cada sopro uma nova construção em nós&quot;</span>).</li><li>O árabe da frase <span class="alinti-v">&quot;O tempo e a natureza não têm existência externa&quot;</span> diz <span class="alinti-v">&quot;tempo e lugar (hayyiz)&quot;</span>; o alcance de &quot;natureza&quot; no turco é um pouco diferente.</li><li>A frase <span class="alinti-v">&quot;por meio de ... por ocasião de ...&quot;</span> na página Causa aparece no árabe na forma <span class="alinti-v">&quot;junto a uma coisa&quot;</span>; os detalhes estão na página Causa.</li></ul>
+<ul><li>O dístico &quot;Se Ele não existisse, nós não existiríamos / Se nós não existíssemos, Ele não existiria&quot; ocorre no árabe exatamente.</li><li>A primeira metade da frase &quot;Cada sopro é construção e criação&quot; não está no árabe tal qual; há outra frase que dá a mesma ideia (&quot;a cada sopro uma nova construção em nós&quot;).</li><li>O árabe da frase &quot;O tempo e a natureza não têm existência externa&quot; diz &quot;tempo e lugar (hayyiz)&quot;; o alcance de &quot;natureza&quot; no turco é um pouco diferente.</li><li>A frase &quot;por meio de ... por ocasião de ...&quot; na página Causa aparece no árabe na forma &quot;junto a uma coisa&quot;; os detalhes estão na página Causa.</li></ul>
 <p>Limites: o texto árabe é de uma única edição; nossa numeração de seções não corresponde um a um à organização de capítulos e páginas da edição, por isso, na maioria dos lugares, fizemos o pareamento a partir da própria frase. Pode haver erros de digitalização. Além dessas trinta citações, nenhuma outra foi comparada com o árabe.</p></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/pt/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

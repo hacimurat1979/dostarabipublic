@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Gönül Defteri: scripts/gonul-uret.py üretir (elle düzenlenmez). Yazarın kendi sesi, okuma özeti DEĞİL. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <title>Com a pá, dentro da terra — Diário do Coração</title>
 <meta name="description" content="Com a pá, dentro da terra: Uma fotografia; as palavras são do Claude, as passagens são do Futuhat.">
@@ -30,6 +30,7 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#8a6100">
 <script src="/assets/gonul-tema.js"></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -122,6 +123,21 @@
   .kartlar { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
   .kart a { display: block; color: inherit; text-decoration: none; }
   .kart .kapak { margin-bottom: 10px; }
+  /* YS-02: liste kartında sabit 3:2 çerçeve; portre fotoğrafta konu `kapak.odak` ile gösterilir (bulanık köşe değil) */
+  .kart .kapak img { aspect-ratio: 3 / 2; height: auto; object-fit: cover; object-position: var(--odak, 50% 50%); }
+  /* Portre görsel yazıda ilk ekranı kaplamasın (başlık görünsün) */
+  article img.dikey { width: auto; max-width: 100%; max-height: 50vh; margin-inline: auto; }
+  .onc-son { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 32px 0 0; }
+  .onc-son a { display: inline-flex; flex-direction: column; justify-content: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--gridline); border-radius: 14px; text-decoration: none; color: var(--text-primary); max-width: 100%; }
+  .onc-son a:hover { border-color: var(--accent-interactive); }
+  .onc-son small { color: var(--text-muted); font-size: 0.8rem; }
+  .onc-son .sonraki { margin-left: auto; text-align: right; }
+  .suzgec { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+  .suzgec[hidden] { display: none; }
+  .suzgec button { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .suzgec button[aria-pressed="true"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  .suzgec button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kartlar > li[hidden] { display: none; }
   .kart h2 { margin: 6px 0 6px; font-size: 1.25rem; }
   .kart p { margin: 0; color: var(--text-secondary); }
   .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
@@ -142,6 +158,15 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 </style>
 <link rel="alternate" type="application/atom+xml" title="Diário do Coração" href="/gonul/pt/feed.xml">
 <script src="/assets/gonul-revise.js" defer></script>
@@ -157,7 +182,7 @@
       <a href="/gonul/pt/kurekle-toprakta/" lang="pt-BR" hreflang="pt-BR" aria-current="page">PT</a>
     </nav>
   </div>
-<p><a href="/gonul/pt/">← Diário do Coração</a></p><article data-dost-dosya="data/gonul/yazilar.json" data-dost-veri="/data/gonul/yazilar.json" data-dost-kaynak="kurekle-toprakta"><figure class="kapak"><img src="/gonul/img/kurekle-toprakta.webp" srcset="/gonul/img/kurekle-toprakta-800.webp 360w, /gonul/img/kurekle-toprakta.webp 721w" sizes="(min-width: 40rem) 38rem, 100vw" width="721" height="1600" alt="Uma cova recém-cavada, estreita e funda; dentro dela um homem com uma pá, de luvas, cabeça baixa; uma picareta e uma pá ao lado da borda." fetchpriority="high" decoding="async"><figcaption class="gonul-duzenle" data-dost-alan="kapak.yazi">Foto: o autor.</figcaption></figure><div class="meta"><time datetime="2026-11-06">6 de novembro de 2026</time><span>· 1 min</span><span class="ortak-etiket">· Foto do autor; texto do Claude</span></div><h1 class="gonul-duzenle" data-dost-alan="baslik">Com a pá, dentro da terra</h1><h2 class="gonul-duzenle" data-dost-alan="govde[0].ara">Palavras do Claude</h2>
+<p><a href="/gonul/pt/">← Diário do Coração</a></p><article data-dost-dosya="data/gonul/yazilar.json" data-dost-veri="/data/gonul/yazilar.json" data-dost-kaynak="kurekle-toprakta"><figure class="kapak"><img class="dikey" style="--odak:50% 29%" src="/gonul/img/kurekle-toprakta.webp" srcset="/gonul/img/kurekle-toprakta-800.webp 360w, /gonul/img/kurekle-toprakta.webp 721w" sizes="(min-width: 40rem) 38rem, 100vw" width="721" height="1600" alt="Uma cova recém-cavada, estreita e funda; dentro dela um homem com uma pá, de luvas, cabeça baixa; uma picareta e uma pá ao lado da borda." fetchpriority="high" decoding="async"><figcaption class="gonul-duzenle" data-dost-alan="kapak.yazi">Foto: o autor.</figcaption></figure><div class="meta"><time datetime="2026-11-06">6 de novembro de 2026</time><span>· 1 min</span><span class="ortak-etiket">· Foto do autor; texto do Claude</span></div><h1 class="gonul-duzenle" data-dost-alan="baslik">Com a pá, dentro da terra</h1><h2 class="gonul-duzenle" data-dost-alan="govde[0].ara">Palavras do Claude</h2>
 <p class="gonul-duzenle" data-dost-alan="govde[1].p">A fotografia é do autor. As palavras foram deixadas comigo, com o pedido de que os sentidos viessem de Dost. Sou uma IA; as linhas abaixo são a minha leitura da fotografia, não o relato de uma vivência.</p>
 <p class="gonul-duzenle" data-dost-alan="govde[2].p">A terra foi cavada: funda, estreita, de lados retos. Dentro dela está um homem, de cabeça baixa, uma mão no cabo de uma pá; as duas mãos com luvas. À borda da cova há uma picareta e outra pá. À esquerda, uma lápide; ao fundo, agulhas de pinheiro e a relva começando a verdejar.</p>
 <p class="gonul-duzenle" data-dost-alan="govde[3].p">A fotografia não engrandece a morte nem a esconde: o que há é um trabalho sendo feito, com as mãos, em silêncio.</p>
@@ -166,9 +191,9 @@
 <blockquote class="gonul-duzenle" data-dost-alan="govde[6].alinti">“a morte é a separação do espírito do corpo pelo qual se realiza sua vida sensorial”</blockquote>
 <p class="gonul-duzenle" data-dost-alan="govde[7].p">Futuhat, Volume X, Seção 128 (pp. 136-173).</p>
 <blockquote class="gonul-duzenle" data-dost-alan="govde[8].alinti">“Se um servo de Deus morre e passa ao mundo do barzakh, o senhorio de Deus sobre quem ali morreu continua.”</blockquote>
-<p class="gonul-duzenle" data-dost-alan="govde[9].p">Futuhat, Volume XIV, Seção 165 (pp. 351-361); uma frase da citação.</p></article><p class="kart-eylem"><button type="button" class="kart-btn" id="gonul-kart" hidden data-hazir="Preparando o cartão…" data-alt="Diário do Coração · foto do autor, palavras do Claude">Salvar como cartão</button></p><aside class="kunye"><div><p>Esta página não é um resumo de leitura. A fotografia é do autor; as palavras foram escritas pelo Claude; as citações são ditos que aparecem entre aspas nos resumos das seções do Futuhat, e de quem são não é dito aqui.</p><p>Escrito em turco; esta versão em português é a nossa tradução.</p></div></aside>
+<p class="gonul-duzenle" data-dost-alan="govde[9].p">Futuhat, Volume XIV, Seção 165 (pp. 351-361); uma frase da citação.</p></article><p class="kart-eylem"><button type="button" class="kart-btn" id="gonul-kart" hidden data-hazir="Preparando o cartão…" data-alt="Diário do Coração · foto do autor, palavras do Claude">Salvar como cartão</button></p><nav class="onc-son" aria-label="Diário do Coração"><a class="onceki" rel="prev" href="/gonul/pt/ne-zaman/"><small>← Entrada anterior</small>Quando</a><a class="sonraki" rel="next" href="/gonul/pt/bulutun-basindaki-dag/"><small>Próxima entrada →</small>A montanha com a cabeça na nuvem</a></nav><aside class="kunye"><div><p>Esta página não é um resumo de leitura. A fotografia é do autor; as palavras foram escritas pelo Claude; as citações são ditos que aparecem entre aspas nos resumos das seções do Futuhat, e de quem são não é dito aqui.</p><p>Escrito em turco; esta versão em português é a nossa tradução.</p></div></aside>
 </main>
-<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/pt/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- scripts/yanyana-uret.py üretir (elle düzenlenmez). Bizim okuma çerçevemiz, okuma özeti DEĞİL. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <title>O que não coube nas páginas — Dost Arabî</title>
@@ -34,6 +34,7 @@
 <link rel="preload" href="/assets/fonts/Fraunces-SemiBold-static.woff2" as="font" type="font/woff2" crossorigin>
 <script src="/assets/gonul-tema.js"></script>
 <script src="/assets/yy-ic.js"></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -98,6 +99,8 @@
   /* 3 Kasım: okuma ölçüsü, içindekiler, biçim gezintisi, yakınlık haritası, terim kutusu, arama, kaynak süzgeci */
   main > h1, main > .kunye, main > article > :is(p, ul, ol, blockquote, h2, h3, h4, details, figure), main > .yh-fig, main > .onsonra, main > .icerik, main > .okundu { max-width:46rem; }
   main:has(.yy-yanyana) > article > .yy-yanyana { max-width:none; }
+  /* YS-07 (2026-11-08): iki sütunlu biçim sayfalarında üst çubuk 46rem'e sıkışıp "Bölümler · Hem-" diye kırpılıyordu */
+  main > header.ustbar { max-width:none; }
   main:has(.yy-yanyana) { max-width:1240px; }
   /* Tasarım laboratuvarı (2026-11-05): ≥1500 px'te içindekiler sağ sütunda yapışkan durur, metin ölçüsü korunur; ekranın yarısı boş kalmaz. */
   @media (min-width: 1500px) {
@@ -119,7 +122,20 @@
   a.okundu-i::after { content:" ✓"; color:var(--accent-interactive); } .okundu { margin:22px 0 4px; } .okundu button { min-height:44px; padding:0 18px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .okundu button[aria-pressed=true] { border-color:var(--accent-interactive); }
   .kay-ara { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; align-items:center; } .kay-ara input { flex:1 1 14rem; min-height:44px; padding:0 14px; border:1px solid var(--gridline); border-radius:22px; background:var(--surface-1); color:inherit; font:inherit; } .kay-ara button { min-height:44px; padding:0 16px; border:1px solid var(--gridline); border-radius:22px; background:transparent; color:inherit; font:inherit; cursor:pointer; } .kay-ara button[aria-pressed=true] { border-color:var(--accent-interactive); } .kay-say { color:var(--text-muted); font-size:.9rem; } #kay-ara:empty { min-height:200px; } @media (min-width:700px) { #kay-ara:empty { min-height:112px; } }
   html.yy-ic .icerik, html.yy-ic .okundu, html.yy-ic nav.onsonra { display:none; }
-  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } }
+  .icerik > summary { white-space:nowrap; } .kay-parca a { display:inline-block; min-height:44px; line-height:44px; padding:0 6px; }
+  .yalniz-ozel { display:none; } html.dost-ozel .yalniz-ozel { display:inline; }
+  /* Telefon (YS-04/05/06, 2026-11-08): çubuklar kaydırırken çekilir (assets/yy-gezin.js), künye ikinci sayfadan itibaren iki satır, terim kutusu alt sayfa */
+  header.ustbar, nav.mini-kabuk { transition:transform .2s ease; } html.yy-aninda header.ustbar, html.yy-aninda nav.mini-kabuk { transition:none; }
+  @media (max-width:640px) {
+    html.yy-cekik header.ustbar { transform:translateY(-120%); } html.yy-cekik nav.mini-kabuk { transform:translateY(120%); }
+    main > aside.kunye { flex-wrap:wrap; } main > aside.kunye > p { flex:1 1 0; min-width:0; }
+    .kunye--kisa p { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin:0; }
+    .kunye-ac { flex:1 0 100%; text-align:left; min-height:44px; padding:0 0 0 24px; border:0; background:none; color:var(--accent-interactive); font:inherit; font-size:.9rem; cursor:pointer; }
+    .terim-kutu { position:fixed; left:8px !important; right:8px; top:auto !important; bottom:calc(var(--mini-alt-h, 57px) + 8px); max-width:none; max-height:50vh; overflow:auto; }
+  }
+  .kunye-ac { display:none; } .kunye--kisa .kunye-ac, .kunye > .kunye-ac { display:block; }
+  @media (min-width:641px) { .kunye-ac { display:none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto; } header.ustbar, nav.mini-kabuk { transition:none; } }
 
   body { padding-bottom: 72px; }
   /* CLS-1 (Gönül 0,199): mini-ust.js üst çubuğu (53 px) yükten sonra ekler; yeri baştan ayrılır, çubuk gelince (html.mini-ust-var) kalkar.
@@ -136,6 +152,15 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 </style>
 <script src="/assets/gonul-revise.js" defer></script>
 <script src="/assets/yy-gezin.js" defer></script>
@@ -148,7 +173,7 @@
 <details class="icerik"><summary>Nesta página<span class="icerik__onizleme">c12k147 — Ponto e Circunferência: O Diag · c16k222 — O Selo dos Santos e os Graus d · c17k224 — O Trigésimo Quarto Sifr: Verda …</span></summary><ol><li><a href="#c12k147--ponto-e-circunferncia-o-diagrama-do-crculo-que-o-pr">c12k147 — Ponto e Circunferência: O Diagrama do Círculo que o Próprio Dost Desenhou</a></li><li><a href="#c16k222--o-selo-dos-santos-e-os-graus-dos-nomes-divinos--enc">c16k222 — O Selo dos Santos e os Graus dos Nomes Divinos — Encerramento do Volume XVI</a></li><li><a href="#c17k224--o-trigsimo-quarto-sifr-verdades-e-segredos-de-vrias">c17k224 — O Trigésimo Quarto Sifr: Verdades e Segredos de Várias Moradas</a></li><li><a href="#c9k124--pesquisar-fica-por-sua-conta-a-seco-mais-longa-do-vo">c9k124 — &#x27;Pesquisar Fica por Sua Conta&#x27;: A Seção Mais Longa do Volume IX e Seu Encerrament</a></li><li><a href="#c13k151--o-assunto--um-ciclo-encerramento-do-volume-xiii">c13k151 — O Assunto É um Ciclo: Encerramento do Volume XIII</a></li><li><a href="#c11k135--a-presenca-da-imaginaco-onde-o-invisvel-e-o-testemu">c11k135 — A Presença da Imaginação: Onde o Invisível e o Testemunhado se Encontram</a></li><li><a href="#c11k136--a-retido-circular-do-caminho-de-al-haqq">c11k136 — A Retidão Circular do Caminho de al-Haqq</a></li><li><a href="#c18k225--sifr-35--da-associaco-aberta--grande-doenca">c18k225 — Sifr 35 — Da Associação Aberta à Grande Doença</a></li></ol></details><article><p>Esta página não é um comentário, mas um registro. Ao ler o Futuhat, reunimos os lugares mais difíceis que não cabiam na nossa razão, aqueles que não entraram nas páginas das formas, nas oito seções mais densas. Cada linha traz a frase de Dost (ou um breve resumo dela) e o rótulo de forma que demos a essa frase. Não lemos nenhuma delas lado a lado com a física e não dizemos nada sobre nenhuma delas.</p>
 <p>O significado dos rótulos está na página de introdução. O número de seção <code><a href="/futuhat/c12k147/">c12k147</a></code> = volume 12, seção 147; ao clicar no número você vai à página da seção.</p>
 <h2 id="c12k147--ponto-e-circunferncia-o-diagrama-do-crculo-que-o-pr"><a href="/futuhat/c12k147/">c12k147</a> — Ponto e Circunferência: O Diagrama do Círculo que o Próprio Dost Desenhou</h2>
-<ul><li>No versículo &quot;Seja&quot;, das três letras duas aparecem e uma fica oculta; ad-Dahr (o Tempo) faz surgir a anteposição, o adiamento e a ordem na fala; Dost relata as palavras do Profeta: <span class="alinti-v">&quot;Não maldigam o Tempo, pois o Tempo é Allah.&quot;</span> <span class="kunye-v">(p. 332-334)</span> (forma: Tempo, Relação)</li></ul>
+<ul><li>No versículo &quot;Seja&quot;, das três letras duas aparecem e uma fica oculta; ad-Dahr (o Tempo) faz surgir a anteposição, o adiamento e a ordem na fala; Dost relata as palavras do Profeta: &quot;Não maldigam o Tempo, pois o Tempo é Allah.&quot; <span class="kunye-v">(p. 332-334)</span> (forma: Tempo, Relação)</li></ul>
 <blockquote>«Mesmo que essas causas sejam superiores a você quanto ao grau que aparece, o propósito é você, o existente; essas causas existem por sua causa e para que você apareça.» (<a href="/futuhat/c12k147/">c12k147</a>, p. 286-287)</blockquote>
 <p>Forma: Causa, Tempo.</p>
 <blockquote>«Al-Haqq se oculta na forma do ser humano perfeito, isto é, na coisidade de sua fixidez (ayn-ı sabite).» (<a href="/futuhat/c12k147/">c12k147</a>)</blockquote>
@@ -206,17 +231,17 @@
 <ul><li>Do capítulo 201: O cansaço nasce de não saber criar de novo. <span class="kunye-v">(p. 354)</span>; um dos versos: Quem O conhece: aquele que aceita que o mundo é criado a cada instante <span class="kunye-v">(p. 354)</span> (forma: Não repetição, Continuidade)</li></ul>
 <ul><li>Do capítulo 211: Assim como você precisa saber para quem está olhando, precisa também descobrir quem está olhando. <span class="kunye-v">(p. 360)</span>; Por isso a única prova de Allah é Allah <span class="kunye-v">(p. 360)</span> (forma: Ponto de vista, Conhecimento, Indistinguibilidade)</li></ul>
 <ul><li>Do capítulo 229: O coração do crente guarda em si o Mais Amplo. <span class="kunye-v">(p. 368)</span> (forma: Contenção)</li></ul>
-<ul><li>Do capítulo 237 (exílio): Conta-se que Layla perguntou a Qays <span class="alinti-v">&quot;Quem é você?&quot;</span> e Qays respondeu &quot;Layla&quot; <span class="kunye-v">(p. 374)</span>. (forma: Indistinguibilidade)</li></ul>
+<ul><li>Do capítulo 237 (exílio): Conta-se que Layla perguntou a Qays &quot;Quem é você?&quot; e Qays respondeu &quot;Layla&quot; <span class="kunye-v">(p. 374)</span>. (forma: Indistinguibilidade)</li></ul>
 <h2 id="c9k124--pesquisar-fica-por-sua-conta-a-seco-mais-longa-do-vo"><a href="/futuhat/c9k124/">c9k124</a> — &#x27;Pesquisar Fica por Sua Conta&#x27;: A Seção Mais Longa do Volume IX e Seu Encerramento Silencioso</h2>
 <ul><li>Discute-se que o tempo e o espaço não têm existência exterior e são de natureza imaginada (mevhum); a diferença de movimento e repouso entre a esfera e o elemento. (forma: Tempo, Razão)</li></ul>
 <ul><li>Capítulo 255: Mahk significa o seu aniquilar-se (fani) n&#x27;Ele, enquanto mahku&#x27;l-mahk significa o seu ser fixo (sabit) n&#x27;Ele <span class="kunye-v">(p. 400)</span>; mahk é aparecer com Ele no vir a ser por meio do califado e da representação; o califado é ligado a aprender os significados das letras no início das suras (Alif, Lam, Mim) <span class="kunye-v">(p. 401-402)</span>. Em cada época apenas uma pessoa (o Ghawth, o Qutb) fica a sós com al-Haqq <span class="kunye-v">(p. 402)</span>. (forma: Tanto-quanto, Indistinguibilidade, Perplexidade)</li></ul>
 <ul><li>Capítulos 260–261: a proximidade (qurb) é o estado das duas pontas de um círculo cortado por uma linha, ou de estar mais perto <span class="kunye-v">(p. 411)</span>; Mas, na verdade, não há possibilidade de distância de Allah. A distância é um estado relativo <span class="kunye-v">(p. 415)</span>; Proximidade é reunião, e distância é dispersão e separação; não há nada no mundo mais distante de Allah <span class="kunye-v">(p. 418)</span>. (forma: Tanto-quanto, Ponto de vista)</li></ul>
 <ul><li>Capítulo 264: Todos os pensamentos são dirigidos divinos, não autorrevelações. Por isso Allah os construiu como formas que surgem no Amā — que é o sopro do Misericordioso <span class="kunye-v">(p. 430)</span>. (forma: Razão, Causa)</li></ul>
-<ul><li>Capítulo 199: explica-se a palavra de Sahl b. Abdullah, <span class="alinti-v">&quot;A senhoria tem um segredo que, se aparecesse, tornaria a senhoria nula&quot;</span> <span class="kunye-v">(p. 195)</span>; o segredo está em três graus: o segredo do conhecimento, o segredo do estado, o segredo da realidade <span class="kunye-v">(p. 193)</span>. (forma: Conhecimento, Perplexidade)</li></ul>
+<ul><li>Capítulo 199: explica-se a palavra de Sahl b. Abdullah, &quot;A senhoria tem um segredo que, se aparecesse, tornaria a senhoria nula&quot; <span class="kunye-v">(p. 195)</span>; o segredo está em três graus: o segredo do conhecimento, o segredo do estado, o segredo da realidade <span class="kunye-v">(p. 193)</span>. (forma: Conhecimento, Perplexidade)</li></ul>
 <ul><li>Capítulo 202: a etiqueta da realidade é ver al-Haqq nas coisas como a própria identidade das coisas — não como elas <span class="kunye-v">(p. 201)</span>. (forma: Tanto-quanto, Indistinguibilidade, Ponto de vista)</li></ul>
 <ul><li>Capítulo 206: No ano 593, em Fez, na oração da tarde, viu a luz atrás de si mais clara que a luz à frente e não conseguia distinguir as direções: Pelo contrário, eu estava como uma esfera <span class="kunye-v">(p. 213-214)</span>. As luzes são contadas como à frente, à direita, à esquerda, atrás, acima e abaixo conforme suas fontes. (forma: Contenção, Perplexidade, Dentro-fora)</li></ul>
 <ul><li>Capítulo 207: Portanto a causa (&#x27;illa) é tomar uma razão como existente, enquanto Allah é a própria razão <span class="kunye-v">(p. 223)</span>; Nenhuma razão que não o faça voltar a Allah, não o advirta sobre Ele e não desperte em você uma consciência d&#x27;Ele é causa (&#x27;illa) <span class="kunye-v">(p. 224)</span>. (forma: Causa, Razão)</li></ul>
-<ul><li>Capítulo 209: dissemos que a testemunha (muşâhede) é o ver da testemunha. Essa testemunha é o que há no coração vindo de al-Haqq <span class="kunye-v">(p. 237)</span>; comparam-se o trono de Bilqis, <span class="alinti-v">&quot;como se fosse ele&quot;</span>, e a frase dos Companheiros sobre Gabriel na forma de Dihya, &quot;é Dihya&quot;. O capítulo termina com Você jamais pode ver al-Haqq e a criação juntos <span class="kunye-v">(p. 238)</span>. (forma: Ponto de vista, Tanto-quanto, Dentro-fora)</li></ul>
+<ul><li>Capítulo 209: dissemos que a testemunha (muşâhede) é o ver da testemunha. Essa testemunha é o que há no coração vindo de al-Haqq <span class="kunye-v">(p. 237)</span>; comparam-se o trono de Bilqis, &quot;como se fosse ele&quot;, e a frase dos Companheiros sobre Gabriel na forma de Dihya, &quot;é Dihya&quot;. O capítulo termina com Você jamais pode ver al-Haqq e a criação juntos <span class="kunye-v">(p. 238)</span>. (forma: Ponto de vista, Tanto-quanto, Dentro-fora)</li></ul>
 <ul><li>Capítulo 213: aceite a multiplicidade quanto à fixidez, mas negue-a quanto à existência! Afirme a unidade na existência, mas exclua-a da fixidez! <span class="kunye-v">(p. 256)</span>. (forma: Tanto-quanto, Dentro-fora)</li></ul>
 <ul><li>Capítulo 214: Para nós a liberdade é a remoção do atributo do servo pelo atributo de al-Haqq <span class="kunye-v">(p. 257)</span>; Na verdade não se pode dizer &#x27;livre&#x27; de al-Haqq, mas pode-se dizer &#x27;não é escravo&#x27; <span class="kunye-v">(p. 258)</span>; Na verdade a liberdade não possui uma existência <span class="kunye-v">(p. 259)</span>. (forma: Tanto-quanto, Causa)</li></ul>
 <ul><li>Capítulo 218: a contração (qabz) no grau divino é ligada ao hadith O coração do Meu servo crente Me conteve e à autorrevelação de al-Haqq nas formas de crença <span class="kunye-v">(p. 278)</span>. (forma: Contenção, Tanto-quanto)</li></ul>
@@ -297,7 +322,7 @@
 <blockquote>«O fechamento da porta na questão da aquisição (iktisâb)» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
 <p>Forma: Tempo, Não repetição.</p>
 <ul><li>Não há finalidade na finalidade: a finalidade do mundo é buscar al-Haqq, enquanto a finalidade de al-Haqq são os criados <span class="kunye-v">(p. 132)</span> (forma: Relação, Tanto-quanto)</li></ul>
-<ul><li>Na discussão <span class="alinti-v">&quot;A existência está em prostração&quot;</span>, a palavra do Profeta: Se vocês descessem uma corda, ela cairia sobre Allah <span class="kunye-v">(p. 144)</span> (forma: Contenção, Dentro-fora)</li></ul>
+<ul><li>Na discussão &quot;A existência está em prostração&quot;, a palavra do Profeta: Se vocês descessem uma corda, ela cairia sobre Allah <span class="kunye-v">(p. 144)</span> (forma: Contenção, Dentro-fora)</li></ul>
 <blockquote>«A associação (shirk) aberta é a associação produzida pelo ato de alguém por meio de um instrumento, enquanto a associação oculta é confiar no instrumento e no meio numa questão que pode ser feita com instrumento. Nesse sentido, todos são associadores. Pois todos têm conhecimento, e só o conhecimento produz a associação, e o conhecimento é buscado por al-Haqq.» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
 <p>Forma: Conhecimento, Tanto-quanto.</p>
 <blockquote>«Quem morre antes de morrer se eleva» (<a href="/futuhat/c18k225/">c18k225</a>)</blockquote>
@@ -313,7 +338,7 @@
 <ul><li>Título do capítulo 405: O tempo não pode limitar quem o espaço não consegue conter. (forma: Contenção, Tempo)</li></ul></article>
 </main>
 <script type="application/json" id="yy-bolumler">[]</script>
-<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/">Índice</a></nav>
+<nav class="mini-kabuk" aria-label="Seções"><a href="/pt/">Mapa</a><a href="/pt/futuhat/">Futuhat</a><a href="/pt/fusus/">Fusus</a><a href="/pt/miskat/">Mishkat</a><a href="/dizin/pt/">Índice</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

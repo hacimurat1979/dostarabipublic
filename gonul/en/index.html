@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Gönül Defteri: scripts/gonul-uret.py üretir (elle düzenlenmez). Yazarın kendi sesi, okuma özeti DEĞİL. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <title>Heart Journal — Dost Arabî</title>
 <meta name="description" content="Short illustrated pieces: some in the author&#x27;s own voice, some with the author&#x27;s photo and words by Claude. Credit on each piece. Not a reading summary.">
@@ -29,6 +29,7 @@
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#8a6100">
 <script src="/assets/gonul-tema.js"></script>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <style>
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Regular-static.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
   @font-face { font-family: "Source Sans Dost"; src: url("/assets/fonts/SourceSans3-Italic-static.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -121,6 +122,21 @@
   .kartlar { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
   .kart a { display: block; color: inherit; text-decoration: none; }
   .kart .kapak { margin-bottom: 10px; }
+  /* YS-02: liste kartında sabit 3:2 çerçeve; portre fotoğrafta konu `kapak.odak` ile gösterilir (bulanık köşe değil) */
+  .kart .kapak img { aspect-ratio: 3 / 2; height: auto; object-fit: cover; object-position: var(--odak, 50% 50%); }
+  /* Portre görsel yazıda ilk ekranı kaplamasın (başlık görünsün) */
+  article img.dikey { width: auto; max-width: 100%; max-height: 50vh; margin-inline: auto; }
+  .onc-son { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 32px 0 0; }
+  .onc-son a { display: inline-flex; flex-direction: column; justify-content: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--gridline); border-radius: 14px; text-decoration: none; color: var(--text-primary); max-width: 100%; }
+  .onc-son a:hover { border-color: var(--accent-interactive); }
+  .onc-son small { color: var(--text-muted); font-size: 0.8rem; }
+  .onc-son .sonraki { margin-left: auto; text-align: right; }
+  .suzgec { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+  .suzgec[hidden] { display: none; }
+  .suzgec button { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .suzgec button[aria-pressed="true"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  .suzgec button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kartlar > li[hidden] { display: none; }
   .kart h2 { margin: 6px 0 6px; font-size: 1.25rem; }
   .kart p { margin: 0; color: var(--text-secondary); }
   .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
@@ -141,9 +157,19 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 </style>
 <link rel="alternate" type="application/atom+xml" title="Heart Journal" href="/gonul/en/feed.xml">
 <script src="/assets/gonul-revise.js" defer></script>
+<script src="/assets/suzgec.js" defer></script>
 </head>
 <body>
 <main>
@@ -155,9 +181,9 @@
       <a href="/gonul/pt/" lang="pt-BR" hreflang="pt-BR">PT</a>
     </nav>
   </div>
-<h1>Heart Journal</h1><p class="giris">Short illustrated pieces: some in the author&#x27;s own voice, some with the author&#x27;s photo and words by Claude. Credit on each piece. Not a reading summary. Pieces written together are marked on their cards.</p><ul class="kartlar"><li class="kart"><a href="/gonul/en/bulutun-basindaki-dag/"><div class="kapak"><img src="/gonul/img/bulutun-basindaki-dag.webp" srcset="/gonul/img/bulutun-basindaki-dag-800.webp 800w, /gonul/img/bulutun-basindaki-dag.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="721" alt="A rocky mountain with its head wrapped in cloud and golden light falling on its slopes; the sky darkens on the right, with a small town and power lines at its foot." fetchpriority="high" decoding="async"></div><div class="meta"><time datetime="2026-11-06">6 November 2026</time><span class="ortak-etiket">· Photo by the author; words by Claude</span></div><h2>The mountain with its head in the cloud</h2><p>A photograph; the words are Claude&#x27;s, the passages are from the Futuhat.</p></a></li><li class="kart"><a href="/gonul/en/kurekle-toprakta/"><div class="kapak"><img src="/gonul/img/kurekle-toprakta.webp" srcset="/gonul/img/kurekle-toprakta-800.webp 360w, /gonul/img/kurekle-toprakta.webp 721w" sizes="(min-width: 40rem) 38rem, 100vw" width="721" height="1600" alt="A freshly dug, narrow and deep grave; inside it a man with a shovel, gloved, head bowed; a pickaxe and a shovel lie at the edge of the pit." loading="lazy" decoding="async"></div><div class="meta"><time datetime="2026-11-06">6 November 2026</time><span class="ortak-etiket">· Photo by the author; words by Claude</span></div><h2>With a shovel, in the earth</h2><p>A photograph; the words are Claude&#x27;s, the passages are from the Futuhat.</p></a></li><li class="kart"><a href="/gonul/en/ne-zaman/"><div class="kapak"><img src="/gonul/img/ikilik-kalkarken.webp" srcset="/gonul/img/ikilik-kalkarken-800.webp 800w, /gonul/img/ikilik-kalkarken.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="1067" alt="A field of two halves melting into each other: night blue on the left, warm earth tones on the right; they meet in a single line of light at the center, while shards of broken glass scatter at both sides." loading="lazy" decoding="async"></div><div class="meta"><span class="muhur" aria-hidden="true"></span><time datetime="2026-10-29">29 October 2026</time></div><h2>When</h2><p>On a single moment, on becoming one, and on duality lifting.</p></a></li><li class="kart"><a href="/gonul/en/allahim-ilmimi-artir/"><div class="kapak"><img src="/gonul/img/bahar-yagmuru.webp" srcset="/gonul/img/bahar-yagmuru-800.webp 800w, /gonul/img/bahar-yagmuru.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="1067" alt="A blossoming branch in spring rain, with misty green hills behind and light filtering through the clouds." loading="lazy" decoding="async"></div><div class="meta"><span class="muhur" aria-hidden="true"></span><time datetime="2026-10-28">28 October 2026</time></div><h2>O Allah, increase my knowledge</h2><p>A prayer, in handwriting.</p></a></li><li class="kart"><a href="/gonul/en/sessiz-cigligin/"><div class="kapak"><img src="/gonul/img/ince-cizgi.webp" srcset="/gonul/img/ince-cizgi-800.webp 800w, /gonul/img/ince-cizgi.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="1067" alt="A horizon where night meets dawn; a single drop above the water and a thin ring beneath it." loading="lazy" decoding="async"></div><div class="meta"><span class="muhur" aria-hidden="true"></span><time datetime="2026-10-28">28 October 2026</time></div><h2>Your silent scream</h2><p>On an end, a beginning, and the fine line between.</p></a></li></ul><p class="abone"><a href="/gonul/en/feed.xml">Follow new entries</a><br><span>Add this address to your feed reader (RSS/Atom); there is no account, email or tracking.</span> <code>https://dostarabi.com/gonul/en/feed.xml</code></p><aside class="kunye"><span class="muhur" aria-hidden="true"></span><div><p>This page is not a reading summary; it is the author&#x27;s own voice. Editing: spelling and layout only.</p><p>A piece written together carries its own credit on its own page; the seal appears only on pieces in the author&#x27;s own voice.</p><p>Written in Turkish; this English version is our rendering.</p></div></aside>
+<h1>Heart Journal</h1><p class="giris">Short illustrated pieces: some in the author&#x27;s own voice, some with the author&#x27;s photo and words by Claude. Credit on each piece. Not a reading summary. Pieces written together are marked on their cards.</p><nav class="suzgec" aria-label="Filter" hidden><button type="button" data-tur="hepsi" aria-pressed="true">All</button><button type="button" data-tur="ses" aria-pressed="false">The author&#x27;s voice</button><button type="button" data-tur="ortak" aria-pressed="false">Claude&#x27;s words</button></nav><ul class="kartlar" data-suzgec-liste><li class="kart" data-tur="ortak"><a href="/gonul/en/bulutun-basindaki-dag/"><div class="kapak"><img src="/gonul/img/bulutun-basindaki-dag.webp" srcset="/gonul/img/bulutun-basindaki-dag-800.webp 800w, /gonul/img/bulutun-basindaki-dag.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="721" alt="A rocky mountain with its head wrapped in cloud and golden light falling on its slopes; the sky darkens on the right, with a small town and power lines at its foot." fetchpriority="high" decoding="async"></div><div class="meta"><time datetime="2026-11-06">6 November 2026</time><span class="ortak-etiket">· Photo by the author; words by Claude</span></div><h2>The mountain with its head in the cloud</h2><p>A photograph; the words are Claude&#x27;s, the passages are from the Futuhat.</p></a></li><li class="kart" data-tur="ortak"><a href="/gonul/en/kurekle-toprakta/"><div class="kapak"><img class="dikey" style="--odak:50% 29%" src="/gonul/img/kurekle-toprakta.webp" srcset="/gonul/img/kurekle-toprakta-800.webp 360w, /gonul/img/kurekle-toprakta.webp 721w" sizes="(min-width: 40rem) 38rem, 100vw" width="721" height="1600" alt="A freshly dug, narrow and deep grave; inside it a man with a shovel, gloved, head bowed; a pickaxe and a shovel lie at the edge of the pit." loading="lazy" decoding="async"></div><div class="meta"><time datetime="2026-11-06">6 November 2026</time><span class="ortak-etiket">· Photo by the author; words by Claude</span></div><h2>With a shovel, in the earth</h2><p>A photograph; the words are Claude&#x27;s, the passages are from the Futuhat.</p></a></li><li class="kart" data-tur="ses"><a href="/gonul/en/ne-zaman/"><div class="kapak"><img src="/gonul/img/ikilik-kalkarken.webp" srcset="/gonul/img/ikilik-kalkarken-800.webp 800w, /gonul/img/ikilik-kalkarken.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="1067" alt="A field of two halves melting into each other: night blue on the left, warm earth tones on the right; they meet in a single line of light at the center, while shards of broken glass scatter at both sides." loading="lazy" decoding="async"></div><div class="meta"><span class="muhur" aria-hidden="true"></span><time datetime="2026-10-29">29 October 2026</time></div><h2>When</h2><p>On a single moment, on becoming one, and on duality lifting.</p></a></li><li class="kart" data-tur="ses"><a href="/gonul/en/allahim-ilmimi-artir/"><div class="kapak"><img src="/gonul/img/bahar-yagmuru.webp" srcset="/gonul/img/bahar-yagmuru-800.webp 800w, /gonul/img/bahar-yagmuru.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="1067" alt="A blossoming branch in spring rain, with misty green hills behind and light filtering through the clouds." loading="lazy" decoding="async"></div><div class="meta"><span class="muhur" aria-hidden="true"></span><time datetime="2026-10-28">28 October 2026</time></div><h2>O Allah, increase my knowledge</h2><p>A prayer, in handwriting.</p></a></li><li class="kart" data-tur="ses"><a href="/gonul/en/sessiz-cigligin/"><div class="kapak"><img src="/gonul/img/ince-cizgi.webp" srcset="/gonul/img/ince-cizgi-800.webp 800w, /gonul/img/ince-cizgi.webp 1600w" sizes="(min-width: 40rem) 38rem, 100vw" width="1600" height="1067" alt="A horizon where night meets dawn; a single drop above the water and a thin ring beneath it." loading="lazy" decoding="async"></div><div class="meta"><span class="muhur" aria-hidden="true"></span><time datetime="2026-10-28">28 October 2026</time></div><h2>Your silent scream</h2><p>On an end, a beginning, and the fine line between.</p></a></li></ul><p class="abone"><a href="/gonul/en/feed.xml">Follow new entries</a><br><span>Add this address to your feed reader (RSS/Atom); there is no account, email or tracking.</span> <code>https://dostarabi.com/gonul/en/feed.xml</code></p><aside class="kunye"><span class="muhur" aria-hidden="true"></span><div><p>This page is not a reading summary; it is the author&#x27;s own voice. Editing: spelling and layout only.</p><p>A piece written together carries its own credit on its own page; the seal appears only on pieces in the author&#x27;s own voice.</p><p>Written in Turkish; this English version is our rendering.</p></div></aside>
 </main>
-<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/en/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

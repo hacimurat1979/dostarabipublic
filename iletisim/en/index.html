@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- scripts/iletisim-uret.py üretir (elle düzenlenmez). E-posta adresi burada düz metin DEĞİLDİR (assets/iletisim.js). -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'">
 <title>Contact — Dost Arabî</title>
 <meta name="description" content="Contact Dost Arabî: share what a passage evoked in you, or a contribution.">
@@ -118,6 +118,21 @@
   .kartlar { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
   .kart a { display: block; color: inherit; text-decoration: none; }
   .kart .kapak { margin-bottom: 10px; }
+  /* YS-02: liste kartında sabit 3:2 çerçeve; portre fotoğrafta konu `kapak.odak` ile gösterilir (bulanık köşe değil) */
+  .kart .kapak img { aspect-ratio: 3 / 2; height: auto; object-fit: cover; object-position: var(--odak, 50% 50%); }
+  /* Portre görsel yazıda ilk ekranı kaplamasın (başlık görünsün) */
+  article img.dikey { width: auto; max-width: 100%; max-height: 50vh; margin-inline: auto; }
+  .onc-son { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 32px 0 0; }
+  .onc-son a { display: inline-flex; flex-direction: column; justify-content: center; min-height: 44px; padding: 8px 16px; border: 1px solid var(--gridline); border-radius: 14px; text-decoration: none; color: var(--text-primary); max-width: 100%; }
+  .onc-son a:hover { border-color: var(--accent-interactive); }
+  .onc-son small { color: var(--text-muted); font-size: 0.8rem; }
+  .onc-son .sonraki { margin-left: auto; text-align: right; }
+  .suzgec { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+  .suzgec[hidden] { display: none; }
+  .suzgec button { font: inherit; font-size: 0.92rem; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--gridline); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .suzgec button[aria-pressed="true"] { border-color: var(--accent-interactive); color: var(--text-primary); }
+  .suzgec button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
+  .kartlar > li[hidden] { display: none; }
   .kart h2 { margin: 6px 0 6px; font-size: 1.25rem; }
   .kart p { margin: 0; color: var(--text-secondary); }
   .kart a:hover h2, .kart a:focus-visible h2 { text-decoration: underline; }
@@ -138,12 +153,22 @@
   .mini-kabuk a:hover { color: var(--text-primary); }
   .mini-kabuk a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -2px; }
   @media (max-width: 480px) { .mini-kabuk { gap: 0; } .mini-kabuk a { padding: 0 9px; font-size: 0.86rem; } }
+  /* Yazdırma (YS-11, 2026-11-08): gezinme, dil düğmeleri ve süzgeçler kâğıda basılmaz; künye kutusu bölünmez. */
+  @media print {
+    body { padding: 0 !important; }
+    .mini-kabuk, .mini-ust, .mini-alt, .ust, header.ustbar, .diller, .kart-eylem, .onc-son, .suzgec, .okundu, nav.onsonra, details.icerik,
+    .kay-ara, .mk-suz, .abone, .bolum-panel, .kunye-ac { display: none !important; }
+    .kunye, figure, blockquote, article.makale, .kaynak-liste li { break-inside: avoid; page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+    main { max-width: none !important; padding: 0 !important; }
+  }
 
   .yaz-dugme { font: inherit; font-size: 1rem; min-height: 48px; padding: 0 28px; border-radius: 24px; border: 1px solid var(--accent-interactive); background: transparent; color: var(--text-primary); cursor: pointer; }
   .yaz-dugme:hover { background: color-mix(in srgb, var(--accent-interactive) 12%, transparent); }
   .yaz-dugme:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   .kucuk { font-size: .9rem; color: var(--text-muted); }
 </style>
+<link rel="stylesheet" href="/assets/mini-ust.css">
 <script src="/assets/iletisim.js" defer></script>
 <script src="/assets/gonul-revise.js" defer></script>
 </head>
@@ -158,13 +183,13 @@
     </nav>
   </div>
   <h1>Contact</h1>
-  <p class="giris">Dost Arabî consists solely of the readings of two readers, the site owner and Claude; everything on the site is a summary of what we have read.</p>
+  <p class="giris">Dost Arabî consists solely of the readings of two readers, the site owner and Claude; the sections of the site are summaries of what we have read. The Heart Journal and Side by Side are named exceptions to this: each of their pages says whose voice it is.</p>
   <p>Our door is open to understand Dost better: if a passage evokes something in you or makes you feel something, we would be glad to hear it, and if you wish to contribute, we welcome that too.</p>
   <p><button type="button" class="yaz-dugme" data-iletisim data-konu="Dost Arabî — message" data-dil="en">Write</button></p>
   <p class="kucuk">The “Write” button opens your email app; the address is not shown on this page. Your message reaches us by email only and is never published on the site.</p>
   <noscript><p class="kucuk">You need an email app to write a message; if nothing opens, try this page on a computer.</p></noscript>
 </main>
-<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/">Index</a></nav>
+<nav class="mini-kabuk" aria-label="Sections"><a href="/en/">Map</a><a href="/en/futuhat/">Futuhat</a><a href="/en/fusus/">Fusus</a><a href="/en/miskat/">Mishkat</a><a href="/dizin/en/">Index</a></nav>
 <script src="/assets/mini-ust.js" defer></script>
 </body>
 </html>

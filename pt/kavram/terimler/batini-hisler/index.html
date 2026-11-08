@@ -28,7 +28,7 @@
      üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
      bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
      domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-RcKapkaMgabUfZG5f3Xwtf6RJSH0Prz+o5xpwr5RzAE=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-9EAjbTh5VxKCBMkeAKxormu/5+aIa4/ujD85AQKCfug='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-RcKapkaMgabUfZG5f3Xwtf6RJSH0Prz+o5xpwr5RzAE=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-D2Va/DSInL09ndJ334Sg0WE8rdZvDCL64Exg8sf7Hi8=' 'sha256-FwKXnXjR5CzOiLajQNkPosmGsRdcqBrF2og7gNJn0dE=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-9EAjbTh5VxKCBMkeAKxormu/5+aIa4/ujD85AQKCfug='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
 <!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
      köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
      her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
@@ -59,7 +59,7 @@
 <meta property="og:title" content="Os Cinco Sentidos Internos (Faculdades de Percepção) — Dost Arabî">
 <meta property="og:description" content="Em al-Bulgha fi&#x27;l-Hikma, Ibn Arabi divide as faculdades animais em duas: as que percebem e as que movem.">
 <meta property="og:url" content="https://dostarabi.com/pt/kavram/terimler/batini-hisler/">
-<meta property="og:image" content="https://dostarabi.com/assets/og/kavram-terimler-batini-hisler.jpg">
+<meta property="og:image" content="https://dostarabi.com/assets/og/kavram-terimler-batini-hisler-pt.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Os Cinco Sentidos Internos (Faculdades de Percepção) — Dost Arabî">
@@ -69,7 +69,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Os Cinco Sentidos Internos (Faculdades de Percepção) — Dost Arabî">
 <meta name="twitter:description" content="Em al-Bulgha fi&#x27;l-Hikma, Ibn Arabi divide as faculdades animais em duas: as que percebem e as que movem.">
-<meta name="twitter:image" content="https://dostarabi.com/assets/og/kavram-terimler-batini-hisler.jpg">
+<meta name="twitter:image" content="https://dostarabi.com/assets/og/kavram-terimler-batini-hisler-pt.jpg">
 
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -110,18 +110,7 @@
 }
 </script>
 
-<!-- DOST-ANALYTICS-START -- sync-to-preview.py bu iki işaretin arasını
-     bütünüyle çıkarıp önizlemeye özel bir kütükle değiştiriyor (önizlemede
-     SIFIR izleme -- ziyaretçi kabul etse bile hiçbir istek gitmesin diye).
-     Ürün denetimi G3 (2026-09-02): GA4/Clarity artık ziyaretçi bir onam
-     vermeden yüklenmiyor -- önceki hâl bu iki script'i her sayfa açılışında
-     koşulsuz çekiyordu. Onam durumu localStorage'da tutulur ("granted" /
-     "denied"); yalnız "granted" script'leri fiilen yükler. window.dostTrack
-     her yerde güvenle çağrılabilir kalır -- clarity yoksa try/catch zaten
-     sessiz kalıyordu, o davranış korunuyor. Aşağıdaki #dost-consent-banner
-     ilk ziyarette (karar henüz yokken) görünür; ONUN kendisi bu işaretlerin
-     DIŞINDA, çünkü önizlemede de aynı bileşen test edilebilmeli -- yalnız
-     gerçek izleme yükleyicisi bu bloğun içinde. -->
+
 <script>
   (function () {
     var KEY = "dost-analytics-consent";
@@ -171,13 +160,8 @@
     try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
   };
 </script>
-<!-- DOST-ANALYTICS-END -->
-<!-- Font preload (P2-9, ürün denetimi 2026-09-02): 7 @font-face'ten yalnız
-     iki tanesi -- gövde metninin varsayılan ağırlığı (html/body'nin kendi
-     kuralı, 400) ve başlıkların ağırlığı (.detail-title vb., 600). Yediyi
-     birden preload etmek preload'ın kendi amacını (tarayıcıya "bunlar ilk
-     ekran için kritik" demek) boşa çıkarırdı -- diğer beşi zaten
-     font-display:swap ile doğal akışında geliyor. -->
+
+
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/Fraunces-SemiBold-static.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
@@ -291,13 +275,7 @@
         <p class="welcome-screen__line welcome-screen__line--en" lang="en">From Him to Him</p>
         <p class="welcome-screen__line welcome-screen__line--pt" lang="pt-BR">D'Ele a Ele</p>
       </div>
-      <!-- 2026-10-09 (görsel değerlendirme, madde 15): halka kapanınca
-           üstünde iki giriş noktası belirir -- Zât (tepe) ve Kalp. Yerleri
-           Ontoloji çemberindeki yerleriyle aynı (ontology.js CEMBER_ACI:
-           -90° ve 210°); seçim halkanın üzerinden yapılır, halka açılıp o
-           çembere dönüşür (welcome.js). Eskiden bu seçim ritüelden SONRA,
-           ekranın altında bir ipucu kartıydı (start-hint) ve çerez bandıyla,
-           lejantla üst üste biniyordu. -->
+      
       <p class="welcome-screen__secim" id="welcome-secim" data-tr="Bu harita iki uçlu bir çember: her şey Zât'tan çıkıyor, Kalp'ten Zât'a dönüyor. İki uçtan birini seç." data-en="This map is a two-ended circle: everything issues from the Essence and returns to it through the Heart. Pick one of the two ends." data-pt="Este mapa é um círculo com duas pontas: tudo emana da Essência e retorna a ela pelo Coração. Escolha uma das duas pontas.">Bu harita iki uçlu bir çember: her şey Zât'tan çıkıyor, Kalp'ten Zât'a dönüyor. İki uçtan birini seç.</p>
       <div class="welcome-screen__uclar" id="welcome-uclar" hidden>
         <button class="welcome-screen__uc welcome-screen__uc--zat" id="welcome-uc-zat" type="button" data-uc="dhat" data-tr-aria-label="Zât'tan başla" data-en-aria-label="Start from the Essence" data-pt-aria-label="Comece pela Essência" aria-label="Zât'tan başla">
@@ -310,34 +288,103 @@
         </button>
       </div>
     </div>
-    <!-- 2026-08-10 denetim bulgusu (G1/G56): sitenin en görünür ânı, sitenin
-         ne olduğunu söylemiyordu. Tek cümle; halkanın metniyle birlikte
-         beliriyor (welcome.js finish()). -->
+    
     <div class="welcome-screen__tagline" id="welcome-tagline">
       <p class="welcome-screen__tagline-line welcome-screen__tagline-line--tr" lang="tr">Muhyiddîn İbnü'l-Arabî'nin iç dünyasının bir haritası — okumalarımızın özetinden.</p>
       <p class="welcome-screen__tagline-line welcome-screen__tagline-line--en" lang="en">A map of Muhyiddin Ibn Arabi's inner world — from summaries of our readings.</p>
       <p class="welcome-screen__tagline-line welcome-screen__tagline-line--pt" lang="pt-BR">Um mapa do mundo interior de Muhyiddin Ibn Arabi — a partir dos resumos das nossas leituras.</p>
+      
+      <p class="welcome-screen__dost" id="welcome-dost"></p>
     </div>
-    <button class="welcome-screen__skip" id="welcome-skip" type="button" aria-label="Geç · Skip · Pular">Geç · Skip · Pular</button>
-    <!-- N15/Fikir 35 (2026-11-07): varsayılan değişmedi -- karşılama her açılışta gelir (2026-08-27 kararı); bu işaretleyici
-         okurun KENDİ seçimidir, yalnız bu cihazda tutulur (localStorage dost-karsilama-atla); kapatmak için işareti kaldırmak yeter. -->
+    
+    <div class="welcome-screen__eylem" id="welcome-eylem">
+      <button class="welcome-screen__skip" id="welcome-skip" type="button" aria-label="Geç · Skip · Pular">Geç · Skip · Pular</button>
+      <a class="welcome-screen__nereden" id="welcome-nereden" href="hakkinda/nereden-baslamali/" data-tr="Nereden Başlamalı" data-en="Where to Begin" data-pt="Por Onde Começar">Nereden Başlamalı</a>
+    </div>
+    
     <label class="welcome-screen__atla" id="welcome-atla-etiket"><input type="checkbox" id="welcome-atla"><span id="welcome-atla-yazi">Bir daha gösterme · Don't show again · Não mostrar de novo</span></label>
-    <!-- LANG-ROOT/TAB-01 (2026-11-08): ilk ekranda görünür dil seçici. Seçim bu cihazda saklanır (dost-lang) ve sitenin kendi dil düğmesini kullanır. -->
+    
     <div class="welcome-screen__diller" id="welcome-diller" role="group" aria-label="Dil / Language / Idioma">
       <button type="button" class="welcome-screen__dil" data-dil-sec="tr" lang="tr" aria-label="Türkçe" aria-pressed="false">TR</button>
       <button type="button" class="welcome-screen__dil" data-dil-sec="en" lang="en" aria-label="English" aria-pressed="false">EN</button>
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <script src="assets/welcome.js" integrity="sha384-N5DxIRPHh7W4eV8ezy69QgNWJjcb/ntt3cg1f+M18GTVrteK028uJ64V3OKrqc9H"></script>
+  <script src="assets/welcome.js" integrity="sha384-zgOjbZbeSMVY7/QePbshxq0SvmOfVGJRlJ485lVbmImomL6twfJxGibwoHkXVjPz"></script>
+  <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
+    <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
+          data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
+          data-pt="A medição de visitas só com o seu consentimento; se recusar, nenhum script de medição é carregado.">Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez.</span>
+       <a class="consent-banner__ayrinti" href="gizlilik/" data-href-en="gizlilik/en/" data-href-pt="gizlilik/pt/" data-tr="Ayrıntı" data-en="Details" data-pt="Detalhes">Ayrıntı</a></p>
+    <div class="consent-banner__actions">
+      <button type="button" class="btn-ghost" id="consent-decline" data-tr="Reddet" data-en="Decline" data-pt="Recusar">Reddet</button>
+      <button type="button" class="btn-ghost btn-ghost--filled" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var KEY = "dost-analytics-consent";
+      var HTML = document.documentElement;
+      var banner = document.getElementById("consent-banner");
+      if (!banner) return;
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch (e) {}
+      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
+      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
+      if (!stored && !window.__dostUygulama) {
+        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
+        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
+        try {
+          var bt = document.querySelector("base"), bp = "";
+          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
+          var yol = location.pathname.replace(/\/+$/, "");
+          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
+            HTML.classList.add("ilk-kart-bekle");
+            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
+          }
+        } catch (e) {}
+        banner.hidden = false;
+      }
+      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
+      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
+      function yukYaz() {
+        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
+        HTML.style.setProperty("--onay-yuk", gor ? (banner.offsetHeight + 8) + "px" : "0px");
+        HTML.style.setProperty("--onay-alt", gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px");
+        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
+      }
+      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
+      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
+      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
+      window.addEventListener("resize", yukYaz);
+      yukYaz();
+      function decide(value) {
+        var odakta = banner.contains(document.activeElement);
+        try { localStorage.setItem(KEY, value); } catch (e) {}
+        banner.hidden = true;
+        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
+        if (odakta) {
+          var ana = document.getElementById("main-content");
+          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
+        }
+        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
+      }
+      var accept = document.getElementById("consent-accept");
+      var decline = document.getElementById("consent-decline");
+      if (accept) accept.addEventListener("click", function () { decide("granted"); });
+      if (decline) decline.addEventListener("click", function () { decide("denied"); });
+      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
+      banner.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape" || e.defaultPrevented) return;
+        e.preventDefault(); e.stopPropagation();
+        decide("denied");
+      });
+    })();
+  </script>
+
   <header class="app-header">
     <div class="app-header__controls">
-      <!-- FAZ 1 (grafik-önce arayüz, 2026-08-03): 14 eşit ağırlıklı sekme
-           karar yorgunluğu üretiyordu; hepsi ☰ çekmecesine taşındı, üst
-           çubukta yalnız ☰ + arama + şaşırt + tema + dil kaldı. Düğme
-           id'leri ve işaretlemeleri AYNEN korunuyor (ontology.js
-           markActiveNavButton / markNavYeniSeen bunlara bağlı) — yalnız
-           yerleri değişti. Çekmece davranışı: assets/nav-drawer.js. -->
+      
       <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-drawer"
               data-tr-title="Bölümler" data-en-title="Sections" data-pt-title="Seções" title="Bölümler" aria-label="Bölümler">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><g stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></g></svg>
@@ -363,10 +410,7 @@
             <a class="btn-ghost" id="fusus-btn" href="fusus/" title="Füsûsu'l-Hikem, fass fass — Fusus al-Hikam, chapter by chapter — Fusus al-Hikam, capítulo por capítulo" data-tr="Füsûs" data-en="Fusus" data-pt="Fusus">Füsûs</a>
             <a class="btn-ghost btn-ghost--yeni" id="miskat-btn" href="miskat/" title="İbn Arabî'nin kendi seçtiği 101 hadîs-i kudsî, hadis hadis — 101 hadith qudsi selected by Ibn Arabi himself, hadith by hadith — 101 hadith qudsi selecionados pelo próprio Ibn Arabi, hadith a hadith" data-tr="Mişkâtü'l-Envâr" data-en="Mishkat al-Anwar" data-pt="Mishkat al-Anwar">Mişkâtü'l-Envâr</a>
             <a class="btn-ghost btn-ghost--yeni" id="kavram-btn" href="kavram/" title="Her kavramın Fütûhât ve Füsûs boyunca izini süren, veriden türetilmiş bir hayat özeti" data-tr-title="Her kavramın Fütûhât ve Füsûs boyunca izini süren, veriden türetilmiş bir hayat özeti" data-en-title="A data-derived life summary tracing each concept through the Futuhat and Fusus" data-pt-title="Um resumo de vida derivado de dados que traça cada conceito através do Futuhat e do Fusus" data-tr="Kavramlar" data-en="Concepts" data-pt="Conceitos">Kavramlar</a>
-            <!-- 2026-08-10 denetim bulgusu (G50): Okuma Yolları /hakkinda içinde
-                 bir alt-sekmeydi ve çekmecede hiç yoktu — "nereden başlamalıyım"
-                 özelliği en az bulunur yerdeydi. Alt-sekme yapısı korunuyor;
-                 bu düğme yalnız oraya açılan görünür bir kapı. -->
+            
             <a class="btn-ghost" id="okuma-yollari-btn" href="hakkinda/okuma-yollari/" title="Konu konu, kaynak kartlarına bağlı okuma yolları: nereden başlamalı, hangi sırayla" data-tr-title="Konu konu, kaynak kartlarına bağlı okuma yolları: nereden başlamalı, hangi sırayla" data-en-title="Topic-by-topic reading paths tied to source cards: where to start, in what order" data-pt-title="Caminhos de leitura por tema, ligados aos cartões de fontes: por onde começar, em que ordem" data-tr="Okuma Yolları" data-en="Reading Paths" data-pt="Caminhos de Leitura">Okuma Yolları</a>
           </div>
         </div>
@@ -396,34 +440,21 @@
             <a class="btn-ghost btn-ghost--yeni" id="ayethadis-btn" href="ayethadis/" title="Sitede alıntılanan âyet ve hadislerin, en çok tekrarladıkları yerden başlayarak sıralandığı bir dizin" data-tr-title="Sitede alıntılanan âyet ve hadislerin, en çok tekrarladıkları yerden başlayarak sıralandığı bir dizin" data-en-title="An index of quoted verses and hadiths, ordered by how often each recurs" data-pt-title="Um índice de versículos e ditos citados, ordenados por quantas vezes cada um recorre" data-tr="Âyet &amp; Hadis" data-en="Verses &amp; Hadith" data-pt="Versículos e Hadith">Âyet &amp; Hadis</a>
           </div>
         </div>
-        <!-- Yazılar ve denemeler (2026-11-07, kullanıcı kararı: tablette Ayarlar yerine Keşfet'te): kullanıcının kendi sesi (Gönül Defteri) ve bizim
-             okuma çerçevemiz (Yan Yana) okuma özetlerinden ayrı bir grupta; ikisi de düz statik sayfa, gerçek bağlantı. -->
+        
         <div class="nav-drawer__group">
           <h2 class="nav-drawer__baslik"><span class="nav-drawer__heading" role="button" tabindex="0" aria-expanded="true" data-tr="Yazılar ve denemeler" data-en="Writings and essays" data-pt="Escritos e ensaios">Yazılar ve denemeler</span></h2>
           <div class="nav-drawer__items">
-            <!-- Gönül Defteri (2026-10-28): uygulama kabuğu görünümü DEĞİL, düz statik sayfalar
-                 (scripts/gonul-uret.py); gerçek bir bağlantıdır, tam sayfa yükler. Yedinci grup
-                 yapmak yerine burada: telefonda Bölümler katmanının altı grup düzeni (ad ekranda
-                 kalsın) bozulmaz. -->
+            
             <a class="btn-ghost btn-ghost--yeni" id="gonul-btn" href="gonul/" data-href-en="gonul/en/" data-href-pt="gonul/pt/" title="Sitenin sahibinin kendi sesiyle yazıları; okuma özeti değildir — Pieces in the site owner's own voice; not reading summaries — Textos na voz própria do dono do site; não são resumos de leitura" data-tr="Gönül Defteri" data-en="Heart Journal" data-pt="Diário do Coração">Gönül Defteri</a>
-            <!-- Yan Yana (2026-11-02): düz statik sayfalar (scripts/yanyana-uret.py); gerçek bağlantı, tam sayfa yükler.
-                 Masaüstünde yalnız altbilgide olması bulunmasını zorlaştırıyordu (kullanıcı notu). Yalnız Türkçe. -->
-            <a class="btn-ghost btn-ghost--yeni" id="yanyana-btn" href="yan-yana/" title="Dost&#x27;un sözlerini kuantum fiziğiyle yan yana okuma denemesi; okuma özeti değil, bizim okuma çerçevemiz." data-tr-title="Dost&#x27;un sözlerini kuantum fiziğiyle yan yana okuma denemesi; okuma özeti değil, bizim okuma çerçevemiz." data-en-title="An attempt to read Dost beside quantum physics; not a reading summary but our own reading frame." data-pt-title="Uma tentativa de ler Dost ao lado da física quântica; não é resumo de leitura, mas nosso quadro de leitura." data-tr="Yan Yana: Dost ve Kuantum Fiziği" data-en="Side by Side: Dost and Quantum Physics" data-pt="Lado a Lado: Dost e a Física Quântica">Yan Yana: Dost ve Kuantum Fiziği</a>
+            
+            <a class="btn-ghost btn-ghost--yeni" id="yanyana-btn" href="yan-yana/" data-href-en="yan-yana/en/" data-href-pt="yan-yana/pt/" title="Dost&#x27;un sözlerini kuantum fiziğiyle yan yana okuma denemesi; okuma özeti değil, bizim okuma çerçevemiz." data-tr-title="Dost&#x27;un sözlerini kuantum fiziğiyle yan yana okuma denemesi; okuma özeti değil, bizim okuma çerçevemiz." data-en-title="An attempt to read Dost beside quantum physics; not a reading summary but our own reading frame." data-pt-title="Uma tentativa de ler Dost ao lado da física quântica; não é resumo de leitura, mas nosso quadro de leitura." data-tr="Yan Yana: Dost ve Kuantum Fiziği" data-en="Side by Side: Dost and Quantum Physics" data-pt="Lado a Lado: Dost e a Física Quântica">Yan Yana: Dost ve Kuantum Fiziği</a>
           </div>
         </div>
         <div class="nav-drawer__group">
           <h2 class="nav-drawer__baslik"><span class="nav-drawer__heading" role="button" tabindex="0" aria-expanded="true" data-tr="Hakkında" data-en="About" data-pt="Sobre">Hakkında</span></h2>
           <div class="nav-drawer__items">
             <a class="btn-ghost" id="hakkinda-btn" href="hakkinda/" data-tr="Dost Arabî Hakkında" data-en="About Dost Arabî" data-pt="Sobre Dost Arabî">Dost Arabî Hakkında</a>
-            <!-- 2026-08-15 @revise: "Hakkında sayfasındaki sekmeleri butonlar
-                 olarak alalım" -- hakkinda-wrap'in dört alt-sekmesi
-                 (#hakkinda-subtab-*) burada doğrudan erişilebilir. Okuma
-                 Yolları'nın kendi düğmesi başka bir grupta da var (satır
-                 ~226) -- burada yinelenmesi bilinçli, iki ayrı keşif yolu.
-                 2026-08-17 @revise: diğer gruplarla tutarlı olsun diye kendi başlığına
-                 (akordion) kavuştu -- eskiden bu grubun hiç .nav-drawer__heading'i
-                 yoktu, "Dost Arabî Hakkında" düğmesi alt-sekmelerin hemen
-                 yanında düz sırada duruyordu. -->
+            
             <a class="btn-ghost btn-ghost--sub" id="hakkinda-sub-siirler-btn" href="hakkinda/siirler/" data-tr="Şiirleri" data-en="Poems" data-pt="Poemas">Şiirleri</a>
             <a class="btn-ghost btn-ghost--sub" id="hakkinda-sub-vahdet-btn" href="hakkinda/vahdet/" data-tr="Eleştiriler" data-en="Criticisms" data-pt="Críticas">Eleştiriler</a>
             <a class="btn-ghost btn-ghost--sub" id="hakkinda-sub-okuma-yollari-btn" href="hakkinda/okuma-yollari/" data-tr="Okuma Yolları" data-en="Reading Paths" data-pt="Caminhos de Leitura">Okuma Yolları</a>
@@ -434,11 +465,7 @@
             <a class="btn-ghost btn-ghost--sub" id="hakkinda-sub-kaynakca-btn" href="hakkinda/kaynakca/" data-tr="Kaynakça" data-en="Bibliography" data-pt="Bibliografia">Kaynakça</a>
           </div>
         </div>
-        <!-- Çevrimdışı okuma (2026-10-10): assets/cevrimdisi.js. Kullanıcı
-             dokunmadıkça hiçbir şey indirmez. Tarayıcı desteklemiyorsa satır
-             gizli kalır (bağlanmamış düğme olmasın). data-cekmece-kalir:
-             düğmeye basınca çekmece kapanmaz (nav-drawer.js). Halka: kesik
-             iz = henüz inmemiş, dolu yay = inen kısım (GORSEL_DIL). -->
+        
         <div class="nav-drawer__cevrimdisi" id="cevrimdisi" hidden data-cekmece-kalir>
           <button type="button" class="cevrimdisi__dugme" id="cevrimdisi-dugme">
             <svg class="cevrimdisi__halka" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle class="cevrimdisi__iz" cx="10" cy="10" r="7.5"/><circle class="cevrimdisi__dolu" cx="10" cy="10" r="7.5"/></svg>
@@ -463,11 +490,7 @@
     <section class="graph-wrap confidence-on" id="ontology-wrap">
       <svg id="graph" role="group" aria-label="Ontoloji haritası"
            data-tr-aria-label="Ontoloji haritası" data-en-aria-label="Ontology map" data-pt-aria-label="Mapa de ontologia"></svg>
-      <!-- 2026-08-10 denetim (G57 + rapor 16-A): mobilde grafik fiilen okunmuyor
-           (bitişik etiket yumağı). Bu alternatif liste iniş sırasına göre 15
-           düğümü verir; her satır o düğümün paneline gider. Mobilde varsayılan
-           GÖRÜNÜR, grafik gizli; "Haritayı aç" düğmesi grafiğe geçirir.
-           Masaüstünde tam tersi (grafik varsayılan, liste gizli). -->
+      
       <nav class="ontoloji-mobil-liste" id="ontoloji-mobil-liste" aria-label="Ontoloji: mertebe listesi (mobil alternatif)" data-tr-aria-label="Ontoloji: mertebe listesi (mobil alternatif)" data-en-aria-label="Ontology: rank list (mobile alternative)" data-pt-aria-label="Ontologia: lista das hierarquias (alternativa móvel)"></nav>
       <div class="view-status" id="ontology-wrap-status" hidden>
         <div class="view-status__spinner" aria-hidden="true"></div>
@@ -487,11 +510,7 @@
       <button class="graph-confidence-toggle is-on" id="ontology-confidence-toggle" type="button" aria-pressed="true" data-tr-title="Ne kadar eminiz? — düşük güvenli bağlantıları soluklaştır" data-en-title="How certain are we? — fade low-confidence links" data-pt-title="Quão certos estamos? — esmaecer vínculos de baixa confiança" title="Ne kadar eminiz? — düşük güvenli bağlantıları soluklaştır" aria-label="Ne kadar eminiz? — düşük güvenli bağlantıları soluklaştır">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3.5 4.5 6.8v5.1c0 4.6 3.1 7.9 7.5 8.6 4.4-0.7 7.5-4 7.5-8.6V6.8L12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.6 12.1l2.4 2.4 4.4-4.9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/></svg>
       </button>
-      <!-- 2026-08-10 denetim (G7 + rapor EK A.3): "Zât'a git" tek yönlendirmesi
-           yeni ziyaretçiyi sitenin en soyut/uzun paneline indiriyordu; ama
-           Zât'tan başlamak sitenin metafiziğine sadık — çözüm iki-uçlu:
-           "iki uçtan biri: O'ndan inen yol, O'na dönen yol". Çerçeve korunur,
-           bilişsel yük hafifler. -->
+      
       <div class="start-hint" id="start-hint" hidden>
         <p class="start-hint__text" data-tr="İlk kez mi buradasın? Bu harita iki uçlu bir çember: her şey Zât'tan çıkıyor, Kalp'ten Zât'a dönüyor. İki uçtan birini seç." data-en="First time here? This map is a two-ended circle: everything issues from the Essence and returns to it through the Heart. Pick one of the two ends." data-pt="Primeira vez aqui? Este mapa é um círculo com duas pontas: tudo emana da Essência e retorna a ela pelo Coração. Escolha uma das duas pontas.">İlk kez mi buradasın? Bu harita iki uçlu bir çember: her şey Zât'tan çıkıyor, Kalp'ten Zât'a dönüyor. İki uçtan birini seç.</p>
         <div class="start-hint__actions">
@@ -517,9 +536,7 @@
     <section class="graph-wrap" id="esma-wrap" hidden>
       <svg id="esma-graph" role="group" aria-label="Esmâü'l-Hüsnâ haritası"
            data-tr-aria-label="Esmâü'l-Hüsnâ haritası" data-en-aria-label="Map of the Beautiful Names" data-pt-aria-label="Mapa dos Belos Nomes"></svg>
-      <!-- 2026-08-16 (uzman paneli denetimi, O-01/F4): 101 düğümlü grafik
-           mobilde okunmuyor -- Ontoloji'nin G57 çözümüyle aynı mobil-liste
-           alternatifi (bkz. GU.createMobileListFallback, assets/esma.js). -->
+      
       <nav class="esma-mobil-liste" id="esma-mobil-liste" aria-label="Esmâ: isim listesi (mobil alternatif)" data-tr-aria-label="Esmâ: isim listesi (mobil alternatif)" data-en-aria-label="Divine Names: name list (mobile alternative)" data-pt-aria-label="Nomes Divinos: lista de nomes (alternativa móvel)"></nav>
       <div class="view-status" id="esma-wrap-status" hidden>
         <div class="view-status__spinner" aria-hidden="true"></div>
@@ -574,9 +591,7 @@
     </section>
 
     <section class="graph-wrap" id="hal-wrap" hidden>
-      <!-- 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı, Dalga 2.5):
-           grafik mobilde okunmuyor -- Ontoloji/Esmâ/Sırlar ile aynı
-           mobil-liste alternatifi (bkz. GU.createMobileListFallback). -->
+      
       <nav class="hal-mobil-liste" id="hal-mobil-liste" aria-label="Hâller: seyir listesi (mobil alternatif)" data-tr-aria-label="Hâller: seyir listesi (mobil alternatif)" data-en-aria-label="States: journey list (mobile alternative)" data-pt-aria-label="Estados: lista do percurso (alternativa móvel)"></nav>
       <svg id="hal-graph" role="group" aria-label="Hâller haritası"
            data-tr-aria-label="Hâller haritası" data-en-aria-label="Map of states" data-pt-aria-label="Mapa dos estados"></svg>
@@ -605,12 +620,7 @@
         <span class="esma-fca-caption__tag">FCA</span>
         <p class="esma-fca-caption__nitelik" id="hal-fca-caption-nitelik"></p>
       </div>
-      <!-- Ortak oryantasyon-halkası pilotu (2026-08-04, VISUALIZATION_IDEAS.md
-           "Ortak oryantasyon-halkası"): düğme değil, canlı bir gösterge --
-           tıklanmaz, aç/kapa yapmaz, yalnız o an hangi yaw/pitch'te
-           olduğumuzu gösterir. Hâller'de pilot; diğer beş görünüme
-           (ontoloji/esma/sirlar/sorular/menziller) kullanıcı onayından
-           sonra yayılabilir. -->
+      
       <div class="graph-orient-ring" id="hal-orient-ring" aria-hidden="true">
         <svg viewBox="-12 -12 24 24" width="24" height="24">
           <circle class="graph-orient-ring__track" r="9" fill="none"></circle>
@@ -672,9 +682,7 @@
     <section class="graph-wrap" id="sirlar-wrap" hidden>
       <svg id="sirlar-graph" role="group" aria-label="Sırlar haritası"
            data-tr-aria-label="Sırlar haritası" data-en-aria-label="Map of mysteries" data-pt-aria-label="Mapa dos mistérios"></svg>
-      <!-- 2026-08-16 (uzman paneli denetimi, O-01/F4): 104 kenarlı grafik
-           mobilde okunmuyor -- Ontoloji'nin G57 çözümüyle aynı mobil-liste
-           alternatifi (bkz. GU.createMobileListFallback, assets/sirlar-graph.js). -->
+      
       <nav class="sirlar-mobil-liste" id="sirlar-mobil-liste" aria-label="Sırlar: kayıt listesi (mobil alternatif)" data-tr-aria-label="Sırlar: kayıt listesi (mobil alternatif)" data-en-aria-label="Mysteries: record list (mobile alternative)" data-pt-aria-label="Mistérios: lista de registros (alternativa móvel)"></nav>
       <div class="view-status" id="sirlar-wrap-status" hidden>
         <div class="view-status__spinner" aria-hidden="true"></div>
@@ -707,10 +715,7 @@
     </section>
 
     <section class="graph-wrap" id="bilmiyoruz-wrap" hidden>
-      <!-- 2026-08-10 denetim (G41): sitenin duruş beyanı sayfası görsel olarak
-           neredeyse boştu; bilmiyoruz.json'daki manifesto (üç dilli) bilmiyoruz.js
-           tarafından etkinleştirilirken doldurulur. Boş varsayılan, JS
-           yüklenmezse hiç metin göstermek yerine yalnız sessizce boş kalsın. -->
+      
       <div class="bilmiyoruz-manifest" id="bilmiyoruz-manifest"></div>
       <svg id="bilmiyoruz-graph" role="group" aria-label="Bilmiyoruz halkası"
            data-tr-aria-label="Bilmiyoruz halkası" data-en-aria-label="Ring of unknowns" data-pt-aria-label="Anel do que não sabemos"></svg>
@@ -729,9 +734,7 @@
     </section>
 
     <section class="graph-wrap" id="elestiri-arkeolojisi-wrap" hidden>
-      <!-- 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı, Dalga 2.5):
-           grafik mobilde okunmuyor -- Ontoloji/Esmâ/Sırlar ile aynı
-           mobil-liste alternatifi (bkz. GU.createMobileListFallback). -->
+      
       <nav class="elestiri-arkeolojisi-mobil-liste" id="elestiri-arkeolojisi-mobil-liste" aria-label="Eleştiri Arkeolojisi: kişi listesi (mobil alternatif)" data-tr-aria-label="Eleştiri Arkeolojisi: kişi listesi (mobil alternatif)" data-en-aria-label="Archaeology of Criticism: person list (mobile alternative)" data-pt-aria-label="Arqueologia da Crítica: lista de pessoas (alternativa móvel)"></nav>
       <svg id="elestiri-arkeolojisi-graph" role="group" aria-label="Eleştiri arkeolojisi haritası"
            data-tr-aria-label="Eleştiri arkeolojisi haritası" data-en-aria-label="Map of the archaeology of criticism" data-pt-aria-label="Mapa da arqueologia da crítica"></svg>
@@ -747,7 +750,7 @@
       <button class="graph-hint" type="button" data-tr-title="Yatay eksen ölüm yılı, düşey bant bölge; elmas kurbanı, kare hükümdarı/hâmîyi işaret ediyor. Bir kişiye ya da bağa tıklayın." data-en-title="The horizontal axis is the year of death, the vertical band is the region; a diamond marks a victim, a square a ruler/patron. Click a person or a connection." data-pt-title="O eixo horizontal é o ano de morte, a faixa vertical é a região; um diamante marca uma vítima, um quadrado um governante/patrono. Clique numa pessoa ou em uma conexão." title="Yatay eksen ölüm yılı, düşey bant bölge; elmas kurbanı, kare hükümdarı/hâmîyi işaret ediyor. Bir kişiye ya da bağa tıklayın." aria-label="Yatay eksen ölüm yılı, düşey bant bölge; elmas kurbanı, kare hükümdarı/hâmîyi işaret ediyor. Bir kişiye ya da bağa tıklayın.">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg>
       </button>
-      <!-- 2026-08-10 denetim (G36): renk ve biçim kodları yalnız ipucundaydı; iyi/kötü okumasını önlemek için "eleştiren/savunan/aktaran" adlandırması. -->
+      
       <div class="legend" id="elestiri-arkeolojisi-legend">
         <button class="legend__toggle" type="button" aria-expanded="true">
           <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
@@ -779,9 +782,7 @@
     </section>
 
     <section class="graph-wrap" id="eser-agi-wrap" hidden>
-      <!-- 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı, Dalga 2.5):
-           grafik mobilde okunmuyor -- Ontoloji/Esmâ/Sırlar ile aynı
-           mobil-liste alternatifi (bkz. GU.createMobileListFallback). -->
+      
       <nav class="eser-agi-mobil-liste" id="eser-agi-mobil-liste" aria-label="Eser Ağı: eser listesi (mobil alternatif)" data-tr-aria-label="Eser Ağı: eser listesi (mobil alternatif)" data-en-aria-label="Network of Works: work list (mobile alternative)" data-pt-aria-label="Rede de Obras: lista de obras (alternativa móvel)"></nav>
       <svg id="eser-agi-graph" role="group" aria-label="Eserlerin zaman çizelgesi"
            data-tr-aria-label="Eserlerin zaman çizelgesi" data-en-aria-label="Timeline of the works" data-pt-aria-label="Linha do tempo das obras"></svg>
@@ -797,7 +798,7 @@
       <button class="graph-hint" type="button" data-tr-title="Sürükleyerek ya da tekerlekle aşağı kayın, Ctrl (⌘) + tekerlek ile yakınlaştırın; elmas biçimi eserlerinin kataloğu olan iki eseri işaret ediyor. Bir esere ya da bağa tıklayın." data-en-title="Drag or scroll to move down the list, Ctrl (⌘) + scroll to zoom; the diamond shape marks the two works that catalogue the rest. Click a work or a connection." data-pt-title="Arraste ou role para descer na lista, Ctrl (⌘) + rolagem para ampliar; o formato de diamante marca as duas obras que catalogam as restantes. Clique numa obra ou em uma conexão." title="Sürükleyerek ya da tekerlekle aşağı kayın, Ctrl (⌘) + tekerlek ile yakınlaştırın; elmas biçimi eserlerinin kataloğu olan iki eseri işaret ediyor. Bir esere ya da bağa tıklayın." aria-label="Sürükleyerek ya da tekerlekle aşağı kayın, Ctrl (⌘) + tekerlek ile yakınlaştırın; elmas biçimi eserlerinin kataloğu olan iki eseri işaret ediyor. Bir esere ya da bağa tıklayın.">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg>
       </button>
-      <!-- 2026-08-10 denetim (G34): elmas işaretinin anlamı yalnız ipucundaydı. -->
+      
       <div class="legend" id="eser-agi-legend">
         <button class="legend__toggle" type="button" aria-expanded="true">
           <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
@@ -805,15 +806,14 @@
         </button>
         <div class="legend__body" tabindex="0">
           <div class="legend__item"><span class="legend__marker legend__marker--eser-nokta" aria-hidden="true"></span><span data-tr="Eser (dolu daire)" data-en="Work (filled circle)" data-pt="Obra (círculo cheio)">Eser</span></div>
+          <div class="legend__item"><span class="legend__marker legend__marker--eser-yaklasik" aria-hidden="true"></span><span data-tr="Tarihi yaklaşık eser (kesik halka)" data-en="Work with an approximate date (dashed ring)" data-pt="Obra com data aproximada (anel tracejado)">Tarihi yaklaşık eser (kesik halka)</span></div>
           <div class="legend__item"><span class="legend__marker legend__marker--eser-katalog" aria-hidden="true"></span><span data-tr="Katalog eseri: diğer eserleri listeleyen iki eser (elmas)" data-en="Catalogue work: the two works that list the others (diamond)" data-pt="Obra-catálogo: as duas obras que listam as restantes (diamante)">Katalog eseri</span></div>
         </div>
       </div>
     </section>
 
     <section class="graph-wrap" id="kuran-dokusu-wrap" hidden>
-      <!-- 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı, Dalga 2.5):
-           grafik mobilde okunmuyor -- Ontoloji/Esmâ/Sırlar ile aynı
-           mobil-liste alternatifi (bkz. GU.createMobileListFallback). -->
+      
       <nav class="kuran-dokusu-mobil-liste" id="kuran-dokusu-mobil-liste" aria-label="Kur'ân Dokusu: sûre listesi (mobil alternatif)" data-tr-aria-label="Kur'ân Dokusu: sûre listesi (mobil alternatif)" data-en-aria-label="Qur'anic Texture: surah list (mobile alternative)" data-pt-aria-label="Textura Corânica: lista de suras (alternativa móvel)"></nav>
       <svg id="kuran-dokusu-graph" role="group" aria-label="Sûre ve bap atıf grafı"
            data-tr-aria-label="Sûre ve bap atıf grafı" data-en-aria-label="Sûrah and chapter citation graph" data-pt-aria-label="Grafo de citações de suratas e capítulos"></svg>
@@ -829,7 +829,7 @@
       <button class="graph-hint" type="button" data-tr-title="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 77'sinde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir." data-en-title="The lower arc is sûrahs (Mushaf order), the upper arc is chapters of the Futûhât/Fusûs. Touch a sûrah and paths of light appear toward the chapters that cite it; path thickness is citation count. The sûrahs are spaced evenly — the spacing carries no information. We found citations in 35 of the 114 sûrahs. Click a sûrah or a chapter; arrow keys move along an arc." data-pt-title="O arco inferior são as suratas (ordem do Mushaf), o arco superior são os capítulos das Futûhât/Fusûs. Toque numa surata e surgem caminhos de luz até aos capítulos que a citam; a espessura é o número de citações. As suratas estão espaçadas por igual — o espaçamento não transmite informação. Encontramos citações em 77 das 114 suratas. Clique numa surata ou num capítulo; as setas percorrem um arco." title="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 77'sinde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir." aria-label="Alt yayda sûreler (Mushaf sırası), üst yayda Fütûhât/Füsûs bölümleri. Bir sûreye değinince onu anan bölümlere giden ışık yolları belirir; yolun kalınlığı atıf sayısı. Sûreler eşit aralıkla dizili — aralık bilgi taşımıyor. 114 sûrenin 77'sinde atıf bulduk. Bir sûreye ya da bölüme tıklayın; ok tuşları yay üzerinde gezdirir.">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg>
       </button>
-      <!-- 2026-08-10 denetim (G27): iki halkanın ne olduğu ilk bakışta okunmuyordu. Lejant ipucundakinin özeti. 2026-10-09: halkalar karşılıklı iki yay oldu. -->
+      
       <div class="legend" id="kuran-dokusu-legend">
         <button class="legend__toggle" type="button" aria-expanded="true">
           <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
@@ -845,9 +845,7 @@
     </section>
 
     <section class="graph-wrap" id="seyahat-atlasi-wrap" hidden>
-      <!-- 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı, Dalga 2.5):
-           grafik mobilde okunmuyor -- Ontoloji/Esmâ/Sırlar ile aynı
-           mobil-liste alternatifi (bkz. GU.createMobileListFallback). -->
+      
       <nav class="seyahat-atlasi-mobil-liste" id="seyahat-atlasi-mobil-liste" aria-label="Seyahat Atlası: durak listesi (mobil alternatif)" data-tr-aria-label="Seyahat Atlası: durak listesi (mobil alternatif)" data-en-aria-label="Travel Atlas: stop list (mobile alternative)" data-pt-aria-label="Atlas de Viagens: lista de paradas (alternativa móvel)"></nav>
       <svg id="seyahat-atlasi-graph" role="group" aria-label="Seyahat atlası"
            data-tr-aria-label="Seyahat atlası" data-en-aria-label="Travel atlas" data-pt-aria-label="Atlas de viagem"></svg>
@@ -905,9 +903,7 @@
     </section>
 
     <section class="graph-wrap" id="sorular-wrap" hidden>
-      <!-- 2026-08-17 (uzman paneli denetimi, O-01/F4 devamı, Dalga 2.5):
-           grafik mobilde okunmuyor -- Ontoloji/Esmâ/Sırlar ile aynı
-           mobil-liste alternatifi (bkz. GU.createMobileListFallback). -->
+      
       <nav class="sorular-mobil-liste" id="sorular-mobil-liste" aria-label="Sorular: soru listesi (mobil alternatif)" data-tr-aria-label="Sorular: soru listesi (mobil alternatif)" data-en-aria-label="Questions: question list (mobile alternative)" data-pt-aria-label="Perguntas: lista de perguntas (alternativa móvel)"></nav>
       <svg id="sorular-graph" role="group" aria-label="Sorular haritası"
            data-tr-aria-label="Sorular haritası" data-en-aria-label="Map of questions" data-pt-aria-label="Mapa das perguntas"></svg>
@@ -926,25 +922,18 @@
       <button class="graph-3d-toggle" id="sorular-3d-toggle" type="button" data-tr-title="Derinliğe eğ — en temel soru önde, tek tek sorular arkada" data-en-title="Tilt into depth — the most basic question in front, single questions behind" data-pt-title="Incline para a profundidade — a pergunta mais básica à frente, as perguntas isoladas atrás" title="Derinliğe eğ — en temel soru önde, tek tek sorular arkada" aria-label="Derinliğe eğ — en temel soru önde, tek tek sorular arkada">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="7.5" ry="3" fill="none" stroke="currentColor" stroke-width="1.4"/><ellipse cx="12" cy="12" rx="7.5" ry="3" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.72"/><ellipse cx="12" cy="17.5" rx="7.5" ry="3" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.45"/></svg>
       </button>
-      <!-- Soru Nehri (2026-08-09): sorular.json'un `relations` alanındaki 38
-           elle kurulmuş soru→soru bağını, kategori-sarmalı yerine akan bir
-           nehir olarak gösteren ikinci görünüm modu. Kategori-eğim düğmesiyle
-           aynı .graph-3d-toggle sınıfını paylaşıyor (aynı buton dili). -->
+      
       <button class="graph-3d-toggle" id="sorular-nehir-toggle" type="button" data-tr-title="Soru Nehri — sorular arası bağları akan bir nehir olarak göster" data-en-title="Question River — show the links between questions as a flowing river" data-pt-title="Rio de Perguntas — mostrar os vínculos entre perguntas como um rio que flui" title="Soru Nehri — sorular arası bağları akan bir nehir olarak göster" aria-label="Soru Nehri — sorular arası bağları akan bir nehir olarak göster">
         <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M3 8c2 0 2-2.5 4-2.5S9 8 11 8s2-2.5 4-2.5S17 8 19 8s2-2.5 2-2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M3 14.5c2 0 2-2.5 4-2.5s2 2.5 4 2.5 2-2.5 4-2.5 2 2.5 4 2.5 2-2.5 2-2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/></svg>
       </button>
       <button class="graph-back" id="sorular-back" type="button" hidden data-tr-title="Bütün sorulara dön" data-en-title="Back to all questions" data-pt-title="Voltar a todas as perguntas" title="Bütün sorulara dön" aria-label="Bütün sorulara dön">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14 6 A7 7 0 1 1 7.5 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7.5 6.5 L7.5 10.5 L11.5 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <!-- Lejant kaldırıldı: yeni kategori halkasında her küre kendi rengini ve
-           tam adını zaten taşıyor; dokuz satırlık lejant hem tekrar ediyor hem
-           de halkanın sol altını örtüyordu. -->
+      
     </section>
 
     <section class="graph-wrap" id="menziller-wrap" hidden>
-      <!-- Ürün denetimi P1-4 (2026-09-02): diğer sarmal/grafik görünümleriyle
-           aynı desen (bkz. hal-mobil-liste) -- 28 durak gruplama olmadan
-           seyir sırasıyla, çünkü sıra sarmalın kendisi. -->
+      
       <nav class="menziller-mobil-liste" id="menziller-mobil-liste" aria-label="Menziller: seyir listesi (mobil alternatif)" data-tr-aria-label="Menziller: seyir listesi (mobil alternatif)" data-en-aria-label="Mansions: journey list (mobile alternative)" data-pt-aria-label="Estações: lista do percurso (alternativa móvel)"></nav>
       <svg id="menziller-graph" role="group" aria-label="Menziller haritası"
            data-tr-aria-label="Menziller haritası" data-en-aria-label="Map of the mansions" data-pt-aria-label="Mapa das estações"></svg>
@@ -963,10 +952,7 @@
       <button class="graph-hint" type="button" data-tr-title="Bir menzile tıklayın; boş alanı sürükleyerek gezinin, Ctrl (⌘) + tekerlek ile yakınlaştırın" data-en-title="Click a mansion; drag empty space to pan, Ctrl (⌘) + scroll to zoom" data-pt-title="Clique numa mansão; arraste o espaço vazio para navegar, Ctrl (⌘) + rolagem para ampliar" title="Bir menzile tıklayın; boş alanı sürükleyerek gezinin, Ctrl (⌘) + tekerlek ile yakınlaştırın" aria-label="Bir menzile tıklayın; boş alanı sürükleyerek gezinin, Ctrl (⌘) + tekerlek ile yakınlaştırın">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="11" x2="12" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg>
       </button>
-      <!-- Lejant (P2-7, ürün denetimi 2026-09-02): renk kategori değil,
-           harfin nefesteki mahreç sırasına bağlı sürekli bir gradyan
-           (menziller.js:hueFor) -- sekiz nokta, gradyanın Dost'un okuduğu
-           SEKİZ varlık-mertebesi katmanına denk düşen kesitleri. -->
+      
       <div class="legend" id="menziller-legend">
         <button class="legend__toggle" type="button" aria-expanded="true">
           <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
@@ -993,13 +979,10 @@
       </div>
       <div class="tasiyicilar-shell">
         <div class="tasiyicilar-left">
-          <!-- 2026-08-16 düzeltme: lejant, .tasiyicilar-wrap'ın (dolu içerikle
-               büyüyen, sabit yükseklikli olmayan) bottom:12px'ine değil,
-               grafiğin kendi köşesine (bu wrap) sabitleniyor -- eskiden
-               #tasiyicilar-foot'un kapanış metniyle üst üste biniyordu. -->
+          
           <div class="tasiyici-scene-wrap">
             <div class="tasiyici-scene" id="tasiyicilar-scene"></div>
-            <!-- 2026-08-10 denetim (G23): dolu/boş düğüm ve iki sarmalın anlamı yalnız metinde geçiyordu. -->
+            
             <div class="legend" id="tasiyicilar-legend">
               <button class="legend__toggle" type="button" aria-expanded="true">
                 <span data-tr="Lejant" data-en="Legend" data-pt="Legenda">Lejant</span>
@@ -1144,9 +1127,9 @@
         </div>
         <div class="hakkinda-content__section">
           <h3 data-tr="Gönül Defteri" data-en="Heart Journal" data-pt="Diário do Coração">Gönül Defteri</h3>
-          <p data-tr="Sitedeki bölümler okumaların özetidir. Gönül Defteri bunun dışındadır: sitenin sahibinin kendi sesiyle yazdığı yazılardır, okuma özeti değildir. Sayfalarında mürekkep halkalı bir mühür ve bunu söyleyen bir künye cümlesi durur."
-             data-en="The sections of this site are summaries of readings. The Heart Journal is outside that rule: it holds pieces the site's owner writes in their own voice, and they are not reading summaries. Its pages carry an ink-ringed seal and a line saying so."
-             data-pt="As seções deste site são resumos de leituras. O Diário do Coração fica fora dessa regra: reúne textos que o dono do site escreve na sua própria voz e que não são resumos de leitura. As suas páginas trazem um selo de anel de tinta e uma linha que o diz.">Sitedeki bölümler okumaların özetidir. Gönül Defteri bunun dışındadır: sitenin sahibinin kendi sesiyle yazdığı yazılardır, okuma özeti değildir. Sayfalarında mürekkep halkalı bir mühür ve bunu söyleyen bir künye cümlesi durur.</p>
+          <p data-tr="Sitedeki bölümler okumaların özetidir. Gönül Defteri bunun dışındadır: yazarın kendi sesiyle olan yazılar ile fotoğrafı yazarın, metni Claude'un olan yazılardan oluşur; ikisi de okuma özeti değildir ve her yazının künyesi kimin sesi olduğunu söyler. Yazarın kendi sesi olan yazılarda mürekkep halkalı bir mühür ve bunu söyleyen bir künye cümlesi durur."
+             data-en="The sections of this site are summaries of readings. The Heart Journal is outside that rule: it holds pieces in the author's own voice and pieces where the photo is the author's and the words are Claude's; neither is a reading summary, and each piece's credit says whose voice it is. Pieces in the author's own voice carry an ink-ringed seal and a line saying so."
+             data-pt="As seções deste site são resumos de leituras. O Diário do Coração fica fora dessa regra: reúne textos na voz própria do autor e textos em que a foto é do autor e as palavras são do Claude; nenhum deles é resumo de leitura, e o crédito de cada texto diz de quem é a voz. Os textos na voz própria do autor trazem um selo de anel de tinta e uma linha que o diz.">Sitedeki bölümler okumaların özetidir. Gönül Defteri bunun dışındadır: yazarın kendi sesiyle olan yazılar ile fotoğrafı yazarın, metni Claude'un olan yazılardan oluşur; ikisi de okuma özeti değildir ve her yazının künyesi kimin sesi olduğunu söyler. Yazarın kendi sesi olan yazılarda mürekkep halkalı bir mühür ve bunu söyleyen bir künye cümlesi durur.</p>
         </div>
         <div class="hakkinda-content__section">
           <h3 data-tr="Bu Sitenin Zemininde Kim Var" data-en="Who Stands Beneath This Site" data-pt="Quem Sustenta Este Site">Bu Sitenin Zemininde Kim Var</h3>
@@ -1283,15 +1266,15 @@ mesmo antes que o assombro exista."></blockquote>
               </marker>
             </defs>
             <circle class="hakkinda-diagram__field" cx="170" cy="100" r="70"></circle>
-            <!-- O'nda: merkezden açılan sarmal; sonu kesik ve soluk -- bitmiyor. -->
+            
             <path class="hakkinda-diagram__spiral" d="M170 100 C 178 100 182 93 182 87 C 182 77 173 71 163 71 C 149 71 139 83 139 97 C 139 115 153 129 171 129 C 193 129 209 111 209 89 C 209 67 194 51 174 47"></path>
             <path class="hakkinda-diagram__spiral hakkinda-diagram__spiral--tail" d="M174 47 C 145 44 118 62 110 92 C 104 116 112 142 130 158"></path>
-            <!-- O'ndan: merkezden çıkar, bir yerde varır ve durur (duraç çizgisi). -->
+            
             <path class="hakkinda-diagram__arrow" d="M177 98 L 288 55" marker-end="url(#sefer-arrow)"></path>
             <path class="hakkinda-diagram__stop" d="M296 44 L 303 62"></path>
             <text class="hakkinda-diagram__label" x="322" y="34" text-anchor="end"
                   data-tr="O'ndan" data-en="From Him" data-pt="DEle">O'ndan</text>
-            <!-- O'na: dışarıdan gelir, hedefi merkezin ta kendisidir. -->
+            
             <path class="hakkinda-diagram__arrow" d="M46 55 L 158 97" marker-end="url(#sefer-arrow)"></path>
             <text class="hakkinda-diagram__label" x="18" y="34" text-anchor="start"
                   data-tr="O'na" data-en="Toward Him" data-pt="A Ele">O'na</text>
@@ -1434,14 +1417,7 @@ mesmo antes que o assombro exista."></blockquote>
     <button class="detail-panel__notebook" id="detail-notebook-toggle" type="button" title="Kavram defterime ekle / kaldır — Add to / remove from my concept notebook — Adicionar a / remover do meu caderno de conceitos" aria-label="Kavram defterime ekle / kaldır — Add to / remove from my concept notebook — Adicionar a / remover do meu caderno de conceitos" aria-pressed="false">
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path class="detail-panel__notebook-star" d="M12 4.2l2.2 4.6 5 .7-3.6 3.5.85 5-4.45-2.4-4.45 2.4.85-5-3.6-3.5 5-.7Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
     </button>
-    <!-- Ürün denetimi P0-3 (2026-09-02): share-mode.js (2036 satır, 13
-         paylaşım şablonu) yalnız gizli bir klavye komutuyla (@share)
-         açılıyordu, UI'da hiçbir giriş noktası yoktu. #detail-share zaten
-         her sayfada çalışıyor (native share / link kopyalama); bu düğme
-         onu DEĞİŞTİRMİYOR, yanına görsel kart üretimine giden tek ve sade
-         bir yol ekliyor. 2026-10-09: "bu kaydı paylaş" -- açık kaydı
-         ({view,id}) share-mode'a verir; artık telefonda da görünür
-         (önceden ≤640px'te gizliydi, telefonda @share'e girilemiyordu). -->
+    
     <button class="detail-panel__share-visual" id="detail-share-visual" type="button" title="Görsel kart oluştur / Create visual card / Criar cartão visual" aria-label="Görsel kart oluştur / Create visual card / Criar cartão visual">
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="9.5" r="1.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16.5l4.8-4.8a1.4 1.4 0 0 1 2 0l2.9 2.9 2-2a1.4 1.4 0 0 1 2 0l2.3 2.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -1462,7 +1438,7 @@ mesmo antes que o assombro exista."></blockquote>
       <a href="iletisim/" data-href-en="iletisim/en/" data-href-pt="iletisim/pt/" data-tr="İletişim" data-en="Contact" data-pt="Contato">İletişim</a>
     </p>
     <p class="app-footer__gizlilik">
-      <span class="yalniz-tr"><a href="dizin/" data-tr="Dizin" data-en="Index" data-pt="Índice">Dizin</a>
+      <span><a href="dizin/" data-href-en="dizin/en/" data-href-pt="dizin/pt/" data-tr="Dizin" data-en="Index" data-pt="Índice">Dizin</a>
       ·</span>
       <a href="gizlilik/" data-href-en="gizlilik/en/" data-href-pt="gizlilik/pt/" data-tr="Gizlilik" data-en="Privacy" data-pt="Privacidade">Gizlilik</a>
       ·
@@ -1473,36 +1449,6 @@ mesmo antes que o assombro exista."></blockquote>
       <a href="yenilikler/" data-href-en="yenilikler/en/" data-href-pt="yenilikler/pt/" data-tr="Yenilikler" data-en="What's New" data-pt="Novidades">Yenilikler</a>
     </p>
   </footer>
-
-  <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
-    <p><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
-          data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
-          data-pt="A medição de visitas só com o seu consentimento; se recusar, nenhum script de medição é carregado.">Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez.</span>
-       <a href="gizlilik/" data-href-en="gizlilik/en/" data-href-pt="gizlilik/pt/" data-tr="Ayrıntı" data-en="Details" data-pt="Detalhes">Ayrıntı</a></p>
-    <div class="consent-banner__actions">
-      <button type="button" class="btn-ghost" id="consent-decline" data-tr="Reddet" data-en="Decline" data-pt="Recusar">Reddet</button>
-      <button type="button" class="btn-ghost btn-ghost--filled" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
-    </div>
-  </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      if (!stored && !window.__dostUygulama) banner.hidden = false;
-      function decide(value) {
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-    })();
-  </script>
 
   <div class="app-fallback" id="app-fallback" hidden role="status" aria-live="polite">
     <div class="app-fallback__ring" aria-hidden="true"></div>
@@ -1530,18 +1476,15 @@ mesmo antes que o assombro exista."></blockquote>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-saB1pYXRTQbULaSaRoBUSDviGwC14+M68APjDvmwnV3YuNWlSGvvC2Xm3IR6yOUv"></script>
   <script src="assets/view-status.js" defer integrity="sha384-8zvPOFsleI7n18Pg6FIPwSRAU/XZY/a/sU7f52KIZqhXKOlKl0nVLVu7GSFqRuGL"></script>
-  <script src="assets/graph-utils.js" defer integrity="sha384-k20Cfo//wC/CPE8bU8Htc9ay6MCZXPmlyIq3KuGnHAWKS0DdCppLjnyaxz58i7bl"></script>
-  <!-- nav-drawer.js graph-utils.js'ten SONRA gelmeli (2026-08-15): artık
-       açılışta GU.registerStepBack çağırıyor. -->
-  <script src="assets/nav-drawer.js" defer integrity="sha384-gWvvNNbomz87uHYlElltKuwMqT1QuUde+5pwzwnxqSf1Lc6DdnZx9cGwgWmDdq50"></script>
+  <script src="assets/graph-utils.js" defer integrity="sha384-W3kbu62Xt5SeP8rDVRtoG7Mmps7VrnZR4ubQPaJI8gZ37GHPcfHvsyssnGpQ3FXm"></script>
+  
+  <script src="assets/nav-drawer.js" defer integrity="sha384-3wawT9kR/5HKTo3R6jIwNGyCqWyCQssgrPvhLnAmlBBAzo0rLq6EBjsupKtWNMup"></script>
   <script src="assets/graph-hint.js" defer integrity="sha384-7yfI/LA/K9Jm3NSc3qV1Obpp9Pi5apleJjeRB+wYRX4iOGxc8MRaLO6g1uV5rcY8"></script>
   <script src="assets/lightbox.js" defer integrity="sha384-UqAL6FLLFCQ/GOoXKYchPMCXK4H/MUr2w1FNrpgE5rs9AhDJhyjxDddCAv1eqEqm"></script>
-  <!-- Kademeli açılım (G15). Küçük ve görünümden bağımsız olduğu için
-       tembel-yükleme listesine değil buraya konuyor: ontology.js sır
-       detayını çizerken window.__dostKademe hazır olmalı. -->
+  
   <script src="assets/kademe.js" defer integrity="sha384-pHPXqeCpal28UySB+/9nmbO0gpF/bP97VpAFPlRP5khCm4pDyvyj1et7nJrKrOq9"></script>
-  <script src="assets/search.js" defer integrity="sha384-hD8sFAo2khmBy1sGnjbyk+6Ut1SveRrNTNSXXOnI7rrtaMdDH3cI5HnwV7NFICMe"></script>
-  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-8gxYTJHgy49TK6ZKZ4MPEKOvSuu+1iYrr42iW7c/R1RzUgownIgwahMIkUEzZ3k5"></script>
+  <script src="assets/search.js" defer integrity="sha384-lqMX3M8O94xZC4iYaCZDi/4sSSIhZssL/r9b6ixXr2XGms80hhSaPTnbe7/Dr7hp"></script>
+  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-BLUCdE3E5qQH0VRJwFc81lAtZzSKT65q++xj2FDR5DyC3jPK5MJJ+MXS43jaJhHi"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-0cRxdoe8RiTJ66KA+R5BgIVdAeqqwGI62BpiO3k3RuQ0a9Dq7cB//x2rgwX/rPKW"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
@@ -1553,22 +1496,19 @@ mesmo antes que o assombro exista."></blockquote>
        ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
        (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
        static <script> etiketi yok. -->
-  <script src="assets/view-loader.js" defer integrity="sha384-LSY3j1Epz19t6HRKNZ9E2TTXlmMVeDIgadXWmv1A+D8sh1iEW8wpSXd2U4mA46dQ"></script>
-  <script src="assets/ontology.js" defer integrity="sha384-+tqrOjqLkskbNYaa4gwZ2tLqRNqIU8U/Vb4HnclafNDD6eb7nNrxkthPKEIrqRpI"></script>
-  <script src="assets/hareket.js" defer integrity="sha384-2r0iSusbdHywowDQZHhESA7BjmNTJa9HcqeSOTdgHF3pNUz6ktaCfMvrByzAjB3f"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-B0mcmobdg2sRDo8A9C82WQ8/tTzttZWJzmbZYnPmszNggsbShPqPNLV+OpUovVYv"></script>
+  <script src="assets/ontology.js" defer integrity="sha384-QrQnblXFX8YFPo2XiDoKunQ7/zW+0c3jcKseyEVQLRgjwm3+8zLU3Lf4r4+4af8j"></script>
+  <script src="assets/hareket.js" defer integrity="sha384-Kv7gGpiBRUP+2SAwW3yTlFuWDnSVi2GeMvxh8Qi1rl0C56JSL71Rc+/1b4vWfzOs"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-B8cxM/v6lyeIBDwZJ2+HoFynejEMxs6PFXFIQmOSUgj8qK263rFshKPfXmEr0tTm"></script>
-  <script src="assets/crosslink-preview.js" defer integrity="sha384-RItmRYjyXgGldJLforIuGfuaUChhW8NL+VT4zDGQr+pZQcc+epCX70Ud/Ec582Mm"></script>
+  <script src="assets/crosslink-preview.js" defer integrity="sha384-XmLIQmbopclyYvrBbqCi66J5a48rZuxabhfi7S6hygMzTD+pguEoWDFq896b7/Pt"></script>
   <script src="assets/ayet-onizleme.js" defer integrity="sha384-qt5pS8iR9NKU8B1ct+f/4mIHTI/mbuX+0pZlKalKoEag1aBPbkGBQUDoz+Wr5r5a"></script>
-  <script src="assets/start-hint.js" defer integrity="sha384-69TPr06H8GTGBPwakJqEAUWIVznAwhEmKCzqt83PybE/VYhz/WCsJvLtNE85vBQt"></script>
-  <!-- 2026-08-10 denetim (G57 + rapor 16-A): mobil için grafik yerine liste. -->
+  <script src="assets/start-hint.js" defer integrity="sha384-KvIsvUShUjWtqcBXodoiY5QEc71+oGAcFu7V8tE3E6yL0e5OBBUclyPCBca1dWtR"></script>
+  
   <script src="assets/ontoloji-mobil-liste.js" defer integrity="sha384-XTZuvnp/o3FAdmHn88Hl0TK/wT2QdDCM5NjyOfj2lrAP3pASPhdTQH3YDrfd3uuz"></script>
   <script src="assets/secret-nav.js" defer integrity="sha384-XibU8f1PSj7LDoBp7FhjYwsD2FOjOu/WmQbEwr7lHeAcvYTgCDilF6MN8DBRL59E"></script>
-  <!-- Gizli kipler (@revise: edit-mode + durus-kontrol + tahkik-tarama;
-       @share: share-mode, ~79 KB gzip) 2026-10-09'dan beri burada statik
-       etiket DEĞİL: assets/view-loader.js'in KIPLER haritasından kip ilk
-       istendiğinde iniyor (SRI orada, sri-guncelle.py tazeliyor). -->
+  
   <script src="assets/sessiz-mod.js" defer integrity="sha384-xVDqdkdUQwZ6sbyxphRypMCsxK94lbiXs9voJ3PmOM5iHNiHXkg6TFeui3Aj2j7l"></script>
-  <!-- Çevrimdışı okuma satırı (2026-10-10): nav-drawer.js'ten sonra. -->
+  
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-y+prbq2jccmZlf/MuoX9UilYJ16Xh+3F5U4xDTPObKK5qrpqaat7aOv+Pmy5dm/q"></script>
   <script>
