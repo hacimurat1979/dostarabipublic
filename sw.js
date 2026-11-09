@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-8aafb48d4316";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-f3e400f9ae7c";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -24,14 +24,15 @@ const SHELL_URLS = [
   "./assets/favicon.svg",
   "./assets/fonts/Fraunces-Regular-static.woff2",
   "./assets/welcome.js",
+  "./assets/kabuk.2728c47523.js",
   "./assets/theme.js",
   "./assets/i18n.js",
+  "./assets/view-loader.js",
   "./assets/view-status.js",
   "./assets/graph-utils.js",
   "./assets/nav-drawer.js",
   "./assets/search.js",
   "./assets/uygulama-kabugu.js",
-  "./assets/view-loader.js",
   "./assets/cevrimdisi.js",
   "./assets/kavram-defteri.js",
   "./assets/fonts/SourceSans3-Regular-static.woff2",
@@ -201,12 +202,29 @@ function veriTavani(cache) {
 }
 
 function yedekSayfa() {
-  const html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'
-    + '<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dost Arabî</title></head>'
-    + '<body style="font-family:system-ui,sans-serif;max-width:34rem;margin:15vh auto;padding:0 16px;text-align:center">'
-    + '<p>Şu an çevrimdışısın. · You are offline. · Está offline.</p>'
-    + '<p><a href="/">Ana sayfa · Home · Início</a></p></body></html>';
-  return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+  // OFF-02/TD-02 (2026-11-09): boş "çevrimdışısın" sayfası yerine bu cihazda önbellekte olan okuma sayfalarının (en çok 6) bağlantıları verilir.
+  // Önbelleğin kendisi burada AÇILMAZ (caches.has ile bakılır): indirme hiç yapılmadıysa ICERIK_CACHE oluşmasın (bkz. yukarıdaki not).
+  const adlar = [CACHE_VERSION, ICERIK_CACHE];
+  return Promise.all(adlar.map((n) => caches.has(n).then((varMi) => (varMi ? caches.open(n).then((c) => c.keys()) : [])).catch(() => []))).then((listeler) => {
+    const gorulen = new Set(), baglar = [];
+    listeler.forEach((ks) => ks.forEach((rq) => {
+      try {
+        const p = new URL(rq.url).pathname;
+        const m = /^\/(?:(?:en|pt)\/)?(futuhat|fusus|miskat)\/([a-z0-9]+)\/$/.exec(p);
+        if (m && !gorulen.has(p) && baglar.length < 6) {
+          gorulen.add(p);
+          baglar.push('<li style="margin:6px 0"><a href="' + p + '">' + ({ futuhat: "Fütûhât", fusus: "Füsûs", miskat: "Mişkât" })[m[1]] + " · " + m[2] + "</a></li>");
+        }
+      } catch (e) { /* adres okunamazsa atlanır */ }
+    }));
+    const html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'
+      + '<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dost Arabî</title></head>'
+      + '<body style="font-family:system-ui,sans-serif;max-width:34rem;margin:15vh auto;padding:0 16px;text-align:center">'
+      + '<p>Bağlantı yok: bu sayfa bu cihazda kayıtlı değil. · No connection: this page is not saved on this device. · Sem conexão: esta página não está salva neste dispositivo.</p>'
+      + (baglar.length ? '<p>Bu cihazda olanlar · Available here · Disponíveis aqui:</p><ul style="list-style:none;padding:0">' + baglar.join("") + "</ul>" : "")
+      + '<p><a href="/">Ana sayfa · Home · Início</a></p></body></html>';
+    return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+  });
 }
 
 // Bir kaynak (JS/CSS/font/veri/arama dizini) ağdan gelmedi: önce tutarlı

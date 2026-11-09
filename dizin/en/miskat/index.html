@@ -13,7 +13,10 @@
 <link rel="alternate" hreflang="pt-BR" href="https://dostarabi.com/dizin/pt/miskat/">
 <link rel="alternate" hreflang="x-default" href="https://dostarabi.com/dizin/miskat/">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#8a6100">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Dost Arabî">
 <meta property="og:locale" content="en_US">
@@ -56,6 +59,12 @@
   nav.dizinler { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 28px; padding-bottom: 16px; border-bottom: 1px solid var(--gridline); }
   nav.dizinler a { display: inline-flex; align-items: center; min-height: 44px; }
   a { color: var(--accent-interactive); }
+  /* HEDEF-01 (2026-11-09): satır içi bağlantılar dokunmatikte ≥ 44 px; satır yüksekliği değişmesin diye negatif kenar boşluğu */
+  @media (pointer: coarse) {
+    main p a, main li > a { display: inline-block; padding: 10px 6px; margin: -10px -6px; }
+    .cilt-seridi { display: flex; flex-wrap: wrap; gap: 0 4px; }
+    main .cilt-seridi a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0; margin: 0; }
+  }
   a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; border-radius: 4px; }
   h1, h2 { font-family: "Fraunces Dost", Georgia, serif; font-weight: 600; line-height: 1.25; }
   h1 { font-size: 1.8rem; margin: 0 0 8px; }
