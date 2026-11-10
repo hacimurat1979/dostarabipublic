@@ -63,6 +63,17 @@
   .tablo { overflow-x:auto; margin: 14px 0 22px; border:1px solid var(--gridline); border-radius:12px; }
   table { border-collapse:collapse; width:100%; font-size:.93rem; min-width:34rem; } th, td { text-align:left; vertical-align:top; padding:9px 11px; border-bottom:1px solid var(--gridline); }
   th { background:var(--surface-1); font-weight:600; position:sticky; top:0; } tr:last-child td { border-bottom:0; }
+  /* Hesap Tezgâhı (2026-11-10, F18): assets/yy-hesap.js; kaydırıcı + küçük çizelge + canlı sayılar */
+  .yy-hesap { --yh-altin: var(--accent-interactive); --yh-mavi: var(--mavi); margin: 14px 0 26px; padding: 14px 16px; border: 1px solid var(--gridline); border-radius: 12px; background: var(--surface-1); }
+  .yy-hesap .yh-baslik { font:600 .78rem/1 "Source Sans Dost", system-ui, sans-serif; letter-spacing:.06em; text-transform:uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .yy-hesap label { display:block; font-size:.95rem; margin-bottom: 4px; }
+  .yy-hesap input[type=range] { width:100%; min-height:44px; accent-color: var(--accent-interactive); }
+  .yy-hesap svg { width:100%; max-width:420px; height:auto; display:block; color: var(--text-secondary); }
+  .yy-hesap .yh-lejant { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:.84rem; color: var(--text-secondary); margin-top: 4px; }
+  .yy-hesap .yh-lej i { display:inline-block; width:14px; height:3px; margin-right:6px; vertical-align:middle; }
+  .yy-hesap .yh-cikti { margin: 10px 0 0; display:flex; flex-wrap:wrap; gap:6px 22px; }
+  .yy-hesap .yh-cikti div { min-width:0; } .yy-hesap dt { font-size:.8rem; color: var(--text-muted); } .yy-hesap dd { margin:0; font:600 1.15rem "Fraunces Dost", Georgia, serif; }
+  .yy-hesap .yh-kunye { margin: 10px 0 0; font-size:.84rem; color: var(--text-muted); }
   blockquote { margin:18px 0; padding-left:14px; border-left:2px solid var(--mavi); color:var(--text-secondary); }
   .kunye { margin: 4px 0 26px; padding: 12px 14px; border: 1px dashed var(--mavi); border-radius: 12px; font-size:.93rem; color:var(--text-secondary); display:flex; gap:10px; align-items:flex-start; }
   .muhur { display:inline-block; width:14px; height:14px; border-radius:50%; border:1.6px dashed var(--mavi); flex:none; margin-top:5px; }
@@ -172,6 +183,7 @@
 </style>
 <script src="/assets/gonul-revise.js" defer></script>
 <script src="/assets/yy-gezin.js" defer></script>
+<script src="/assets/yy-hesap.js" defer></script>
 </head>
 <body>
 <main>
@@ -186,21 +198,25 @@
 <p>Under each figure we write three things: what we calculated, what it shows, and what it does not show.</p>
 <h2 id="b-1-the-number-of-the-bell-test">1. The number of the Bell test</h2>
 <figure class="sekil"><img src="/yan-yana/img/chsh.svg" alt="How the CHSH value changes with how much of the state is the Bell state: 2.83 at p=1, with the classical limit at 2" loading="lazy"><figcaption>Horizontal axis: how much of the state is the Bell state. Vertical axis: the CHSH value. The gold line is our calculation.</figcaption></figure>
+<div class="yy-hesap" data-hesap="chsh"></div>
 <p><strong>What did we calculate?</strong> We took the entangled &quot;Bell state&quot; of two qubits and calculated the CHSH number with four measurement directions [<a class="kaynak" href="https://doi.org/10.1103/PhysRevLett.23.880" target="_blank" rel="noopener">Clauser 1969</a>]. Then we gradually mixed the state with noise.</p>
 <p><strong>What does it show?</strong> In any model that works with local, predetermined values, this number can be at most 2. Quantum theory gives 2√2 ≈ 2.83 for the fully entangled state; our calculation came out at 2.828. When about 71% (1/√2) of the state is the Bell state, the number drops below 2 and the correlation becomes explainable in a &quot;classical&quot; way.</p>
 <p><strong>What does it not show?</strong> It does not show the result of an experiment; in experiments this number was measured and exceeded 2 [<a class="kaynak" href="https://doi.org/10.1038/nature15759" target="_blank" rel="noopener">Hensen 2015</a>; <a class="kaynak" href="https://doi.org/10.1103/PhysRevLett.115.250401" target="_blank" rel="noopener">Giustina 2015</a>]. Nor is it a basis for saying &quot;two distant things are a whole&quot; or &quot;everything is governed from a single consciousness&quot;: it only shows the exclusion of models with local hidden variables.</p>
 <h2 id="b-2-becoming-classical-through-contact-with-the-environment">2. Becoming classical through contact with the environment</h2>
 <figure class="sekil"><img src="/yan-yana/img/dekoherans.svg" alt="The interference visibility and purity of a qubit against the time of contact with the environment: visibility dies out quickly while purity falls to one half" loading="lazy"><figcaption>Gold line: the interference visibility of the two paths. Blue line: the purity of the state. Our calculation.</figcaption></figure>
+<div class="yy-hesap" data-hesap="dekoherans"></div>
 <p><strong>What did we calculate?</strong> We took a qubit in an equal mixture of two states (a superposition) and let it touch its environment weakly (pure dephasing, decay rate 1). We followed the interference visibility and the purity of the state over time.</p>
 <p><strong>What does it show?</strong> The term that carries the interference dies out exponentially: at time 1/γ the visibility is about 0.37 (our calculation: 0.368). Purity falls from 1 to 0.5; that is, the state approaches a classical mixture of the two options [<a class="kaynak" href="https://doi.org/10.1103/RevModPhys.75.715" target="_blank" rel="noopener">Zurek 2003</a>; <a class="kaynak" href="https://doi.org/10.1103/RevModPhys.76.1267" target="_blank" rel="noopener">Schlosshauer 2005</a>]. The &quot;classical-looking world&quot; comes partly from here.</p>
 <p><strong>What does it not show?</strong> It does not explain which outcome occurs; it only shows why the interference disappears. It is not claimed to solve the whole measurement problem; the debate continues [<a class="kaynak" href="https://doi.org/10.1103/RevModPhys.76.1267" target="_blank" rel="noopener">Schlosshauer 2005</a>].</p>
 <h2 id="b-3-the-whole-pure-the-part-mixed">3. The whole pure, the part mixed</h2>
 <figure class="sekil"><img src="/yan-yana/img/butun-parca.svg" alt="The entropy of a single part rises to 1 bit with entanglement while the entropy of the whole stays at zero" loading="lazy"><figcaption>Gold line: the uncertainty of a single part. Blue line: the uncertainty of the whole. Our calculation.</figcaption></figure>
+<div class="yy-hesap" data-hesap="butun-parca"></div>
 <p><strong>What did we calculate?</strong> We took an entangled two-qubit state whose degree can be adjusted. We calculated the uncertainty (entropy) of the whole and of just one part.</p>
 <p><strong>What does it show?</strong> The whole is always in a fully known &quot;pure&quot; state (entropy zero). But as entanglement grows, looking at just one of the parts the uncertainty grows, and at full entanglement it reaches 1 bit.</p>
 <p><strong>What does it not show?</strong> It does not say the part &quot;cannot be described apart from the whole&quot;: the reduced state is perfectly well defined, only mixed. So this figure is not evidence for the &quot;part–whole&quot; closeness we set up on the form pages; it is a reminder for us to say it more carefully.</p>
 <h2 id="b-4-visibility-and-path-information">4. Visibility and path information</h2>
 <figure class="sekil"><img src="/yan-yana/img/gorunurluk-yol.svg" alt="Interference visibility and which-path information, against the degree to which the environment can tell the paths apart; the sum of their squares is always 1" loading="lazy"><figcaption>Gold line: interference visibility. Blue line: path information. Our calculation.</figcaption></figure>
+<div class="yy-hesap" data-hesap="gorunurluk-yol"></div>
 <p><strong>What did we calculate?</strong> We calculated how much interference remains depending on how distinguishable the trace a particle passing through two paths leaves on its environment is. For pure states, the square of the visibility plus the square of the path information comes out as 1 (numerical deviation at the 10⁻¹⁶ level) [<a class="kaynak" href="https://doi.org/10.1103/PhysRevLett.77.2154" target="_blank" rel="noopener">Englert 1996</a>].</p>
 <p><strong>What does it show?</strong> There is a trade-off between knowing which path was taken and seeing interference: as one rises, the other falls.</p>
 <p><strong>What does it not show?</strong> It also shows that the information does not need to be &quot;known by an observer&quot;: the trace in the environment is enough. Reading it as &quot;consciousness determines the outcome&quot; would go beyond what this calculation can bear.</p>
