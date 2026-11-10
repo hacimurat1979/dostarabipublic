@@ -7,7 +7,7 @@ ve `scripts/sync-to-live.py` ile buraya kopyalanır.
 Burada yapılan bir değişiklik bir sonraki senkronda kaybolur.
 
 Kuralların tam ve güncel hâli özel repodaki `CLAUDE.md`'dedir.
-Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-05).
+Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-10).
 
 ## Geçerli temel kurallar
 
@@ -102,6 +102,12 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-05).
   parolası bir kez girilmeden açılmaz (`assets/sahip-kapisi.js`); açıkken sayfanın üstünde kırmızı kemer ve sahibe özel öğelerde kırmızı çerçeve çıkar.
   `@revise` her sayfada açık kalır, kapatınca gizli kip de kapanır. Gönül Defteri ve Yan Yana Keşfet'te "Yazılar ve denemeler" grubundadır.
   Kaynak özel repoda; burada elle değişiklik yapılmaz.
+
+- **Denetim turu (2026-11-09/10, kullanıcı onayı):** @revise uygulayıcısı çakışmayı yazmaz, yol güvenliği denetler ve atomik yazar;
+  @revise otomatik taslak tutar ve telefonda tek uzun basışla açılır; Gönder öncesi EN/PT eşliği uyarısı engellemeden çıkar.
+  @share kartının QR ve adresi kart diline göre `/en`, `/pt` yoluna gider, EN/PT sır kartları kurulabilir, kart bağlantısı
+  alıntı paragrafına kaydırıp yumuşak vurgu verir. "İçeriğe atla" bağlantısı alt sayfalarda sayfada kalır; detay panellerinde
+  klavye odağı takılmaz; @revise düğmesi sabit öğeleri örtmez. Kaynak özel repoda; burada elle değişiklik yapılmaz.
 
 ## Yayın akışı (2026-10-06)
 
