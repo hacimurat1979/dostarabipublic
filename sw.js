@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-50244203d62f";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-b74d5acd0079";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -270,6 +270,17 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // Analytics vb. üçüncü taraf -- karışma.
   if (req.headers.has(INDIR_BASLIGI)) return;      // "Bütün içeriği indir": doğrudan ağ.
+
+  if (url.pathname.includes("/data/gizli/")) {
+    // 2026-11-12 (sahip araçları incelemesi G4/GF11): parola/manifest değişince eski cihaz bayat manifesti ya da .enc'yi görmesin
+    // (yeni parola reddedilirdi): önce ağ, yalnız çevrimdışıyken (ya da ağ hatasında) önbellek.
+    event.respondWith(
+      fetch(new Request(req, { cache: "no-cache" }))
+        .then((resp) => { if (resp.ok) caches.open(CACHE_VERSION).then((c) => c.put(req, resp.clone())).catch(() => {}); return resp; })
+        .catch(() => caches.open(CACHE_VERSION).then((c) => c.match(req)).then((m) => m || cevrimdisiKaynak(req)))
+    );
+    return;
+  }
 
   if (isDataRequest(url)) {
     // stale-while-revalidate: cache varsa hemen onu ver, arka planda tazele.

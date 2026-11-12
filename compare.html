@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-RcKapkaMgabUfZG5f3Xwtf6RJSH0Prz+o5xpwr5RzAE=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg=' 'sha256-Xz+cPwKKUGJxPDjeK3rh6pfZ/JGV9r28BUvbF+552RQ='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-+R/35BFsOzf6TbqiqA91uozP/XZc2x9JGaAxiObswoA=' 'sha256-UzfqcMWSpODAoXRen+GJVI7rhlX6LgYVil3V+xd47bg='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex, nofollow">
@@ -13,53 +13,18 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 
 <script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
+  window.__dostUygulama = (function () {
+    var A = "dost-uygulama";
+    var isaret = false;
+    try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
+    try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
+    if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
+    try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
+    try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
+    return false;
   })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
+  window.__dostLoadAnalytics = function () {};
+  window.dostTrack = function () {};
 </script>
 
 <link rel="stylesheet" href="assets/style.css">
@@ -330,34 +295,6 @@
        data-pt="Fontes: thelivingfractal.com, Substack (thelivingfractal1); para os conceitos de Temas Comuns e do Mapa de Vínculos, obras de Ibn Arabi como Futuhat al-Makkiyya / Fusus al-Hikam.">Kaynaklar: thelivingfractal.com, Substack (thelivingfractal1); Ortak Temalar ve Bağlar Haritası'ndaki kavramlar için Fütûhât-ı Mekkiyye / Füsûsu'l-Hikem gibi İbn Arabî eserleri.</p>
   </footer>
 
-  <div class="consent-banner" id="consent-banner" role="region" aria-live="polite" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
-    <p data-tr="Bu site ziyaret verisini yalnız onayınla ölçer (Google Analytics, Microsoft Clarity). Reddedersen hiçbir ölçüm scripti yüklenmez."
-       data-en="This site measures visits only with your consent (Google Analytics, Microsoft Clarity). If you decline, no measurement script loads."
-       data-pt="Este site mede visitas apenas com seu consentimento (Google Analytics, Microsoft Clarity). Se recusar, nenhum script de medição é carregado.">Bu site ziyaret verisini yalnız onayınla ölçer (Google Analytics, Microsoft Clarity). Reddedersen hiçbir ölçüm scripti yüklenmez.</p>
-    <div class="consent-banner__actions">
-      <button type="button" class="btn-ghost" id="consent-decline" data-tr="Reddet" data-en="Decline" data-pt="Recusar">Reddet</button>
-      <button type="button" class="btn-ghost btn-ghost--filled" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
-    </div>
-  </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      if (!stored && !window.__dostUygulama) banner.hidden = false;
-      function decide(value) {
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-    })();
-  </script>
 
   <script src="assets/vendor/d3-custom.min.js" integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/theme.js" integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
@@ -375,7 +312,7 @@
   <script src="assets/ortak-temalar.js" integrity="sha384-F7LmSdKoFS029jsX36bQPbbK0r4wNNSTjBXU8Q1oEbkZXOCcuTkiDeSc5I8eS2FP"></script>
   <script src="assets/daphne-bag-haritasi.js" integrity="sha384-J7qAnaRSrniYE6zyMBytIImI+uNdePPBBxc5p3Hg+0WVe3/YEACiNYiJwz3CmRto"></script>
   <script src="assets/compare.js" integrity="sha384-835aYb6bdcw4Rt+/tVAEv7ek+1yLEhsW/Aj7Oi7OeItVKD5/kHeNphszdJlONRqk"></script>
-  <script src="assets/edit-mode.js" integrity="sha384-692jBpyZ5Q++yAog4BQbj7WbsACdydJJ8SSbixyitQSrzMlinox2eyqLCBPq0Ykj"></script>
+  <script src="assets/edit-mode.js" integrity="sha384-/eqYObJSi5+S9XPsZKJGj0dO5xtGS8J5SfdALf5JA4jVz+C30ugoyMUzZM4SMT4X"></script>
   
   <script src="assets/durus-kontrol.js" integrity="sha384-op/LqnnMAmHxPWYZvr8Gr4MZR8EyLlWMzPMNMRfAxR+1xSiv95JGxL2grdYhDOwK"></script>
   <script src="assets/tahkik-tarama.js" integrity="sha384-1HLj8CbOtFYlyjU7aeKPx2qVd6boCAdDnosxp0qNuYjnjE0ksSa/r71MBIOqmL5w"></script>
