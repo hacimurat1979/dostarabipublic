@@ -1,5 +1,6 @@
-(function(){"use strict";var e="bW9jLmxpYW1nQG5hbWFyYWsudGFydW1pY2Fo";function r(){try{return atob(e).split("").reverse().join("")}catch{return""}}function i(t){var n=/Android\s+([0-9.]+)/.exec(navigator.userAgent||"");return"dil: "+t+" \xB7 site"+(n?" \xB7 Android "+n[1]:"")}function a(t){var n=r();if(n){var o=t.getAttribute("data-dil")||"tr",d=t.getAttribute("data-konu")||"Dost Arab\xEE";location.href="mailto:"+n+"?subject="+encodeURIComponent(d)+"&body="+encodeURIComponent(`
+(function(){"use strict";var i="bW9jLmxpYW1nQG5hbWFyYWsudGFydW1pY2Fo";function o(){try{return atob(i).split("").reverse().join("")}catch{return""}}function c(t){var e=/Android\s+([0-9.]+)/.exec(navigator.userAgent||"");return"dil: "+t+" \xB7 site"+(e?" \xB7 Android "+e[1]:"")}function d(t){var e=o();if(e){var s=t.getAttribute("data-dil")||"tr",n=t.getAttribute("data-konu")||"Dost Arab\xEE",r="";if(/[?&]hata=1/.test(location.search)){n=t.getAttribute("data-konu-hata")||n;try{var a=new URL(document.referrer);a.origin===location.origin&&(r=`
+sayfa: `+a.pathname+a.hash)}catch{}}location.href="mailto:"+e+"?subject="+encodeURIComponent(n)+"&body="+encodeURIComponent(`
 
 
 --
-`+i(o))}}document.addEventListener("click",function(t){var n=t.target.closest&&t.target.closest("[data-iletisim]");n&&(t.preventDefault(),a(n))})})();
+`+c(s)+r)}}document.addEventListener("click",function(t){var e=t.target.closest&&t.target.closest("[data-iletisim]");e&&(t.preventDefault(),d(e))})})();
