@@ -2,63 +2,14 @@
 <html lang="en" data-dost-lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-lzN/JpihmOGarUo52gBnr5iRYKoeiEn68pH15B2oRXc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-lzN/JpihmOGarUo52gBnr5iRYKoeiEn68pH15B2oRXc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/en/futuhat/c12k145/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>The Return Is Willed by God: The Close of the Twenty-Third Sifr</h2><p>The Sifr&#x27;s closing three chapters move from a typology of veils (seventy thousand of them) through Abu Yazid al-Bistami&#x27;s astonishment — &quot;how is the one who sits with Him carried to Him?&quot; — to the theme of return: &quot;the whole matter returns to Him,&quot; &quot;the return is willed by God,&quot; and &quot;when we return, we change.&quot; It continues through the three talismans — thought, imagination, habit — and the Malamis&#x27; mastery over them; the Sifr closes in a single administrative sentence.</p><article aria-label="Text of this part" lang="en"><section><h3>The Seventy Thousand Kinds of Veil</h3><p>Chapter 350 builds a typology of veils from the hadith of the seventy thousand veils: veils of grace, veils of existence, and the divisions between material-spiritual and opaque-translucent. The chapter also takes up the debate (comparing Ash&#x27;ari and Mu&#x27;tazili positions) over whether acts belong to the Real or to the servant, and the difference between Moses and the Prophet fainting during revelation.</p><p>Chapter 350 explains the stage of &quot;obstructing and distancing means&quot; and reports the hadith of the seventy thousand veils: &quot;God has seventy thousand veils, or seventy veils. [...] They are veils of light or of darkness. Were He to lift them, the disclosures of His essence would destroy the creatures the eye beholds.&quot; (p. 132) Dost explains the eye mentioned here as &quot;the eye of the creatures once it has become the Real&#x27;s eye.&quot; He sorts the veils into kinds: veils of existence; those by which creatures are veiled from God (&quot;Our hearts are locked&quot;); those by which God is veiled from His creatures (the hadith that only &quot;the cloak of majesty upon His essence&quot; remains between Him and them); and the veil of the verse &quot;except by revelation or from behind a veil.&quot; God spoke to Moses from behind fire, a tree, the right side of the valley and a blessed place; He spoke to the polytheist neighbor of the verse from behind the veil of Muhammad; &quot;All the tongues of the world are the words of God.&quot; (pp. 132-133)</p></section><section><h3>Veils of Existence: Protection, Honor and Jealousy</h3><p>Dost sorts the veils of existence into kinds: &quot;veils of protection and caution,&quot; &quot;veils of honor and shelter&quot; (for example, the veiling of kings), and &quot;the veil of jealousy&quot; over what is guarded (the veil in the verse &quot;houris secluded in pavilions&quot;). Among protectors and shields he counts what guards animal bodies from heat and cold, and the warrior&#x27;s shield and armor. As an example of spiritual veils, he describes the person bothered by someone&#x27;s conduct who places his own self as a shield before the one being blamed, so that the arrows of blame do not reach him (p. 133).</p></section><section><h3>To Whom Acts Belong, and the &quot;Scent of Partnership&quot;</h3><p>Dost holds that attributing ugly conduct to the self, and good acts wholly to God without putting oneself in between, is &quot;a requirement of courtesy before God&quot;; for all acts belong to God, yet the divine reports still carry &quot;a scent of partnership&quot; (&quot;God created you and what you do&quot;; &quot;Whatever good befalls you is from God, and whatever evil from yourself&quot;; &quot;Hers is what she has earned&quot;; &quot;He inspired it with its wickedness and its God-fearing&quot;). The ruling: &quot;Thus in acts, the Real and creation must be together.&quot; (p. 134) He reports the positions: the Ash&#x27;aris, for whom the servant acquires the act; the Mu&#x27;tazila, for whom the act belongs to the servant while God creates the temporal power within him; those who say the chain of causes ends in the &quot;cause of causes&quot;; and the naturalists and dahris, who call God &quot;nature&quot; or &quot;time.&quot; &quot;So partnership continues in all schools and religions.&quot; Unveiling, the Law and reason have not assigned the act to one side alone, and &quot;We cannot say that all schools and religions are in error!&quot; (p. 135) The Real and the world meet in partnership on this question; Dost calls it &quot;real and manifest association&quot; and &quot;a place of astonishment.&quot; He divides the theologians in two: those who ascribe all acts to beings, and those who ascribe the good to God and the evil to beings (p. 136).</p></section><section><h3>Veils of Grace and the Veil of Claims</h3><p>Dost describes the veils of grace as &quot;veils of tenderness toward creatures, made out of fear that they would burn&quot;: they protect against the disclosures of the essence burning the creatures the eye perceives. God placed claims in creatures; they saw existence as their own, and these claims are &quot;the veils of grace between God and creatures.&quot; Were the veils lifted, the lights of the essence would burn every existent the eye perceives apart from the Real&#x27;s existence. &quot;But God leaves the veils of claims behind, so that the People of God may be set apart from others.&quot; (pp. 136-137) For the People of God, possible things remain described by non-existence in respect of their realities and by existence in respect of their rulings, and are the Real, as in the hadith &quot;I am his hearing and his sight.&quot; Dost relates that God occupies the claimants with the veils and says &quot;God is the companion of those who remember Him&quot; (p. 137).</p></section><section><h3>Astonishment: &quot;How Is the One Who Sits with Him Carried to Him?&quot;</h3><p>In Chapter 350, Dost recounts the astonishment Abu Yazid al-Bistami felt during a Friday sermon: when the reciter read the verse &quot;On that day We shall carry the God-fearing to the Merciful in a delegation,&quot; tears streamed from Bistami&#x27;s eyes and he said: &quot;How strange a thing this is! How is the one who sits with Him carried to Him?&quot; (p. 138). Dost attributes this to Bistami not knowing the full realities of the divine names, remaining limited to what his own witnessing gave him — his astonishment is treated as resembling denial without quite being denial.</p><p>Dost likens this saying of Bistami&#x27;s to Abraham&#x27;s asking how God revives the dead: &quot;Abraham asked this question because of the difference in the manner of reviving the dead, not because he denied the reviving of the dead.&quot; Had Bistami known that the God-fearing sit not with the Merciful but with the names the Compeller, the Proud and the Mighty, he would have understood that they can be carried to the Merciful; Dost adds: &quot;There is no fear of God before the Merciful. The Merciful is the name one hopes in, coquettes before, and feels intimacy with.&quot; (p. 138) Had it not been for the veils God has drawn between Himself and existents, &quot;ranks would not be distinguished and realities would be mixed together&quot;; this is why limits are preserved among things (p. 138).</p></section><section><h3>Joining Witnessing and Speech; Taste and the Divine Report</h3><p>The VASIL titled &quot;Being Able to Join Witnessing and Speech&quot; (p. 139) says that God has not joined, for anyone, His witnessing with speech within that witnessing, since this is not possible; yet if the divine disclosure takes the form of an image, witnessing and speech can be joined. Dost adds that Shihab al-Din al-Suhrawardi of Baghdad is reported to have upheld joining them, that he could not learn from the narrator what kind of disclosure was meant, and that it must have been a formal disclosure. He interprets the saying of al-Sayyari (from al-Qushayri&#x27;s Risala), &quot;The intelligent person takes no delight in witnessing the Real,&quot; as &quot;witnessing the Real is the state of annihilation, and there is no delight in it&quot;; address is not possible in annihilation: &quot;The human being does not leave the ruling of humanity.&quot; (p. 139) On taste: &quot;The words of the possessor of taste must agree with the divine reports.&quot; The people of the path who lack taste deny it, saying &quot;so-and-so speaks of knowledge in the divine reports, with no other source&quot;; among possessors of taste too there are those of greater insight, and each speaks of the knowledge his path or his own state gives (pp. 139-140).</p></section><section><h3>The Blindness of Hearts and the Locks</h3><p>Dost holds the blindness of hearts to be more severe than the blindness of eyes: &quot;The blindness of hearts is a veil between you and the Real, while the blindness of eyes, which its owner never sees, is only a veil between a person and colors in particular.&quot; Deafness, being locked, closed or veiled are lower than blindness in ruling (p. 140). When people told Muhammad, &quot;There is a veil between us and you,&quot; they meant locks; Dost reads &quot;You do your work, and we shall do ours&quot; as &quot;work to lift the locks,&quot; and says that those who confess their hearts are locked are &quot;in the station of hope.&quot; The locks differ in cause: &quot;For some the lock is envy, for some ignorance, for some it is being occupied at that moment with a matter more important to them.&quot; (p. 141)</p></section><section><h3>Fainting During Revelation; Opaque and Translucent Veils</h3><p>Dost relates that when God cast revelation, &quot;a sound arose like rain striking a rock, and the angels fainted&quot;; the Prophet too fainted in this kind of revelation: Gabriel sent it down into his heart, he passed through the world of the senses, foamed at the mouth, and covered himself with cloths until the revelation ended, with sweat pouring from his brow on a cold day. God spoke with Moses with the intermediaries removed; he did not faint, &quot;he himself spoke and was spoken to&quot;; Dost ranks this station above the revelation that comes through an angel, and it was the mountain that fainted (p. 141). All this is &quot;an effect of the veil&quot;; veils are of two kinds, spiritual and material, and the material ones are opaque or translucent: with the opaque the eye sees nothing but the veils, with the translucent it sees what lies behind the veil and confusion arises. Dost shows it with a verse: &quot;The cup grew thin, the wine grew thin / They came to resemble each other, the matter grew confused / As if there were wine and no cup / As if there were a cup and no wine.&quot; (pp. 141-142)</p><p>The greatest of the veils are two: the spiritual veil, which is ignorance, and the sensory veil, which is &quot;the state you are in&quot; (p. 142). As an example of ignorance, Dost relates that the Prophet was taken to a tree with birds&#x27; nests, with Gabriel sitting in one nest and he in another; when they reached the nearest heaven, something of pearl and ruby hung down, a kind of disclosure of the Real: &quot;Gabriel fainted because he knew the quiddity of what hung down.&quot; The Prophet, not knowing its quiddity, stayed sober, and said, &quot;I understood then that Gabriel was above me in knowledge.&quot; Dost: &quot;So knowledge made Gabriel faint, while the lack of knowledge left the Prophet sober in the state he was in.&quot; (p. 142) One&#x27;s being a veil to oneself is the most opaque of the material veils: &quot;God Most High created no veil for you other than yourself!&quot; (p. 143)</p></section><section><h3>Three States of Address: Moses, the Prophet and the Angels</h3><p>Dost describes Moses&#x27; case: he set out wanting fire for his family, and when he had met his need the Real called to him in a way fitting his need (&quot;I am your Lord, take off your sandals, you are in the sacred valley of Tuwa&quot;); God did not say &quot;I am God&quot; as He revealed, but confirmed his state with the first address. Moses was ready to listen to the call and did not faint: &quot;It is the heart that leaves a person in his sensing and keeps him in the state of seeing sensible things, that governs his body. This divine speech directed to Moses had no aspect directed to the heart.&quot; (pp. 143-144) In the Prophet, revelation came down upon the heart, and because his heart was occupied with receiving it, he withdrew from governing his body; this state is called &quot;fainting&quot; and &quot;being carried out of oneself&quot;; the angels are the same. Dost reports the angels&#x27; words on recovering, &quot;What did your Lord say? The Truth. He is exalted, great,&quot; according to two readings: in one the angels say &quot;What is it?&quot;, are told &quot;Your Lord,&quot; and say &quot;the Truth&quot;; in the other &quot;The Truth. He is exalted and great&quot; is God&#x27;s own speech, not the angels&#x27;. &quot;This is the difference between Moses&#x27; state and the state of the Prophet and the angels.&quot; (p. 144)</p></section><section><h3>Chapter 350: The Knowledges Learned from This Station</h3><p>Dost lists the knowledges in this station: God&#x27;s praising Himself through creatures and His praising Himself through being independent of creatures, and which is more complete; the difference among knowledge, wisdom and expertise; deputyship in answering on God&#x27;s behalf; where God places His knowledge of creatures in the world; the distinction between the two graspings in the world of witnessing and of the unseen. In this context he relates a man&#x27;s words to a disciple, &quot;Seeing Abu Yazid once is better than seeing God a thousand times,&quot; with the reason: &quot;The Real appears to His servants only to the measure of their knowledge of themselves.&quot; (p. 145) One whose knowledge has no effect on him is no scholar: whoever knows fire burns does not throw himself in, the exceptions being those who take fire as a means of nearness and those who know it will not burn them (p. 146). The list also includes the verses of blessing, conjecture following knowledge, the state of the people of doubt, the states of the Highest Assembly, God&#x27;s nearness closer than the jugular vein, &quot;committing all things, good and evil, to God,&quot; divine perception, and what prevents nocturnal emission in dreams and the obstacles (pp. 146-147).</p></section><section><h3>Chapter 351: The Station Learned from al-Wadud, and the Possible Thing&#x27;s Submission</h3><p>Chapter 351 presents &quot;the Station of the Common Attributes of Souls and Spirits&quot; as learned from the name al-Wadud, from the Muhammadan rank. Dost introduces the station as &quot;among the greatest stations&quot;: its names are al-Awwal, al-Akhir, al-Zahir and al-Batin; creation and command belong to it as well. &quot;The first thing it gives is divine and cosmic submission.&quot; (p. 148) After a poem listing pairs of submission (&quot;Withholding and giving,&quot; &quot;Nearness for nearness / Distance for distance&quot;), he says that God preferred the existence of possible things to their non-existence because they demanded preference in themselves, and that this is &quot;the Real&#x27;s submission to the demand of possible things&quot;: God described Himself as loving that possible things know Him, and the lover&#x27;s trait is to submit to the beloved (p. 149). The possible thing addresses its Lord: &quot;Your will is one, and the will attributed to me comes from You. So what my essence will accept of submission to You is that I be for You as You wish, not in the manner You command!&quot; (p. 149) Dost notes that this station requires secrets and courtesies: &quot;Thus wherever the Prophet walks, he walks, and wherever he stops, he stops there -without any addition-&quot;; &quot;Say &#x27;I do not know&#x27;!&quot; and &quot;Say: My Lord, increase me in knowledge&quot; (p. 151).</p></section><section><h3>The Governance of the Name al-Mu&#x27;min: Affirmation, al-Awwal and al-Akhir</h3><p>Dost presents the second station under the governance of the name al-Mu&#x27;min: if the name means &quot;the one who affirms,&quot; it concerns the created believer; if &quot;the one who grants security,&quot; it gives the assurance that He who brought the believer into existence from non-existence will not annihilate him again. The possible thing&#x27;s affirming its Lord concerns God&#x27;s granting it security from non-existence when He brought it into being. Here al-Awwal and al-Akhir come in: &quot;If God places Himself in the name al-Awwal and informs His servant, He places the servant in the name al-Akhir. Then the servant confirms the Real in the report he gives. So the truthful one is the First, and the one who confirms is the Last.&quot; (p. 152) He defines truthfulness as &quot;a light that appears in the servant&#x27;s heart&quot;; when the reporter turns away, the one who affirms by this light turns away from him too, whereas affirmation by proof has no such ruling (p. 153). He describes faith as &quot;a luminous unveiling&quot;: whoever proceeds from proof cannot keep himself safe from doubt that would damage his proof; the sun&#x27;s light rises and sets and doubt&#x27;s darkness follows, whereas faith is a divine light that admits no decline. &quot;The Real knew things not by proof but by His own self (by His knowledge of His self). And the perfect human is created in God&#x27;s form.&quot; (p. 154)</p></section><section><h3>The Servant Is Silent, the Real Speaks Continually</h3><p>The VASIL (p. 154) describes the servant as silent and the Real as continually speaking: &quot;So the servant must be one who is continually silent and listening.&quot; In the states and conditions created within him, the servant continually hears the Real&#x27;s command of creation; &quot;When you hear a servant speak, this is the Real&#x27;s creating in him.&quot; Dost presents this as the essence of the gnosis that can arise for the people of this path.</p></section><section><h3>Restriction Is an Attribute: Absoluteness Is Also Limitation</h3><p>VASIL (p. 155): &quot;Intellects ascribe absoluteness to the Real. They do not know that absoluteness is also a limitation.&quot; The ground of limitation is distinction, so that realities not be mixed; absoluteness is being distinguished from what is limited, that is, &quot;being limited by absoluteness.&quot; The Real named Himself &quot;the Forbearing&quot; and &quot;the Patient&quot; toward the servant who deserves punishment. Dost: &quot;There is no absoluteness without limitation and restriction.&quot; In that the Real discloses Himself in every form and accepts the rulings of possible things, &quot;the rulings of possible things have limited the Real.&quot;</p></section><section><h3>Severity Is an Attribute of the Real and of Beings</h3><p>VASIL (pp. 156-157): when the verse &quot;Your Lord&#x27;s seizing is severe&quot; was recited in Abu Yazid&#x27;s presence, he said, &quot;Mine is more severe.&quot; Dost explains this by the servant&#x27;s seizing lacking cosmic mercy, whereas divine mercy accompanies God&#x27;s seizing; Abu Yazid ascribed his Lord&#x27;s seizing to himself because &quot;my Lord&#x27;s seizing is in it, while in my Lord&#x27;s seizing there is none of the abasement of my seizing.&quot; The Real named Himself al-Shadid; God punishes by means of fire, and the one punished is in a state of veiling from God and sees only the causes: &quot;Seeing the causes of pain is heavier than finding pain in punishment without seeing its cause.&quot;</p></section><section><h3>Humility, the Lawful Balance and the Verses of &#x27;Abasa</h3><p>VASIL (pp. 157-159): &quot;Humility during the Real&#x27;s disclosure and intimate converse is a praised thing.&quot; In other cases it is blamed in whoever shows it. The seeing of those who see the Real in everything must take place with a true balance it does not exceed: &quot;He raised the heaven and set up the balance.&quot; The servant praises where praise is sought, and turns away where turning away is sought. Dost says this witnessing holds a hidden snare that nothing but knowing the divinely lawful balance can lift. He explains the verse &quot;He frowned and turned away because the blind man came&quot;: the Prophet saw in the tyrant the Real&#x27;s attribute, independence, and wanted to purify him, and was told, &quot;What is it to you if he does not purify himself?&quot; When the slaves about whom his Lord had rebuked him came to him, the Prophet used to say, &quot;Welcome to those on whose account my Lord rebuked me!&quot; and would not rise until they left (pp. 158-159).</p></section><section><h3>Rendering Due Rights; Compulsory and Voluntary Servanthood</h3><p>VASIL (pp. 159-161): &quot;God gave everything its creation.&quot; What is given to each thing is its essential right with God from the side of its essence; an accidental right is the one in the verse &quot;I shall fulfill the pledge I gave you.&quot; Some servants enter paradise by desert, others by God&#x27;s will; those who enter the Fire by desert are the criminals who have done no good at all, and they are told, &quot;Today, O criminals, stand apart&quot;; the rest come out through the intercession of intercessors or by God&#x27;s bounty. &quot;In the obligatory act the servant is compelled; in beautiful doing he is a willing servant.&quot; Some people prefer the station of voluntary servanthood to that of compulsory servanthood. On compulsion Dost cites &quot;while his heart is at rest in faith&quot; and notes that in unbelief the matter differs because the other party can be persuaded by the tongue. The chapter closes with a verse: &quot;Rendering rights is obligatory / Upon a witness and an absent one [...] Whoever does not render them / The Law calls him wicked.&quot; (p. 161)</p></section><section><h3>The Preservation of the Possible Thing: Need of a Preserver</h3><p>VASIL (pp. 161-162): once a possible thing exists it needs someone to preserve its existence. Dost: &quot;For God, preservation is creation, and so preservation is ascribed to Him.&quot; Possible things, which do not exist by themselves, have no existence other than the moment they exist; preservation concerns the second moment that follows the time of coming into existence. The Real is the one watched over by His servant, not the preserved one; God does not accept being preserved, for He is the Self-Sufficient. He adds that in some irregular readings the last word of &quot;Shall I take as ally other than God, who created the heavens and the earth, and who feeds&quot; is read &quot;is fed.&quot; He takes the guardians in &quot;Over you are guardians&quot; to be those who watch the servants&#x27; acts; the phrase &quot;guardians are sent to you,&quot; being indefinite, covers both those who preserve existence and those who preserve acts (p. 162).</p></section><section><h3>The Pen and the Tablet: First in the World of Writing</h3><p>VASIL (pp. 162-163): &quot;The first to exist in the world of writing and recording are the Pen and the Tablet.&quot; Their reality extends through all existents, high and low, intelligible and sensible; through them God preserves knowledge in the world. Dost lists the hadith &quot;Record knowledge in writing,&quot; God&#x27;s writing the Torah with His hand, and the verses &quot;We have counted everything in a clear register&quot; and &quot;We write down what they have done and their traces&quot;; kataba (to write) means to join, to pierce, and katiba (a battalion) was so named because its soldiers are joined together. The verse: &quot;Every existent comes to be through joining to its Tablet.&quot; (p. 163)</p></section><section><h3>God&#x27;s Sessions with His Servants: Obligatory, Permitted, Voluntary and Cosmic Sessions</h3><p>VASIL (pp. 163-166): &quot;The number of God&#x27;s sessions with His servants equals the number of the obligations He has laid on them.&quot; When God created them, He invited them to sit with Him in these sessions; whoever turns away from sitting with Him has gone against His invitation. Dost classifies the sessions: &quot;sessions of faith&quot; (as many as the permitted acts in which the Law allows action with neither reward nor sin), obligatory sessions (including vows and the commands of rulers), &quot;sessions of voluntary good&quot; (as many as voluntary acts; &quot;There can be no voluntary act without an equivalent among the obligatory&quot;: the obligatory counterpart of voluntary alms is zakat), and &quot;cosmic sessions&quot; (the hadith &quot;Whoever begins a good custom&quot;; as many as those who originate good customs). God reserved His highest love for those of the obligatory sessions and a lesser love for those who do voluntary good (pp. 163-165). &quot;Every session has a door [...] The doorkeeper is faith. Some have two doorkeepers: faith and intention.&quot; The doors are nothing but beginning the act. Dost explains &quot;those who are constant in their prayer&quot; as the servant&#x27;s being before God in all his states and dealings, and, citing &#x27;A&#x27;isha&#x27;s saying that the Prophet remembered God &quot;at all times,&quot; calls this &quot;the remembrance of the heart&quot; (pp. 165-166).</p></section><section><h3>The Will of Return: &quot;The Whole Matter Returns to Him&quot;</h3><p>Chapter 351 devotes a separate VASIL directly to the theme of return: &quot;The servant is praised for returning to God voluntarily; God Most High says: &#x27;The whole matter returns to Him.&#x27; Once you know this, you too should return to God by your own will! Do not return to Him under compulsion, for returning to Him is inevitable, and you will meet Him whether you will it or not.&quot; (pp. 166-167) Further on, a verse sums this up: &quot;The return is willed by God / In all beings, the return is with God.&quot; (p. 169).</p><p>In the same VASIL, Dost reports the hadith &quot;Whoever loves to meet God, God loves to meet him&quot;; he notes that what drives the servant to shame is his sin or his failure to use his power fully, and says the Real warms His servant with the words: &quot;My servant! What you do is My decree and My measure. You are a place through which My ruling runs.&quot; (p. 167) Were the servant to say the same to God, it would be discourtesy. Knowing that meeting God comes only through death, Dost says, &quot;we died in life to all dealing, movement and will&quot;; when what people mean by &quot;death&quot; comes and the veil of the body is lifted, there is no change of state in us. From &#x27;Ali: &quot;Were the veil lifted, my certainty would not increase.&quot; (pp. 167-168)</p></section><section><h3>Returning Through Change: The Previous Nuance Deepened</h3><p>Chapter 351 describes the return of body and soul this way: &quot;While the soul remains with the Real in the state it is in, the body returns to its origin — the earth from which it came... When we return, we change, and no state is added to the state we are already in.&quot; (pp. 168-169).</p><p>Dost says the last work of death as it is known is to come between the soul and the body it governs; the angel settles the body with God in &quot;a seat of truth&quot; until the day of resurrection. In the gardens a body and structure unlike this worldly one is seen: &quot;The human creation will be reversed in the hereafter: there, the inner of the human will stay fixed as his outer is here, while his outer there will pass from form to form as his inner does here.&quot; (p. 168) He notes that the return mentioned in this chapter is not &quot;the return of repentance&quot;: repentance means returning in regret and resolving on a matter; this return is the general return that takes place in all of a person&#x27;s states, known not by ordinary people but by the special (p. 168).</p></section><section><h3>Servanthood Is the Servant&#x27;s Essence: God&#x27;s Wide Earth</h3><p>VASIL (pp. 169-171): &quot;Servanthood is sheer abasement and is the servant&#x27;s essential trait. The servant is not charged with fulfilling it, for servanthood is his essence.&quot; Rendering the right of one&#x27;s essence is worship and servanthood; only one who settles in the wide divine earth can do it: &quot;O My servants who believe! My earth is wide, so worship Me alone.&quot; Dost: &quot;From the year five hundred and ninety [...] I worshipped God there. Today it is the year 635.&quot; This place does not admit change but has the trait of permanence; it is not a sensible earth but an intelligible and spiritual one. A human can see his pure servanthood only through divine disclosure; without disclosure he is, in the form he was created in, servant-lord, owner-owned. The verse: &quot;The Lord is Lord, the servant is servant / Do not confuse them and fall into error.&quot; (p. 170)</p></section><section><h3>Transition Between States; the People of Magnificence and the Barzakh World</h3><p>VASIL (pp. 171-172): &quot;The whole world was created according to the divine form, and the world is nothing but the shu&#x27;un through which the Real appears.&quot; Dost describes how some of God&#x27;s servants, passing from state to state, witness the Real in their shu&#x27;un in a way that creatures will not recognize them, and so remain forever unknown; when recognized, they change either place or state. He recalls the Prophet&#x27;s answer to &quot;Who are God&#x27;s friends?&quot;: &quot;When they are seen, God is remembered.&quot; His advice to one who would benefit from this class: &quot;He must not show that he recognizes him, must treat him with independence and dignity, and act like ordinary people.&quot; (p. 172) The next VASIL (pp. 173-174) treats &quot;the servants of magnificence&quot;; Dost mentions the jurist Najm al-Din Muhammad al-Mawsili, whom he met in Mosul, and says that rising in stations happens not by leaving one but by being carried with it to another. This possessor of the state looks at his self to see his Lord in it; if what he seeks does not appear, he turns his gaze to his Lord to see his self in Him; the name al-Ghayyur turns him back to his self and shows him his Lord in his self (p. 173).</p></section><section><h3>The Eternal Shadow and Ranks: &quot;Boasting Belongs to the Rank&quot;</h3><p>VASIL (pp. 174-175): &quot;The one who sees his self by true witnessing sees it as the eternal shadow of the one in whose form he was created.&quot; Shadows prostrate because of the prostration of the one they come from; they are passive and have no effect of their own. Things are seen by their ranks, not by their existence; &quot;as to humanity there is no difference between slave and master,&quot; and superiority belongs to rank. At this station the Prophet says, &quot;I am only a human like you,&quot; then mentions the rank (&quot;It is revealed to me&quot;); with &quot;I am the master of people on the Day of Resurrection, and there is no boasting&quot; he rejects boasting and mentions the rank of intercession and the praised station. Dost: &quot;So boasting belongs to the rank, not to us.&quot; Ranks are nonexistent relations; in its essence only God may boast (p. 175).</p></section><section><h3>The Divine Command Acts upon the One Commanded</h3><p>VASIL (pp. 175-177): &quot;The divine command acts upon the one commanded; the one commanded cannot stand before His command.&quot; When the divine command comes on the tongue of a creature, souls grow proud at being under the command of their like. When the receptacle is ready the Real brings Himself into existence; the tongue of state and unveiling says to the receptacle, &quot;You have no effect in this.&quot; Recalling Noah&#x27;s &quot;My call only increased their flight,&quot; Dost calls the common saying that a preacher&#x27;s words fail to affect because they do not come from the heart a matter &quot;resting on a corrupt basis&quot;: &quot;Look to whom you are being called! If you are called to the Real, accept that word even if it comes from Satan! For you are accepting only the truth, and it does not matter from whom it comes.&quot; (p. 176)</p></section><section><h3>The People of Witnessing and the Divine Essential Definitions</h3><p>VASIL (pp. 177-178): &quot;When one of the rulings of existence is ascribed to other than God, the people of witnessing reject it. Whatever they see and witness, they see God before it.&quot; Dost notes that Abu Bakr al-Siddiq said he was in this state; the scholars of this station do not recognize ignorance. When likenesses and equals come, unrecognizability arises: when one says &quot;A man came to me,&quot; who he is is not known until a description, substitute or explanatory apposition is given. He mentions the Malamis among the People of God: &quot;They are the masters of this path.&quot; The VASIL of pp. 179-180 says that only &quot;the people of vision&quot; know the essential divine definitions; this station belongs to whoever says &quot;I saw nothing but God.&quot; Asked &quot;Who is the seer?&quot; he says &quot;He&quot;; &quot;Who is the speaker?&quot; &quot;He&quot;; &quot;What is there?&quot; he says &quot;relations.&quot; Dost says this was the witnessing of Abu Yazid al-Bistami, and adds that the knower of the Real is one for whom the Real is hearing, sight and all faculties (p. 180).</p></section><section><h3>Turning Away from the Fallen, and Turning to Them</h3><p>VASIL (pp. 180-181): Dost says that at Konya, in a witnessing, he saw a divine man called &quot;Sakit al-Rafraf Ibn Sakit al-&#x27;Arsh,&quot; and that he kept company in Fas (Morocco) with a person dwelling in Aton. He notes that a group among the People of God turn away from the fallen (sakit), because they have not reached the degree of gnosis that sees the Real as the identity of all things; those who truly know God turn to every fallen one with mercy or with knowledge and gnosis: &quot;For they know what has occurred when they fall, or who the fallen one is.&quot; He cites &quot;No leaf falls&quot; and &quot;Everything falls from fear of God&quot;; he defines hubut as &quot;falling swiftly without will&quot;: &quot;The principle in existence is compulsion.&quot; (p. 181)</p></section><section><h3>Those Who Guard Against the Authority of Heedlessness: the Pole and &quot;Guardian over All Things&quot;</h3><p>VASIL (pp. 181-183): the men of God who free their souls from the sway of heedlessness are of two kinds: those protected absolutely, and those limited in protection outwardly and inwardly. Of those protected absolutely, some guard the heart, the place that holds the Real; some guard respect for the veil behind which they know the Real to be: &quot;This is the state of the Pole.&quot; What belongs to the Pole from God is not witnessing but the attribute of address; he is the master of the divine register. This station is that of all prophets who bring a Law, and they received the title &quot;guardian over all things (hafiz &#x27;ala kulli shay&#x27;).&quot; Dost relates that some people believe they possess certain true names and that the Real crowds them in these names (izdiham); God veils them from knowing that the names in truth belong to Him, and he adds: &quot;God informed me that the names are His names.&quot; (pp. 182-183)</p></section><section><h3>The Two Doors of Mercy and the Addresses &quot;Then It Was Said to Him&quot;</h3><p>The VASIL (pp. 184-190) proceeds through a series of addresses that God, having opened the two doors of mercy, makes to a servant He has stood before Him; most begin with &quot;Then it was said to him.&quot; The first: &quot;If you do not guard against God, you have not known Him. If you guard against Him, you have known Him even less. One of these two traits will inevitably be yours.&quot; This is why heedlessness and forgetting were created. Then: &quot;Can a veil and covering be drawn over what is nearer than the jugular vein? The Real is veiled from you by you. You are His covering over you.&quot; (p. 184) Next come: God is named al-Hakim and al-&#x27;Alim on your account; &quot;Follow the report and do not pursue theoretical inquiry devoid of report&quot; (al-Khabir); &quot;When you take Him as your agent rely on God, and beware of being His agent&quot;; &quot;You are the heart of the world, and He is your heart.&quot; (p. 185)</p><p>Further addresses: &quot;Do not feign ignorance of whom you belong to! Just as you are from Him, He is yours. Yet He is not from you!&quot;; one who errs in ijtihad is not held responsible, since God charges everyone only with what he can do; &quot;If you mention blessings, you belong to them and become the servant of the blessing. If you mention God, you belong to Him and become His servant.&quot;; God&#x27;s hidden compulsion (compelling people in their choices and free will) and His manifest compulsion; of six directions four belong to Satan, one to you, one to God, and in the particular face belonging to God the Law has no ruling, and from it sciences protected from doubt come to the heart (pp. 185-186). Then: &quot;Let no one station confine you, for you are Muhammadan&quot;; asking leave for a good act may point to damage in faith, and the balance of the Law must not be let go for an instant; not overdoing one&#x27;s provisions (&quot;The road makes one thirsty, the cities are far&quot;); the dislike of making vows, and unnecessary questions having destroyed earlier communities; envy consumes good deeds; &quot;Faith is an isthmus between islam and ihsan&quot;; &quot;If you are an heir, inherit the Real!&quot;: when the Real shows you that He is independent of the worlds, He has left them, and this is the Real&#x27;s &quot;estate&quot; (pp. 187-189).</p><p>In the next address Dost supports the counsel &quot;put everything you place into its own reality; even if it is so, do not say &#x27;only God exists&#x27;&quot; with an enumeration in which multiplicity cannot be denied: there is knower and ignorant, commander and commanded, judge and the judged, willer and willed, release and compulsion; a person is one as a whole, though his organs are separate and his faculties many, and if one place hurts, the pain spreads through his whole being. &quot;So for God, the outer and the inner are like spirit and body in the human being. As these two do not part, neither do they. The truth is the existence of the servant and the Lord. So you and He are!&quot; (p. 190) He shows that the difference rests on perceptions, not on things, by honey tasting bitter to some temperaments (p. 190). The last addresses: &quot;If God calls you with &#x27;O...&#x27;, you must know from where you are called and where you are. Why were you called? Who or what is the caller?&quot; and &quot;Happiness and felicity lie not in knowledge but, with faith, perfection lies in knowledge. If you join the two, you reach the degree beyond which there is no other goal.&quot; (p. 191)</p></section><section><h3>Chapter 351: The Knowledges Learned from This Station</h3><p>Dost lists the knowledges of the station: the source of command, prohibition and all rulings, of rational and divine laws; &quot;the creation of the inside of the human, not the outside&quot;; &quot;You learn that there are three humans in existence: the whole and first human, the world-human, and the human who is Adam&quot;; weighing; what the middle way brings about; ilham; the divine registers and the book; the reckoning of the register of deeds; absoluteness without limitation; neglect and respite; divine warfare and withholding (and whether this contradicts absolute generosity); the infallibility of prophets; the division of the world into kinds; the differences among prophets, friends and the intelligent; the angels&#x27; fear; a single spirit having many souls (pp. 191-192). Also the greatness of punishment given to a nearby one of high rank; the difference among punishment, torment and pain; the superiority of the two testimonies; the blamed and praised kinds of association; belonging to God and, as &quot;a strange knowledge,&quot; the Real&#x27;s descent to the world in His attributes or the world&#x27;s ascent to the Real in its attributes: Dost says most of the knowers of God say &quot;the Real descends to the servants&#x27; attributes,&quot; which the realities and unveiling do not accept (pp. 192-193); the names al-Sabur and al-Halim, and the superiority of what is other than humans over humans (p. 193).</p></section><section><h3>Three Talismans: Thought, Imagination, Habit</h3><p>Chapter 352 defines three &quot;talismans&quot; (dominating powers) that surround the human being: &quot;Its talisman is thought... The other talisman is imagination. God makes it dominate meanings... The third talisman is habits. God makes this talisman dominate rational souls.&quot; (pp. 200-201) Thought rules the intellect, imagination rules meanings, and habit rules the soul. Dost points to the Malamis as the group that best overcomes these three talismans: &quot;This station belongs to the Malamis; they are the foremost of all in this, for they overcome habit from within habit itself.&quot; (pp. 202-203)</p></section><section><h3>The First Talisman: Thought and the Light of Faith</h3><p>Chapter 352 ties the name given to the talisman to its &quot;having been turned around&quot;: &quot;a talisman rules and dominates whatever it is directed at.&quot; The talisman set over intellects is the strongest: such intellects accept from divine reports, prophetic hadiths and unveiled knowledge only what can fall under their interpretation and their balance. God set thought over the human so that he might understand that by &quot;reflecting&quot; he can learn anything only through Him; it is said to it: &quot;O Intellect! You can know Me only through Me.&quot; (p. 194) Dost says this talisman rules over one group among the People of God, who take more delight in knowledge with a scent of thought in it than in the knowledge given by the pure light of faith. He ties this to a person&#x27;s having some creativity in knowledge he gained by his own effort, and to his not knowing that he came from non-existence into existence by divine bounty; the light of faith, however, is a divine gift (pp. 194-195). Doubts enter knowledge obtained by thought; doubt takes it from his hands or leaves him bewildered (p. 195).</p></section><section><h3>Using Thought in Its Proper Place, and the Polytheists</h3><p>Dost says he has nothing to say to those who claim to take knowledge from the exalted spirits and to summon them (istinzal); &quot;for such people are servants not of God but of existents&quot;; their knowledge of God amounts to knowing that He is the principle (of existence) (p. 196). &quot;The human is a talisman over himself by the claim of &#x27;standing&#x27; that he carries within.&quot; The human knows that the most valuable thing he can obtain with his faculties is knowing God&#x27;s essence, and leaves using his faculties where attainment is possible to use them where it is not; &quot;God warns you of Himself&quot; and the hadith &quot;Do not think about God&#x27;s essence&quot; concern this (pp. 196-197). When the talisman lifts, God removes the servant&#x27;s standing: &quot;He uses you in poverty, which means your witnessing your origin.&quot; (p. 197) Concerning rationalists who by thought see truth as falsehood, Dost relates that the polytheists said &quot;We call upon idols only that they may bring us nearer to God,&quot; that association already presupposes the Real, and that the deists say &quot;God is too exalted to know particulars&quot;: &quot;From this it is understood that one who associates partners with God is happier than the deists.&quot; (p. 198) He reports that these thinkers consider the prophets people who laid down spiritual laws and the promise and threat of the hereafter a tool of statecraft, and says, &quot;We seek refuge in God from such a thought and such knowledge&quot; (pp. 198-199).</p></section><section><h3>The Second Talisman: Imagination and the Accompaniment of Disclosure</h3><p>The second talisman is imagination: &quot;Imagination embodies meanings and puts them into the molds of sensible forms.&quot; A person ruled by the talisman of imagination is deprived of perceiving affairs as they are; he imagines meanings embodied and so joins two opposites. Because this talisman was set by the Real, it will never be lifted from human creation (p. 199). Its ruling lifts when its owner sees that thought has entered the treasury of imagination and left it: imagination accompanies thought until it reaches the intellect; the servant witnesses meanings in the abstract, and on rising to the Real the first thing he witnesses is his own possibility, and is bewildered; the Real takes him by the hand by telling him it is &quot;possibility itself&quot; (p. 200). When the servant descends to the world of matter, the Real&#x27;s disclosure accompanies him; &quot;Seeing the Real as His very identity, he at the same time sees that He is not his own or the world&#x27;s identity.&quot; (p. 201) Dost relates that this witnessing is rare, that he had not seen a single person with this station by taste, and that his wife Maryam bint Muhammad ibn &#x27;Abdun told him of one (p. 201).</p></section><section><h3>The Third Talisman: Habit and the Door of the Particular Face</h3><p>The third talisman is the talisman of habit, which rules over rational souls: souls grow familiar with habits, and benefits and advantages are tied to them. One who learns that the talisman will not lift seeks his own &quot;particular face&quot; (wajh khass), where the effect of cause is absent; he turns to its door and waits there. He sees that the causes want to draw him and have him take the trusts in them, but the thought that says &quot;This conduct is discourtesy before God&quot; comes from the self; the servant keeps waiting at his particular face and says: &quot;God forbade entering houses from their backs. Had you come from God, you would enter houses by their doors. I am a house.&quot; (p. 202) If the Real wills his entering this station, the cause comes with its trust through the door of the particular face. Dost notes that those who visibly transcend habits do not hold this station: a person who closes his hand in the air and opens it to find gold and silver has not left cause either, since closing and opening the hand is a cause; only obtaining it this way is not customary, which is why it is said &quot;he has transcended habit&quot; (p. 203).</p></section><section><h3>Chapter 352: The Knowledges Learned from This Station</h3><p>Dost lists the knowledges of this station: the knowledge of allusion and address; the doubts that come to the people of proof; the name that turns to creation and decree; the interval between bringing into existence and decreeing; over whom time has passed, and whether being limited by it is chosen or necessary; what the power of thought relies on and whether a divine source supports it (p. 203). Then the connection of cause with what is caused (&quot;Does God do by means of a cause something He does without that particular cause?&quot;); the connection of mercy and honor and their pushing against each other; what is most beautiful in the world of command and creation (&quot;There is no ugliness, and no comparison can be made in beauty&quot;); the superiority of human creation and its being created for both wretchedness and felicity; the servant&#x27;s reaching the Real only through death, and whether that is a special meeting (p. 204). The human&#x27;s natural love of standing, and standing as servant or as master; divine judgment at the resurrection; insight; divine opening (pp. 204-205).</p></section><section><h3>The Close of the Twenty-Third Sifr</h3><p>Chapter 352 continues with the customary list of &quot;this is known from this station&quot; and closes with the usual formula: &quot;Divine opening is known from this station. God Most High speaks the truth and guides to the right path.&quot; (p. 204). Then comes a single sentence: &quot;The twenty-third Sifr has ended.&quot; (p. 205).</p></section></article><nav aria-label="Navigation"><p><a href="en/">Dost Arabî</a> › <a href="en/futuhat/">al-Futuhat al-Makkiyya</a> › <a href="dizin/futuhat/#cilt-12">Volume XII</a></p><p><a rel="prev" href="en/futuhat/c12k144/">← The River&#x27;s Return, the Soul&#x27;s Non-Return</a> · <a href="dizin/futuhat/">Index</a> · <a rel="next" href="en/futuhat/c12k146/">The First and the Last: Two Names United in the Perfect Human →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

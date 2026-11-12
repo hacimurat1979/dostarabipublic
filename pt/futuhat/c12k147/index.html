@@ -2,63 +2,14 @@
 <html lang="pt-BR" data-dost-lang="pt">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-iIxXR553Lajqb67j98LWmR2WmANpJiCmHSBrgnTJe7k='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-iIxXR553Lajqb67j98LWmR2WmANpJiCmHSBrgnTJe7k='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/pt/futuhat/c12k147/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>O Ponto e o Círculo: O Próprio Diagrama Desenhado por Dost</h2><p>Quatro capítulos avançam da glorificação oculta de animais e seres inanimados, pela visão das &quot;três escuridões&quot; de Dost em seus primeiros dias no sufismo, e a reunião pelo ser humano perfeito da tríade semelhança-oposição-contrariedade, até um diagrama de ponto e circunferência que o próprio Dost desenha, afirmando que &quot;o ponto é o Real... as linhas e possíveis que emergem começam de Deus e a Ele retornam.&quot;</p><article aria-label="Texto desta parte" lang="pt-BR"><section><h3>A Glorificação Oculta de Animais e Seres Inanimados</h3><p>O Capítulo 357 argumenta que animais, plantas e seres inanimados são, na realidade, &quot;racionais&quot; (que percebem, que falam), algo que só o povo do desvelamento e da fé pode testemunhar. Dost sustenta isto com uma série de exemplos do Alcorão e do hadith: o versículo &quot;tudo O glorifica com louvor,&quot; as formigas falando com Salomão, a poupa dizendo &quot;sei o que não sabes,&quot; e o relato autêntico de que o tronco de tamareira em que o Profeta se apoiava chorou depois (pp. 264-266). O título do capítulo menciona &quot;dois segredos mosaicos&quot; (p. 265).</p><p>O capítulo abre com o caminho pelo qual os possíveis são conhecidos como são em si mesmos. Dost diz que este conhecimento só pode ser obtido se Deus o mostra a partir de Sua própria essência, por desvelamento: &quot;O único caminho para a realização deste conhecimento é a solicitude eterna. Esta solicitude te concede uma disposição completa que te permite recebê-lo.&quot; Ele enumera os meios de obter essa disposição: disciplinas da alma, esforço corporal, assumir o caráter dos nomes divinos, realizar-se com espíritos angélicos puros, purificar-se por um caminho legítimo (não racional), afastar-se do apego aos existentes e esvaziar o coração de tudo o que não seja o Real (p. 264).</p><p>Ele explica que os possíveis conhecem e falam mesmo em seus estados de não existência: são ouvidos e vistos por meio de um ouvir e ver de estatuto fixo (thubuti), sem existência exterior, e quando o comando de Deus &quot;Sê&quot; lhes é feito ouvir, eles correm ao comando. &quot;Em sua própria não existência eterna, os possíveis conhecem por sua própria natureza o Ser Necessário e O glorificam. Esta é uma glorificação eterna e um louvor essencial e imemorial.&quot; (p. 265) Todo existente louva a Deus em sua própria língua; essa língua não é compreendida, o povo do desvelamento a ouve testemunhando e o crente a aceita pela fé. Dost liga a menção dos nomes al-Halim e al-Ghafur no versículo ao fato de que alguns servos estão privados de desvelamento e fé: os racionalistas escravos de seu próprio pensamento e os que se contentam com a consideração analógica. Já os crentes de fala sincera entre os amigos de Deus &quot;passam ao interior junto com o exterior, e ao sentido junto com a letra; não se afastam da letra.&quot; (p. 265)</p><p>Dost diz que Deus velou os olhos de alguns servos da vida, da fala e da percepção que se espalham pelos possíveis e por todos os existentes. O que mostra sua vida é chamado &quot;vivo&quot;; o que mantém sua vida oculta é chamado &quot;planta&quot; ou &quot;inerte&quot;: &quot;Assim os seres são divididos segundo os velados, ao passo que segundo o povo do desvelamento e da fé não são divididos.&quot; O povo da testemunha diz &quot;ouvimos e vimos&quot;, os velados dizem &quot;nem vimos nem ouvimos&quot;, e o povo da fé diz &quot;cremos e confirmamos&quot; (p. 266). Ele enumera os versículos sobre o assunto: a prostração de tudo nos céus e na terra, do sol, da lua, das estrelas, das montanhas e dos seres vivos; a glorificação do trovão; a prostração das sombras; a formiga que diz &quot;entrai em vossas moradas&quot;; o ensino da fala das aves. Do hadith cita o testemunho de tudo, seco e úmido, em favor do almuadem até onde chega sua voz, o Uhud como &quot;uma montanha que nos ama e que amamos&quot;, a pedra de Meca que saudava o Profeta, a glorificação das pedras na palma de sua mão e a pata de cordeiro envenenada que falou com ele (pp. 266-267).</p><p>Ele relata o hadith sobre a morte dos judeus no fim dos tempos: quando um judeu se esconde atrás de uma árvore, a árvore dirá &quot;ó muçulmano, há um judeu atrás de mim, mata-o&quot;, ao passo que a árvore Gharqad não o dirá. Dost diz que há aqui um &quot;estranho segredo divino&quot;: entre as árvores também há as que esperam a misericórdia de Deus e guardam o direito do vizinho; o direito do vizinho é uma qualidade louvada em todas as sociedades e religiões, e o Profeta disse à sua prima Umm Hani&#x27;: &quot;Quem tomaste por vizinho, nós também tomamos por vizinho.&quot; (p. 267) Ele diz que a partícula &quot;man&quot; (&quot;quem&quot;) no versículo &quot;Deus reserva Sua misericórdia a quem Ele quer&quot; é indefinida e abrange tudo, porque tudo é vivo e falante; cada coisa aprende de Deus com que louvar-se (p. 267). A marca inseparável de quem sabe que tudo fala, ele a dá como vergonha diante de tudo, mesmo diante de si e de seus vizinhos (p. 268).</p></section><section><h3>O Nome dos Animais e os Atos que Deles Procedem</h3><p>Dost diz que os animais foram chamados &quot;bahima&quot; de &quot;ibham&quot; (vaguidade) porque Deus tornou vaga para nós a sua condição; essa vaguidade vem de não conhecermos a verdade a seu respeito ou de nossa perplexidade diante deles (p. 269). Ele dá exemplos de atos que procedem dos animais por sua natureza inata, sem pensamento nem premeditação: aranhas tecendo teias para pegar moscas, alguns animais armazenando alimento com medida, formigas comendo apenas metade do que guardaram por medo de passar fome. &quot;Onde está, então, a insensatez que lhes é atribuída, e onde está esta conduta?&quot; (p. 269) Ele observa que Deus tornou vaga a condição dos animais para alguns, e que isso os leva a interpretar de outro modo a fala dos animais no Livro e na Suna (p. 269).</p><p>Dost diz que um ser racional que deseja transmitir o pensamento que traz dentro não se contenta em ordenar letras: ora usa uma expressão falada, ora um gesto de mão ou de cabeça, ora a escrita e os numerais, ora qualquer meio que torne possível a compreensão; a tudo isso se chama &quot;fala&quot; (p. 270). Ele descreve a criatura do versículo &quot;Faremos sair para eles da terra uma criatura que lhes fala&quot;: sai de Ajyad, sua frente não se distingue de suas costas, e chama-se &quot;jassasa&quot;. Ela sopra uma vez, e por esse sopro os rostos das pessoas se tornam distintos; na testa de cada um é traçado o estado que tem no conhecimento de Deus, fé ou descrença. A fala atribuída ao animal é o movimento que torna esse traço distinto; se for falar, fala em sua própria língua e o interpelado entende. Ele liga isso ao relato autêntico do hadith do Anticristo em Muslim, no qual Tamim al-Dari encontra o Anticristo (p. 270).</p></section><section><h3>Formas Superiores e Inferiores, a Tábua Preservada e o Ensino</h3><p>Dost diz que toda forma do mundo inferior tem uma correspondente no mundo superior: &quot;As formas do mundo superior preservam a existência das formas do mundo inferior.&quot; Entre os dois mundos correm laços ininterruptos de cada forma à sua correspondente no outro; a ascensão e a descida se dão ao longo desses laços, de modo que podem ser contados como &quot;escadas e degraus&quot; e às vezes são chamados &quot;afinidade&quot; (pp. 270-271). Há também laços entre as formas celestes e o que o Profeta, transmitindo de Deus, chamou de &quot;Tábua Preservada&quot;. A Tábua tem esse nome porque Deus preserva nela o que escreveu; como tudo está nela, o Alcorão a chama &quot;tudo&quot;: &quot;Deus escreveu nela Seus livros, e dela fez descer as páginas que revelou a Seus profetas e mensageiros.&quot; Os livros detalham o que nela está resumido (p. 271).</p><p>Ele define o ensino: &quot;Ensinar é remover os véus que impedem as disposições das formas inferiores de receber a efusão (dirigida a elas pelas formas superiores).&quot; Dá o exemplo de um obstáculo que bloqueia o fluxo da água: removido, a água flui de onde fora retida; na verdade, quem remove o obstáculo não é quem faz a água fluir. Quem ensina outro entre as formas inferiores apenas removeu o véu da ignorância e da dúvida, embora as pessoas suponham que quem lhes ensina o conhecimento é quem remove o véu da ignorância (p. 272). Ele observa que cada possível tem sua face particular, que ninguém além do que foi trazido à existência conhece, e que por essa face tudo necessita de Deus, não de sua causa cósmica. Os conhecimentos particulares que Deus dá a cada forma são conhecimentos de gosto, que não se transmitem e só são conhecidos por quem os saboreia; dessa particularização vieram a existir os &quot;jardins do favor particular&quot; (p. 272).</p><p>Ele diz que esta estação é a única que abrange o mundo inteiro e o ser humano, e que detém a misericórdia geral no mundo. Por sua natureza o mundo repousa sobre quatro elementos; por seu espírito provém de pai, mãe, do sopro e da volta divina, de modo que a misericórdia lhe chega de quatro lados. A misericórdia que conserva a umidade e a salva do efeito da secura difere da misericórdia que conserva a secura e impede que a umidade a destrua, e a que mantém uma coisa fria difere da que a mantém quente: &quot;Esses elementos se detêm uns aos outros, e enquanto esse deter e equilibrar continua, a forma do corpo é preservada.&quot; Quem aprende essas quatro misericórdias em si mesmo saberá aonde vai; quem não as conhece em si é ignorante de seu próprio estado (pp. 272-273).</p><p>Ele explica que Deus vela algumas pessoas de testemunhar essas misericórdias para impedir que sejam postas em palavras, como ocorre nas conversas de Omar e Mu&#x27;adh. O conhecimento chega a seus destinatários de duas maneiras: entregue a eles diretamente por Deus, ou ensinado por dignos de confiança que conhecem o depósito de outro (p. 273). Diz que o anjo que traz o conhecimento é um dos anjos alados, e o mais elevado deles é o que tem menos asas, isto é, duas (p. 273). Relata também que numa das cidades do Magrebe viu uma criatura semelhante a um papagaio, que saía do peito de um homem e corria muito veloz enquanto o homem a movia como se movem asas (pp. 273-274). Entre os anjos há os que têm de duas a seiscentas asas e mais: &quot;As asas dos anjos são para descer, não para subir. As asas dos corpos elementais não são para descer, mas para subir.&quot; (p. 274)</p><p>Ele dá uma história como exemplo de animais que sabem o que algumas pessoas não sabem: um homem batia na cabeça do burro que montava com um pau, e quando outro homem tentou impedi-lo, o burro disse &quot;deixa-o, ele está batendo na própria cabeça.&quot; Dost explica a fala por leituras como a de que o burro conta quem o golpeia como um burro, sabe o bem que ganha junto a Deus pela pancada, ou considera que cumpre o direito de serviço para o qual foi criado (p. 274). Quando o Profeta emigrou para Medina e soltou sua camela, os Companheiros quiseram detê-la, e ele disse: &quot;Deixai-a, pois ela se move por comando.&quot; Outro hadith diz &quot;O elefante a deteve&quot;, o que se refere a Meca, e o episódio do elefante é bem conhecido. Os seres que não são humanos nem jinn, seja animal, planta, inerte, anjo ou espírito, todos têm uma prova clara de seu Senhor sobre os próprios estados (pp. 274-275).</p><p>Dizendo &quot;esta estação contém conhecimentos variados&quot;, Dost enumera o que dela se aprende: o conhecimento dos números e das letras (o conhecimento dos amigos de Deus, como disse Muhammad b. Ali al-Hakim al-Tirmidhi), as misericórdias sumárias e as particulares ao homem, o conhecimento da exposição, o conhecimento das boas-novas, os graus da fé, a mudança dos estados e a mudança dos corações ao receberem os dons divinos. Entre as perguntas levantadas: o que os sinais e as provas indicam, por que diferem sendo um só aquilo para que apontam, por que o coração é velado de conhecer uma coisa; se o homem se junta aos animais ou é uma espécie especial, e por que traço se distingue do animal quando todos os seres vivos são falantes. Ele acrescenta que escreveu um livro chamado al-Tadbirat al-ilahiyya sobre os modos dos reis (p. 275). As linhas seguintes enumeram a unicidade própria dos animais, a tomada de espiões pelo rei, a consulta, o dito &quot;Dai presentes uns aos outros e vos amareis&quot;, o efeito da beneficência sobre as almas, a resposta à súplica do descrente e do politeísta, a reunião e o naqur (formas) (pp. 275-277).</p></section><section><h3>A Alma Falante e a Alma Animal: Cavaleiro e Montaria</h3><p>O Capítulo 358 abre sob o título &quot;Conhecimento de Três Segredos Diferentes em suas Luzes, Moradas e Luas Cheias&quot; (p. 277). Dost diz primeiro que a alma falante é feliz neste mundo e no outro e não tem parte na desgraça, e separa as duas almas como cavaleiro e montaria: &quot;A alma falante é um cavaleiro sobre uma montaria, e usa a montaria para andar no caminho reto que o Real estabeleceu para ela.&quot; Se a alma animal atende a essa vontade, torna-se montaria submissa, e se resiste, torna-se montaria rebelde; mas seu intuito não é opor-se, ela se move por sua natureza, pois não conhece a Lei (p. 278). Ele explica que a sede das penas para o roubo, o adultério, a luta e a calúnia é a alma animal, que sente a dor, de modo que não há diferença entre a sede do tormento no ser humano e a de todos os animais. Relata que o Profeta se levantou para o funeral de um judeu e, quando lhe disseram que era judeu, disse: &quot;Não era uma alma?&quot; (p. 278).</p><p>Dost diz que, nos estados de não existência, Deus olha continuamente para as realidades das coisas possíveis, e que a generosidade divina prossegue em sua dádiva a elas. Ele observa que Deus se dirige à realidade fixa (a entidade fixa) no estado de não existência e que ela corre ao comando quando a interpelação se volta para ela; a indefinição de &quot;cada coisa&quot; serve para não separar o fixo do existente. &quot;Deus, o Altíssimo, é o Veraz que dá a conhecer as realidades das coisas tal como são em si mesmas.&quot; (p. 279) Explica que os estados dos possíveis na não existência procedem deles mesmos, que na não existência não há alteração e que a alteração pertence à existência: &quot;Assim, nas entidades fixas a questão está, em estados particulares, entre a não existência e a existência.&quot; Quem compreende isso, acrescenta, aprendeu a criação e os atributos com que o Criador deve ser descrito, pois valem &quot;Nada é semelhante a Ele&quot; e &quot;A cada dia Ele está em algum assunto&quot; (p. 280).</p><p>Ele trata da renúncia: &quot;A renúncia às coisas pode provir da ignorância de quem a possui [...] e do véu que cobre seu olho.&quot; Pergunta como quem testemunha que o mundo inteiro louva e conhece seu Criador pode comportar-se como renunciante em relação a ele, já que o próprio renunciante é parte do mundo. Chama a pretensão do renunciante de sair de tudo o que não é Deus de &quot;mera ignorância&quot; e diz que sua renúncia é apenas uma mudança de lugar entre estados (p. 280). Observa que o versículo &quot;Fugi para Deus&quot; é seguido logo por &quot;Não ponhais outro deus ao lado de Deus&quot;, de modo que a fuga é uma fuga da ignorância ao conhecimento (p. 281). Relata Moisés matando o egípcio e fugindo com medo, a vinda de Shu&#x27;ayb ao seu encontro, a concessão da profecia e o envio ao Faraó, e enuncia o proveito do conhecimento: &quot;Pois se o conhecimento não dá a seu possuidor o resultado que sua realidade requer, não há conhecimento nem conhecedor.&quot; (pp. 281-283)</p><p>Ele diz que Deus não criou o homem onisciente, e que ordenou até a Seu Profeta dizer &quot;Meu Senhor, aumenta o meu conhecimento&quot;; o conhecimento na natureza inata do mundo e do homem é apenas o conhecimento da existência de Deus e da necessidade do criado. Ser independente por meio de Deus é impossível, pois ser independente de Deus é impossível (p. 283). Liga a isso o retiro do Profeta na caverna de Hira: &quot;Quem busca seu Senhor deve estar a sós com seu Senhor em seu íntimo.&quot; Deus criou para o homem um exterior e um interior para que ele ficasse a sós com Deus em seu interior; se o homem toma seu conhecimento de Deus, seu interior é um lugar de retiro (p. 284).</p></section><section><h3>Três Escuridões: A Própria Visão de Dost</h3><p>O Capítulo 358 relata uma visão pessoal dos primeiros dias de Dost no sufismo: ele viu seu próprio corpo como um &quot;tapete negro,&quot; depois encontrou três escuridões empilhadas umas sobre as outras. &quot;a primeira escuridão é a escuridão da natureza visível a ti... acima desta escuridão... está a alma... acima desta segunda escuridão há ainda uma terceira escuridão. É o primeiro intelecto, a causa da qual a própria alma existe.&quot; (pp. 284-285) Dost compara isto às três escuridões do útero (estimativa, útero, ventre): &quot;ao nascer, permanece-se dentro de sua escuridão, de modo que, sendo exteriormente luz, é-se interiormente escuro. Dentro desta escuridão interior, uma pessoa pode sempre caminhar pela lâmpada do conhecimento.&quot; (p. 285)</p><p>Na continuação da visão, Dost relata que ao ver seu corpo e sua escuridão compreendeu que não poderia olhar para si se não tivesse certa luz, e que ao perguntar de onde vinha a luz lhe disseram: &quot;É a luz da existência, e por ela te vês.&quot; Quando viu sua sombra espalhar-se sobre ele e se espantou, foi-lhe dito: &quot;As escuridões da possibilidade estão sempre em ti, pois essa escuridão é um atributo essencial teu.&quot; À pergunta &quot;Como posso obter uma luz em que não haja escuridão?&quot; a resposta foi &quot;Nunca a encontrarás&quot; (pp. 285-286). Diz que Deus só é conhecido por este caminho pelo desvelamento e pela testemunha: &quot;Pelas provas especulativas pode-se conhecer o Seu juízo, não Ele mesmo.&quot; O intelecto só pode conhecer o atributo do Ser Necessário, como a necessidade que o possível tem d&#x27;Ele (p. 286).</p><p>Ele relata que depois que Deus lhe mostrou sua essência e seu corpo, mostrou-lhe a relação do mundo com ele, e que ao perceber que viera à existência a partir do mundo sentiu uma pontada interior; a criação dos céus e da terra, isto é, as causas superiores e inferiores de sua existência, estavam acima dele como agentes. Foi-lhe dito: &quot;Ainda que essas causas estejam acima de ti quanto ao grau em que aparecem, o propósito é a existência, e esse és tu; essas causas existem por tua causa e para que tu apareças.&quot; Como Deus quis ser conhecido, só pode conhecê-Lo quem está em Sua forma, e Deus criou o ser humano perfeito, não o humano animal, em Sua forma (pp. 286-287). Dost diz que esse anúncio compensou seu abatimento, que compreendeu estar entre os perfeitos e não ser um animal, e agradeceu (p. 287).</p></section><section><h3>O Ser Humano Perfeito, o Mundo e os Nomes Divinos</h3><p>Ele diz que quando Deus lhe mostrou a relação do mundo com ele e a dele com o mundo, distinguiu dois graus e concluiu que &quot;se eu não existisse, o mundo inteiro não existiria.&quot; O conhecimento originado sobre Deus, diz, está na forma do conhecimento eterno, e isso não é outro senão o ser humano perfeito: &quot;Pois ele é o espírito do mundo, e o mundo, em suas partes superiores e inferiores, está preparado para ele.&quot; Compara a semelhança entre o humano animal e o ser humano perfeito à do macaco com o homem nos membros exteriores (p. 287). Observa que todos os nomes divinos dados a Deus também lhe são dados, e nenhum fica de fora. Uma coisa só pode ser conhecida por si mesma ou por seu semelhante, diz, de modo que o ser originado deve estar na forma de Quem o fez existir (pp. 287-288).</p><p>Dost diz que o ser humano perfeito, ainda que muitos como indivíduos, é uma só realidade: Deus diz dele &quot;Nada é semelhante ao semelhante a Ele&quot;, assim o fez uma semelhança e lhe negou a semelhança. A distinção entre os nomes é esta: o nome que pertence ao Real e não ao homem é &quot;Allah&quot;; o nome que pertence ao homem e não ao Real é &quot;vice-regente&quot;, isto é, o ser humano perfeito. Observa que os outros nomes são compostos de espírito e forma, e por sua forma apontam para o homem, por seu sentido para Deus (p. 288). Cita o hadith &quot;Eu era um tesouro e não era conhecido; quis ser conhecido, então criei a criação, dei-Me a conhecer a ela, e ela Me conheceu&quot;, e diz: &quot;O Real se oculta na forma do ser humano perfeito, isto é, em sua coisidade de fixidez (a entidade fixa).&quot; Quando se lhe veste a roupa da coisidade da existência, o tesouro sai com a manifestação do homem (p. 289).</p><p>Ele diz que no versículo &quot;Ele ensinou a Adão todos os nomes&quot; a palavra &quot;todos&quot; significa abrangência e generalidade. Tomando a expressão &quot;nafs-ka&quot; na súplica do Profeta &quot;Ó Deus, peço-Te por todos os nomes com que nomeaste a Ti mesmo&quot; como a anexação de uma coisa a si mesma, dá duas leituras: a anexação é entre duas formas, ou a alma é a alma do ser humano perfeito, que recebe todos os nomes divinos e cósmicos (p. 289). Como exemplo dessa leitura dá as palavras de Jesus &quot;Tu sabes o que há em minha alma, e eu não sei o que há na Tua alma&quot;; observa que Jesus sabia ser vice-regente e ser humano perfeito a quem pertencem os nomes divinos, e por isso não disse &quot;não disse que sou um deus&quot; (p. 290). Relaciona a frase da súplica &quot;os nomes que reservaste para Ti no conhecimento do Teu invisível&quot; com o fato de o ser humano perfeito ser o invisível do Real (p. 290).</p><p>Ele diz que, em relação ao mundo, o homem se assemelha a um especialista em cada ramo do saber, e que por sua abrangência é superior ao outro. Observa que o anjo supera o homem em obediência por estar livre da roupa da humanidade, ao passo que o homem, feito de elementos, tem o traço do descuido e do esquecimento (p. 291). Dá a razão da superioridade de Adão no conhecimento dos nomes: &quot;Pois o vice-regente, se não aparece com os nomes que são direito de quem o fez vice-regente, pelos quais é desobedecido e obedecido, não é vice-regente.&quot; O homem é completo e superior em abrangência, ao passo que o anjo é superior em um aspecto ou dois (p. 291).</p><p>No fim do capítulo vem a habitual lista do &quot;isto se aprende desta estação&quot;: rastros apagados e seus graus; o estado de quem, tendo rejeitado uma ordem, chega ao ponto de se matar, e sua relação com a perfeição; o conhecimento do aquietar; &quot;Todo aquele que comete um crime o comete contra si mesmo&quot;; os temperamentos, e como o que prejudica Zayd beneficia &#x27;Amr; por que o disputador continua disputando embora saiba que seu adversário tem razão; contentar-se com o decreto; o efeito de um existente sobre outro; o princípio da profecia e se alguém no mundo fica fora da obrigação; a mudança dos versículos com a mudança dos tempos e estados; as diferenças entre feminilidade e masculinidade; os graus da fraternidade; as balanças divinas. Dá o versículo &quot;Se isto é a verdade vinda de Ti, faze chover pedras sobre nós&quot; como exemplo de pessoa que conhece o possível; a diferença entre verso e prosa e de onde descem os espíritos de fogo também são enumeradas (pp. 292-294).</p></section><section><h3>O Ser Humano Perfeito: Semelhança, Oposição, Contrariedade</h3><p>O Capítulo 359 define três tipos de relação — semelhança, oposição (contrário amigável) e contrariedade (contrário hostil) — e os fundamenta em exemplos: &quot;a semelhança de duas semelhanças é dois brancos, a semelhança de dois contrários é branco e preto, a semelhança de dois opostos é aroma e cor.&quot; (p. 296) Depois afirma: &quot;o ser humano perfeito reuniu tudo isto em si por sua própria natureza. Este traço não se encontra em mais ninguém. Ele é semelhança, oposição e contrariedade diante do Real.&quot; (pp. 296-297) O ser humano perfeito é descrito como o único ser capaz de portar as três formas relacionais ao mesmo tempo.</p><p>O Capítulo 359 leva o título &quot;Digo-o a ti, minha filha; ouve, minha nora&quot; (p. 295). Dost diz que Deus criou para cada coisa um contrário, uma semelhança e um oposto, e pôs a concordância no oposto, a repulsa no contrário e a afinidade na semelhança. Na relação da semelhança com sua semelhança, a afinidade mútua os une no amor; quanto ao contrário e seu contrário, &quot;o repelirem-se (repulsão) é essencial&quot; e cada um quer que o outro desapareça da existência. Dois opostos não são assim: o amor entre eles não permite que um deseje a aniquilação do outro, mas por sua natureza nunca se reúnem (pp. 295-296). Ele observa que o propósito de expor essas distinções é explicar a qual delas se relaciona o lugar do servo diante de Deus (p. 296).</p><p>Dost explica a posição do ser humano perfeito diante do Real por três relações: é semelhança por ter sido criado na forma divina, contrário por ser servo que não pode ser o senhor daquele de quem é servo, e oposto por ser o Real a sua audição, a sua visão e os seus poderes. Observa que o dito &quot;Quem conhece a si mesmo conhece seu Senhor&quot; significa conhecer pelo conhecimento da semelhança, da contrariedade e da oposição (pp. 296-297). Explica o versículo &quot;Não tomeis por amigos Meu inimigo e vosso inimigo&quot; como tratar o inimigo com a postura da contrariedade e não com o amor da semelhança, como se ele fosse vossa semelhança; diz que, para distinguir o inimigo essencial do acidental, são necessárias uma balança e um desvelamento são (p. 297).</p></section><section><h3>O Herdeiro, o Ijtihad, a Amizade e o Amor</h3><p>Ele diz que as pessoas diferem em graus de perfeição, sendo o mais baixo da estação o humano animal e o mais alto &quot;a sombra de Deus&quot;: &quot;Ele é o ser humano perfeito e o delegado do Real. O Real é a sua língua e os seus poderes.&quot; No tempo dos mensageiros o ser humano perfeito era o mensageiro, e depois dele o perfeito é o herdeiro; os não profetas também podem receber a descida divina em seus corações, e tais pessoas são chamadas &quot;herdeiros&quot;, não &quot;mensageiros&quot;. O ijtihad, nas palavras de Dost, é &quot;empenhar todo o esforço para produzir a disposição no interior&quot;; com essa disposição o homem recebe a descida divina (inspiração) que vem a seu coração (p. 298). Observa que o verdadeiro mujtahid não é quem emite um julgamento, mas quem transmite a verdade que lhe chega em sua autorrevelação, e que seu sinal, por causa da unicidade da mensagem nesta era, é não cair em desacordo em seu julgamento (pp. 298-299).</p><p>Ele diz que também os nomes divinos contêm semelhança, oposição e contrariedade: al-Rahman e al-Rahim são semelhanças, al-Rahman e al-Sabur são opostos, al-Darr e al-Nafi&#x27; são contrários. Depois de citar o dito do Profeta &quot;Se eu tomasse um amigo, tomaria Abu Bakr como amigo, mas vosso companheiro é o amigo de Deus&quot; e o versículo &quot;Deus tomou Abraão por amigo&quot;, diz que quem aprende que não é impossível Deus tomar Seus servos por amigos deve esforçar-se por ser Seu amigo; o caminho é seguir a Lei do Real, e quem faz disso uma característica pode alcançar o amor, estado mais particular que a amizade: &quot;O amigo é amigo contigo por tua causa, ao passo que o amante está contigo por causa de si mesmo. Quão grande é a diferença entre amizade e amor!&quot; (p. 299) Em seguida dá os versos que começam &quot;Juro, comemos pão e sal juntos&quot; (p. 300).</p><p>Ele descreve o direito do pão e do sal como um hábito que Deus criou nas pessoas: fazem sacrifícios por um companheiro com quem partilharam pão e sal. Diz que o acréscimo &quot;e vosso inimigo&quot; depois de &quot;Não tomeis Meu inimigo por amigos&quot; vem para tornar os inimigos de Deus desagradáveis, e que na frase &quot;Eles expulsam o Mensageiro&quot; a expulsão do Mensageiro de sua terra é mencionada porque deixar a terra natal está entre as coisas mais duras que podem suceder a uma pessoa (p. 301). Relata que Abraão mostrou a seu pai Azar ternura e conselho, e quando soube por revelação que o pai era inimigo de Deus afastou-se dele, como lembra o versículo: &quot;Quando lhe ficou claro que era inimigo de Deus, desvinculou-se dele.&quot; (p. 301) Acrescenta que, para quem este estado não foi realizado por gosto, há uma afinidade entre ele e o inimigo de Deus, e que antes de a inimizade se tornar clara ele era desculpado (p. 302).</p><p>Entre os conhecimentos da estação, enumera: o aumento do bem, o traço que separa o Real do falso e os limites (definições que separam as coisas), os servos dos nomes e os servos dos pronomes, a ciência da transcendência e a causa no mundo que pede a tomada de associados. Partindo do hadith de que toda criança nasce na natureza inata e os pais a fazem judia, cristã, politeísta ou magiana, pergunta se o intelecto faz o papel dos pais quando alguém sai da natureza inata para o politeísmo (pp. 302-303). Sobre o xeique e o discípulo, explica que o xeique é obrigado a ocultar do discípulo que este possui o sentido que pede a forma: se lho disser, o discípulo aparecerá com a forma sem o sentido, e surgem erros e confusões (pp. 303-304). Dá o exemplo da sombra na miragem: ao aproximar-te não a encontras como a viste, mas não duvidas do que viste (p. 305). Diz que quando se diz aos batinitas &quot;Deus existe&quot; eles fogem para dizer &quot;Ele não é inexistente&quot;, o que cria uma associação com a existência originada (p. 305).</p></section><section><h3>Luz, Escuridão e o Mundo como Istmo</h3><p>O título do Capítulo 360 é &quot;Conhecimento da Estação das Escuridões Louvadas e das Luzes Visíveis&quot; (p. 308). Dost diz que a luz torna possível a percepção mas não pode ser ela mesma percebida, ao passo que a escuridão não torna possível a percepção mas é ela mesma percebida. Quando perguntaram ao Profeta &quot;Viste teu Senhor?&quot;, ele disse: &quot;Ele era luz; como poderia vê-Lo?&quot; (p. 308). O Real é luz pura, e o impossível é escuridão pura: &quot;O mundo é o istmo entre a luz e a escuridão. Assim como não é descrito pela escuridão em sua essência, também não o é pela luz.&quot; (p. 309)</p><p>Ele relata que Deus criou dois olhos no homem; com o primeiro o homem recebe a luz, com o outro a escuridão, ao passo que em si mesmo não é nem escuridão nem luz. O possível é descrito como perplexo entre a não existência e a existência, pois não pode passar por completo a nenhum dos extremos (pp. 309-310). Ele separa os sentidos habituais de luz e escuridão: no sensível, a luz do relâmpago, das estrelas e das lâmpadas; no interior, a luz do intelecto, da fé e do conhecimento, e a escuridão da ignorância, da associação e da insensatez; o que não é nem luz nem escuridão é a dúvida, a conjectura, a perplexidade e a investigação especulativa (p. 310). Diz que o conhecimento sobre o possível é &quot;um vasto mar de conhecimento de grandes ondas,&quot; um mar sem outra margem que não seus dois extremos (p. 310).</p></section><section><h3>O Ponto e o Círculo: O Diagrama Desenhado por Dost</h3><p>No Capítulo 360, Dost explica a relação entre o Real, o possível e a não-existência através de um diagrama de ponto e circunferência que ele mesmo desenha. &quot;o ponto é o Real; o espaço fora da circunferência é a não-existência ou escuridão. Entre o ponto e o espaço fora da circunferência está o possível... mencionamos o ponto porque o ponto é a origem da circunferência do círculo. Assim como o círculo emerge através do ponto, o possível emerge através do Real.&quot; (pp. 313-314) E continua: &quot;o ponto do qual a linha se estende em direção à circunferência é o começo da linha. É assim o primeiro e o último... as linhas e possíveis que emergem começam de Deus e a Ele retornam novamente. &#x27;Todos os assuntos retornam a Ele.&#x27;&quot; (p. 314).</p><p>Dost diz que as linhas que se estendem do ponto à circunferência terminam num ponto, e que a circunferência como um todo está em relação ao ponto nessa posição; cita os versículos &quot;Deus os abarca por trás&quot; e &quot;Ele abarca todas as coisas&quot;. Sobre o começo e o fim da linha diz &quot;é da linha e não é da linha; dize como quiseres,&quot; comparando-o ao caso dos atributos de que os asharitas dizem &quot;nem Ele nem outro que Ele&quot;. Liga o dito &quot;Quem conhece a si mesmo conhece seu Senhor&quot; ao versículo &quot;Lhes mostraremos Nossos sinais nos horizontes e em si mesmos&quot;: &quot;Pois o mundo inteiro fora de ti são os horizontes, e eles são a tua circunferência.&quot; (p. 311)</p><p>Ele explica que a linha se compõe de pontos, a superfície de linhas e o corpo de superfícies: o nome &quot;linha&quot; surge de dois ou mais pontos, uma superfície de quatro pontos, e um corpo em ato de oito. Compara isso com o que sabemos de Deus, a essência e sete atributos: &quot;Assim como o corpo não é senão pontos, também os pontos não são senão o corpo. Contudo, ao mesmo tempo, o corpo não são os pontos, e os pontos não são o corpo.&quot; (pp. 311-312) Diz que o comprimento do corpo vem da linha, a largura da superfície e a profundidade da junção de duas superfícies, e que o Real trouxe o mundo à existência por três realidades, a saber Sua identidade, Seu voltar-se e Sua palavra (&quot;Sê&quot;). O mundo é &quot;luz sobre luz, escuridão sobre escuridão,&quot; pois a toda luz corresponde uma escuridão, e a toda existência uma não existência (p. 312).</p><p>Ele diz que a existência é uma única realidade que as existências exteriores dos possíveis multiplicam: &quot;A existência é uno-muitos... Assim como existimos dependentemente. Sem o Real não seríamos.&quot; Lembra o versículo &quot;Deus prescinde dos mundos&quot; junto com a relação senhor-sujeito, quanto ao Real ser Deus (pp. 312-313). Observa que o possível só pode olhar para o véu, e que se os véus fossem levantados a possibilidade desapareceria. Ao tratar do hadith &quot;Se os véus fossem levantados, os esplendores de Sua face queimariam tudo o que Sua vista alcança&quot;, diz que os véus permanecem baixados; se as pessoas tivessem entendido esse hadith teriam conhecido a si mesmas, e assim o Real. Relata que al-Hakim al-Tirmidhi conheceu o Real dessa maneira e chamou esse desvelamento de &quot;o reino do reino&quot; (p. 313).</p></section><section><h3>Sem Luz Não Haveria Percepção, e as Escuridões Espirituais</h3><p>No vasl intitulado &quot;Sem Luz Nada Seria Percebido&quot;, Dost diz que os nomes dados à luz mudam segundo as faculdades: quando o que se ouve é percebido, essa luz se chama &quot;audição&quot;; quando o que se vê é percebido, &quot;visão&quot;; quando o que se toca é percebido, &quot;tato&quot;. &quot;Assim, tudo o que torna possível a percepção é esta luz.&quot; (p. 314) Tudo o que é percebido tem uma relação com a luz; ele distingue os julgamentos do necessário e do impossível, dizendo que o possível cai sob os julgamentos do necessário e do impossível, ao passo que o necessário e o impossível não caem sob o julgamento da possibilidade (p. 315). Liga a imperceptibilidade no dito do Profeta &quot;Ele era luz; como poderia percebê-Lo?&quot; ao fato de a luz da percepção estar contida nele; uma parte não pode perceber o todo, de modo que, enquanto o Real conhece as partes, as partes não podem conhecê-Lo (p. 316).</p><p>Ele enumera as escuridões espirituais: a escuridão do conhecimento, a escuridão da alusão, a escuridão da equiparação de dois estados, a escuridão da negação e a escuridão da dúvida. Quando a ignorância é tomada como a negação do conhecimento por certo estado, diz que todos os outros que Deus são ignorantes, e é por isso que Deus ordenou a Seu Profeta dizer &quot;Meu Senhor, aumenta o meu conhecimento&quot; (p. 317). Trata do ensino dos nomes a Adão e das palavras dos anjos &quot;Vais pôr nela quem espalhe a corrupção?&quot;; observa que a pergunta feita a Jesus, &quot;Disseste tu às pessoas...&quot;, foi feita para apresentar a prova contra os que o adoravam e repreendê-los (pp. 317-318). Relata que para os sufis a alusão é &quot;um chamado feito de longe&quot; (p. 319). Chama de escuridão da dúvida a que aparece quando Deus perdoa quem morreu sem se arrepender, acreditando que a ameaça se cumpriria (pp. 319-320).</p><p>Ele diz que Deus tirou o homem da escuridão do invisível em que estava, que todos os possíveis estão na escuridão do invisível, e que cada possível tem uma chave que só Deus conhece: &quot;A primeira chave com que Ele abre um invisível é o ser humano perfeito, que é a sombra de Deus entre os existentes que não são Ele.&quot; Deus o manifestou a partir do Sopro do Misericordioso; a sura Ya Sin, o coração do Alcorão, é ele, e &quot;Ya Sin&quot; é um chamado que significa &quot;ó senhor&quot;. O exterior do homem é a sombra estendida, seu interior a parte que permanece no invisível: &quot;Por isso o interior do homem nunca pode ser conhecido.&quot; (pp. 321-322)</p></section><section><h3>Delegação ao Real: Dez Graus</h3><p>No vasl intitulado &quot;Explicação dos Graus das Dez Categorias&quot;, Dost diz que Deus deu essa perfeição ao ser humano perfeito, que existe segundo a forma divina, para que ficasse no lugar do Real, e é por isso que é chamado &quot;vice-regente&quot; (p. 323). Enumera então dez delegações. Na primeira, os que vêm depois dele entre os de sua espécie são os vice-regentes do vice-regente; as dez categorias valem em seu nome, e esse número não admite acréscimo (pp. 323-324). A segunda é o homem representar, por sua essência e espiritualidade, a metade da forma: o anjo, o animal, o mineral e a planta fora do homem não têm vontade ligada a coisa alguma, &quot;movem-se segundo sua natureza inata, e a exigência dessa natureza é a prostração a Deus e o louvá-Lo.&quot; (p. 324)</p><p>A terceira delegação é a realização do assunto que está no possível e o leva da não existência à existência. Ele explica que os possíveis em seus estados de não existência estão diante do Real, que o Real olha para eles com nomes como al-Alim e al-Hafiz, e que, enquanto não há ordem entre as entidades fixas, a entrada na coisidade da existência segue uma ordem (pp. 324-325). Diz que a resolução está no lugar da palavra &quot;Sê&quot;, e que o delegado é aquele em cujo coração o Real põe o conhecimento dos possíveis que quer trazer à existência; esse conhecimento chega ou por pensamento, compreendendo a partir dos nomes al-Mudabbir e al-Mufassil, ou como uma noção inspirada no interior (pp. 325-326). Na quarta delegação, que trata do desejo do Real de ser conhecido pela prova que colocou, o versículo é &quot;Lhes mostraremos Nossos sinais nos horizontes,&quot; seguido de &quot;e em si mesmos&quot;, e o ser humano perfeito torna-se, por desvelamento e testemunho, uma prova mais próxima que o mundo (p. 327).</p><p>Na quarta delegação Dost diz que a sombra está na forma daquele de quem procede e que a criação do ser humano perfeito é uma misericórdia. Lê o dito de Abu Yazid al-Bistami &quot;Meu castigar é mais duro que o teu castigar&quot; como castigar por meio de sua alma animal: o Real castiga com o que é criado, a misericórdia é imanente em Seu castigar, e os castigos postos neste mundo visam à purificação (p. 328). Relata que só o ser humano perfeito pode conhecer o Real: &quot;O intelecto do anjo ou do humano animal não alcançou este conhecimento de Deus, pois Deus velou todos eles de Si e apareceu ao ser humano perfeito.&quot; (p. 329) Acrescenta que a negação de Deus surge de o intelecto ter delimitado o Real, e que, se o ser humano perfeito não tivesse sido posto no mundo, ninguém poderia negá-Lo (pp. 329-330).</p><p>A quinta delegação é o homem representar no mundo o nome Rafi&#x27; al-darajat: &quot;Assim como ninguém além de Deus pode conhecê-lo, ninguém além do ser humano perfeito pode conhecer Deus.&quot; Como uma parte não pode conhecer o todo, nenhum ser criado pode conhecer o ser humano perfeito; um todo pode conhecer o seu semelhante e as partes que contém (pp. 330-331). Dost diz que, se a unicidade do ser humano perfeito for multiplicada pela unicidade do Real, sairia uma unicidade, e pergunta: &quot;Qual unicidade é tua? [...] A unicidade do delegado, ou a de quem o nomeou vice-regente?&quot; (p. 331) Na sexta delegação relata que Deus Se descreve como tendo muitas palavras, e que ao distinguir entre as palavras o ser humano perfeito toma o lugar do Real; no versículo do &quot;Sê&quot;, duas das três letras aparecem e uma está oculta (p. 332). Observa também que Jesus é chamado &quot;palavras&quot; por ser múltiplo em sua constituição exterior e interior (pp. 332-333).</p><p>Ele relata que a precedência, o atraso e a ordem na fala se encontram também nos existentes que são os loci das palavras divinas, que al-Dahr faz surgir essa ordenação, e que o Profeta disse &quot;Não amaldiçoeis o tempo, pois o tempo é Deus&quot;. Cita um verso: &quot;A fala está no coração, mas a língua tornou-se sua prova.&quot; Diz que a parte do ouvinte nas palavras do falante, afora os que compreendem de Deus, é muitas vezes apenas ouvir a ordem das letras, e que a compreensão é um estado acrescentado à audição da palavra (pp. 333-334). Observa que o homem é uno em sua definição geral, mas sabemos que Zayd não é &#x27;Umar, e que só a palavra &quot;Sê&quot; percorre tudo o que recebe existência; por isso Deus é o criador contínuo e o preservador contínuo (pp. 334-335).</p><p>A sétima delegação é a delegação nos atos exteriores e interiores no próprio ser do homem; sua base é o versículo &quot;para que saibamos&quot;. Dost descreve uma súplica que enche o coração por inteiro e é atendida de imediato como um estado que diz, por gosto e experiência, a veracidade do voltar-se do servo ao Real, e conta o pôr à prova de quem faz uma alegação como delegação a Deus (pp. 335-336). Diz que, ao responder &quot;Sim&quot; a &quot;Não sou eu vosso Senhor?&quot;, reconhecemos a servidão, que para uma pessoa racional que não é crente o intelecto também está no lugar de um mensageiro, declarando o Criador transcendente e uno (pp. 336-337). Observa que no hadith &quot;Quem morre sabendo que não há deus senão Deus entra no Paraíso&quot; o Profeta menciona o &quot;conhecimento&quot;, e diz que os que permanecem para sempre no Inferno são apenas os que associam algo a Deus, os politeístas imitadores que negligenciaram a investigação, e os despojadores (pp. 337-338).</p><p>Ele apresenta a súplica do Profeta &quot;Meu Senhor, perdoa e tem misericórdia, pois Tu és o melhor dos misericordiosos&quot; como intercessão pelos que, sem o saber, pararam no limite da investigação especulativa, e a conta como súplica que abrange todos desde Adão até o sopro de desmaio que Israfil soprará (p. 338). Dost pede ao leitor que não esqueça sua parte dessa intercessão e que não seja dos que afirmam que a misericórdia de Deus alcança só os crentes (p. 338). Um aspecto da profecia cessou e outro continua: &quot;A profecia em sua forma exterior é uma profecia cuja aparição cessou, ao passo que a profecia interior é contínua neste mundo e no outro.&quot; Como evidência cita &quot;Teu Senhor inspirou a abelha&quot;, o dito da formiga &quot;ó formigas&quot; e as palavras da poupa (p. 339).</p><p>A oitava delegação é a que faz da unicidade do Real um par: o Real Se vê em Sua perfeição no espelho do ser humano perfeito, e este se vê no Real em perfeição; o Real e o homem sentam-se entronizados um diante do outro em seus tronos, como o povo do Paraíso &quot;em leitos frente a frente&quot; (p. 339). Diz que a entidade fixa é como uma semente na não existência e uma árvore na existência, nestes versos: &quot;A entidade fixa é sempre um servo de Deus / O Real é sempre seu objeto de adoração.&quot; (p. 340) Na nona delegação diz que o istmo inteligível entre dois semelhantes é como a sombra entre uma pessoa e sua sombra estendida, e que a criação aparece pelo Real enquanto o Real não aparece pela criação (p. 341). Como o descuido e o esquecimento são estados que acompanham a criação do homem, diz que é preciso a transferência do mandato, e que o versículo &quot;Senhor do oriente e do ocidente; não há deus senão Ele, tomai-O por procurador&quot; aponta para a disposição no exterior e no interior (p. 342). Com base nisso diz &quot;és o vice-regente do vice-regente.&quot; (p. 343)</p><p>A décima delegação é a delegação dos mortos na unicidade de Deus: com a morte os cobrimentos se abrem e a verdade se mostra a todos. Ele explica o dito de um dos Companheiros, &quot;Se o véu fosse levantado, minha certeza não aumentaria&quot;, como significando que, ao ver o que sabia, não haveria aumento de certeza (pp. 343-344). Ao tratar de Moisés vendo correr as cordas dos mágicos, distingue entre o mágico, que muda o olhar, e o delegado que detém o mandato, que muda a coisa olhada; o conhecimento em que o mágico se apoia ele chama de &quot;alquimia&quot; (pp. 344-345). Quanto aos milagres, para os verificadores não são extraordinários mas um fazer ocorrer eventos: &quot;Não há repetição na existência que fizesse de algo um hábito!&quot; (p. 345) Divide a morte em morte necessária e morte voluntária; a grande luta é a luta com a alma, e Deus provê a quem mata sua alma pelo julgamento do martírio (pp. 346-347).</p></section><section><h3>A Luz da Unicidade da Essência, a Unicidade da Multiplicidade e a Unicidade da Anexação</h3><p>Ao descrever &quot;a luz da unicidade da essência&quot;, Dost diz que o &quot;um&quot; contém em potência a unicidade de tudo o que aparece no mundo, e que o número surge com o um e desaparece quando o um desaparece: &quot;Não fosse Deus, o mundo não existiria exteriormente.&quot; Relata que Deus deu a Si mesmo tanto o nome de essência quanto o de alma (nafs), que no versículo &quot;Nossa palavra a uma coisa&quot; a &quot;palavra&quot; é masculina e a vontade feminina, e que o mundo veio a ser de palavra e vontade (p. 347). Explica o versículo &quot;Concede fêmeas a quem quer, machos a quem quer, ou os dá em pares&quot; como atenção ao lugar, a quem insemina e a ambos (p. 348). Embora Deus prescinda dos mundos, como é descrito por generosidade e misericórdia, o objeto da misericórdia deve existir; Deus fez o mundo existir a partir de Sua generosidade (pp. 348-349). &quot;As luzes da essência não são senão os existentes. Não são outra coisa que as autorrevelações da essência.&quot; (p. 349)</p><p>Sobre a unicidade da anexação, explica que o possível se junta ao necessário, que o necessário torna necessários para o possível as relações e os nomes que tem em si, que a imaginação faz existir tudo o que não é Deus, e que também o ser humano perfeito pode fazer existir em si os objetos de conhecimento que não são ele (pp. 350-351). Observa que essa unicidade também pode ser chamada unicidade da união e da conexão, e cita estes versos: &quot;O vidro afinou-se, o vinho afinou-se / Assemelharam-se e a coisa se confundiu.&quot; (p. 351) Diz que a partícula &quot;ka&quot; no versículo &quot;Nada é semelhante a Ele (ka-mithlihi)&quot; indica uma qualidade e não é uma letra acrescentada, embora algumas pessoas, temendo cair na comparação, a tenham contado como supérflua (pp. 351-352).</p></section><section><h3>Os Conhecimentos Enumerados no Fim do Capítulo</h3><p>No fim do capítulo ele enumera, como de costume, o que se aprende da estação. Trata do intelecto fazer-se sinal primeiro e ser a primeira prova; dos limites, em que há um limite do exterior, do interior, do lugar de ascensão e um limite do limite; da proibição de dar exemplos de Deus (&quot;pois Deus sabe e vós não sabeis&quot;), e de que só os profetas e os amigos de Deus podem dar exemplos (pp. 352-353). Ocupa-se de por que às vezes se exigem quatro testemunhas, por que se pede prova a quem faz uma alegação, de que confessar algo que acarreta pena hadd é uma alegação, e de que quem confessa pode às vezes ter mentido, supondo que se pouparia de uma dor maior (pp. 353-354). Sobre a atitude do xeique para com o discípulo sem aptidão relata três opiniões; a que ele mesmo prefere é que o xeique empregue todo o esforço e cumpra seu dever (&quot;Faço mais de setenta&quot;) (p. 355). Conta que Abu al-Abbas al-Sabti de Marraquexe aconselhou um homem que se queixava de pobreza a casar quatro vezes, e que o homem acabou por enriquecer (p. 356).</p></section><section><h3>Preto e Branco Unidos na Cor</h3><p>No Capítulo 359 surgem estas linhas: &quot;a gradação entre dois opostos se conhece a partir desta estação. Como exemplo, podemos citar a gradação entre preto e branco. Esta gradação surge porque a cor os une.&quot; (p. 305).</p></section><section><h3>Estar com o Real Sem Buscar Recompensa</h3><p>Os Capítulos 358 e 359 contêm duas passagens sobre a questão do salário/recompensa. No 358, uma pergunta: &quot;quem é superior em grau se conhece a partir desta estação: é aquele que se mantém longe de buscar recompensa, ou aquele que a exige?&quot; (p. 279) E na seção em verso do 359, um conselho direto: &quot;está com o Real, e não busques recompensa d&#x27;Ele.&quot; (p. 302).</p></section></article><nav aria-label="Navegação"><p><a href="pt/">Dost Arabî</a> › <a href="pt/futuhat/">al-Futuhat al-Makkiyya</a> › <a href="dizin/futuhat/#cilt-12">Volume XII</a></p><p><a rel="prev" href="pt/futuhat/c12k146/">← O Primeiro e o Último: Dois Nomes Unidos no Ser Humano Perfeito</a> · <a href="dizin/futuhat/">Índice</a> · <a rel="next" href="pt/futuhat/c12k148/">Retornai, Todos Vós, a Deus: O Fechamento do Volume XII →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

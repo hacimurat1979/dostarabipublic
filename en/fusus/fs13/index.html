@@ -2,63 +2,14 @@
 <html lang="en" data-dost-lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-GLIZLuVv+fthbfqnQgJG4LuilHsBvbPaS3klmyYrnXk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-GLIZLuVv+fthbfqnQgJG4LuilHsBvbPaS3klmyYrnXk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/en/fusus/fs13/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Power Is Incidental — Origin Is Weakness</h2><p>This bezel sets out from a prophet&#x27;s prayer: when Lot felt powerless before his people, he said &quot;If only I had power against you, or could lean on a firm support&quot; (Hud 11:80). The bezel unpacks that sentence word by word and arrives at this conclusion: the higher the gnosis, the lower the independent resolve — because the knower sees the oneness of actor and acted-upon; no one remains to direct his resolve toward. The bezel&#x27;s central claim: humanity&#x27;s origin is weakness, power is a later accident; and true strength is to make God one&#x27;s trustee.</p><article aria-label="Text of this part" lang="en"><section><h3>The Subject of the Bezel and Its Place in the Sequence</h3><p>At the opening of the bezel Konuk gives the reason why the “wisdom of melk” (hikmet-i melkiyye) is lodged in the Word of Lot: “The people of Lot spread corruption on the earth by occupying themselves with natural affairs and animal desires. Lot (peace be upon him) called them from animality to humanity.” Their selves were strong and their veils equally intense, so the call was not accepted and they answered Lot with violence; Lot, for his part, was weak against them. Konuk says that Lot meant “by ‘firm support’ the ‘tribe’, and by ‘power’ ‘resistance’, that is, the ‘resolve’ (himmet) that proceeds from human beings”; the aim of the wish was the destruction and passing away, through a divine punishment, of the determined existences of his people, the source of their intense veils of the self.</p><p>Konuk also explains the place of the bezel in the sequence: “Since ‘resolve’ (himmet) belongs to the openings of the heart, the Shaykh (may God be pleased with him) mentioned this ‘hikmet-i melkiyye’ after the ‘hikmet-i kalbiyye’.” The reason for the ‘hikmet-i kaderiyye’ that follows is this: one who takes refuge in God, the firm support, becomes aware of the secret of fate only after he has passed away in God&#x27;s existence and subsists through God; so the Shaykh sets out the wisdom of fate after this wisdom.</p></section><section><h3>The Word Melk and the Firm Support</h3><p>The Fuṣūṣ text gives the meaning of “melk” as follows: “‘Melk’ is intensity and ‘melik’ is intense.” (s. 786) Konuk relays examples from the language: when dough is kneaded firmly one says “the parts of the dough stuck to one another with strength and intensity” (s. 786); and the poet Qays ibn al-Khaṭīm, in a verse describing the thrust of his spear, used “melk” in the sense of strength and intensity. A footnote introduces Qays ibn al-Khaṭīm al-Awsī (d. 620) as a poet known for lyric poems that combined an urban style with Bedouin taste in pre-Hijra Medina. In the words reported from Lot in Hud 11:80, “melk” has this sense; according to Konuk, “the relation of the ‘hikmet-i melkiyye’ to the Word of Lot has been derived from this noble verse.” (s. 787)</p><p>The Fuṣūṣ relays the Messenger&#x27;s answer to Lot&#x27;s words: “May God Most High have mercy on my brother Lot, for he took refuge in a firm support.” (s. 786) Konuk explains this as a pointer to the fact that Lot was with God, who is strong and intense (s. 787). The Fuṣūṣ further relays the Messenger&#x27;s saying that since this saying of Lot no prophet has been sent except among a group from his own people, within a tribe that protects him. Konuk opens this as follows: “Just as the Real accepted Lot&#x27;s wish and, in his own time, sent an angel to stand in the place of the tribe that is the firm support, so the prophets He sent after him He also sent within a tribe.” (s. 790) As an example he gives Abū Ṭālib&#x27;s protection of the Messenger of God.</p></section><section><h3>Melk and Za&#x27;f: The Secret of Two Origins</h3><p>The bezel opens by unpacking the word melk: with a short vowel on the first letter, melk means intensity, and melik means intense — powerful. When Lot said to his people &quot;If only I had power against you&quot; (Hud 11:80) he used this word. The Prophet responded: &quot;May God have mercy on my brother Lot, for he leaned on a truly firm support&quot; — because what Lot meant by that phrase was God Himself, not a human tribe.</p><p>From there the bezel enters the origins of the human. The Quran says: &quot;God created you from weakness, then after weakness He brought about strength, then after strength He brought about weakness and old age&quot; (Rum 30:54). Konuk reads this as a three-stage process: weakness is the origin, power is added afterward — and so power is incidental, temporary.</p></section><section><h3>Incidental Strength, Weakness and the Age of Forty</h3><p>Konuk ties Lot&#x27;s “If only I had power against you” to his having grasped, by divine light, the meaning of Rum 30:54; this grasp was “not of the kind of knowledge obtained by hearing, but a grasp arising from the level of haqq al-yaqīn” (s. 791). So Lot knew that he was created from relative non-being and exists through the existence of the Real, and that one whose origin is relative non-being has no strength. Konuk defines the “accident” (araz) thus: “it is said of what needs an existence in order to appear and cannot remain in two moments.” (s. 791) His example is ice: the existence of ice and the strength in it are accidental with respect to the existence of water, and the strength is brought about when water is frozen; the human body too is originated from the density-bound determination and restriction of absolute existence, so the strength in it is likewise accidental.</p><p>Konuk distinguishes weakness from old age: “But the origination of weakness is one thing and the origination of old age another. For the origination of weakness in a human being is his return to the original weakness, while the origination of old age is his bringing into existence and origination from non-being.” (s. 792) In a young man&#x27;s body old age is not there at the beginning; it comes into being later. Resting on “he is returned to the vilest age” (Hajj 22:5), the Fuṣūṣ says that in weakness the ruling on the aged is the ruling on the child; Konuk opens this as a return to the weakness of temperament in childhood, and adds that the weakness of the two temperaments is alike in ruling but one is not the very same as the other, “because there is no repetition in self-disclosure” (s. 792).</p><p>The Fuṣūṣ says that a prophet is sent only after the completion of forty, and counts this as the time when deficiency and weakness begin; this is why Lot, together with the presence of weakness, asked for effective resolve (himmet-i müessire). Konuk: “each prophet was sent to call his people only after he had completed his fortieth year. And a person&#x27;s fortieth year is the time when deficiency begins to affect his human strength and weakness his natural temperament.” (s. 793) According to Konuk, the reason Lot asked not for natural strength but for effective resolve is that he knew natural strength to be incidental and that its occurrence together with old age is impossible (s. 793).</p></section><section><h3>Annihilation and Subsistence: What Was Lot&#x27;s Request</h3><p>Konuk compares two stations. In fanâ-fillâh the person is absorbed into God&#x27;s existence; they have no independent resolve, because they no longer exist as individuals. In baqâ-billâh the person subsists through God; they act with the combined force of all divine names — but this is not their own action, it is the action of God&#x27;s names. Lot was in the station of annihilation when he spoke; he was longing to pass into subsistence.</p><p>The perfect human is like a mirror: God appears in it with all His names. But just as a mirror has no action at all over the forms reflected in it, so too the perfect human. Every act that comes from them is God&#x27;s. Konuk gives an example: when Shibli was asked &quot;Why don&#x27;t you act with resolve?&quot;, he said: &quot;I gave my share to you; we left God to act on our behalf.&quot; This saying is tied to the Quranic command &quot;Take Him as trustee&quot; (Muzzammil 73:9).</p></section><section><h3>Fanâ-fillâh, Baqâ-billâh and the Most Perfect Locus of Manifestation</h3><p>Konuk defines the station of fanâ-fillâh thus: “the station of fanâ-fillâh consists in the lifting of the determinations from the face of absolute existence.” (s. 788) In the sight of one at this level the incidental otherness of the determinations vanishes, and he sees no existence other than God&#x27;s existence to which action could be ascribed; therefore he himself has no resolve (himmet) or disposal. Konuk: “At this level, if you wish say ‘This existence is the Real’, if you wish say ‘I am the Real’! The two are one.” (s. 788) He adds this couplet from the Gulshan-i Rāz: “There is truly nothing existent besides God. Say ‘the Real’ if you wish, or ‘I am the Real’.” (s. 788)</p><p>The station of baqâ-billâh is, according to Konuk, the station of the perfect human: “This level is the Absolute Essence&#x27;s showing itself in a most perfect locus of manifestation.” (s. 788) The perfect human comprises all the levels of absolute existence, the corporeal and the luminous and the levels of unity and oneness; this level is the last self-disclosure of the Absolute Essence and its last garment of determination. Konuk reports that the ascent and expansion take place in our Prophet in the most perfect way, and that for this reason he is called “Seal of the Prophets” and “leader of the messengers”. He notes that the Real also appears with all His names in the other prophets and friends, but that there the rule of the names is not in balance and some prevail over others: “Therefore the expression ‘most perfect locus of manifestation’ is reserved to our Prophet (peace and blessings be upon him) alone.” (s. 789)</p><p>Konuk distinguishes disposal as follows: one in the station of fanâ-fillâh has no disposal through resolve in bringing something into being or annulling it; the perfect human at the level of baqâ-billâh, by the force of the totality of the divine names of which he is a locus of manifestation, has disposal and resolve for bringing into being and annulling (s. 789). This disposal appears through the loci of manifestation: “The acts of the Real appear according to the loci of manifestation; […] and according to the strength and intensity of the loci of manifestation the act of the Real too becomes strong and intense.” (s. 789-790) Konuk gives Isra 17:5 as an example: when the time came for punishment for one of the two corruptions of the Children of Israel, God sent servants endowed with strength and intensity, setting loci of manifestation such as Nebuchadnezzar and his soldiers over them. He opens Lot&#x27;s “If only I had power against you” as asking for strong loci of manifestation to punish his people and, with that, asking God to move him to the station of baqâ-billâh (s. 790).</p></section><section><h3>Gnosis Diminishes Resolve</h3><p>Here the bezel says: &quot;truly, gnosis does not leave resolve free to act. Thus the higher the knower&#x27;s gnosis rises, the less their independent action through resolve.&quot; Two reasons are given. First: the knower has realized the station of servanthood; they do not set out to act on their own, but await their Master&#x27;s command. Second: the knower sees oneness between the actor and the acted-upon — they cannot see something other on which to concentrate their resolve.</p><p>An exchange between Abū Madyan and the abdāl is related. The abdāl ask him: &quot;We find it easy to act in world affairs; you find it difficult. Yet we aspire to your station, while you pay no attention to ours. Why?&quot; The answer: because Abū Madyan&#x27;s gnosis is higher than theirs, he is more complete in appearing in incapacity and weakness. The inability to act is not a deficiency — it comes from seeing more fully.</p></section><section><h3>The Absence of Resolve in the Knower: Question, Answer and Anecdote</h3><p>The Fuṣūṣ sets up an objection asking what keeps Lot from effective resolve. Konuk opens it thus: this effective resolve is found in those who follow the law of the prophets and reach the station of friendship (walāya); so “how can something found in the follower not be found in the one followed?” (s. 793) The answer: “this analogy of yours is right. But you were unaware of another knowledge” (s. 793); that knowledge is that divine gnosis prevents disposal through resolve. Konuk also poses and answers a question: above, disposal through resolve was ascribed to the perfect human at the station of baqâ-billâh, whereas here it is said that the higher the knower&#x27;s gnosis rises, the less his disposal (s. 794-795).</p><p>In answering this question Konuk describes the state of the perfect human: in him “nothing is left, under the heading of shares arising from the attributes of his determinate existence, such that he would have a particular will and direct his resolve at something!” (s. 795) This person too walks the earth like any possessor of a body, eats, drinks and marries; satisfaction and anger appear from him. Onlookers suppose his selfly attributes to be awake like their own, “whereas he is asleep” (s. 795); Konuk ties this to Kahf 18:18 (“You would think them awake, while they are asleep”) and says: “His satisfaction and anger are the satisfaction and anger of the Real.” (s. 795) He adds that it is extremely difficult to understand this person by looking at his outward state, and relays a quatrain from Hz. Mısrî: “He has no essence to be known by his essence / nor a dust to be known by his dust / Do not think he is known by his word / The people of reality have no sign.” (s. 795)</p><p>Konuk tells an anecdote that rests on the Rashaḥāt. Mirza Babur, one of Timur&#x27;s descendants, moves to seize Samarkand with five hundred thousand soldiers; ʿUbaydallāh Aḥrār, one of the successors of Shah Naqshband, is there, and through their resolve and disposal the army is scattered and the city cannot be taken. Mirza Babur used to keep company with the people of Sufism; one day, lying on his side on the walls of old Samarkand and shouting “There is no resolve in the knower!”, he said that they had understood that the Khwaja who had scattered them through resolve was not a knower. On hearing this the Khwaja remarks that Mirza Babur did not know the meaning of the saying, and would not have said it had he known: “For the knower has been honored with such a fanâ that all his attributes have gone to the abode of non-being, and no name or trace of him remains of himself.” (s. 796) The Khwaja says that the verses of Anfāl 8:17, “When you threw, you did not throw” and “You did not kill them, but God killed them”, express this meaning; and adds that, were it not so, it would be hard to ascribe to prophets such as Noah and Hud their overturning of their peoples by setting an overpowering force upon them (s. 796).</p></section><section><h3>The Opponent, the Particular Lord and the Wrapping</h3><p>The Fuṣūṣ reports what the knower sees: the one who opposes him has not turned from the reality on which his entity stood in its state of fixity and non-existence; to call it “opposition” is only an accidental thing shown by the veil over people&#x27;s eyes (s. 796). In his commentary Konuk says that at the station of witnessing oneness the knower sees that the opponent is still fixed on the very reality that his fixed entity had in its state of fixity in divine knowledge, and notes that the opponent “walks on the straight path that belongs to him” (s. 797). The reason: “For every locus of manifestation has a particular Lord; that divine name which is its particular Lord is its spirit and governor; and that name takes the locus of manifestation by the forelock and leads it on its own straight path.” (s. 797) For this reason the knower does not direct his resolve at removing the one who opposes him.</p><p>Konuk distinguishes two ways of looking. When the knower looks with the eye of reality, he finds every locus&#x27;s act pleasing and accepts it without objecting; “when he looks with the eye of the law, he objects to the unbelief that comes from unbelievers and to the transgression that appears from the transgressors.” The reason: “For the law is founded on the veil of duality; and where there is veil, there is dispute.” (s. 797) Citing Rum 30:7 for the people of the veil, Konuk says that the word “ghāfil” (heedless) arises by reversing the word “ghilāf” (wrapping) in the saying “Our hearts are in a ghulf, that is, a wrapping” (Baqara 2:88) (s. 797). The “wrapping” is “the curtain and veil that screens the heart from perceiving a thing as it was fixed in divine knowledge”; because of it the people of heedlessness perceive only the life of this world (s. 798). Among the reasons that keep the knower from disposal is also this: “For he sees that everything is in its place. There is nothing disagreeable that the knower would spend resolve on lifting from its place and putting elsewhere.” (s. 798)</p></section><section><h3>Abū al-Suʿūd, Taking God as Trustee and Concentration</h3><p>Resting on Muzzammil 73:9 and Hadid 57:7, the Fuṣūṣ grounds Abū al-Suʿūd&#x27;s saying: the trustee is the one who disposes; because God says “Spend from what He made you successors over”, Abū al-Suʿūd and the knowers knew that what was in their hands was not theirs and that they were successors in it; and the Real said to him, “In what I made you successor over and gave you to own, make Me your trustee and take Me as such.” Konuk relays the conversation as recorded in chapter 25 of the Futūḥāt and explains: “For since the Real commands that He be taken as trustee, by this command He commands that disposal be left to Him. For the trustee is the one who disposes.” (s. 799) He gives the meaning of the verse in Hadid as: “I made you vicegerents in lordship; and since all your faculties and limbs have become Me, give Me preference over all the attachments of your relative existence.” (s. 799) The footnotes state that Muḥammad ibn Kāʾid al-Awānī and Abū al-Suʿūd ibn al-Shibl al-Baghdādī al-Andalusī belonged to the close circle of ʿAbd al-Qādir al-Jīlānī, and that what is known of their lives rests mostly on Ibn ʿArabī&#x27;s references in the Futūḥāt (s. 799).</p><p>The Fuṣūṣ asks how resolve could remain in one who witnesses this command, and gives the reason: resolve takes effect only through a concentration. Konuk opens this: for disposal through resolve one must “direct the whole of the outer and inner faculties to the thing with full presence and total orientation, and there must be no room in the heart for anything other than that thing” (s. 800). The knower&#x27;s gnosis separates him from this concentration, because turning wholly to the thing on which he would spend his resolve and taking it into his heart would require removing the gnosis of the Real from his heart. Hence, in Konuk&#x27;s words, “the knower whose gnosis is complete appears bare of disposal and with the utmost incapacity and weakness.” (s. 800)</p></section><section><h3>The Abdāl and Abū Madyan: Konuk&#x27;s Answer</h3><p>Opening the exchange with the abdāl, Konuk describes the classes of friends of God: “One class of them is charged with loosing and binding affairs, and they are the foremen of the Real&#x27;s court. These are three hundred people called ‘the best’. Seven of them are called ‘abdāl’.” (s. 801) He relays the question the abdāl had sent to Shaykh ʿAbd al-Razzāq; in a footnote ʿAbd al-Razzāq is identified as Abū Muḥammad ʿAbd al-Razzāq al-Jazūlī al-Iskandarī, one of Abū Madyan&#x27;s successors. Konuk reports that Abū Madyan&#x27;s name was Shuʿayb and that he was the spiritual guide of the Greatest Shaykh, the author of this book. He reconciles the two states thus: the perfect human at the station of essential servanthood “returns to God Most High the accidental lordship entrusted to him; and he himself does not take on the disposal that lordship requires” (s. 801). But in the course of his total orientation, such acts of disposal appear in his locus of manifestation through the force of the totality of the divine names that he is not aware of their issuing; therefore the station of the abdāl is contained in his station (s. 801).</p><p>Konuk opens the Fuṣūṣ&#x27;s “In the station of weakness and incapacity we are more complete than Abū Madyan” thus: the Shaykh is unique among the friends of God in expounding divine knowledge, and appearing through weakness and incapacity increases as gnosis increases; so at the station of weakness and incapacity the Shaykh is more complete than his guide Abū Madyan (s. 801). He then says that it should not be supposed that the Shaykh claims superiority over his guide: “Such claims belong to those who are under the influence of the selfly attributes.” (s. 802) According to Konuk, the Shaykh has not the slightest disposal in the meanings and realities he wrote in the Fuṣūṣ: “Each of its words has issued from them by command.” (s. 802) One who acts by command is excused; as gnosis rises, weakness and incapacity rise too, and Abū Madyan&#x27;s not inclining to the station of the abdāl but appearing through incapacity is of this kind.</p></section><section><h3>The Messenger, Disposal and the Miracle</h3><p>The Fuṣūṣ relays the Messenger&#x27;s “I do not know what will be done to me or to you. I only follow what is revealed to me” (Ahqaf 46:9) and continues: if it is revealed to him with certainty that he should act, he acts; if he is forbidden, he refrains; if he is left free to choose, he chooses to leave disposal, “unless he is deficient in gnosis.” Konuk says that the prophets, out of the perfection of their servanthood, take the Real as trustee in all things and avoid disposal, and that their acts and words rest on revelation; he cites Najm 53:3-4 (s. 802). If the one left free to choose is deficient in gnosis, he uses his choice in disposal, for “he does not know that disposal is essential to the Real and accidental to the servant. And appearing through incapacity is essential to the servant, while appearing through lordship is accidental; and appearing through what is essential is higher than appearing through accidents.” (s. 803) Konuk also adds the translation of a couplet from the Dīwān-i Kabīr: “If they ask what love is, say it is leaving choice! One who is not freed from choice is not chosen.” (s. 803)</p><p>The Fuṣūṣ relays that Abū al-Suʿūd ibn al-Shibl said to his companions, “Truly God Most High has given me disposal for fifteen years; and I have left it, in a coquettish way” (s. 803); it calls this “the language of coquetry” and says that disposal is left only because of the perfection of gnosis, since gnosis does not require disposal by the ruling of choice. Konuk interprets this saying of Abū al-Suʿūd as “a language that belongs to the people of coquetry” (s. 804) and gives the example of the vizier and the sultan: the vizier&#x27;s disposal is an accidental disposal derived from the sultan&#x27;s essential disposal; giving the sultan&#x27;s property back to the sultan as a preference would be a cold thing; when the sultan commands the vizier, the vizier rises to act by the sultan&#x27;s order and compulsion. Accordingly: “So whenever the knower disposes in the world, it is thus by divine command and compulsion, not by his own choice.” (s. 804)</p><p>The Fuṣūṣ says there is no doubt that the station of messengership requires disposal, and that the religion of God appears through what is confirmed among the community and the people. Konuk opens this as follows: the messenger disposes by miracle so that his people accept the message he brought, and the miracle he shows confirms his message (s. 804). The friend of God is not like this: “For since the ‘friend’ is a locus of manifestation of the name the Inner, it is not necessary for him to appear through wonders in order to show the divine religion.” (s. 805) Even the messenger does not seek disposal in the outward; Konuk ties this to his compassion for his people: “For miracles are proofs. So he does not wish to press the point when the proof appears over them.” (s. 805) Because his people&#x27;s remaining in error after a miracle has been shown would cause their destruction, the messenger is content with conveying; Konuk cites Maida 5:99 (“Nothing is incumbent on the Messenger but to convey”). A footnote states that the expressions placed between dashes in Konuk&#x27;s translation of the Fuṣūṣ are not from the Arabic text but explanatory additions made with the commentary of Bosnevī in view (s. 805).</p></section><section><h3>People Before the Miracle, and Guidance</h3><p>The Fuṣūṣ lists what happens when a miracle appears to a group: some believe; some, though they know it, do not show their assent out of wrongdoing, arrogance and envy; and some attach it to sorcery and illusion. Konuk gives examples: people like al-Walīd out of wrongdoing, people like Abū Jahl out of loftiness of rank and the wish to prevail, and people like Abū ʿĀmir among the Jews of Medina, who was certain in his own conscience of the prophethood, out of envy; for those who attach it to sorcery he cites Qamar 54:2 (“If they see a miracle they turn away and say, ‘an ongoing sorcery’”) (s. 806). Because the prophets know that only the one whose heart God has lit with the light of faith believes, their resolve falls short in asking for miracles. Konuk gives the reason: the effect of a miracle is not general, since “the effect&#x27;s not being general in their hearts is because their essential, uncreated capacities differ.” (s. 807)</p><p>The Fuṣūṣ cites Qasas 28:56 (“You do not guide whom you love, but God guides whom He wills”) and the phrase in the same verse “He knows best those who are guided”: if the effect of resolve were general, the Messenger of God&#x27;s resolve would have taken effect; yet it did not take effect on his uncle Abū Ṭālib, and the verse cited was revealed about Abū Ṭālib. Maida 5:99 and Baqara 2:272 point the same way (s. 807-808). Konuk opens Qasas 28:56 as follows: “O my Beloved, you do not guide, by your bound and determinate existence called Muhammad, whom you love because of bodily kinship and some natural attributes; but the divine will attaches to the appearance, in this world of witnessing, with guidance, of those whose fixed entities in divine knowledge asked guidance of the Real through their uncreated capacity.” (s. 808) He also says that the Prophet is the most perfect locus of manifestation of the name the Guide and that those who seek guidance are drawn to his surroundings as iron filings gather around a magnet by its attraction (s. 808). He explains “He knows best those who are guided” as God&#x27;s knowing in divine knowledge, through the capacity of their fixed entities, who asked guidance of the Real (s. 809).</p></section><section><h3>Knowledge Follows the Known — Five Levels and the Perfect Human</h3><p>The bezel&#x27;s final section opens onto a wider ontology. The central claim: &quot;knowledge follows the known&quot; — God&#x27;s knowledge is not imposed from outside but shaped by what the fixed entities (a&#x27;yān-i sābita) of things request. Everyone appears by the command &quot;Be!&quot; according to their capacity. God&#x27;s gaze toward them is not a judgment but a mirror of their intrinsic receptivity. This is why even the Prophet could not make his uncle Abū Ṭālib believe — for faith is a matter of non-constructed capacity (istiʿdād ghayr maʿjūl); it cannot be forced from outside.</p><p>At this point the bezel summarizes five levels of existence: (1) Essence of Oneness — pure, beyond any description; (2) Names and Attributes — the fixed entities that appear in knowledge; (3) Spirits — abstract intellects and souls; (4) Absolute Imagination — imaginal forms; (5) Sense and Witnessing — the dense world. And the perfect human is the sixth level that gathers all five.</p></section><section><h3>The Five Levels: Konuk&#x27;s Detailed Enumeration</h3><p>Konuk says that the absolute existence of the Real has five levels in general terms, and opens each. (1) The Essence of oneness and non-determination: at this level the Real cannot be described or marked by any attribute or name, because He is independent of all relations and respects; the term “absolute existence” is a technical term set only to point to this level. (2) Attributes and names: absolute existence becomes determinate in knowledge through its attributes and names, which are its essential affairs; the forms of the names that arise in the knowing presence are called “fixed entities”, they are the realities of possible things fixed in divine knowledge and, not being existent outside, are not created; at this level the names are distinguished from one another. (3) Spirits: according to the fixed entities, existence appears as abstract intellects and souls. (4) Absolute imagination: the forms are subtle like an image reflected in a mirror and cannot be divided or fragmented. (5) The presence of sense and witnessing: existence appears in dense forms, and these forms can be divided and fragmented. Konuk says that all these levels are “descents and self-disclosures of one infinite existence” (s. 809); their result is the perfect human, who comprises all the levels, and his level is the sixth level of descent and self-disclosure of absolute existence (s. 810).</p></section><section><h3>Knowledge Follows the Known, Qaf 50:29 and Wrongdoing</h3><p>Konuk asks that the ruling “knowledge follows the known” not be taken to mean that God&#x27;s knowledge is derived from something other than Him: “For the fixed entities are the forms of the names; and the names are nothing but the essential affairs and are the very ‘self’ of the Essence of the Real.” (s. 810) His example is the calligrapher: a person must be a calligrapher in order to know that he is one; when someone judges “I am a calligrapher”, his knowledge follows his being a calligrapher, which is known. Each fixed entity has an essential requirement, called “capacity” and “receptivity”; the appearance of the Real in outer existence “takes place in the form of each ‘entity’ in keeping with that entity&#x27;s capacity, without addition or deficiency.” (s. 810) So the capacity of the believer&#x27;s fixed entity asked for faith, and the fixed entity of the unbeliever and the disobedient asked for unbelief and disobedience, and each appeared by the command “Be!” in the attribute that it had asked for. Konuk relays the translation of a couplet of Hafez: “Whatever there is comes from our ill-fitting, shapeless stature; otherwise Your honoring with the light of Your existence is not short and insufficient so as not to fit anyone&#x27;s height.” (s. 810)</p><p>The Fuṣūṣ takes Qaf 50:29 (“The word, that is the ruling, is not changed with Me”) as the proof of this ruling: “For My word is within the bound of My knowledge of My creation”; and it opens “And I am not unjust to My servants in the extreme” thus: God did not decree the unbelief that makes them wretched and then ask of them what they cannot do; He dealt with them only according to His knowledge and knew them by what they gave Him from themselves; if there is wrongdoing, they are the wrongdoers (Baqara 2:57). Konuk says that if someone&#x27;s fixed entity was drawn in the state of non-existence in the form of the name the Guide, he will also appear in outer existence with guidance and as a believer, and that God knew this from his formal image in eternity (s. 811). He gives the explanation too in the voice of the Real: “For ‘wrongdoing’ in the language is ‘putting a thing in a place other than its place’.” (s. 812) Whatever anyone asked, the Real granted it; Konuk cites Anbiya 21:23: “God is not asked about what He does; they are asked.” (s. 812) Since the Real did not decree them to be unbelievers by compulsion and then reproach them for their unbelief, He did not wrong them.</p></section><section><h3>“The Word Is from Us”: Command and Compliance</h3><p>The Fuṣūṣ continues in the voice of the Real: “We said: ‘The word is from us; and from them, through hearing, there is compliance and non-compliance.’” (s. 812-813) In his commentary Konuk says that the fixed entities are the forms of the divine names and the names are the very self of the Essence that is named, so God said to them only what He knew His Essence required Him to say (s. 813). At the level of the names the existence of the Real has two “hands”: “with one He gives, with the other He takes.” (s. 813) The Real speaks with the name the Speaker and wills with the name the Willer; these are the active hand; through the receptive hand He hears what He says and complies with what He wills. The Originator&#x27;s “Be!” corresponds to the thing&#x27;s acceptance of it by complying with the command. When the command issues, the thing brings itself into being: “But it brings itself into being with the Real and in the Real.” (s. 813) Since the command comes according to the capacity of the thing known in divine knowledge, the Real&#x27;s knowledge of a thing&#x27;s capacity is His knowledge of His own Essence; knowledge and the known are nothing but the relations of the one existence and become one thing (s. 814).</p></section><section><h3>“From Us and from Them”, the End of the Bezel and the Odd and the Even</h3><p>The Fuṣūṣ continues with a couplet: everything is “from Us and from them”, and taking is also “from Us and from them.” Konuk relays what the Shaykh says in the voice of the Real: all the appearances are “from Us” in respect of the affairs and names that follow from the one Essence; but since the one Essence could not appear through effects without those affairs and names, in this respect they are “from them”; the names took their realities from the Essence, and since the Real&#x27;s knowledge follows these known realities, His knowledge was taken from this known (s. 814). Konuk says that the expressions “from Us and from them” are relative and considered with respect to the level of oneness and the level of unity-in-multiplicity, that in reality existence and the names belong to the Real, and that knowledge and the known are one thing; he rests on Muhammad 47:36: “The life of this world is only play and amusement.” This is with respect to our supposed existence: “Its outer is jest, but its inner is the most serious of the serious. For the perfections of the names appear only through the loci of manifestation.” (s. 814) He adds this translation from the Mathnawī: “You made this ‘I’ and ‘we’ in order to play the game of service with yourself.” (s. 815)</p><p>Konuk opens the Fuṣūṣ&#x27;s couplet “If they are not from Us, then surely We are from them” as follows: although the expressions “from Us” and “from them” carry a sense of duality, real existence is only one; these expressions arise from the names, which are the relations of the one existence, and the existence of a relation is relative (s. 815). Even if existent entities such as prophets and friends of God do not claim to exist through the Real, lest duality follow, “there is no doubt that the Real is from them: that is, the absolute existence of the Real has become determinate and restricted through their forms and is found to have appeared from them with the perfection of appearance.” (s. 815) The reason: “For the Real is in the state of absoluteness at the level of oneness; He does not appear unless He is determined and restricted by a form. ‘Meaning’ requires ‘form’ in order to be seen.” (s. 815) Here Konuk relays the translation of a couplet from the Mathnawī: form comes into existence from the formless, just as smoke is born of fire (s. 816).</p><p>The Fuṣūṣ closes the bezel by addressing the reader: “O friend of God, verify this hikmet-i melkiyye in the Word of Lot! For it is the inner core of gnosis.” (s. 816) Konuk says that in this bezel the Shaykh set out that the human being is created from relative non-being, that although the station of messengership requires disposal the messenger does not engage in it out of compassion for his community, and that the knowing friend of God who knows that every existent appearing in this world of witnessing is in the forms of its fixed entities in divine knowledge has no disposal through resolve; these are the inner core of divine knowledge, and he recommends knowing these gnoses “in their reality and in keeping with the Muhammadan taste” (s. 816). The last couplet of the bezel says that the one essence called “odd” was contained in the “even” (s. 817).</p><p>Konuk opens the last couplet thus: the one real existence described by the attribute “odd” was contained in the “even” made up of the entities of the world, since the entities of the world occupy the second level (s. 817). Absolute existence is not described by any attribute or name at the level of absoluteness; when it descends to the level of attributes and names it is called by the name “God”, and “God” is one in Essence and unity-in-multiplicity in attributes. The one existence of the Real has descended, each level denser than the one before, down to the world of sense and witnessing, and at each level the image in divine knowledge of each name has put on a garment of determination in proportion to the density of that world (s. 817). This containment is not by indwelling in another existence. Konuk gives vapor as an example: when vapor condenses by one degree it becomes cloud, by another degree water, and by yet another ice; these are originated with respect to vapor, and vapor is eternal with respect to them; the odd vapor is contained in the existences of cloud, water and ice, but “their existence is nothing other than vapor; and these are only the incidental attributes of vapor.” (s. 817) According to the note at the end of the bezel, Konuk began the commentary on it on the morning of Thursday 30 November 1916 and finished it on the night of Sunday 17 December 1916.</p></section></article><nav aria-label="Navigation"><p><a href="en/">Dost Arabî</a> › <a href="en/fusus/">Fusus al-Hikam</a></p><p><a rel="prev" href="en/fusus/fs12/">← The Heart Is Named for Its Turning</a> · <a href="dizin/fusus/">Index</a> · <a rel="next" href="en/fusus/fs14/">Fate — What You Said About Yourself in Eternity →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

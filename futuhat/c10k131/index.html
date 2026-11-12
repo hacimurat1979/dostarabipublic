@@ -2,63 +2,14 @@
 <html lang="tr" data-dost-lang="tr">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-yhw+xEMd+04C0oVMKh0xM0B48GJjSuJLHl1H0CzSU0o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-yhw+xEMd+04C0oVMKh0xM0B48GJjSuJLHl1H0CzSU0o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/futuhat/c10k131/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Merkeze Ulaşmak Üzere Sürekli İniş: Daire, Şekillerin En Üstünü</h2><p>Dört bölüm, âlemin yaratılış amacından (her ısırıkta farklı tat veren aynı elma) İlk Akıl&#x27;dan unsurlara uzanan bir kozmogoniye, oradan Dost&#x27;un kendi ağzından &#x27;dairenin şekillerin en üstünü olduğu&#x27; ve &#x27;bütün âlemin merkeze ulaşmak üzere sürekli aşağı indiği, bu inişin de Hakkı aramaktan başka bir şey olmadığı&#x27; öğretisine ulaşıyor; kapanışta izzet-zillet elbisesinin kıyamette el değiştirmesi ve üç sınıf insan sınıflaması işleniyor.</p><article aria-label="Kısım metni"><section><h3>Aynı Elmadan Farklı Tatlar: Âlemin Yaratılış Amacı</h3><p>294. Bölüm (Musevî mertebeden konuşulan, menzil adı &quot;Mekkeli Muhammedî Menzil&quot; olan) şu soruyla açılıyor: &quot;Acaba hayvan bu yaratılışta insana ortak mıdır, yoksa bu yaratılış insana mı özgüdür?&quot; (s. 275). Âlemin yaratılış amacının Hakk&#x27;ın bilinmesine delil olması işleniyor; İbn Arabî bir benzetme sunuyor: &quot;İnsan tek bir elmayı yerken her ısırışından farklı bir tat bulur. Elmayı tamamladığında ise ancak son ısırışta bulduğu başka bir tat bulur. Elma aynı elmadır&quot; (s. 278) — sonsuz ilahi nispetlerin, tek bir hakikatin farklı anlarda farklı biçimde tadılmasına benzetildiği bir örnek. Bölümde bir beyit geçiyor: &quot;Eşya zıtlarıyla ayrışır / Yokluk varlığı, varlık yokluğu ayırt eder&quot; (s. 279).</p></section><section><h3>Menzilin Soruları ve Kur&#x27;an&#x27;da İnsan</h3><p>294. Bölüm&#x27;de Dost, menzilin âlemin Allah katındaki mertebesinin bilgisini içerdiğini söyleyip sorularını sıralıyor: yokluğun kendisinden dolayı saygı gösterilmesi gereken bir mertebesi var mıdır; bedbaht ve kızılmış olanlardan yaratılmışların Allah katında saygın bir mertebesi var mıdır; Allah&#x27;ın âlemi taziminin sebebi nedir; yaratılmış âlemin kendisiyle bilindiği bir yücelik niteliği var mıdır (s. 274-275). Menzil insanın yaratılışının bilgisini de içerir: hayvan bu yaratılışta insana ortak mıdır; insan lafzı Kur&#x27;an&#x27;da niçin çoğunlukla kınanma, zayıflık ya da eksiklik özelliğiyle zikredilir? Kınama örnekleri &quot;kuşkusuz insan hüsrandadır&quot; ve &quot;insan rabbine karşı pek nankördür&quot;; zayıflık örnekleri &quot;biz insanı, çamurdan (süzülüp çıkarılmış) bir özden yarattık&quot; ve &quot;biz insanı (yüz yüze geleceği) zorluklar içinde yarattık&quot;; övgüyü kınamanın izlediği örnek ise &quot;insanı en güzel surette yarattık&quot; ardından &quot;sonra onu aşağıların aşağısına attık&quot; âyetidir (s. 275).</p></section><section><h3>Âlemin Yaratılış Gayesi, Nihayetsiz Nispetler ve Bilginin Artışı</h3><p>Âlemin Allah katındaki yeri için Dost şunu söylüyor: &quot;Allah âlemi kendisine duyduğu ihtiyaç nedeniyle yaratmadı. Allah âlemi bilinmesine delil olsun diye yarattı.&quot; Böylece varlık ve bilgi mertebesinden eksik olan tamamlanır; Allah âlemin yaratılışından daha önce sahip olmadığı bir kemal kazanmış değildir (s. 275). Allah ile âlem arasında nihayetsiz nispetler bulunduğundan mümkünlerin yaratılması da sonsuzdur; yaratılış dünyada ve ahirette süreklidir, mârifet de sürekli meydana gelir ve bu nedenle peygambere bilginin artışını istemek emredilmiştir. Bu artış varlıklar hakkında değil, &quot;âlemde var ettiği şeylere göre Allah hakkındaki bilgisinin artması&quot;dır; âlemde yaratılan her yeni şey zuhur eden bir ilahi nispetin bilgisini kazandırır (s. 276). Akıl taksiminin cinsleri sınırladığı itirazına cevap veriyor: göz görülenleri, kulak duyulanları kendi gücüne göre taksim ederdi; &quot;Herhangi bir imkâna sahip olan her bir güç bir taksim yaptığında, kendi gücünün dışında kalan şeyler de o taksimin dışında kalır&quot; (s. 277).</p></section><section><h3>Müteşabih, Boyun Eğen Yüzler ve İlahi Yeminler</h3><p>Dost, &quot;O&#x27;nun bilgisinden hiçbir şeyi bilemezler ancak O&#x27;nun dilediğini bilebilirler&quot; ve &quot;Onu bilgi bakımından ihata edemezler&quot; âyetlerinden sonra gelen &quot;Yüzler (Allah için) boyun eğmiştir&quot; âyetini açıyor: yüzler varlıkların zatları ve var olanların hakikatleridir, çünkü &quot;her şeyin yüzü onun zatı demektir&quot;; Allah âlemde yarattığı her şeyi kemali üzere yaratmıştır ve bu kemal onun yüzüdür (s. 278). Müteşabih inmemiş olsaydı, Allah&#x27;ın bilgisinde müteşabih bir şeyin bulunduğu bilinmezdi; Allah bize hem bilinen bir şeyin hem de yalnız Allah&#x27;ın bilebileceği bir şeyin bulunduğunu açıklamıştır (s. 278-279). İlahi yeminlerde Allah bazen &quot;Allah&#x27;a yemin olsun ki&quot; diyerek kendi ismi üzerine, bazen &quot;Rabbinin üzerine yemin olsun ki&quot;, &quot;Zariyat üzerine yemin olsun ki&quot;, &quot;yıldız üzerine&quot;, &quot;güneş üzerine&quot; gibi yaratıklar üzerine yemin eder; Dost&#x27;a göre yaratıklar zâhirde isimlerin yerine konulmuştur ve gizlenen şey isimlerdir (s. 279). &quot;Göğe ve onu yapana yemin olsun ki&quot; âyetini &quot;göğün yapıcısına&quot; diye açıyor; &quot;Göğün ve yerin rabbine yemin olsun ki&quot; âyetinde &quot;ve&quot; harfinin ortaklık bildirdiğini söylüyor (s. 281-282).</p></section><section><h3>Yokluğun Üstünlüğü ve Tenzih</h3><p>Dost, yokluğun üstünlüğünü anlatıyor: salt yokluğun değeri &quot;sırf varlığa delil olması&quot;dır; sınırlı yokluk varlığı kabul edebilecek niteliktedir ve bu yönüyle mutlak yokluktan üstündür; mutlak yokluk ise varlık niteliğinde kendisine ortak olup Allah&#x27;a verilen bir ismin kendisine verilmesi hususunda ilahi mertebe hakkındaki kıskançlığı nedeniyle olduğu hal üzere kalır (s. 279-280). Hak, var olanlar için tespih (tenzih) yükümlülüğü belirlemiştir; tenzih yokluk niteliğidir ve Hak kendisini onunla niteleyerek mutlak yokluğu şereflendirmiştir: &quot;İzzet sahibi Rabbin onların nitelemelerinden münezzehtir.&quot; Yokluk halinde ezel niteliği ona aittir ve &quot;Allah&#x27;ı Allah&#x27;ın dışındaki şeyler içinde mutlak yokluktan daha iyi bilen yoktur&quot; (s. 280). &quot;Kuşkusuz ki sen daha önce bir şey değil iken seni yarattık&quot; âyetinde, varlık halinde de itiraz etmeden ve kaderin akışına teslim olarak kalmayı, insanın şerefini varlığında yokluğuna dönmesinde görüyor (s. 280).</p></section><section><h3>Şiarlara Saygı, Azap ve Rahmetin Gazabı Geçmesi</h3><p>Dost, &quot;Kim Allah&#x27;ın şiarlarını yüceltirse, bu kalplerin takvasındandır&quot; âyetinde şiarların alametler ve deliller olduğunu, âyetin &quot;nefislerin&quot; veya &quot;ruhların&quot; değil &quot;kalplerin&quot; takvasından söz ettiğini, çünkü insanın her nefes halden hale girdiğini söylüyor; bu değişimin farkına varmak çetin iştir ve ancak güçlü kâmiller bu hale ulaşabilir (s. 281). Bazı ârifler bu durumlara saygıyı meşru görüp Allah&#x27;ın dışındaki her şeyi mutluluğa katmıştır; böyle bakan kimse kimseyi azap içinde görmez. Dost, Allah&#x27;ın iki yerin de dolacağını ve oralarda ebedî kalınacağını bildirdiğini, fakat acı demek olan azabın sürekli olacağına dair bir nass bulunmadığını söylüyor ve Ebu Yezid&#x27;in &quot;azapla haz almanın dışında&quot; sözünü anıyor (s. 282-283). Rahmetin gazabı geçmesini at yarışıyla anlatıyor: &quot;Öyleyse ipi göğüsleyen, geçendir&quot;; &quot;Rahmet Allah&#x27;ın yaratıkları hakkında gazabı geçmiştir. Öyleyse rahmet, Allah&#x27;ın keremiyle iki âlemde de öndedir&quot;; &quot;Rahmetim gazabımı geçmiştir&quot; ifadesi de &quot;Cehennemi insan ve cinlerle dolduracağım&quot; âyeti de doğrudur (s. 283-284).</p></section><section><h3>Kozmogoni: İlk Akıl&#x27;dan Unsurlara</h3><p>295. Bölüm (Muhammedî, Yüce Sayıların Mertebesi Menzili), bir kozmogoni şeması sunuyor: İlk Akıl&#x27;dan Nefs&#x27;e, Heba cevherine, cisme/Arş&#x27;a, Kürsü&#x27;ye, Atlas feleğine (burçlar), Mükevkeb feleğine (menziller/yıldızlar), dört feleğe ve nihayet unsurlara (ateş-hava-su-toprak) uzanan sıralı bir iniş. Amâ burada kozmolojik bir &quot;yer&quot; olarak teknik biçimde konumlandırılıyor: &quot;Onun üzerinde bulunan ve Amâ ile altında bulunan -ki Amâ üzerinde ve altında hava bulunmayan şeydir- mertebesi, Rab ismine aittir&quot; (s. 289). Yıldızların ışığının kaynağı da günlük bir örnekle somutlaşıyor: &quot;Çakmak taşında kıvılcımlar vardır ve tutuşur ve ondan lamba meydana gelir... güneşi bir lamba yaptı&quot; (s. 293-294).</p></section><section><h3>Menzilin İlimleri Fihristi ve Yılan Hikâyesi</h3><p>295. Bölüm&#x27;de Dost menzilin ilimlerinin fihristini veriyor: parıltılar (levaih) ilmi, sayılara dişiliğin girmesi, Manilik mensuplarının niçin sapmış olduğunun bilgisi, kan davasında velinin kanı bağışlaması ve öldürülenin hakkı, akıl ilmi, itibar ilmi, yıldız bilimcilerin bilgilerini nereden aldığı ve bu ilmin diğer ilimlerden üstünlüğü, keramet ile istidrac arasındaki fark ve Allah&#x27;tan başka insanı ve hayvanı sevmenin nedeni (s. 285-286). Yıldız ilmiyle ilgili hayvan hikâyesini aktarıyor: Endülüs&#x27;ün batısındaki Şelb&#x27;de bulunan, ne küçük ne büyük bir yılanın üst kısmı yenilince yıldız ilmi, ortası yenilince bitkilerin ilmi, kuyruğu takip eden kısım yenilince yerin altındaki suların ilmi kazandırır; Emirin kâtibi Abdullah b. Abdun yılanı tek vuruşla üç eşit parçaya bölmüş, kardeşleriyle birlikte yemişlerdir (s. 286). Sevginin iki nedeni vardır, nispet ve iyilik; nispet Allah&#x27;a dönük olduğunda daha yakındır, çünkü insan ilahi surete göre yaratılmıştır (s. 286).</p></section><section><h3>Kerrubiyyân, İlk Akıl, Nefs, Heba ve Doğa</h3><p>Dost, Allah&#x27;ın heybetinde kendilerinden geçmiş, Allah&#x27;tan başkası hakkında bilgisi olmayan kerrubiyyân meleklerini anlatıyor; bunlardan biri İlk Akıl&#x27;a, insanlardan Efrad&#x27;a tahsis edilmiştir ve Kutub&#x27;un yardımı İlk Akıl&#x27;dan gelir (s. 287). İlk akıl yazı ve tedvin âlemindeki ilk varlıktır ve örneksiz yaratılmıştır; ondan, bir zaman aralığı olmaksızın, türeme yoluyla nefs çıkar: &quot;Nefs, kıyamete kadar bu âlemde meydana gelen her şeyin kendisine yazıldığı korunmuş levhadır&quot;; nefisten karanlık cevher olan heba çıkmıştır ve Allah doğa mertebesini nefis ile heba arasında akledilir bir mertebe olarak var etmiştir (s. 287). Allah&#x27;ın belirli bir sebep vesilesiyle yarattığı her şey o varlığa özgü özel bir tecelliyle var olmuştur ve sebep onu bilmez; &quot;ona üflerim&quot; âyeti ile &quot;Allah&#x27;ın izniyle kuş olur&quot; bu bağlamda anılır (s. 287-288).</p></section><section><h3>Arş, Kürsü, Atlas Feleği ve Yirmi Sekiz Menzil</h3><p>Dost, cisimde ortaya çıkan ilk şeklin daire olduğunu, elifin mahreçlere uğrayarak harfleri içermesini anlatıp dairesellikten sonra ilk şeklin üçgen olduğunu, şekillerin sonsuza kadar gittiğini söylüyor (s. 288). Allah cismi heba&#x27;da tutar; doğa nefs için sanatkârın aleti gibidir. Cismi Arş diye isimlendirmiş, rahmetin kaynağı yapmış, Rahman ismiyle onun üzerine yerleşmiştir; dünya devam ettiği sürece onun için bilfiil dört, bilkuvve dört taşıyıcı yaratmış, kıyamette toplam sekiz olur (s. 288-289). Kürsü Arş içindeki bir suret değil, heba&#x27;da başka bir suret olup iki ayak Arş&#x27;tan ona sarkmıştır; sınırlı ve mutlak rahmet ayrışmış, tek kelime haber ve hüküm diye ikiye bölünmüş, hüküm emir ve yasağa, emir vacip, mendup ve mubaha, yasak haram ve mekruha ayrılmıştır (s. 289). Kürsü&#x27;nün aşağısındaki yıldızsız dairesel cisimde burçlar diye bilinen on iki ölçü takdir edilmiştir; Atlas feleğinin ortasındaki felek sabit yıldızlar feleği, yani yirmi sekiz menzilin yeridir ve Dost menzilleri Nath, Batin, Süreyya, Dübüran ile başlayıp Reşa ile biten bir listeyle sayar (s. 290). Gök bilimcilerin bilgisi Atlas&#x27;ta sonlanır, gerçekte Mükevkeb&#x27;de biter; Dost &quot;Biz bugün altı yüz otuz dört senesindeyiz&quot; diye kaydeder (s. 291).</p></section><section><h3>Unsurlar, Yıldızlar, Tespih Eden Türeyenler ve İdris</h3><p>Dost, toprağın boşluğun sonu ve kesiflerin son noktası olduğunu, âlemin hareketinin aşk ve sevgi kaynaklı olduğunu söyledikten sonra su unsurunu anlatıyor: &quot;Su, unsurlardan ilk var olan varlıktır&quot;; ondan kesifleşen toprak, ısınan kısım hava, ondan ısınan kısım ateş (esir küresi) olur ve &quot;bize göre unsurların aslı, sudur&quot;; bu konuda hakimler altı görüş ileri sürmüş, beşi hatalı, biri keşif ehliyle uyumludur (s. 292-293). Sudan çıkan buhar en büyük feleği talep etmiş, kevkeb feleği engelleyince geri dönüp yoğunlaşmış, Allah onu yedi gök ile parçalamıştır; esir küresinden uçuşan kıvılcımlar yıldızları meydana getirmiş, &quot;Güneşi bir lamba yaptı&quot; âyeti anılmıştır (s. 293). Gece, güneş ışığının yayılmasını engelleyen yerin karanlığıdır; ay aslı üzere ışıksızdır, Allah onun ışığını söndürmüştür (s. 294). Her felekte o feleğin doğasıyla aynı cinsten bir âlem düzenlenmiş, bunlar melekler diye isimlendirilmiştir; kuru, yaş, sıcak, soğuk, donuk, bitki, hayvan, kısaca her şey kendine özgü bir dille Allah&#x27;ı tespih eder (s. 294). Yıldız ilmini insanlara ilk öğreten Allah&#x27;tan alan İdris&#x27;tir (s. 295). Bölüm yıldızların &quot;O&#x27;nun emriyle amade&quot; olduğunu ve Kuşeyri&#x27;den aktarılan eşek hikâyesini anarak kapanır: eşeğe vuran adama eşek &quot;Bırak onu! Çünkü o kendi başına vurmaktadır&quot; demiştir (s. 295-296).</p></section><section><h3>Daire, Şekillerin En Üstünü: Merkeze Doğru Sürekli İniş</h3><p>295. Bölümde Dost önce dairenin geometrik üstünlüğünü ilan ediyor: &quot;Cisimde ortaya çıkan ilk şekil, dairedir ve o şekillerin en üstünüdür. Daire, şekiller arasında harfler arasında Elif harfi gibidir ve bütün şekilleri içerir&quot; (s. 288); ardından kürsünün altındaki bir cismin de dairesel olduğunu ekliyor: &quot;Hak, mertebe bakımından kürsü&#x27;nün aşağısında başka bir dairesel cisim yaratmış ve onu yıldız olmaksızın felek daireselliğinde var etmiştir&quot; (s. 290). Ardından âlemin hareketini merkez kavramıyla açıklıyor: &quot;Bütün âlem ise merkeze ulaşmak üzere, sürekli aşağı inicidir. Bu talep, bir mârifet talebidir ve merkezi de işinin kendisinde karar kılacağı şeydir... Öyleyse onun (merkezi) aramak üzere inişi süreklidir. Bu durum, Hakkı aramak diye ifade edilen şeydir. Öyleyse Hak, onun aradığıdır&quot; (s. 292).</p></section><section><h3>Cennet Dereceleri, Cehennem Derekeleri ve Uygun Karşılık</h3><p>296. Bölüm&#x27;de Dost cennet derecelerinin cehennem dereke sayısınca olduğunu söylüyor: insan emri yerine getirirse cennette özel olarak o amel için belirlenmiş bir derece elde eder, yapmazsa cehennemde ona karşılık gelen bir dereke vardır; &quot;Cennetteki o dereceden bir taş atılsaydı, ateşteki o derekenin istiva çizgisine düşerdi.&quot; &quot;Muttali oldu ve onu cehennemin ortasında gördü&quot; âyetini, Kehf suresindeki iki adam örneğini ve Saffat&#x27;taki &quot;benim bir arkadaşım vardı&quot; âyetini bu bağlamda anıyor (s. 297). Kutsi hadiste Allah&#x27;ın kıyamet günü kuluna İslam&#x27;ın beş ilkesini hatırlattığı, bir kısmına inanıp bir kısmını inkâr edenin kâfir kısmına katıldığı aktarılır; aynı ölçü şeriatın bütün emir ve yasaklarına, söze, akideye ve ameli terke uygulanır (s. 298). Şekilde cennetteki derecelerin, cehennemdeki derekelerin ve Araf&#x27;ın — bâtını rahmet, dışı azap olan sur — şekilleri verilir (s. 298-299).</p><p>Dost ilahi karşılıkların aynı cinsten olduğunu âyetlerle gösteriyor: &quot;Onlar tuzak kurdu, Allah da tuzak kurdu&quot;, &quot;Allah da onlarla alay eder&quot;, &quot;Bugün de iman edenler inkâr edenlere güler&quot;, &quot;Onlar Allah&#x27;ı, Allah da onları unuttu&quot;; bu nedenle karşılık &quot;uygun karşılık&quot; diye isimlendirilmiştir (s. 299-300). Kibirlilerin zerreler gibi diriltilip insanlar tarafından ayakla çiğnenecekleri rivayet edilmiştir. Müşrik, iyi ahlakının ve amellerinin karşılığını sorunca Allah ona &quot;Sen bu amelleri yaptığında […] sana ihsan ettiğim şu şu nimetlerle karşılığını vermiştim&quot; der ve müşrik bunu onaylar; Dost bu konuyu &quot;cennet ehli ile cehennem ehli arasındaki miras meselesi&quot; diye adlandırıp cennet ve cehennem bahislerinde anlatacağını söylüyor (s. 300).</p></section><section><h3>Fiilde Tecelli ve İsmail b. Sevdekin&#x27;in Uyarısı</h3><p>Dost menzilin ilimleri arasında Hakk&#x27;ın mutlu kullarına bedbahtların mertebelerini sormasının bilgisini ve ilimlerin iki kısmını — yalnız zevkle bilinen ve fikir gücüyle idrak edilen — sayıyor (s. 301). Şemseddin İsmail b. Sevdekin et-Tevrî&#x27;nin dikkatini çektiği bir meseleyi aktarıyor: fiilde tecelli mümkün müdür? Dost&#x27;a göre &quot;Bir şey yapmayla yükümlü tutmak, yapmayacağını ve amel etmeyeceğini bildiği bir kimseye &#x27;yap&#x27;, &#x27;işle&#x27; diyen bir alim ve hikmet sahibinden meydana gelmez&quot;; kulun fiille bir ilgisi olmalıdır ve bu ölçüdeki bir ilişki nedeniyle fiilde tecelli kabul edilir. İbn Sevdekin&#x27;in uyarısı şudur: Hak insanı kendi suretine göre yarattığı için fiil insanın bir niteliğidir, &quot;Fiil kendisinden soyutlanmış olsaydı, Allah&#x27;ın suretine göre olmuş olmazdı&quot;; Dost bu uyarıyla ne kadar sevindiğini söylüyor ve üstadın bazen bilgiyi öğrencisinden öğrenebileceğini belirtiyor (s. 301-302). Menzil öğretimde siyaset yöntemini, yani öğrenci farkında olmadan nezaketle öğretmeyi de içerir (s. 302).</p></section><section><h3>İzzet-Zillet Elbisesinin El Değiştirmesi</h3><p>296. Bölüm (Musevî, Ahirette Mutluların Niteliklerinin Bedbahtlara İntikali Menzili), cennet dereceleri ile cehennem derekelerinin simetrik yapısını işliyor. Bölümde tegabün (karşılıklı kayıp-kazanç) gününde izzet ve zilletin el değiştirmesi anlatılıyor: &quot;Kıyamet günü olduğunda ise kâfirin izzeti ve sevinci kendisinden çıkartılır ve mümine giydirilir. Müminin dünya hayatında ibadet esnasındaki elbisesi olan zilleti ve korkusu çıkartılır, kıyamet günü kâfire giydirilir&quot; (s. 301).</p></section><section><h3>Her Suretin Tespihi ve Kaf Dağındaki Yılan</h3><p>297. Bölüm&#x27;de Dost &quot;Her şey Rabbinin hamdini tespih eder&quot; âyetini açıyor: âlemdeki her suret kendisine ilham edilmiş özel bir hamdle yaratanını tespih eder; bir suretin bozulması aynı cevherde başka bir suretin görünmesidir, suretlerin yok olma zamanı diğerlerinin var olma zamanıdır (s. 303-304). İnsan ve cinlerin dışındaki bütün âlemin insanın duyusundan gizli kalan şeyleri keşfetme özelliği olduğunu, taşların, bitkilerin ve hayvanların Hz. Peygamber&#x27;in nebiliğini bilmesinin buradan kaynaklandığını söylüyor (s. 304). Yusuf b. Ahlef el-Kümi&#x27;nin 586 senesinde aktardığına göre Musa es-Serdani Kaf dağında okyanusu çevreleyen yılana selam vermiş; yılan Ebu Medyen&#x27;in halini sormuş ve &quot;Allah birisini dost edindiğinde, onun (adını) bizim zatlarımıza duyurur, onun sevgisini bize, yeryüzüne ve bizim kalplerimize indirir. Artık her taş veya toprak veya ağaç veya hayvan, onu tanır ve sever&quot; demiştir (s. 304-305).</p></section><section><h3>&quot;-den Daha&quot; Kalıbı, İsimlerin İsimleri ve Yüz</h3><p>Dost, insanın dışındaki bütün yaratıkların huşu ve tevazu makamında olduğunu, insanın ise Allah&#x27;a karşı büyüklük iddiasına kalkabildiğini, İblis&#x27;in de Âdem&#x27;e karşı büyüklendiğini fakat Allah&#x27;a karşı büyüklenmediğini söylüyor; böyle bir iddia Firavun ve kavmi örneğinde yerleşince Allah varlıkta &quot;-den daha&quot; kalıbını yerleştirmiştir (s. 305). Bu kalıp kınanmış (Firavun&#x27;un iddiası) ve övülmüş (&quot;merhamet edenlerin en merhametlisi&quot;, &quot;yaratanların en güzeli&quot;) olmak üzere iki türlüdür (s. 305-306). Menzil isimlerin ilmini ve isimlendirilene gösterilen saygıyı da içerir: Allah&#x27;ın Arapça&#x27;da &quot;Allah&quot; diye isimlendirdiği isim Farsça&#x27;da Huda&#x27;dır ve bunlar &quot;isimlerin isimleri&quot;dir; Mushaf yanımızda iken düşman bölgesine yolculuk yapmamız yasaklanmıştır, çünkü Mushaf&#x27;ın delaleti vardır (s. 306-307). Kâmil kulun yüzünün saygıya daha layık olduğunu söyleyip Hz. Peygamber&#x27;in kölesinin yüzüne vuran adama &quot;Yüzden sakın! Çünkü Allah Âdem&#x27;i kendi suretine göre yarattı&quot; dediğini aktarıyor; &quot;Bir şeyin yüzü, o şeyin zati demektir&quot; (s. 307).</p></section><section><h3>Yaratma ile Takdir: İsimler Arası Fark</h3><p>297. Bölüm (Muhammedî, En Yüce Mertebede İnsan Çamurunun Tesviyesinin Övülmesi Menzili), insanın kendini büyütmesiyle (&quot;-den daha&quot; kalıbıyla, Firavun örneği) Hakk&#x27;ın rahmetle büyüklüğü arasındaki karşıtlığı işliyor; ardından ilahi isimler arasında ince bir ayrım kuruyor: el-Hâlık ve el-Kâdir isimleri &quot;yaratma&quot;yı, el-Müdebbir/el-Mufassıl/el-Mukaddir isimleri ise &quot;takdir&quot;i temsil ediyor (s. 307) — hem lafız hem anlamca birbirinden ayrılan iki farklı ilahi fiil kategorisi.</p></section><section><h3>Şiblî, Unutmanın Rahmeti ve Ruhsatlar</h3><p>Dost, yükümlülük aklının otoritesi altında sınırlanmış kimsenin gayelerinin gerçekleşmesiyle muhatap olmadığını söyleyip Şiblî örneğini veriyor: rivayete göre Şiblî namaz vakitlerinde şuur haline döndürülürdü, namazdan sonra kendinden geçme hali yine hakim olurdu; Cüneyd&#x27;in &quot;Şibli hakkında kötü söz söylenmesini engelleyen […] Allah&#x27;a hamd olsun&quot; sözünü aktarıyor (s. 309). Allah&#x27;ın âlemde gerçekleşen unutmalarda gizlediği rahmeti anlatıyor: günahlar ve hatalar Allah&#x27;ın ilminde takdir edilmiştir; açıklık ve keşif halinde işlenseydi Allah&#x27;a karşı hayânın azalmasında abartı olurdu. Hz. Peygamber&#x27;in hadisi: Allah kaza ve kaderini uygulamak istediğinde akıl sahiplerinden akıllarını çeker alır, uyguladığında tekrar iade eder ki ibret alsınlar; ayrıca &quot;Ümmetimden hata ve unutma kaldırılmıştır&quot; (s. 310). Unutarak orucunu bozan kimse günaha girmese de kaza etmelidir, çünkü onu Allah yedirmiş ve içirmiştir; &quot;Hac her sene mi?&quot; diye soran kimseye &quot;evet deseydim farz olacaktı&quot; hadisi de anılır (s. 310). Fakihlerin illet, kıyas, istihsan gibi yollarla hükümleri çoğalttığını, sıradan insanlardan ruhsat rahmetini esirgediklerini söyleyip Hz. Peygamber&#x27;in &quot;Allah size sadaka vermiştir. Onun verdiği sadakayı alınız&quot; dediğini aktarıyor (s. 311).</p></section><section><h3>Gizli ve Açık Zikir; Bilginin Hatırlama Olması</h3><p>Dost, Hakk&#x27;ın bilgisinin insanın gizlediği ile açıkladığı arasındaki farkı anlatıyor: Hakk&#x27;ın bir gaybı, bir de mazharı vardır; el-Bâtın ismi yönüyle Hak kulunu içinden zikreder, ez-Zâhir ismi yönüyle onu meleklerden ibaret bir topluluk içinde ya da ilahi isimler topluluğu içinde zikreder; sırdan daha gizli olan ise yalnız Hakk&#x27;ın bildiğidir: &quot;Öyleyse bilgi üç şeyle ilgilidir: Açıklık, sır ve sırdan daha gizli olan&quot; (s. 312). Allah insana her şeyin bilgisini yerleştirmiş, sonra onunla kendisi arasına perde koymuştur ve bu bilgiye bütün âlem tahsis edilmiştir; &quot;Biz ona şah damarından daha yakınız&quot; âyeti anılır (s. 312-313). Kulun bildiği şeyler bir hatırlamadır: &quot;İnsanın bilgisi, daima hatırlamadır&quot;; Zünnun el-Mısri örnek verilir ve Allah misak gibi bu bilgiyi yaratıklarına unutturmuştur (s. 313). Menzil her ilahi ismin bütün ilahi isimlerle isimlendirilmiş olduğunu (&quot;ister Allah deyin ister Rahman deyin&quot;) ve her cevherin âlemdeki bütün hakikatleri içerdiğini de bildirir; Dost bu bilginin cemaatten ayrı olarak kendisine tahsis edildiğini, Ebu&#x27;l-Kasım b. Kasî&#x27;nin Halu&#x27;n-Na&#x27;leyn&#x27;de aynı görüşü yazdığını söylüyor (s. 314).</p></section><section><h3>Kapanış: Üç Sınıf İnsan ve Günlük Analojiler</h3><p>297. Bölümün kapanışı, insanları üç sınıfa ayıran bir sınıflandırmayla noktalanıyor: &quot;Öyleyse bizler üç sınıfız: Birinci sınıf, düşüncesi doğru ve bakışı keskin olanlardır. İkinci sınıf, gözlerinde perde bulunan kimselerdir... Bir kısmımız ise kör ve şaşıdır... Dördüncü bir sınıf ise yoktur&quot; (s. 308). Bölüm 295&#x27;teki bir başka pasaj, mananın farklı mertebelerde (akli/duyulur/hayali) farklı &quot;kalıp&quot; aldığını bir benzetmeyle anlatıyor: &quot;Onlar (manalar), üzerinde bulunduğu şeyin rengini aldığı bukalemuna benzer&quot; (s. 292). Bölüm 294&#x27;teki at yarışı örneği de (s. 283-284) rahmetin gazabı &quot;geçmesi&quot; öğretisini anlatıyor: geniş nefesli ama yavaş bir at, sonunda dar nefesli hızlı atı geçer.</p></section></article><nav aria-label="Gezinme"><p><a href="./">Dost Arabî</a> › <a href="futuhat/">Fütûhât-ı Mekkiyye</a> › <a href="dizin/futuhat/#cilt-10">Cilt X</a></p><p><a rel="prev" href="futuhat/c10k130/">← İki Kumanın Bir Araya Gelmesi: Zıtları Birleştirmeyle Allah&#x27;ı Bilmek</a> · <a href="dizin/futuhat/">Dizin</a> · <a rel="next" href="futuhat/c10k132/">Beden, Bir Terazi Sureti: Adalet ile İhsan Arasında →</a></p></nav><section aria-label="Dost'un kendi dizininde"><h3>Dost'un kendi dizininde</h3><p>Bu dizin Dost'un kendi <a href="futuhat/c1k2/">Fihrist</a>'inden aktarıldı.</p><ul><li><strong>294. Bölüm</strong>: “Mekkeli Muhammedi menzilin Musevi mertebeden bilinmesi.” (Kitabın Fihristi, C1 s. 52)</li><li><strong>295. Bölüm</strong>: “Şerefli sayıların menzilinin Muhammedi mertebeden bilinmesi.” (Kitabın Fihristi, C1 s. 52)</li><li><strong>296. Bölüm</strong>: “Mutluların özelliklerinin bedbahtlığa intikal menzilinin Musevi mertebeden bilinmesi.” (Kitabın Fihristi, C1 s. 52)</li><li><strong>297. Bölüm</strong>: “Muhammedi mertebeden Âdem&#x27;in toprağının tesviyesinin yüce mertebede övülme menzilinin bilinmesi.” (Kitabın Fihristi, C1 s. 52)</li></ul></section></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

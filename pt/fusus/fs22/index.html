@@ -2,63 +2,14 @@
 <html lang="pt-BR" data-dost-lang="pt">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-lrarSo7VBhm8Km3p5i6mQOP5aUEW9hOLvBuv/kB5r6M='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-lrarSo7VBhm8Km3p5i6mQOP5aUEW9hOLvBuv/kB5r6M='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/pt/fusus/fs22/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>A Palavra de Elias</h2><p>Da afirmação de que Elias é a mesma pessoa que Idris, e de sua ascensão aos céus, o engaste passa à questão da transcendência (manter Deus livre de semelhança) e da imanência (vê-Lo numa forma). Segundo Ibn &#x27;Arabi (conforme transmitido por Konuk), cada uma, sozinha, permanece incompleta.</p><article aria-label="Texto desta parte" lang="pt-BR"><section><h3>Os Dois Temperamentos de Elias; Sutileza e Densidade no Espírito e no Corpo</h3><p>Konuk abre o engaste com os dois temperamentos de Elias. Por seu temperamento espiritual, Elias pertence ao temperamento das formas angélicas, e por seu temperamento corporal ao das formas humanas; assim, conversou com os anjos de um lado e se misturou com os seres humanos do outro. Konuk: “Portanto, Elias apareceu como aquele que reúne duas formas, com a condição de um istmo (barzakh) entre dois mundos.” (p. 1162)</p><p>Konuk explica que o espírito e o corpo a que chamamos ‘si’ (nafs) são, na realidade, uma só coisa: “A diferença entre eles não é senão sutileza e densidade.” (p. 1162) O exemplo é o vapor: “Embora nuvem, água e gelo não sejam senão vapor, seus nomes mudam em cada nível.” (p. 1162) Diz que a ligação do espírito com o corpo não se dá por inabitação (hulul) nem por união (ittihad); para o corpo que adquire sutileza, “a forma permanece enquanto a qualidade da sutileza se produz. Esse corpo é então um espírito formado.” (p. 1162) Observa que as vidas dos santos relatam estados como estar presente em vários lugares ao mesmo tempo, que pertencem à natureza do espírito, e menciona os estados de Khidr e de Jesus no mesmo quadro. No exemplo do ferro em brasa: “Estando nesse estado, é ao mesmo tempo ferro e fogo.” (p. 1163)</p></section><section><h3>A Identidade de Idris e Elias, e um Ponto Omitido</h3><p>Ibn &#x27;Arabi afirma que Idris, que foi elevado ao céu, e Elias são a mesma pessoa — uma afirmação que ele repete frequentemente em outras partes de seu corpus. O nome do ídolo Ba&#x27;l também aparece no engaste, mas apenas como uma nota etimológica (sua relação com o nome da cidade Baalbek); o texto não aborda diretamente o tema da idolatria, passando rapidamente para outro assunto (transcendência-imanência).</p><p>A história da montanha se abrindo, um cavalo de fogo emergindo dela, e Elias sendo purificado do desejo ao montá-lo, é apresentada no comentário de Konuk como uma cena cheia de símbolos: a montanha representa a determinação corporal, a abertura representa a disciplina espiritual, e montar o cavalo representa a ação justa.</p><p>Konuk liga a frase do engaste ‘Elias é Idris’ ao que se diz no engaste de Idris: por meio de muita disciplina espiritual, Idris despojou-se dos atributos humanos e naturais e permaneceu em forma luminosa. “Pois o nobre Idris não comeu, não bebeu e não dormiu por dezesseis anos.” (p. 1164) Konuk descreve a esfera do Sol assim: “A esfera do Sol é o ponto polar em relação aos planetas que compõem o seu sistema, e a quarta esfera em relação à terra.” (p. 1164) Explica que não se pode subir até lá corporalmente, porque “o espírito sutil, diferentemente do corpo denso, não se queima nem se dissolve no fogo.” (p. 1164) Dá a Baalbek o sentido de ‘o ídolo do emir’ e menciona a descida de Jesus no fim dos tempos como sendo do mesmo tipo; pede que não se caia na noção de transmigração: “Antes, Elias é Idris, que desceu do lugar elevado em estado de espírito formado.” (p. 1165)</p><p>Konuk dá os detalhes dos símbolos, tomando a cena como um acontecimento no mundo das imagens: “‘Montanha’ aponta para a determinação corporal de Elias; e ‘a fenda da montanha’ aponta para a rachadura dessa determinação densa pela abundância da disciplina espiritual.” (p. 1165) O cavalo que sai é a forma das obras que procedem de sua própria determinação segundo o nome particular de que Elias é o lugar de manifestação; montar o cavalo é cavalgar essas obras justas. Konuk acrescenta que cada profeta tem um caminho próprio e, conforme ele, uma ‘montaria’ (p. 1165). Lê o fato de o cavalo e o sinal serem de fogo como o domínio do calor do anseio e como a sutileza da determinação e das obras: “pois o mais sutil dos quatro elementos é o ‘calor’.” (p. 1166) Sobre a queda do desejo: “Pois o desejo está entre as exigências dessa determinação densa.” (p. 1166) Como o lugar dos fins egoístas, como o desejo sexual, a ira, o orgulho e a inveja, é a determinação densa, “desaparecido o lugar, naturalmente também não permanece o que nele reside.” (p. 1166)</p><p>O próprio Konuk formula e responde à pergunta se Idris e Elias são o mesmo ou diferentes: “Idris e Elias (a paz esteja com eles) são um só do lado do &#x27;ayn e da realidade e são o &#x27;ayn um do outro; e do lado da determinação formal e do aparecimento pessoal são duas pessoas e o outro um do outro.” (p. 1205) Sua razão é que o Real, sendo o &#x27;ayn único, aparece em muitas formas segundo Seus nomes, e que o &#x27;ayn de cada forma é o próprio &#x27;ayn das outras formas, havendo ao mesmo tempo diferença entre as formas (p. 1205).</p></section><section><h3>Transcendência e Imanência: Duas Faces Que Se Requerem</h3><p>A seção mais extensa do engaste aborda a ideia de que o conhecimento que vem com a teofania carrega transcendência e imanência juntas, e que uma não pode existir sem a outra. O versículo &#x27;nada há semelhante a Ele&#x27; (Shura 42/11) é citado aqui como evidência tanto para a transcendência (nada se assemelha a Ele) quanto para a imanência (ser referido como uma &#x27;coisa&#x27;, uma espécie de qualificação).</p><p>A essência desta discussão emerge no comentário de Konuk como um princípio: a existência é uma, mas se divide em duas por consideração (dependendo do ponto de vista) — o agente (o Real) e o afetado (o mundo). Essa distinção traz o engaste de Elias para uma tensão aparente com o engaste de Zacarias (se o efeito ocorre para o não-existente ou para o existente), mas Konuk resolve essa contradição aparente através de uma diferença de nível (unicidade da essência versus unicidade da multiplicidade).</p><p>Konuk liga a afirmação do engaste ‘o Real foi declarado transcendente em Elias’ ao fato de Elias permanecer um espírito despido de desejos: o conhecimento dos anjos, dos espíritos e dos intelectos, livres de desejos, repousa na transcendência. Konuk cita Baqara 2/30: os anjos disseram “Ao passo que nós Te glorificamos com louvor e Te santificamos,” e diz “E a transcendência é a metade do conhecimento divino.” (p. 1166) Diz o mesmo dos sábios exotéricos que seguem a razão especulativa: “recuam diante da imanência e afirmam a transcendência; e não têm gosto pela imanência.” (p. 1167)</p><p>Quando o conhecimento é dado por teofania, a razão já não está do lado só da transcendência nem só da imanência. Konuk: “Isto é, quando Deus Altíssimo dá conhecimento à razão por teofania, ela se livra de sua própria especulação e já não está na transcendência, que é a metade do conhecimento, nem na imanência; antes, está no absoluto (itlak).” (p. 1167) Dessa razão: “Onde quer que o Real tenha afirmado a transcendência e a imanência de Si mesmo, ela também O afirma transcendente e imanente nesses lugares.” (p. 1167) Konuk diz que a sua transcendência não é a transcendência nominal dada pela razão especulativa, mas a transcendência real dada pela teofania, e que a sua imanência também é testemunhada e desvelada. As leis reveladas vieram com transcendência e imanência, “mas nelas não se permite excesso nem descuido; é preciso, antes, afirmar a imanência dentro da transcendência e a transcendência dentro da imanência.” (p. 1168) Konuk observa que os detalhes dessa discussão passaram no engaste de Noé.</p><p>Konuk lê Shura 42/11 de duas maneiras: “Se o ‘kaf’ em ‘ka-mithlihi’ for considerado supérfluo, significa ‘nada há semelhante a Ele’. Como nesse sentido se nega a semelhança, isso é transcendência. E se o ‘kaf’ não for considerado supérfluo, mas tomado no sentido de ‘mithl’, o sentido torna-se ‘nada há semelhante ao semelhante a Ele’. Isto é a própria imanência.” (p. 1169) A frase seguinte, ‘E Ele é o Que Ouve, o Que Vê’, é imanência porque transmite que o Real se assemelha à criação no ouvir e no ver; mas, segundo a compreensão dos eleitos, expressa restrição: “Quem ouve e vê é somente o Real; não há outro ouvinte e vidente.” (p. 1170) Konuk conta isto também como transcendência.</p><p>Em seguida o Fusus passa a Saffat 37/180. Konuk: “Portanto Deus Altíssimo declarou-Se transcendente para além da transcendência que as criaturas realizam com seus intelectos. Pois os que afirmam a transcendência pelo intelecto delimitaram o Real.” (p. 1171) Como exemplo: “Quando se diz que o Real é transcendente em relação a um corpo limitado por um limite, isso equivale a dizer que o Real está fora dele: onde terminam os limites do corpo, começam os limites do Real.” (p. 1171) Konuk acrescenta que só conhecem o Real em si os intelectos iluminados pela teofania e pelo desvelamento-testemunho luminoso, e que transcendência e imanência são afirmações feitas quanto à relação entre os dois modos divinos a que chamamos o Manifesto e o Oculto (p. 1171).</p><p>Konuk deduz de a imaginação ser o sultão supremo no ser humano que as leis reveladas desceram com o julgamento da imaginação: “Isto é, na estação da transcendência as leis reveladas afirmaram a imanência na língua da imaginação.” (p. 1169) Na estação da imanência, por sua vez, afirmam a transcendência na língua da razão. Por mais que a razão de um racional alcance a perfeição, termina na imaginação. Como exemplos enumera o estabelecer-se (istiwa&#x27;) em Sajda 32/4, ‘a mão de Deus’ em Fath 48/10 e o escárnio em Baqara 2/15: “Vê-se que a lei veio com a imanência que a imaginação julga.” (p. 1172) Diz que a transcendência das leis nasce da insuficiência dos intelectos em perceber a coisa como ela é, e que por isso o Real declarou-Se transcendente para além da transcendência dos intelectos (p. 1172).</p><p>Konuk explica os dois aspectos que o Fusus dá para An&#x27;am 6/124 pela estrutura da frase: no aspecto de início, ‘Deus’ é o sujeito e ‘sabe melhor’ o predicado; no aspecto de predicação, ‘os mensageiros de Deus’ é o sujeito e ‘Deus’ o predicado: “Os mensageiros de Deus são Deus. Ele sabe melhor onde colocar a Sua mensagem.” (p. 1173) A razão: todo mensageiro é um ser humano perfeito, e o ser humano perfeito é o lugar de manifestação do nome abrangente ‘Allah’; o Real é a identidade (huwiyya) dos mensageiros, e os mensageiros são a forma do Real. Konuk diz que o aspecto de início é o conhecido entre os sábios, enquanto o aspecto de predicação não seria prontamente aceito pelos sábios exotéricos, e cita Anfal 8/17 como testemunha (p. 1174): “Isto é, sendo a identidade (huwiyya) do Real o próprio &#x27;ayn da identidade dos mensageiros, a imanência que há nos mensageiros se estabelece para a transcendência que há na identidade do Real, e a transcendência que há na identidade do Real se estabelece para a imanência que há nos mensageiros.” (p. 1174)</p></section><section><h3>A Soberania da Imaginação: Até as Leis Reveladas Falam Sua Língua</h3><p>A imaginação é declarada um &#x27;maior sultão&#x27;, mais poderosa que a razão, porque as próprias leis reveladas se dirigem às pessoas na língua da imaginação — através de formas e parábolas.</p><p>O caminho do viajante também é redefinido neste contexto: descer da razão para o desejo e se tornar &#x27;o animal absoluto&#x27; é descrito junto com o desvelamento de ver o estado dos que estão nos túmulos, e a condição de ser incapaz de relatar esse desvelamento (mudez). Konuk acrescenta aqui a história do galo e do cachorro de Rumi.</p><p>O Fusus diz que quem deseja tomar ciência da sabedoria de Elias deve descer do domínio de sua razão ao seu desejo e tornar-se ‘o animal absoluto’. Konuk explica: “que seja como um animal cuja razão não o estorva na disposição das coisas e que se submete aos influxos do Compassivo.” (p. 1201) Segundo o Fusus, essa realização da animalidade tem dois sinais: ver na sepultura quem está sendo castigado e quem está em bem-aventurança, e ver o morto como vivo, o calado como falante e o sentado como caminhante; o segundo é a mudez, não conseguir dizer o que viu mesmo que queira. O Fusus acrescenta que um discípulo seu que teve esse desvelamento sem a mudez não realizou a animalidade. Konuk resume a história do terceiro volume do Mathnawi: um homem que pediu a Moisés para entender as línguas dos animais ouve o galo dizer ao cão: ‘Amanhã o cavalo do senhor morrerá’; o senhor vende o cavalo, depois a mula e o escravo, e por fim o galo anuncia a morte do próprio senhor (p. 1202). Konuk: “A palavra do Xeique Akbar ‘o animal não pode dizer o que vê’ é quanto à língua dos sentidos; de resto, o animal fala em seu próprio mundo de imagens com seu espírito e seu sentido.” (p. 1203)</p><p>Konuk descreve a passagem do viajante, nessa estação, ao grau de ‘intelecto puro’ pela realização abrangente: “Por realização abrangente entende-se tanto o desvelamento quanto a mudez.” (p. 1203) Nesse grau o viajante compreende que “aquilo que se chama percepção revela-se não ser algo que surge das formações deste cérebro elemental,” (p. 1204) e testemunha que os diversos juízos que aparecem nas formas naturais são os sentidos das entidades fixas que desceram às formas naturais. Konuk enumera assim os graus da existência absoluta, a realidade única: “no grau da unicidade da Essência é idêntica à Essência; no grau das entidades fixas é puro sentido, inteligível; no grau dos intelectos é intelecto puro, e no grau da alma é alma; no grau da animalidade é animal; e nos graus da planta e do mineral é planta e mineral.” (p. 1204)</p></section><section><h3>Teofania nas Formas, Sonhos e Velamento</h3><p>Sobre a frase do Fusus ‘descemos os véus sobre o &#x27;ayn do crítico e do crente’, Konuk explica o crítico como aquele que raciocina pela razão especulativo-demonstrativa e o crente como o crente por imitação. Ambos são formas entre as formas em que o Real Se manifesta; o velamento é ordenado para que se tornem evidentes as diferenças entre as disposições das formas e o aparecimento do Real conforme a disposição de uma forma (p. 1175). Konuk diz que as formas são os lugares de manifestação dos nomes divinos e que os nomes diferem uns dos outros. Dá o exemplo do sonho: “Pois a vigília é, na realidade, sonho e imaginação.” (p. 1175) Para quem vê o Real numa forma durante o sono, os concomitantes da forma seguem o Real; se o intérprete é uma pessoa de razão e especulação, passa além da forma e diz: ‘O Real é transcendente em relação à forma’; se é uma pessoa de desvelamento ou de imitação e fé, “essa pessoa nem restringe o Real a essa forma nem O despoja de todas as formas.” (p. 1176) Konuk toma a palavra ‘Allah’ como o grau da divindade e acrescenta: “Pois não é permitido nomear a Essência absoluta com ‘Allah’ e restringi-la com esse nome.” (p. 1177) Uma nota de rodapé da edição informa que a oração explicativa posta entre travessões no texto do Fusus não é do Fusus, mas foi acrescentada por Ahmed Avni Bey tendo em vista o comentário de Bosnawi (p. 1176).</p></section><section><h3>O Agente e o Afetado</h3><p>O princípio que o Fusus chama de ‘espírito e essência’ desta sabedoria é que o comando se divide em agente e afetado: o agente, em todos os aspectos, é Deus, e o afetado, em todos os aspectos, é o mundo. Konuk dá dois exemplos. O primeiro: “Quando uma pessoa coloca em sua mão esquerda uma moeda que tinha na direita, a mão direita é a autora do ato de colocar e a esquerda a receptora desse ato.” (p. 1178) O segundo é que o exterior do ser humano é ‘animal’ e o seu interior ‘racional’, e o interior age sobre o exterior. Depois: “a existência do mundo é o exterior do Real; e o Real é o interior e a identidade (huwiyya) da existência do mundo; e ambos são duas considerações do grau da divindade, que é de um só &#x27;ayn.” (p. 1179) À pergunta sobre a contradição com a afirmação do engaste de Zacarias de que o efeito ocorre ‘para o inexistente’, Konuk responde que aquela afirmação é quanto ao grau da unicidade (ahadiyya) e esta quanto ao grau da unicidade-na-multiplicidade (wahidiyya): “Portanto, aqui o efeito vai dos nomes ativos para os lugares de manifestação passivos.” (p. 1179) Explica como o Real pode ser afetado por meio do hadith da proximidade pelos atos supererrogatórios: “os atos supererrogatórios vindos do servo agem sobre o Real e tornam-se a causa do amor do Real” (p. 1180); e sobre os versículos da súplica e da resposta (Mu&#x27;min 40/60, Baqara 2/186): “Quando o servo suplica, sua súplica age sobre o Real. Nesse caso o Real é o afetado.” (p. 1183)</p></section><section><h3>O Uno Que É Muitos, e o Espelho</h3><p>O Fusus diz: ‘O Real é o uno que é muitos; com as formas é muitos, com o &#x27;ayn é um’. Konuk explica isso com os membros de Zayd: a mão de Zayd não é a forma de seu pé, nem o seu olho a de sua sobrancelha, mas Zayd é a totalidade desses membros; “Zayd é muitos quanto às formas de seus membros e um quanto ao &#x27;ayn de sua pessoa. Assim, Zayd é o uno que é muitos.” (p. 1184) Diz o mesmo do conceito ‘ser humano’: o que vem à mente não são as formas de seus indivíduos, como Zayd, &#x27;Amr e Khalid, mas um sentido único. Konuk traduz assim a quadra de &#x27;Umar Khayyam: “O Real é a alma do mundo e o mundo é, todo ele, o corpo. As classes de anjos são os sentidos deste corpo, desta armação. As esferas, as coisas geradas e os elementos são os membros. Isto, e somente isto, é tawhid. Todas as outras palavras apontam para a multiplicidade.” (p. 1183)</p><p>O Fusus explica o aparecimento do Real numa forma no Dia da Ressurreição e depois a Sua transformação em outra por meio do &#x27;ayn único que está no lugar de um espelho: o observador que vê nele a forma de sua crença a conhece e a afirma, e quem vê algo diferente da sua crença a nega. Konuk explica o efeito do espelho sobre a forma: “Por exemplo, se se olha para um espelho côncavo ou convexo, ele mostra a forma de uma pessoa gorda, baixa e de cabeça achatada, ou magra e comprida.” (p. 1186) e “Assim, o espelho é, num aspecto, agente e, noutro aspecto, afetado.” (p. 1186) A frase ‘olha para um espelho, não para a comunidade’ ele interpreta assim: os espelhos que mostram as formas alteradas são os espelhos dos nomes divinos, e o espelho que mostra cada forma em seu estado original é o espelho da unicidade essencial; ao se olhar o nome Provedor (Razzaq), o sentido de prover aparece como uma realidade diferente das realidades de nomes como Curador (Shafi&#x27;), Elevador (Rafi&#x27;) e Compelidor (Jabbar) (p. 1187).</p></section><section><h3>A Serpente, a Morte do Si e o Limite</h3><p>Konuk toma o hadith do Fusus, ‘Deus ama a coragem mesmo na morte de uma serpente’, em relação ao si (nafs): “A serpente não é senão o teu próprio si.” (p. 1188) ‘Matar o si’ não é suicídio, mas o que o povo de Deus chama de ‘morte vermelha’, “que consiste em remover o seu atributo opondo-se aos desejos do si.” (p. 1189) Mesmo que a forma exterior seja destruída, a essência e a realidade de uma pessoa não podem ser mortas: “Pois o limite (hadd), isto é, o conhecimento divino, a retém; e o imaginal, isto é, o mundo das imagens, não a remove.” (p. 1189) Seu exemplo é o pintor: quem lança o quadro ao fogo destruiu apenas o quadro sensível; “a forma desse quadro que existe no conhecimento do pintor permanece.” (p. 1190) Konuk acrescenta a esta discussão a tradução dos versos de Rumi que começam com ‘Morri como mineral e me tornei planta…’ (p. 1188).</p><p>O Fusus cita Anfal 8/17 (‘Não atiraste quando atiraste, mas Deus atirou’) como prova. Konuk explica: “O corpo muhammadiano é uma forma da qual Deus Altíssimo, no nobre versículo, […] negou primeiro o atirar.” (p. 1190) No meio do versículo Ele afirma o atirar para essa forma e, no fim, com ‘mas’, volta a Deus como quem atira. Konuk resume assim a descida do Real à forma muhammadiana: “Pelo Seu nome o Oculto, o Real é o agente, e pelo Seu nome o Manifesto, Ele é o afetado.” (p. 1192) Que a razão abarque ou não o segredo dessa palavra é indiferente: “A fé nela é, de todo modo, obrigatória.” (p. 1192) Quem a apreende é um conhecedor; quem não a apreende é “um crente submisso, isto é, alguém com fé por imitação.” (p. 1192)</p></section><section><h3>Causa e Efeito; o Limite da Razão</h3><p>O Fusus diz que, contra o juízo da razão ‘a causa não é a causa do efeito que é a sua própria causa’, o conhecimento da teofania diz ‘a causa é a causa do efeito que é a sua própria causa’. Konuk explica: a causa é a Essência em sua unicidade, o efeito são as entidades fixas estabelecidas na inexistência; as entidades fixas pedem à Essência a sua instauração na existência por suas disposições: “Assim, tal como o Real que faz existir é a causa na instauração do existente, a causa de o Real fazer existir é também que as entidades fixas, governando o Real por suas próprias disposições, Lhe pedem a existência.” (p. 1192) Liga o princípio à sentença ‘todo governante é governado por aquilo que governa’, que passou no engaste de Esdras (p. 1193). No exemplo do pintor: “Assim, o que causou o quadro vir a ser é o seu pedir ao seu autor a manifestação de sua existência.” (p. 1193) No juízo oposto da razão segue-se um círculo: “É semelhante ao círculo de ‘a galinha vem do ovo e o ovo da galinha’.” (p. 1194) A razão despojada do pensamento reflexivo, em contraste, encontra a Essência da causa e a Essência do efeito como uma única coisa que aparece em dois graus, e o ser causa e o ser efeito como relações dessa única coisa (p. 1194).</p><p>O Fusus diz que ninguém é mais inteligente do que os mensageiros e que eles trouxeram notícia do que a razão estabelece, do que a razão não consegue apreender por si só e do que a razão reconhece na teofania. Konuk divide isso em três tipos: o que a razão estabelece e aceita; os versículos e hadiths de imanência que a razão não consegue apreender por si só (Baqara 2/15, Tawba 9/111, Fath 48/10); e o que a razão julga impossível e só reconhece na teofania. Para o terceiro: “Por exemplo, uma pessoa em seu sonho caminha sobre o mar e voa no ar.” (p. 1196) Depois de despertar, a razão fica perplexa com o que viu nessa teofania. Konuk: se o servo é um ‘servo do Senhor’, entrega sua razão ao seu Senhor; se é ‘servo de seu pensamento reflexivo e de sua razão’, “devolve o Real ao juízo de seu pensamento reflexivo.” (p. 1196) Como exemplo menciona os filósofos que, ao ouvir Ya Sin 36/65 sem negar a vida futura, perguntam ‘como fala uma mão?’ e interpretam o relato figuradamente (p. 1196).</p></section><section><h3>Ressurreição e Reunião neste Mundo; o Estado do Conhecedor</h3><p>Konuk abre a parte do Fusus sobre os conhecedores que têm teofania com o subtítulo ‘Ressurreição e Reunião na Morada deste Mundo’ e diz: “Este mundo é um véu sobre as testemunhas do além.” (p. 1197) Os conhecedores aparecem em atributos mundanos; Konuk cita A&#x27;raf 7/198 (“Ó meu amado, tu os vês olhando para ti, mas eles não veem”, pp. 1197-1198) e a tradução dos versos do Mathnawi que dizem ‘shir e shir se parecem na escrita’, sendo um leite e o outro um leão que dilacera (p. 1198). Descreve a aniquilação assim: quando a teofania da Essência vem ao coração do conhecedor, a sua existência nela se dissolve, e “é isto o que se chama aniquilação em Deus” (p. 1199); depois da aniquilação vem a subsistência. Explica a ressurreição do conhecedor: “Pois, desde o dia em que a sua existência servil perece, esta é a sua ressurreição maior e o dia da sua união com o Real.” (p. 1200)</p></section><section><h3>Uma Exceção de Konuk: Uma Objeção Aberta ao Imam Rabbani</h3><p>Ao discutir a proposição de que &#x27;a natureza é idêntica ao Sopro do Compassivo&#x27;, Konuk cita a 31ª Carta do Imam Rabbani e se opõe abertamente a ela — declarando o caminho de Ibn &#x27;Arabi superior e o caminho do Imam Rabbani &#x27;inferior&#x27;.</p><p>Konuk diz que o desvelamento de que ‘a natureza é o próprio Sopro do Compassivo’ “ocorre para alguns lugares de beber (meshrab) e não para outros” (p. 1205), e que, porque os lugares de beber diferem, algumas pessoas falaram contra o desvelamento do Xeique Akbar; transmite da 31ª carta do Imam Rabbani: “Como está estabelecido entre o povo do Real, o abarcar e a proximidade pertencem ao conhecimento de Deus Altíssimo; e o Real, glorificado seja, não se une a nada.” (p. 1205) Segundo Rabbani, o Xeique Muhyiddin e seus seguidores chamam a Essência de ‘absolutamente desconhecida’ e a consideram sujeita a nenhum juízo, mas afirmam abarcar essencial e co-presença essencial; o correto é “a proximidade de conhecimento e o abarcar de conhecimento” (p. 1206). A resposta de Konuk: “Esta palavra é contrária ao caminho gnóstico do Xeique Akbar […] mas a diferença está no caminho.” (p. 1206) Ao viajante a quem se desvela que o Sopro do Compassivo é o &#x27;ayn das formas naturais, ele diz que é dada “a sabedoria divina abrangente”, que é “o virar, pela existência única do Real, das formas das entidades criadas infinitas” (p. 1206); remete aos engastes de Shu&#x27;ayb e de Jesus para os detalhes do Sopro do Compassivo.</p></section><section><h3>Intelecto Puro, Anfal 8/17 e Testemunho</h3><p>Na última parte, o Fusus diz que, para o viajante a quem se desvelou que a natureza é o &#x27;ayn do Compassivo, Anfal 8/17 é compreendido pelo gosto. Konuk: o que matou os incrédulos na guerra foram as armas, as formas dos crentes e o Real que criou as formas dos crentes; “Assim, ‘matar’ e ‘atirar’ ocorreram pela totalidade destes.” (p. 1207) O viajante que se detém no intelecto puro junta-se ao grupo dos conhecedores e “torna-se completo no conhecimento”; quem desce ao grau animal e testemunha que o Sopro do Compassivo é o &#x27;ayn das formas naturais torna-se perfeito e “vê somente Deus.” (p. 1208) Konuk cita a quadra de Abdullah Balyani: “Enquanto não vir o Real a cada instante com os dois olhos da minha cabeça, nunca deixo de pedir para testemunhá-Lo.” (p. 1208) Dá também a tradução do verso de al-Hallaj ‘Este “ayn” no olho és tu ou sou eu?’ e esta tradução do Gulshan-i Raz de Shabistari: “Adão é o espelho, o mundo o reflexo, e o ser humano é como o olho do reflexo; nele a pessoa está oculta.” (p. 1209) O comentário de Konuk: “Assim, o Real olha para Si mesmo, e em consequência o vidente torna-se o &#x27;ayn do visto.” (p. 1209)</p></section></article><nav aria-label="Navegação"><p><a href="pt/">Dost Arabî</a> › <a href="pt/fusus/">Fusus al-Hikam</a></p><p><a rel="prev" href="pt/fusus/fs21/">← A Palavra de Zacarias</a> · <a href="dizin/fusus/">Índice</a> · <a rel="next" href="pt/fusus/fs23/">A Palavra de Luqman →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

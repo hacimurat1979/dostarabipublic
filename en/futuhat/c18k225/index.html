@@ -2,63 +2,14 @@
 <html lang="en" data-dost-lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-2/1wdqmsqX+44bGjpQNY1HXntRdAjnfEs8BCdHgowuM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-2/1wdqmsqX+44bGjpQNY1HXntRdAjnfEs8BCdHgowuM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/en/futuhat/c18k225/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Sifr 35 — From Open Shirk to the Greatest Disease</h2><p>Volume XVIII of the Fütûhât opens with the Thirty-Fifth Sifr. The sifr is the continuation of Chapter 559 and keeps listing secrets with the same &quot;Among these is …&quot; formula: first with chapter numbers, from the 255th chapter to the 464th, then under unnumbered headings. Towards the end of the sifr (pp. 153–167) four headings come. Under &quot;Open and Hidden Shirk&quot;, open shirk is defined as &quot;the shirk that one&#x27;s act brings about through a means&quot; and hidden shirk as &quot;trusting in the tool and the means in a matter that can be done with a tool&quot;, and it is said that &quot;in this respect everyone is a mushrik&quot;; in the same place a second saying is quoted: &quot;What is meant by shirk here is accepting a second god beside God.&quot; Then come the headings on immersion in blessings being blindness, on the veils of one who breaks his word about a trust increasing, and on turning away being the greatest disease. The chapter is completed with the end of the thirty-fifth sifr.</p><article aria-label="Text of this part" lang="en"><section><h3>Chapters 255–270: Taste, Wine, Caprice and the Full Moon (pp. 13–21)</h3><p>The sifr keeps one formula in every entry: “Among these is … from the chapter …” Dost lists the entries in order, with chapter number and heading: 255 “The One Who Comes from Above Has Taste”; 256 “The Drinker Becomes Joyful”; 257 “The One Who Is Sated Overflows”; 258 “Whoever Does Not Drink Deep of His Water Is Not of His Prophets”; 259 “The One Whose Form Is Erased Loses His Name”; 260 “Whoever Is Given Steadfastness Is Safe Through the Night”; 261 “The Veil in the Odd (Oneness)”; 262 “The Highest Station in the Place of Manifestation” (in the verses of the entry): “The intellect was named ‘intellect’ because it intellects / Caprice was named caprice because of its violence and wrath” (p. 17); 263 “Whoever’s Crescent Is Erased Can Arrive”; 264 “The One Who Hastens (or Is Luminous) Has Become the Full Moon”.</p><p>265 “The Evening Gathering Is a Night Discourse”: “God speaks, and they speak; God listens, and they listen; God answers, and they answer. This goes on until the time of dawn” (p. 18); 266 “The Flash and Reflection of Lightning”; 267 “The Innocent One Has Attacked”; 268 “The One Who Draws Near Is Given Love to Drink”; 269 “Not Everyone Who Draws Away Has Gone Far”; 270 “Blocking the Means Is Among the Rulings of the Law”.</p></section><section><h3>Chapters 271–290: The Guest, the Degrees of Certainty, Incomparability and Idol-Worship (pp. 21–31)</h3><p>Dost continues listing the entries: 271 “The Truth Is in Every Path”; 272 “Not Every Passing Thought (Khāṭir) Is a Cloud That Rains”; 273 “The Incomer Worships”; 274 “The Incomer Is a Witness”; 275 “Whoever Breathes Is at Ease like the Morning (Emerging from Darkness)”; 276 “The Light of the Sun Is the Spirit”; 277 “The Degrees of Certainty Appear in Instruction”: “Whoever is placed in the station of the certainty of knowledge is under the authority of knowledge, while whoever is placed in the station of the certainty of vision (ʿayn al-yaqīn) has the ruling of witnessing and seeing appear over him” (p. 24); 278 “The Speech of the Imams and the Poles”; 279 “Camels Spread over the Earth Because of a Lofty Secret” (the dream that Najmuddīn Ibn Shayy al-Mawṣilī reported by letter, showing Maʿrūf al-Karkhī in the middle of the fire, is related): “Paradise is surrounded by disagreeable things, while hell is surrounded by desires” (p. 25); 280 “Incomparability Is Diluting and Thinning”.</p><p>281 “Caprice Makes One Desire”; 282 “The Appointed Term and the Solving of the Riddle”; 283 “Idol-Worship Is an Intention”: “So everyone is an idolater, and everyone guards what he believes” (p. 27); 284 “The Pool Approached and the Praised Station”; 285 “Oppressing Orphans Is the Habit of Base People”; 286 “Familiarity Is a Part of Disposal”; 287 “Passing from the Outward to the Inward Is the Work of Those of Insight”; 288 “What Have I to Do with the Governor?”; 289 “Narrowness in Verification”; 290 “Whoever Visits the Silent One Has Visited Him”.</p></section><section><h3>Chapters 291–310: The Scale, the Tablet and the Pen, the Embryo, Names and Beliefs (pp. 31–40)</h3><p>Dost continues listing the entries: 291 “Deficiency and Excess in the Scale”; 292 “Declaring His Works Free of Evil”; 293 “The Proof Lies in the Movement of the Heavy”; 294 “When the Real (ʿAyn) Appears, Existence Vanishes”: “The letter kāf split the sun of the sky in two. This happened after the night prayer; at that moment I was in annihilation” (p. 32); 295 “The One Who Sends a Rank Witnesses Its Worth”; 296 “The Ruling in the Tablet and the Pen”; 297 “The Knowledge of the Unlettered Prophet”; 298 “The Closure of Breasts Within Breasts”; 299 “Secrets Appear at the Start of the Day”: “God is neither just nor unjust; there is only the one who gives judgment, and what a fine judge He is!” (p. 35); 300 “Reaching and Attaining Belong to the People of the Night”.</p><p>301 “The Whisper in Watching the Sun”; 302 “The Embryo Is in the Liver Until the Time of Birth”; 303 “The Oath upon the Communities”: “I witnessed an embryo in the womb say ‘yarhamukallāh (may God have mercy on you)’ to its mother, who had sneezed and said ‘al-ḥamdu lillāh’” (p. 36); 304 “Where the Metaphorical Use of Attributes Becomes a Calamity”; 305 “Declaring the Names Incomparable Without Inclining to the Named”; 306 “The One Who Comes by Night Desires to Attain”; 307 “Existence in the Witness and the Witnessed”; 308 “Leaving the Layer by Means of the Layers”; 309 “Knowing Ranks and Degrees Through Books”; 310 “The Knowledge of Origination and Equality in Recompense”: “In the heart of every adherent of a belief there is a god that he has brought into being and believes in” (p. 40).</p></section><section><h3>Chapters 311–330: The Paths of the Law, the Prophets, the Summons and the Schools (pp. 40–49)</h3><p>Dost continues listing the entries: 311 “The Paths That Come Through the Prophets”; 312 “Those Among the Creatures Who Hasten to Exalt the Attribute of the Real”; 313 “Whoever Is Happy with Equal Recompense Does Not Stay Far”; 314 “The Dispute and Contention of the Highest Assembly in the World” (with the example of a doctor giving a patient bitter medicine): “The doctor wants to benefit the patient with a medicine that will cause him pain” (p. 41); 315 “The Successive Coming of the Prophets and the Creation of Likenesses”; 316 “The Negligence of Man — Not of the Other Living Beings”; 317 “The Prophet’s Becoming Aware of the Revelation Gabriel Brought”; 318 “The One Whom Being in the Halo of Light Frightens”; 319 “Being Tried with the Hardest While Seeking the Truest”; 320 “Protection Through Inspiration in Inspiration”.</p><p>321 “How the Creatures Reject the Summons of the Real” (with the example of an echo): “The form of the summons has been turned back to him and rejected. In other words, his own vessel has been returned to him” (p. 44); 322 “The State of One Who Turns to All the Schools and Adopts Them”; 323 “The Occurrence of Continuous Transmission in Narration and the Multiplication of Narrators”; 324 “Knowing What Is Written and How It Is Arranged”: “How, then, are necessity and freedom to be reconciled?” (p. 46); 325 “The Dominion of the Dominion in the Dominion”; 326 “The Creatures’ Resistance and Opposition to the Real”; 327 “In Master and Slave, Freedom Is Limitation”; 328 “Property and Children as a Trial for Everyone”; 329 “The Hypocrite Is Concordant”; 330 “Answering the Summons in the Evening and the Morning”.</p></section><section><h3>Chapters 331–355: Trade, Trial, Agency, Man in the Form of the All-Merciful and the Jamrahs (pp. 49–61)</h3><p>Dost continues listing the entries: 331 “Trade Is Open to Gain and to Loss”; 332 “In the Trial a Person Remains Weak or Grows Strong”; 333 “Preferring Others (Īthār) Is Not a Trait of Those Who Know the Secrets”; 334 “The Real Manifests in Every Sign to the Knowers Granted Sainthood”; 335 “Appointing a Successor Is a Contradiction”; 336 “Hearts Are the Places Where the Knowledge and Lights of Secrets Fall”; 337 “Man Is Created in the Form of the All-Merciful”: “Raḥim is a branch of Raḥmān; that branch means the form on which man was created” (p. 52); 338 “The Three Mid-Month Days Make the Full Moons Double”; 339 “Repeating the Seeing for the Wish to Come True”; 340 “The Earth Is a Laid-Out Cradle and the Sky a Raised Roof”.</p><p>341 “The Wind Element Is a Place Where Winged Ones Roam”: “The All-Merciful drives the clouds / While the eye supposes that the wind moved them” (p. 54); 342 “Knowing the Composite and the Simple in the Encompasser and the Encompassed”; 343 “Knowing the Limit in Courtesy Before the Illuminating Lamp”; 344 “The One Who Begins with Favors”; 345 “The Knowledge of the Secrets in Rivers and Seas”; 346 “The Evening Conversation of Two Friends on a Hill”; 347 “The High Rank in Adhering to the Law”; 348 “Knowing the Reflection and Image That Occur in Light and in Copper”; 349 “The Station of the One Who Gives Silver and Gold”; 350 “The One Who Separates and Details Has Not Attained Union”.</p><p>351 “Consultation Means Speaking with One Another”; 352 “The Believer Does Not Expose the Liar but Confirms the Believer”; 353 “The Plurality of the Jamrahs”; 354 “The Generous One Is the Possessor of Generosity”; 355 “Arranging the Rows Is a Familiar Task”.</p></section><section><h3>Chapters 356–380: The Qur’an, Interpretation, the House and the Dream (pp. 61–73)</h3><p>Dost continues listing the entries: 356 “Reciting Tenths of the Qur’an in the Gardens” (from this entry on, the entries mostly continue in the form “He said”): “This is a chapter that we state just as we received and heard it” (p. 61); 357 “The Mission of the Spirits Among the Spirits”; 358 “Excessive Love Is Deep Perception”; 359 “The Arabs Are the Masters of All Factions”; 360 “Interpretation in Hadith and Verses, and the Knowledge of the Outward”; 361 “Whoever Is Given the Comprehensive Words Is Given Wisdoms”: “Here there is no fourth category; there are only command, report and prohibition” (p. 63); 362 “The Most Fortunate Among the People of the Book Is the One Who Gives Account”; 363 “Effacing and Affirming in the Knowledge of Houses”: “The foundation of the house is tawhīd, and its pillars are four: prayer, almsgiving, fasting and pilgrimage!” (p. 64); 364 “The Prophets’ Reporting Is the Night Conversation of the Friends of God”; 365 “One Who Shrinks from Harm Is Not a Human”.</p><p>366 “The Prophets’ Stations Are from the Shadows of the Clouds”; 367 “The Difference Between Doubt and Decisive Proof”; 368 “Lights Come in Succession to the Hearts of the Free”; 369 “What Subsistence Gives in the Abode of Felicity and Wretchedness”; 370 “Does the Prostration of the Heart and Body Cease, or Does It Continue Forever?”; 371 “The Division of Speech into Originated and Eternal”; 372 “The Ease Given by the Address of Generosity and Leniency”; 373 “The Secret of the Hermaphrodite Is the Males’ Joining the Females”; 374 “Those for Whom Sleep Is an Admonition”; 375 “What Comes to the Travelers of Every School”.</p><p>376 “The Differences Between Revelation Coming from Above and from Below”: “acquired knowledge means God’s help, while bestowed knowledge means His gift” (p. 71); 377 “Prevention and Hindrance in Being Torn Apart”; 378 “Knowing the Lofty Station Authentic for Abraham”; 379 “Is Speech After Death Carried Out by Sound and Letter?”; 380 “The Rulings of the Dream, Specific to This World”: “Every state you are in in this world is a dream” (p. 73).</p></section><section><h3>Chapters 381–410: Mercy, the Book, Bewilderment, Revelation and Nearness (pp. 73–88)</h3><p>Dost continues listing the entries: 381 “What Is the State of People Awakened from Heedlessness on the Path of the Lord and the Path of God?”; 382 “Is There a Share and a Footing in Eternity?”; 383 “Whether Enumeration Is Possible in Induction”; 384 “The Demarcation Between the People of Shirk and Tawhīd”; 385 “Knowing the Distinguishing Trait Between the One in a State and the Idle”: “God has a wall between Paradise and the Fire. Its inner side is mercy, and outside it is punishment” (p. 75); 386 “The Superior, the More Superior, the Deficient and the Perfect”; 387 “Existence in Fidelity to Covenants”; 388 “Everything Rests on the One, and He Is Not an Addition”; 389 “Firm Binding and Breaking Are in the Part and from the Part”; 390 “The Deaths Receiving Life Through the Plant”.</p><p>391 “The General Rank That Joins the Beneficial Parts”: “You are a believer. So you are His mirror” (p. 78); 392 “The Meeting of the Descending and the Ascending, and Knowing What Occurs Between Them in the Encounter”; 393 “The Pearl That Appears from Behind the Coverings”; 394 “The One Whose Head Is Not Raised from Among the People”; 395 “The Nearness That Goes to Excess”: “Arrival can only be at bewilderment. One who knows God knows nothing of Him but bewilderment” (p. 80); 396 “One Who Was Held Back May Fall Down After Rising”; 397 “The Worth of One Whose Affair Is Hidden Is Not Known”: “Nothing is hidden! It is only the absence of knowledge that has made something hidden” (p. 82); 398 “The Benefits in General Rescripts (Tawqīʿ)”; 399 “What the Rank Brings Forth Concerning the Gaze”; 400 “Whoever Leaves You Free to Choose Has Bewildered You”.</p><p>401 “The Gnoses Within Special Knowledges”; 402 “Establishing a Ruling Without Knowledge”; 403 “Equality in Enmity”; 404 “The Fair-Minded One Is Not Described”; 405 “Time Cannot Limit One Whom Place Cannot Contain”; 406 “Man Is the Covering of the All-Merciful”; 407 “Where Feet Slip in Some Rulings of the Intellect and of Dreams”; 408 “One Who Wishes to Meet Prefers Annihilation to Subsistence” (the saying in the hadith on the Antichrist): “No one will see his Lord before he dies” (p. 86); 409 “What Is the Place of the Mercy of the Merciful Beside the Mercy of Providence?”; 410 “The Meaning of the Verse “Or Nearer””.</p></section><section><h3>Chapters 411–440: Deed, Knowledge, Nonexistence, Names, Glorification and Praise (pp. 88–102)</h3><p>Dost continues listing the entries: 411 “The Mounts of Deeds Are the Burāq of Their Owners”; 412 “The Knower Questioning the Knower”; 413 “Admonition Is a Glad Tiding”; 414 “One Is Jealous Toward the Jealous”; 415 “The Lightest of Punishments Is Striking Off the Necks”; 416 “There Is No Such Thing as Nonexistence; Understand This”: “There is nothing but God and the possible things! While God exists, the possible things are fixed. So there is no nonexistence” (p. 90); 417 “What Joins the Outward, the Inward, the Limit and the Rising-Point?”; 418 “The Soundest Way in Seeking the Real by Proof”: “God is known by the intellect but not seen; He is seen by unveiling but not known” (p. 91); 419 “Seeing Fears in States”; 420 “A Warning Unlike the Divine Light”.</p><p>421 “The Stations of the Courteous in the Sky, the Throne and the Cloud”; 422 “The Small Ones Joining the Great”; 423 “The One of Whom “There Is Nothing Like Him” Is Said Is in Every Respect Neither Dead nor Alive”; 424 “Exposure (Purification) in Zeal and Rolling Up the Sleeves”; 425 “The State of One Who Flees from Peace to War”: “The name that rules over you is therefore your Lord” (p. 95); 426 “The Veil’s Becoming a Chamberlain”; 427 “The Rights Over the Created”; 428 “The Generosity of Generosity Belongs to the Possessors of Aspiration”; 429 “What Is with You Runs Out, and What Is with God Does Not”: “You are with Him! What is with you is also with Him” (pp. 96–97); 430 “The Best of the Manifest and the Hidden Is to Exalt the Rites of God”.</p><p>431 “Islam and Faith as the Two Precursors of Excellence”; 432 “The Servants the Real Hides Are Bridegrooms”; 433 “Establishing the Cause Is a Way”; 434 “Loving the Recompense Is Loving Providence”; 435 “Sometimes a Blessing Sets the People of Darkness in Motion”; 436 “Address Belongs to the One Who Takes Delight”; 437 “Glorification Is Wounding”; 438 “Praise Is Limitation”: “Since the words of God do not run out, there is no limit at which the praise arising from Him toward God would end” (p. 101); 439 “Interpretation Belongs to the People of Tahlīl”; 440 “Than Whom Is God Greater?”.</p></section><section><h3>Chapters 441–464: Possession, the Pole, Manifestation, Ascension and the Lote Tree (pp. 102–114)</h3><p>Dost continues listing the entries: 441 “What Is Yours Is Not Something Possessed”; 442 “Respecting the Sanctities Is Among the Honors”; 443 “One Favored by Providence in Childhood Shows Humility in Adulthood”; 444 “Rewards Are Not Lost Among the Forgotten”; 445 “The Commander of the Mill Turns Its Pole”; 446 “The State of One Who Resists Being Among the Nuqabāʾ”; 447 “It Is Impossible for a State to Be General”; 448 “Handing Affairs Over to God Is a Request”; 449 “Near Kin Are More Deserving of Kindness”; 450 “With the Men, Acceptance Is a Turning”.</p><p>451 “A Fine Word Is a Part of Power”; 452 “Origination in Worshipping a God in Relation”; 453 “Manifestations Belong to the People of the Glimmers”; 454 “The Chosen One Is the One Who Forgives Those Who Wronged Him”; 455 “One Trait of the Friend Is Keeping Away from Enemies”; 456 “Shrinking from Competition”; 457 “When Does the Created Remain Steadfast in Witnessing the Real?”; 458 “The Ascension of Souls Belongs to Intimacy”; 459 “Rewards Are Without Result”; 460 “The Unveiling of Gnosis in Abandoning the Attribute”.</p><p>461 “One Who Does Not Understand Does Not Understand”; 462 “My Names Are the Coverings of My Majesty and My Beauty”; 463 “The Eye of the Knowers Looks to the Rank of ʿIlliyyīn”; 464 “Arrival at the Lote Tree of the Furthest Limit”.</p></section><section><h3>Unnumbered Entries (1): Supplication, the Law, Seeing, the Vow and Contentment (pp. 114–128)</h3><p>After Chapter 464 the entries continue under unnumbered headings: “The Gnoses That Night Worship Brings Forth at the Ends of the Day”; “Supplication Is According to the Vessel”; “The Laws Having Come Down According to the Courtesies of the Real”; “The Eye of the Heart in the Heart”: “God created man’s constitution inverted: while his hereafter is within, his world is outside, in his outward” (p. 115); “The Ranks of the Real with the Created”; “The Expansion of the Expanse of the Expanse”; “The Real’s Turning Away from One Who Worships the Created”; “Seeing Is a Veil”: “The only door of gnosis is seeing. Nothing is clearer than it” (p. 117); “Only One Who Truly Realizes Stability Understands Tranquility”; “The Power of the Subtle and the Weakness of the Dense”.</p><p>“The Servant’s Second Nearness in the Seconds”; “Saturday Is in Saturday”; “The Silent One Is Unfortunate”; “The House of Light Means the Flourishing Heart”; “The Guarded Fortress Is the Sciences of the Law”; “Wherever You Are, It Is You Who Appears”; “Writing Belongs to the Possessors of Agency”; “O You Who Teach the Truth! You Are the Foregoing, Eternal Book”; “The Precious Substance in Sanctification”; ““The Mighty Will Drive Out the Lowly from There””.</p><p>“The Pillars of One Who Rests His Structure on a Firm Foundation Grow Strong”; “Decisive Proofs in the Place of Adducing Evidence”; “The Vow Is Obligatory in All Schools”; “Being Saved from the Calamities of Relations”; “Whoever Sees the Real Has Seen Himself”: “Whoever wishes to see the Real must see himself” (p. 124); “The One Who Answers Hears, and the One Who Hears Obeys”; “The Garment of the Inward Is Nourishment; the Garment of the Outward Is What Removes Harm”; “Whoever Is Blind in This World Is Blind in the Hereafter”: “As you are today, so you will be tomorrow” (p. 125); “Adhering to the Command and Avoiding the Prohibition”; “One Safe from Departing Does Not Seek Ascent”.</p><p>“The Delight of Torment for the Beloved, Part of the Heirs Who Are People of the Book”; “Hiding from the Worthy Is Ignorance”.</p></section><section><h3>Unnumbered Entries (2): the Shaʾn, Fear, Love, the Goal, Remembrance and Prostration (pp. 128–147)</h3><p>Dost continues listing the entries: “The Being of the Shaʾn in the Shaʾn”; “The Closing of the Door on the Question of Acquisition” (it is said that the phrase “He is now as He was” added to the hadith was not transmitted from its narrator, and the hadith is recalled): “God was, and there was nothing with Him” (p. 98); “Only One Who Fears Can Truly Fear”; “The One Who Gives Sustenance Wishes to Order Time”; “The Beloved Is Near”; “What Gives Happiness from Good Is Loving Another”; “Whoever Reaches the End of Expanse Contracts”; “There Is No Goal in the Goal”: “The goal of the world is to seek the Real, while the goal of the Real is the created” (p. 132); “The One Who Brings About a Wondrous Work Is Remembered by Name”; “Turning Occurs for the Deluded”.</p><p>“One Who Is Not Arrogant Toward the Creatures Has Surely Fulfilled the Obligatory Right”; “The Aim Is to See Deficiency Even After Spending All Effort” (the sacred hadith): “I was a hidden treasure; I created the world, became known to them, and they knew Me” (p. 135); “One Who Keeps His Self from Its Desire Reaches the Garden of Refuge”: “Every will is a caprice, and caprice gives the self delight” (p. 136); “The Real Destroys the False; Looking at It Makes One Faint”; “The One Who Answers Is Answered; Why Should He Not Be?”; “A Fine Fragrance Indicates Fine Character”; “Remembrance on One’s Sides Is Nearness to the Unseen”: “Those who remember fall into three groups: the first group is the one who remembers standing” (p. 139); “Sufficiency in Fidelity”; “Seeking Forgiveness at Daybreak”; “Providence in Worship Is the Command’s Agreement with the Will”.</p><p>“Only One Who Flees from Himself to Himself Acts Haughty Toward Him”; “Open Speech and Whisper Are the Self’s Utterance”; “Existence Is in Prostration” (in the account of Ibn ʿAṭāʾ and the camel’s prostration, the Prophet’s saying is recalled): “If you were to lower a rope, it would fall upon God” (p. 144); “Recompense Bears Witness to Justice and to the Abandoning of Favor”; “Generosity in the Origins Is Proof of the Absence of Favor”; “Only the People of Contentment Are Content”; “One Who Does Not Know the Created Does Not Know the Creator”: “One who is unable to know himself is also unable to know his Lord” (p. 146); “The Stratagem Is Obscure”.</p></section><section><h3>Unnumbered Entries (3): Mirrors, Flowers, Trial, the Dream and the Shadow (pp. 147–153)</h3><p>Dost continues listing the entries: “Mirrors See One Another”: “To see Abū Yazīd once is better than to see God a thousand times” (p. 148); “The Flowers Belong to Those Who Look”; “Sometimes Trial Is a Concealment”; “One Who Betrays Betrayal Betrays the Trust as Well”; “Turning Away Is Turning Away”; “In the Setting of the Sun Lies the Death of the Self”; “The Adornment of the World Is the Dream”: “In worldly life man is in a dream, and for that reason the interpretation of the dream has been commanded” (p. 151); “There Is No Blame on the Lame”; “The Likeness in the Shadow”: “The shadows of persons are their shapes, and therefore their likenesses” (p. 152); “One Who Joins a Thing to Its Own Manner Has Appraised It Rightly”.</p></section><section><h3>Open and Hidden Shirk</h3><p>Towards the end of the sifr (pp. 153–154) comes an entry headed &quot;Open and Hidden Shirk&quot;. The entry, introduced with &quot;He said&quot;, reads: &quot;Open shirk is the shirk that one&#x27;s act brings about through a means, while hidden shirk is trusting in the tool and the means in a matter that can be done with a tool. In this respect everyone is a mushrik. For everyone possesses knowledge, and only knowledge brings about shirk, while the Real demands knowledge.&quot; The same entry says: &quot;because they have no knowledge of the shirk they are in, God has not attributed shirk to them.&quot; Then a second saying is quoted: &quot;What is meant by shirk here is accepting a second god beside God. Such conduct is utter ignorance, for there is no other god.&quot;</p></section><section><h3>Unnumbered Entries (4): Turning Away from the Signs, the Limbs’ Testimony, Deviation and Zakāt (pp. 154–160)</h3><p>Dost continues listing the entries: “Turning Away from the Signs Is the Greatest Calamity”; “Whoever Dies Before Dying Ascends”; “The Faults of One Against Whom His Limbs Testify Multiply”; “The Appearance of Security in Hidden Mercy”; “The Fearing Scholar Is the Night Wrapped in Darkness”; “Departing from the Religion Is the Rule of the Deviators”; “Only One Who Devotes Himself to the Rank Alone Can Climb the Slope”; “The One Who Claims to Belong to Someone Other Than His Father, or the Slave Who Attaches Himself to Someone Other Than His Master”; an untitled entry (first line “He who holds fast to the firm rope”): “The rope is a circle with two supposed ends, divided in two by an imagined line” (p. 159); an untitled entry (first line “Wherever it may be, zakāt means blessing”): “Sahl b. ʿAbdallāh said: ‘Sustenance and food are God.’” (p. 160).</p></section><section><h3>Immersion in Blessings Is Blindness</h3><p>The second heading near the end of the sifr is &quot;Immersion in God&#x27;s Blessings Is Blindness&quot; (p. 161). The entry reads: &quot;When you are the sign itself, the nearest thing to the one for whom you are the proof is you yourself. When you immerse yourself in the sign, you become one who proceeds from the proof — not the proof — and you move away from being a sign (to God). In other words, you have moved away from the aim, become veiled, and remain in blindness.&quot; Then the verse is recalled: &quot;When you see those who plunge into Our signs, turn away from them.&quot;</p></section><section><h3>Unnumbered Entries (5): Contentment with the Decree, the Moment and Light (pp. 161–164)</h3><p>Dost continues listing the entries: an untitled entry (first line “He who stays calm under decree and destiny”): “The servant must be content with the decree, but he need not be content with every matter on which a ruling is given” (p. 162); an untitled entry (first line “In constant error and blindness”); an untitled entry (first line “The delight of the moment belongs to the gatherer”); an untitled entry (first line “Light accompanies the one who is in light”): “Appearance takes place under the guardianship and governance of light, and the realities of things then become visible” (p. 163).</p></section><section><h3>Sometimes Destruction Is in the Successor</h3><p>The third heading is &quot;Sometimes Destruction Lies in the Successor&quot; (p. 164). According to the entry, the veils and hardships of one who is entrusted with something and breaks his word to God about it increase. Solomon&#x27;s prayer &quot;Give me a kingdom that will befit no one after me&quot; is recalled, and it is said: &quot;What he asked for is the whole&quot;; it is said that the people of earnestness are imprisoned, because they have left their root, which is poverty. The entry ends: &quot;Beware of neediness! The rich are veiled by other than God because they are in need of what they own. They asked for more than what was in their hands and were not satisfied.&quot;</p></section><section><h3>Unnumbered Entries (6): The Moment’s Recompense and Rejoicing (pp. 164–165)</h3><p>Dost continues listing the entries: an untitled entry (first line “Recompense is tied to the moment; if both go”): “When the master of the moment deals with his moment as due and pays its right, he is protected from being punished with regard to his moment” (p. 164); an untitled entry (first line “There is no ease after which there is no distress”): “God has commanded His servants to rejoice in His favor and mercy; rejoicing in accumulated property is not right” (p. 165).</p></section><section><h3>The Greatest Disease: Turning Away</h3><p>The closing theme of the sifr is the most severe disease of hearts: turning away. Ibn Arabī first says that turning away in an absolute sense is impossible — every turning away is an orientation toward something. But there is a specific turning away: turning one&#x27;s face from the signs God has placed in the universe as His evidence. When this disease takes root, medicine no longer helps. In a poem that follows, Ibn Arabī says: &#x27;When He turns His face I fall ill / Would that I knew who has made me ill like this.&#x27;</p></section><section><h3>Unnumbered Entries (7): Remembrance, Proofs, the Imam, the Messiah and the Religion of the Prophets (pp. 166–175)</h3><p>Dost continues listing the entries: an untitled entry (first line “When the ends are in the self”): “You too must turn away from one who turns away from the remembrance of God” (p. 166); an untitled entry (first line “The remembrance of remembrance is safe from the stratagem”): “The remembrance of remembrance is like ‘the praise of praise’” (p. 167); an untitled entry (first line “Beware! The attribute of the Real appears in the created”); an untitled entry (first line “Proofs are veils, drawn veils”): “One who stays with the proof is deprived of what it points to” (p. 168); “One Who Knows His Deed Is Seen Has Not Worshipped the Created”; “One Who Seeks Forgiveness for His Sin Has Acted on His Knowledge”; “What the One Who Sees the Carpet Encompasses”: “Those seated on the carpet do not take their eyes off the owner of the carpet even for a moment” (p. 170); “The Knowledge Assigned to Particular Sealhood”; “Strong Light as an Obstacle”; “The Rank of the Imam Among the Creatures”: “The malik, that is, the sovereign, is without doubt a mamlūk, that is, a slave” (p. 172).</p><p>“The Difference Between the Messiah and a ‘messiah’”: “The Messiah is also one who wipes his own eye” (p. 172); “The Trait of One Who Knows the Names of the Names”; “The Knowledge of Secrets and Lights”: “Lights are the witnessed realm, and the Real is light, and so He is witnessed and seen. Secrets are the unseen, and the He-ness belongs to them” (p. 173); “The Religion of the Prophets Is One, Without Addition, Yet the Laws Differ from One Another and Have a Common Denominator”: “What is meant is to uphold the religion and not to fall into division in it” (p. 174).</p><p>After the last entry the text ends: “This much explanation of this chapter is sufficient for those who know it and to whom wisdom and the power of exposition have been given” (p. 175); then: “The chapter was completed by the author’s own hand, with the end of the thirty-fifth sifr of the book. Praise belongs to God” (p. 175).</p></section></article><nav aria-label="Navigation"><p><a href="en/">Dost Arabî</a> › <a href="en/futuhat/">al-Futuhat al-Makkiyya</a> › <a href="dizin/futuhat/#cilt-18">Volume XVIII</a></p><p><a rel="prev" href="en/futuhat/c17k224/">← Thirty-Fourth Sifr: Truths and Secrets from Various Stations</a> · <a href="dizin/futuhat/">Index</a> · <a rel="next" href="en/futuhat/c18k226/">Sifr 36 / Chapter 560 — Counsels for the Spiritual Wayfarer →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

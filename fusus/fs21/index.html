@@ -2,63 +2,14 @@
 <html lang="tr" data-dost-lang="tr">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-ut0F78xwFKG6Z0A8aEo/onT7kkhIVViCFLF9thmUCbI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-ut0F78xwFKG6Z0A8aEo/onT7kkhIVViCFLF9thmUCbI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/fusus/fs21/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Kelime-i Zekeriyyâviyye</h2><p>Bu fass Zekeriyyâ&#x27;dan yola çıkıp hacminin neredeyse tamamını rahmetin mahiyetine ayırıyor. &#x27;Mâlik&#x27; ismi hem yaşlılıkta bahşedilen bir evlatta hem de testereyle şehadette tecelli ediyor.</p><article aria-label="Kısım metni"><section><h3>Zekeriyyâ&#x27;nın Müdebbiri Olan İsim: Mâlik</h3><p>Fass, Zekeriyyâ&#x27;nın müdebbiri olan ism-i hâssı bildirerek açılıyor: “Zekeriyyâ (a.s.)ın müdebbiri olan ism-i hâss ‘Mâlik’ ism-i şerifidir.” Konuk, bu isme bağlı ahvâlin Zekeriyyâ&#x27;nın vücûdunda zâhir olduğunu, Zekeriyyâ&#x27;nın bu ismin muktezâsı olarak kuvvet-i tâmme ve himmet-i müessire ile müeyyed kılındığını söylüyor; çünkü “‘Mâlik,’ şiddet ve kuvvet ma&#x27;nâsına olan ‘mülk’ten me&#x27;hûzdür; ve ‘mülk,’ kudret ve tasarruf ma&#x27;nâsına dahi gelir.” Konuk&#x27;a göre Zekeriyyâ&#x27;nın vücûd-ı şerîfi “yevmü&#x27;d-dîn” gibi oldu: kıyâmet ma&#x27;nâsındaki yevmü&#x27;d-dînde Hakk&#x27;ın kemâl-i mâlikiyyeti zuhûr ettiği için Hak Teâlâ Fâtiha sûresinde “Yevmü&#x27;d-dînin Mâlik&#x27;i” (Fâtiha 1/4) buyurdu; Zekeriyyâ rahmet ve nikmetin zuhûrunda yevmü&#x27;d-dînin ahvâliyle mütehakkık olduğundan yevmü&#x27;d-dîn menzilesinde idi. Hak o günde bazen rahmet bazen azâb eder ve mâlikiyeti bu iki şe&#x27;nle zâhir olur; “Mâlik-i yevmi&#x27;d-dîn” olduğu gibi “Mâlik-i Zekeriyyâ” oldu. (s. 1133)</p></section><section><h3>İki Şe&#x27;n: Yaşlılıkta Bir Evlat, Testereyle Bir Şehadet</h3><p>Zekeriyyâ&#x27;nın iki hâli, fassın &#x27;Mâlik&#x27; okumasını somutlaştırıyor. Rahmet yüzü: karısı kısırken, kendisi çok yaşlıyken Hak&#x27;tan &#x27;bana indinden bir veli bağışla&#x27; (Meryem 19/5) diye ister; Hak duasını kabul edip Yahyâ&#x27;yı bahşeder — ama Yahyâ burada mal değil, &#x27;maârif-i ilâhiyye ve esrâr-ı rabbâniyye ve ahlâk-ı hamideye vâris&#x27; olarak tanımlanıyor. Nikmet yüzü ise şehadeti: küffâr onu testereyle ikiye biçer, o da bu belanın kaldırılmasını Hak&#x27;tan istemez, çünkü mazhar olduğu ism-i hâssın gereği budur.</p><p>Popüler hafızada Zekeriyyâ ile birlikte anılan meşhur âyet — &#x27;Rabbi lâ tezerni ferden ve ente hayru&#x27;l-vârisîn&#x27; (Enbiyâ 21/89, &#x27;Beni tek başıma bırakma, sen vârislerin en hayırlısısın&#x27;) — bu fasslarda doğrudan geçmiyor. Konuk yalnız Meryem 19/5&#x27;i alıntılıyor ve &#x27;vâris&#x27; kelimesini de Yahyâ&#x27;nın manevi mirası devralması bağlamında kullanıyor.</p></section><section><h3>Hikmet-i Mâlikiyye&#x27;nin Tahsisi ve Mesnevî&#x27;den Bir Beyit</h3><p>Konuk, Zekeriyyâ&#x27;nın mazhar olduğu ism-i hâssın muktezâsı olarak testere belâsının ref&#x27;ini Hak&#x27;tan istemediğini anlattıktan sonra tahsisin gerekçesini şöyle bağlıyor: “İşte bu sebebe binâen ‘hikmet-i mâlikiyye’, Kelime-i Zekeriyyâviyye&#x27;ye tahsis kılındı.” Ardından Mesnevî&#x27;den bir beyit tercümesi koyuyor: “İmdi kıyâmet ol, kıyâmeti gör; her şeyi görmek için bu şarttır. Akl olursan, aklı kemâliyle bilirsin. Aşk olursan aşkı cemâliyle görürsün.” (s. 1134)</p></section><section><h3>Rahmet Vücûden ve Hükmen Her Şeye Vâsi&#x27;dir</h3><p>Füsûs metni (Konuk tercümesiyle) fassın tezini koyuyor: “Ma&#x27;lûm olsun ki, muhakkak Allâh&#x27;ın rahmeti vücûden ve hükmen her şeye vâsi&#x27; oldu; ve muhakkak gazabın vücûdu dahi, Allâh&#x27;ın gazaba olan rahmetindendir; binâenaleyh O&#x27;nun rahmeti gazabını sebkat eyledi. Ya&#x27;ni rahmetin O&#x27;na nisbeti, gazabın O&#x27;na nisbetini sebkat etti.” Konuk, Fass-ı Süleymânî&#x27;de tafsil edildiği üzere rahmetin biri zâtî biri sıfâtî iki kısım olduğunu, bunların da husûsiyet ve umûmiyet bakımından ikiye ayrıldığını hatırlatıyor; her şeye vâsi&#x27; olan “rahmet-i âmme-i zâtiyye”dir ve Hakk&#x27;ın muktezâ-yı zâtıdır, “çünkü Hak bizzât ‘Cevâd’dır.” Zât-ı ahadiyyette mahfî olan niseb ve şuûnât, bu rahmet sâyesinde Hakk&#x27;ın kendi zâtında kendi zâtına tecellisiyle ilminde sübût buldu; Hak, zât-ı ahadiyyetinde sıkıntı içinde kalan esmâsını nefes-i Rahmânîsi ile tenfis edip onlara vücûd-ı ilmî vererek bu sıkıntıdan âzâd etti. (s. 1134)</p><p>Konuk, ilimde sübût bulan a&#x27;yân-ı sâbite sûretlerinin kendi hükümleri dâiresinde a&#x27;yân-ı kevniyye sûretleriyle zâhir olduğunu, bu yüzden rahmet-i zâtiyyenin şu hazret-i şehâdette de vücûden her şeye vâsi&#x27; olduğunu söylüyor. Rahmet bilcümle niseb, a&#x27;yân-ı sâbite ve hâriciyyeye şâmil olunca “niseb-i ademiyyeden ibâret olan gazaba” da şâmil olur; gazabın vücûdu da gazaba olan rahmet-i ilâhiyyedendir. Gazabın Hakk&#x27;a nisbeti ise rahmetin nisbetinden sonradır, çünkü gazab rahmete nisbetle ârızîdir: “Meselâ suyun hâl-i tabiîsi cereyândır; ve donması, ârızîdir. Ve kezâ insanın hâl-i tabiîsi gazab değildir; onun gazabı bir sebeb tahtında zuhûr eden bir sıfat-ı ârızadır.” Konuk, Fass-ı Üzeyrî&#x27;de tafsil edildiği üzere gazab-ı ilâhînin, bir şeyin kemâl ve saâdete bütünüyle kâbiliyetsizliğinden ya da kâbiliyetinin noksanlığından o şeye terettüb ettiğini; gazabın şer ve şekâvet oluşunun mağzûbun-aleyhe nisbetle olduğunu, yoksa gazabın Hakk&#x27;a nisbetle merhûm olduğunu söylüyor, çünkü gazab Hakk&#x27;ın tecelli-i Rahmânîsiyle mevcûd olmuştur ve mevcûd olan her şey tecelli-i Rahmânî ile merhûmdur. (s. 1135)</p></section><section><h3>Her ‘Ayn’ Vücûdu Allah&#x27;tan Taleb Eder</h3><p>Füsûs metni: “Vaktâki her ‘ayn’ için vücûd oldu; binâenaleyh onu Allah&#x27;dan taleb eder. Bunun için O&#x27;nun rahmeti her şeye âmm oldu; zirâ Hak, şol rahmetiyle ki, her şeye onunla rahmet etti, o şey vücûd-ı aynîsinde O&#x27;nun rahmetini kabûl etti. Binâenaleyh Hak o şeyi icâd eyledi.” Baskının dipnotu, Füsûs neşirlerinde burada “ayn” yazdığını, Konuk&#x27;un ise “şey” yazdığını belirtiyor. Konuk açıyor: Hakk&#x27;ın sayılamayacak kadar çok esmâ-i zâtiyyesi vardır, bunlara “mefâtih-i gayb” denir; zât-ı ahadiyyette bilkuvve mevcûd olan bu esmâ fiilen zuhûr ister, Hak onları dıyk-ı ademden çıkarıp nefes-i Rahmânîsi ile tenfis ederek mertebe-i ilimde izhâr eder: “İşte bu tenfis, esmâya rahmettir.” İlm-i Hak&#x27;ta peydâ olan bu sûver-i latîfeye a&#x27;yân-ı sâbite denir; bunlar âlem-i dünyâdaki sûver-i kesîfenin hakîkatleridir ve vücûdları “vücûd-ı hükmî”dir; onların zıllı olan sûver-i kesîfe-i âlemin vücûdu ise “vücûd-ı aynî”dir. (s. 1135-1136)</p><p>Konuk bilcümle emri üç vecihte topluyor: birincisi “vücûd-ı mahz”, ezelen ve ebeden ademi kabûl etmez, vücûd-ı hakîkî-i Hak gibi; ikincisi “imkân-ı mahz”, ezelen ve ebeden bir sebeple vücûdu kabûl eder, vücûd-ı izâfî-i a&#x27;yân gibi; üçüncüsü “adem-i mahz”, ezelen ve ebeden vücûdu kabûl etmez, şerik-i Bârî veyâhud iki vücûd-ı nâmütenâhî gibi. Âlemin vücûd-ı izâfîsi vücûd-ı mahz ile adem-i mahz arasındadır; bir ciheti ademe, diğer ciheti vücûda nâzırdır. A&#x27;yân-ı sâbite esmâ-i ilâhiyyenin, a&#x27;yân-ı kevniyye ise a&#x27;yân-ı sâbitenin zıllı olup vücûd-ı zıllîlerinin zuhûrunu Allah&#x27;tan taleb ettikleri; Allah da feyz-i akdesiyle esmâya mertebe-i ilimde “hükmen”, feyz-i mukaddesiyle mertebe-i aynda “vücûden” rahmet ettiği için “O&#x27;nun rahmeti her şey hakkında umûmî oldu. Binâenaleyh bu i&#x27;tibâra göre her şey merhûmdur; ve bu rahmette İblîs dahi dâhildir.” (s. 1136)</p></section><section><h3>Esmâ da Eşyâdandır: Rahmetin Vâsi&#x27; Olduğu İlk Şeyler</h3><p>Füsûs metni: “Ve esmâ-i ilâhiyye eşyâdandır; ve hâlbuki esmâ-i ilâhiyye ayn-ı vâhideye râci&#x27;dir. İmdi Allâh&#x27;ın rahmetinin vâsi&#x27; olduğu evvelki şey, o ‘ayn’ın şey&#x27;iyetidir ki, rahmet ile rahmet-i mücidedir.” Konuk, “Allâh&#x27;ın rahmeti her şeye vâsi&#x27;dir” denildiğinde esmâ-i ilâhiyyenin de “her şey” ta&#x27;biri altına girdiğini söylüyor; esmâ Rahmân isminin hakîkati olan ayn-ı vâhideye râcidir, Rahmân ismi ism-i câmi&#x27;dir ve her ismin rahmetten hazz ve nasîbi vardır. Konuk, Hakk&#x27;ın ahadiyyetü&#x27;z-zât ve vâhidiyyetü&#x27;l-esmâ ve&#x27;s-sıfât olduğunu, “Allah” diye adlandırılan vücûdun zâtında hiçbir vechle kesret bulunmadığını, bu zât için sonsuz vücûhun olduğunu ve esmâ ile sıfâtı iktiza eden ulûhiyetin bu vücûhu topladığını anlatıyor; esmâ ve sıfâta nazaran küll-i mecmû&#x27;i olan bu ayn-ı vâhidenin şey&#x27;iyeti, rahmet-i zâtiyye ile rahmet-i esmâiyyeyi icâd eder. Konuk bu bahsin Fass-ı Şuayb&#x27;da tafsil edildiğini hatırlatıyor. (s. 1137)</p><p>Füsûs metni devam ediyor: “İmdi rahmetin vâsi&#x27; olduğu evvelki şey, onun nefsidir. Ba&#x27;dehü müşârünileyhâ olan şey&#x27;iyettir. Ba&#x27;dehü gerek dünyâda gerek âhirette, araz olsun ve cevher-i mürekkeb veyâ basit olsun, ilâ-mâ-lâ-nihâye vücûd bulan her mevcûdun şey&#x27;iyetidir.” Konuk bu sırayı açıyor. Birincisi rahmetin kendi nefsidir, çünkü rahmetin taalluk edeceği bir ayn lâzımdır. İkincisi ayn-ı vâhidenin şey&#x27;iyetidir; bu, bilcümle a&#x27;yânın mebdei ve aslıdır ve “hakîkat-i muhammediyye”dir. Konuk, Allah&#x27;ın onu âlemlere rahmet olmak üzere icâd ettiğini söylüyor ve Enbiyâ 21/107&#x27;yi (“Biz seni ancak âlemler için rahmet olarak gönderdik”) ve hadis-i kudsî olarak andığı şu sözü getiriyor: “Yâ Habîbim, seni nûr-i vücûdumdan halkettim ve eşyâyı dahi senin nûrundan yarattım.” Bu mertebenin Hakk&#x27;ın zât-ı ahadiyyet mertebesinden vâhidiyet mertebesine tenezzülü olduğunu ekliyor. Üçüncüsü, dünyâda ve âhirette araz ya da cevher, mürekkeb ya da basit, sonsuza dek vücûd bulan her mevcûd-ı izâfînin şey&#x27;iyetidir. (s. 1137-1138)</p><p>Konuk, şey&#x27;iyeti sâbit olmayanın yalnız adem-i mahz olduğunu söylüyor; vücûd-ı mahz için ve esmâ ile sıfât için (vücûd-ı mahzın bilkuvve mevcûd, bilfiil zâhir olmayan niseb-i ademiyyesi) şey&#x27;iyet sâbittir ve şey&#x27;iyeti sâbit olan şeylerin zuhûru vardır. Rahmet, vücûd-ı Hakk&#x27;ın niseb-i ademiyyesinden bir nisbet olduğu için, kendi nefsine de vâsi&#x27; oldu. Ardından bir suâl getiriyor: rahmet-i ilâhiyye vücûden ve hükmen her şeye şâmil olduğuna göre, bu kadar mağzûb eşyâ varken hepsi nasıl merhûm olur? Füsûs&#x27;un bir sonraki cümlesi bu suâlin cevabıdır. (s. 1138)</p></section><section><h3>Garaz ve Tab&#x27;a Mülâyemet Mu&#x27;teber Değildir</h3><p>Füsûs metni: “Ve eşyâda -yâhud rahmette- bir garazın husûlü ve tab&#x27;ın mülâyemeti mu&#x27;teber değildir; belki mülâyimin ve gayr-ı mülâyimin hepsine rahmet-i ilâhiyye vücûden vâsi&#x27;dir.” Baskının dipnotu “yâhud rahmette” ifadesinin Füsûs metninde bulunmadığını, Konuk tarafından (muhtemelen Bosnevî esas alınarak) eklendiğini belirtiyor. Konuk açıyor: eşyânın icâdındaki maksad, Hakk&#x27;ın vücûd-ı mutlakında bilkuvve mevcûd niseblerin isti&#x27;dâdları vechiyle fiilen zuhûrudur ve bu, nefes-i Rahmânî ile tenfisle hâsıl olur. Bu yüzden rahmetin şümûlünde husûsî garaz ve tab&#x27;a mülâyim gelen şey mu&#x27;teber değildir: “Her şeyin isti&#x27;dâd-ı ezelisi ne ise, bu rahmetin nüzûlünde imân ve hidâyet ve ni&#x27;met ve zevk ve râhat gibi tab&#x27;a mülâyim gelen; ve küfür ve dalâlet ve nikmet ve elem ve râhatsızlık gibi tab&#x27;a gayr-ı mülâyim gelen birtakım ahvâl o şeye vârid olur.” Rahmet-i ilâhiyye mahzâ vücûd verdiği için mülâyim de gayr-ı mülâyim de ona dâhildir. (s. 1139)</p></section><section><h3>Yağmur Meseli: Bir Rahmet, Farklı Meyveler</h3><p>&#x27;Yağmurun yağması, yeryüzündeki bütün nebâtâtın gül veya salih meyve vermesi için değildir... gül ağacından gül, diken ağacından diken, zakkum ağacından zakkum zâhir olur. Hâlbuki hepsinin sebeb-i zuhûru olan rahmet birdir. İhtilâfı semerât, ağaçların ihtilâf-ı istidâdındandır.&#x27;</p></section><section><h3>İstidâd Farkı: Beyit, Mülk 67/3, Hâdî ve Mudill</h3><p>Yağmur misâlinin ardından Konuk bir beyit getiriyor (baskı dipnotuna göre Mehmed Emin Beliğ&#x27;in Dîvân&#x27;ından): “Halkın isti&#x27;dâdına vâbestedir âsâr-ı feyz / Ebr-i nisândan sadef dürdüne, efî semm kapar.” Zât-ı ahadiyyette mahfî olan esmâya rahmet-i zâtiyye-i âmmenin şümûlünün eşit olduğunu söylüyor ve “Rahmân&#x27;ın yaratışında tefâvüt göremezsin” (Mülk 67/3) âyetini anıyor: rahmet-i rahmâniyyenin her isim üzerine sereyânında tefâvüt yoktur, tefâvüt ancak esmâ-i ilâhiyyenin isti&#x27;dâdâtındadır. Rahmet-i rahmâniyyenin feyezânında Hâdî isminin mazharı olan ayn&#x27;da hidâyet sûreti, Mudill isminin mazharı olan ayn&#x27;da dalâlet sûreti zâhir olur. (s. 1140)</p></section><section><h3>Eser Ma&#x27;dûm İçindir: Yaratılışın Sessiz Talebi</h3><p>Konuk&#x27;un iki kez Fütûhât&#x27;a atıfla açtığı bu bahse göre &#x27;eser&#x27; mevcûd için değil, ma&#x27;dûm için vâki olur. Hak&#x27;ın fiilen bir şeyi yaratması, o şeyin henüz yokken taşıdığı bir &#x27;isteğe&#x27; cevaptır. Konuk bunu mimar örneğiyle açıyor: mimarın zatında var olan &#x27;mimarlık&#x27; sıfatı, henüz gerçekleşmemiş bir bina suretini talep eder; mimar bu talepten etkilenip binayı inşa eder.</p><p>Bunu çocuğun umacıdan korkması ya da vehimle hastalık icat eden insan örnekleriyle destekliyor — &#x27;vehim&#x27; (var olmayanın zihinde etki etmesi) burada metafizik bir ilkenin günlük hayattaki yansıması olarak sunuluyor.</p></section><section><h3>Eserin Ma&#x27;dûm İçin Oluşu: Füsûs Metni ve Konuk&#x27;un Açıklaması</h3><p>Füsûs metni (Konuk tercümesiyle) bu bahsi şöyle koyuyor: “Ve tahkîkan biz Fütûhât-ı Mekkiyye&#x27;de zikrettik ki, muhakkak ‘eser’, mevcûd için değil, ancak ma&#x27;dûm için vâki&#x27; olur; ve her ne kadar mevcûd için olursa da ma&#x27;dûmun hükmü hasebiyledir; ve bu ilim, garibdir ve mes&#x27;ele-i nâdiredir; ve onun hakîkatini ancak evhâm sâhipleri bilir. İmdi bu ilim, onların indinde zevk ile hâsıl olur; velâkin kendisinde vehm müessir olmayan kimse bu mes&#x27;eleden uzaktır.” Konuk atıf yapılan yerleri gösteriyor: Fütûhât&#x27;ın yetmiş üçüncü bâbında yirmi ikinci, yirmi üçüncü ve yirmi dördüncü suâllerin cevabı ve beş yüz elli sekizinci bâb. Eser, vücûd-ı Hak&#x27;ta müessir olan a&#x27;yân-ı sâbite-i ma&#x27;dûme için vâki&#x27;dir, Hakk&#x27;ın vücûdu için değil. (s. 1140)</p><p>Konuk açıyor: vücûd-ı Hakk&#x27;a muktezî olan, a&#x27;yânın isti&#x27;dâd ve kâbiliyetlerine göre vücûd ifâza etmektir. Niseb-i ilâhiyye olan esmâ, zât-ı ahadiyyette hâl-i ademde iken müsemmâları olan Hak&#x27;tan kendilerine vücûd itâsına hükmederler; mevcûd-i hakîkî olan Hak da ma&#x27;dûm olan nisebinden müteessir olup onlara vücûd itâsına teveccüh eder: “Binâenaleyh eser, evvelen ma&#x27;dûm için mevcûdda zâhir olur; badehû ma&#x27;dûm olan nisebin hükmü ve talebi hasebiyle vücûd-ı Hak için sâbit olur.” Mimar misâlinde Konuk şunu ekliyor: mimarın vücûdu mevcûd, fakat nisbeti olan mi&#x27;mâriyyet sıfatı kendi vücûdunda mahfî ve müstehlek olduğundan ma&#x27;dûmdu; mimar o sıfatın talebini yerine getirmek için zihninde bir binâ sûreti tahayyül eder ve “bu sûret ilim mertebesinde peydâ olan bir ‘ayn’dır.” Mimarın vücûduna lâzım olan, zihnindeki binâ sûretinin kâbiliyetine göre binâyı hâriçte inşâ etmektir. (s. 1140-1141)</p><p>Konuk, bu ilmin gâyet garîb ve pek nâdir bir mes&#x27;ele olduğunu, ma&#x27;dûmun mevcûdda tesiri meselesini hakîkatiyle anlayanların evhâm sâhipleri olduğunu söylüyor: vehim ma&#x27;dûm bir emr olduğu hâlde onların vücûdlarında tesir eder, hayâl kuvvelerinde vehmî şeyler icâd ederler ve bu sûretlerden pek müteessir olurlar. Örnekleri sıralıyor: çocuklar “umacı geliyor” diye korkutulur, çocuk hiç görmediği korkunç bir sûreti hayâlinde icâd edip ondan korkar; pek çok kimse gece tenhâ bir hânede kalamaz, hânede kimse olmadığını bildiği hâlde vehimlerinin icâd ettiği sûretlerden müteessir olur; bazı kimseler vücûdlarında hastalıktan eser yokken kendilerinde vehmî bir maraz icâd eder ve bundan kurtulamazlarsa vücûdları müteessir olup helâk olurlar. Kendisinde vehmin te&#x27;siri olmayanlar ma&#x27;dûmun mevcûdda te&#x27;sirinin keyfiyetini hakîkaten ve zevkan bilemez. Konuk, her insanın hayâl kuvvesinde vücûdu olmayan şeyi halkettiği bahsinin Fass-ı İshâkî&#x27;de geçtiğini hatırlatıyor. (s. 1141-1142)</p></section><section><h3>Rahmet Ekvânda Sârî, Zevâtta ve A&#x27;yânda Câridir</h3><p>Füsûs metni: “İmdi Allâh&#x27;ın rahmeti ekvânda sârîdir; zevâtta ve a&#x27;yânda câridir.” Konuk açıyor: rahmet-i rahmâniyye zât-ı ahadiyyette mahfî olan niseb-i Hakk&#x27;ı mertebe-i ilimde izhâr ettiği, hâriçte hâdis olan a&#x27;yân-ı kevniyye de mertebe-i ilimde peydâ olan a&#x27;yân-ı sâbitenin sûretleri olduğu için ekvânda sârîdir. “Ta&#x27;bir-i diğerle icâd, hüviyyet-i ilâhiyyenin sûver-i kevniyye-i kesîfede ihtifâsıdır. Buhâr-ı latîfin, buzda ihtifâsı gibi.” Eşyâ ancak rahmet-i rahmâniyye ile mevcûd oldu; rahmet mertebe-i vâhidiyyette bu hüviyyetin gayrı ise de vücûd-ı Hakk&#x27;ın niseb-i ademiyyesinden bir nisbet olduğu için mertebe-i ahadiyyette onun “ayn”ıdır. Rahmet-i ilâhiyye zevâtta, yâni niseb-i ademiyyenin şey&#x27;iyetlerinde ve bu nisebin sûveri olan a&#x27;yân-ı sâbitede câridir; kesîf halk sûretlerinde hüviyyet-i ilâhiyyenin ihtifâsı bakımından da bütün ekvânda sârîdir. (s. 1142)</p><p>Füsûs metni: “Rahmet-i müslânın mertebesi, şühûddan bilindiği vakit, efkâr üzerine âlidir.” Konuk, “müslâ”nın mîmin zammıyla “efdal”in müennesi “fudlâ” ma&#x27;nâsına geldiğini; pek ziyâde artkın ve taşkın rahmetin mertebesinin şühûd tarîkiyle bilindiğinde fikirlerin idrâkinden âlî olduğunu söylüyor: “Zirâ şühûdda isneyniyet kalkar ve şühûd ve şâhid ve meşhûd şey&#x27;-i vâhid olur; binâenaleyh fikrin orada medhali bulunmaz. Hâlbuki fikir, hicâbdır; isneyniyet olan mahalde hükmü câridir.” (s. 1142)</p></section><section><h3>Rahmetin Eşyâyı Zikri İcâddır: Her Mevcûd Merhûmdur</h3><p>Füsûs metni: “İmdi rahmetin zikrettiği her bir kimse, muhakkak sa&#x27;îd oldu; ve hâlbuki vücûdda rahmetin zikrettiği kimseden gayrı yoktur; ve rahmetin eşyâyı zikri, onları icâdının ‘ayn’ıdır. İmdi her mevcûd olan şey merhûmdur.” Konuk açıyor: eşyâ, nefes-i Rahmânînin onları tenfisinden evvel şey-i mezkûr değildi, tenfisle berâber şey-i mezkûr oldu; bu yüzden rahmetin onları zikri ayn-ı icâddır. Dünyâda erbâb-ı ni&#x27;met ve ashâb-ı belâ, âhirette ashâb-ı naîm ve ehl-i azâb, nefes-i Rahmânî ile ketm-i ademden sâha-i vücûda geldikleri için bu rahmet-i vücûd ile merhûmiyete dâhildir. (s. 1143)</p><p>Füsûs metni okuru uyarıyor: “Ey dostum, ashâb-ı belâdan gördüğün şey ile ve onunla kâim olan kimseden nâkıs kılınmayan âlâm-ı âhiretten ona mü&#x27;min olduğun şey ile, bizim zikrettiğimiz şeyin idrâkinden hicâba düşme!” Konuk bunu, “her mevcûd merhûmdur” ifadesine gelecek itirâzı defetmek için söylenmiş sayıyor: dünyâda gördüğün elemler ve âhiretteki elemlere imânın seni “Rahmet nasıl umûmî olur ki, dünyâda ehl-i belâ ve âhirette ehl-i azâb zahmet içindedir?” dedirtmesin; çünkü rahmetin şümûlünde eşyâ hakkında husûsî garaz ve tab&#x27;a mülâyemet mu&#x27;teber değildir, rahmet-i ilâhiyye mahzâ vücûd-bahş olduğu için her şeye şâmildir. (s. 1143-1144)</p></section><section><h3>Rahmetin Bizzât Eseri ve İtikâdâtta Mahlûk Olan Hak</h3><p>Füsûs metni rahmetin eserinin iki vech olduğunu bildiriyor: “Evvelâ ma&#x27;lûmun olsun ki, muhakkak rahmet, ancak icâdda umûmîdir. Binâenaleyh âlâma rahmetiyle âlâmı icâd etti. Ba&#x27;dehü bil ki, muhakkak rahmet için ‘eser’ iki vech iledir. Biri bizzât eserdir; ve o da O&#x27;nun her ayn-ı mevcûdu icâdıdır. Ve garaza ve adem-i garaza ve mülâyime ve gayr-ı mülâyime nazar etmez.” Konuk açıyor: rahmet umûmî sûrette a&#x27;yân-ı sâbiteyi ve a&#x27;yân-ı hâriceyi icâd etmiştir, elem de a&#x27;yândan biridir; Hak elemlere rahmet edip onları icâd etti. Bizzât tesir, husûsî garaz ve gayr-ı mülâyime bakmaksızın rahmetin her ayn-ı mevcûdu icâd etmesidir. (s. 1144)</p><p>Füsûs metni devamında: “Bunun için i&#x27;tikâdâtta mahlûk olan Hakk&#x27;ı uyûn-i sâbitede ayn-ı sâbite gördü. İmdi Hakk&#x27;ın kendi nefsine rahmeti icâd iledir.” Konuk, ibâredeki bir kelimenin şerhlerde farklı okunduğunu kaydediyor: Bosnevî ve Ya&#x27;kûb Han şerhlerinde mâzi sîgası olarak “kabûl etti” ma&#x27;nâsı verilmiş, Bâlî Efendi&#x27;nin de aralarında bulunduğu şerhlerde ise “evvel” ma&#x27;nâsı verilmiş; her iki sûrette murâd, rahmetin her mevcûdun ilm-i ilâhide ayn&#x27;ının sübût hâline nazar ettiğini bildirmektir. Rahmet ilm-i ilâhide sâbit olan ayn&#x27;a nazar ederek icâd ettiği için, itikâd ehlinin hayâlen mahlûk olan Hakk&#x27;ını onların a&#x27;yân-ı sâbitelerinde ayn-ı sâbite gördü. (s. 1145)</p><p>Konuk devamla, her kimsenin a&#x27;yân-ı sâbitesinin kuvvesinde ne varsa o kimsede hissen ve hayâlen zuhûr ettiğini; a&#x27;yân-ı sâbite rahmet-i zâtiyye ile merhûm olunca ahvâllerinin de merhûm olduğunu; “Hakk-ı mu&#x27;tekad”ın itikâd erbâbının a&#x27;yân-ı sâbiteleri ahvâlinden bir hâl olduğunu söylüyor. Âlemde kaç insan varsa Hak hakkında her birinin birbirine benzemeyen bir itikâd-ı mahsûsu vardır; bu itikâdlar şuûnât-ı ilâhiyyeden birer şe&#x27;ndir ve icâdla zâhir olur. Rahmet bu icâdla kendi nefsine rahmet eder: “Ya&#x27;ni rahmet, a&#x27;yân-ı sâbiteyi icâd sûretiyle evvelâ kendi nefsine rahmet etti; ondan sonra da a&#x27;yân-ı sâbitenin bir hâli olan Hakk-ı mahlûka rahmet etti.” (s. 1145)</p></section><section><h3>Suâl Yoluyla Rahmet: Ehl-i Hicâb ve Ehl-i Keşf</h3><p>Füsûs metni: “Ve rahmet için, suâl sebebiyle, eser-i diğer vardır. İmdi mahcûb olanlar, i&#x27;tikâdlarında olan Hak&#x27;tan kendilerine rahmet etmesini taleb ederler. Ve ehl-i keşf ise, Allâh&#x27;ın rahmetini, kendileri ile kâim olmasını taleb ederler. Binâenaleyh onlar, rahmeti ‘Allah’ ismiyle suâl eylerler. Böyle olunca ‘Yâ Allah bize rahmet et!’ derler; ve rahmetin onlarla kıyâmından gayrı, onlara rahmet etmez.” Konuk açıyor: ehl-i hicâb, hayâllerinde halkedip itikâd ettikleri Hak&#x27;tan, cennete rağbetlerinden ve cehennemden havflerinden dolayı günâhlarının afv ve mağfiretini Hakk-ı mukayyedden isterler. Ehl-i keşf ise rahmetin kendileriyle kıyâmını ilâh-ı mukayyedden değil ilâh-ı mutlaktan, “Allah” ismiyle suâl ederler; onlar Hak hakkında i&#x27;tikâd-ı mahsûs sâhibi değildirler, bütün mukayyedâtta Mutlak&#x27;ı müşâhede ederler. (s. 1146)</p><p>Konuk devamla, hükmün ancak hakîkatte bir mahalle kâim olan ma&#x27;nâ için sâbit olduğunu söylüyor: “Meselâ sûver-i âlemden her bir sûret, bir ism-i ilâhinin mazharıdır; ve o ismin hükmü onun mahall-i tecellisi olan o sûret ile kâimdir; ve o sûret o ismin hükmü tahtındadır. Bu sûret bozulduktan sonra mahal kalmayacağı cihetle o ismin hükmü o sûretten zâil olur.” Hakîkatte “râhim” olan ancak ma&#x27;nâdır; rahmetle kâim mahalle râhim denilse de râhim, o mahalle hâkim olan rahmet ma&#x27;nâsıdır. Allah ehl-i keşf kullarına rahmetin onlarla kıyâmı sûretiyle rahmet eder; rahmet onlarla kâim olduğunda onlar rahmetin hükmünü nefislerinde zevkan müşâhede ederler. (s. 1147)</p></section><section><h3>Râhim ve Merhûm: Hâl, Âlim Misâli ve Rahmetin İcâdının Gâyesi</h3><p>Füsûs metni: “Ve ism-i fâil rahim ve râhimdir; ve hüküm halk ile muttasıf olmaz; zirâ o bir emirdir ki, maâni kendi zevâtı için onu icâb eder. İmdi ahvâl mevcûd değildir; ma&#x27;dûm da değildir.” Konuk, rahim ve râhim ism-i fâil olsa da bunda hâkim olanın rahmet olduğunu; rahmetin hükmünün mahlûkıyetle muttasıf olmadığını, çünkü hâriçte vücûd-ı aynîsinin bulunmadığını, emr-i ma&#x27;nevî olup ancak zihinde ma&#x27;kûl ve ma&#x27;lûm olduğunu söylüyor. Ahvâl mevcûd değildir (“işte vücûdu budur” diye ayn-en gösterilemez) ve ma&#x27;dûm da değildir (vücûd-ı aynî üzerinde zâhir olan bir eserdir). Âlim misâli: tahsilden evvel kişinin zâtı mevcûddur ama henüz âlimiyeti yoktur; “âlim” zâtın ayn&#x27;ı olsaydı, âlim denilmediği zamanda zâtının mevcûd olmaması lâzım gelirdi. Âlim ilmin ayn&#x27;ı da değildir, çünkü ilim mefhûmu kişi henüz âlim değilken de mevcûddur. Âlimin âlim oluşu hâldir, hâl ise hâdistir. (s. 1147-1148)</p><p>Füsûs metni: “Ve ale&#x27;l-hakîka rahmet, ‘râhim’ tarafından bir nisbettir ve o hüküm için mûcibdir; böyle olunca o, rahmettir. Ve merhûmda rahmeti icâd eden, o rahmeti icâd etmedi, tâ ki o merhûma rahmet ede. Ve ancak rahmet kendisi ile kâim olan kimseye, o rahmetle râhim olmak için, rahmeti icâd eyledi.” Konuk açıyor: rahmet, râhimin nisbetleri cümlesinden bir nisbettir ve sâhibi üzerine hükmü mûcib olan nisbettir. Mûcid, merhûm olan şeyde bu rahmeti yalnız ona rahmet etmek için icâd etmedi; merhûm da râhim gibi onunla rahmet etsin diye icâd etti: önce rahmet-i rahmâniyye ile, vücûddan sonra hâline münâsip kemâle vusûlünde rahmet-i rahîmiyye ile merhûm olan kimsede rahmetin icâdı, bu iki rahmetle merhûm olduktan sonra diğerlerine râhim olmak içindir. Bu hâlde o abd Rabb&#x27;inin sıfatıyla mevsûf olup rahmet kendisiyle kâim olanlara râhim olur. Konuk bir kıyas yapıyor: Hak bir abdine sıfât-ı fiiliyyeden sıfat-ı kudreti verse, ondan havârık-ı âdât, mu&#x27;cizât ve kerâmât sâdır olur; rahmet ise kâffe-i sıfât-ı fiiliyyenin mebdeidir, çünkü onların a&#x27;yânı rahmet sebebiyle mevcûd olur. (s. 1149)</p></section><section><h3>Hak Rahmetin ‘Ayn’ıdır; Zât ile Sıfat</h3><p>Füsûs metni: “Ve Hak Sübhânehü hazretleri, havâdis için mahal değildir. Böyle olunca kendisinde rahmetin icâdı için mahal değildir; ve hâlbuki o, Râhim&#x27;dir, ve Râhim, ancak onunla rahmetin kıyâmı sebebiyle Râhim olur. İmdi sâbit oldu ki O, rahmetin ‘ayn’ıdır.” Konuk açıyor: Hak mahall-i havâdis değildir, rahmet onun zâtı üzerine bir sıfat-ı zâide olarak hâdis olmaz; Hak ise bütün esmâ, sıfât, a&#x27;yân ve ekvâna rahmet eder, çünkü Râhim&#x27;dir. Hakk&#x27;ın rahmetiyle kıyâmı kendi nisbet-i zâtiyyesiyle kıyâmı demektir; nisbet ise zâtın ayn&#x27;ıdır, gayrı değildir. Bu yüzden “Hak rahmetin ‘ayn’ıdır.” (s. 1149-1150)</p><p>Füsûs metni: “Ve bu emri zevketmeyen ve onun için onda kadem olmayan kimse, Hak rahmetin ‘ayn’ıdır; yâhud sıfatın ‘ayn’ıdır, demeğe cür&#x27;et etmedi. Hak sıfatın ‘ayn’ı değildir; gayrı da değildir, dedi.” Konuk, kendisi için bu emirde kadem-i sülük sâbit olmayan kimseyi Mâtürîdî ve Eş&#x27;arîler gibi anlıyor: onlarda vehme-i isneyniyet gâlibdir, Hakk&#x27;ı kemâliyle tenzih etmemiş olmaktan korkarlar. Onlara göre sıfât-ı Hak “lâ hiye hüve ve lâ hiye gayruhû”dur, yâni “Sıfat, ne Hakk&#x27;ın hüviyetidir ve ne de Hakk&#x27;ın gayrıdır.” Gerekçe olarak Konuk şunu söylüyor: o kimse zâttan sıfâtın nefyine muktedir değildir, sıfât onun indinde mevcûd olduğundan gayrın vücûdunu isbât etmiş olur; sıfâtı zâtın ayn&#x27;ı da kılamaz, çünkü zâta nazaran ıtlâk, sıfâta nazaran takyîd ile hükmolunur. (s. 1150-1151)</p><p>Füsûs metni, bu ibâreden başkasının daha uygun olduğunu bildiriyor: “Ve ancak a&#x27;yân-ı sıfât, mevsûf ile onlar arasında ve onların a&#x27;yân-ı ma&#x27;kûlesi beyninde niseb ve izâfâttır.” Konuk açıyor: ayniyet takdirinde zât sıfatla mukayyed olur; gayriyet takdirinde iki vücûd isbât edilmiş olup zât kendi nefsinde nâkıs olur. Bu yüzden Füsûs&#x27;un tercih ettiği ibâre nefsü&#x27;l-emre daha lâyıktır ve işkâli daha ziyâde kaldırır. Sıfât-ı Hak hâriçte müstakillü&#x27;l-vücûd değildir; akılda zât-ı Hak üzerine zâid olarak mevcûddur, hâriçteki vücûdları ise Hak Teâlâ&#x27;nın ayn-ı zâtıdır. Konuk bunun muhakkik ârif-i billâhın kavli olduğunu söylüyor; hükemânın birçoğu ve Mu&#x27;tezile de böyle söylemişse de bu söz onlardan zevkan sâdır olmamış, nazar-ı aklî ile ihtiyar edilmiştir. Sıfat-ı Hak olan rahmetin kendisiyle kâim olduğunu zevkan bilen ârif-i muhakkikin sözü ise müşâhedeye müstenid olduğundan nefsü&#x27;l-emrden şaşmak ihtimâli yoktur. (s. 1151)</p></section><section><h3>Rahmetin Câmi&#x27; Oluşu ve Her İsimle Rahmet Talebi</h3><p>Füsûs metni rahmetin her ism-i ilâhiye nisbetle farklılaştığını söylüyor: “[…] rahmet câmi&#x27;dir. Binâenaleyh rahmet her bir ism-i ilâhiye nisbetle muhteliftir. İşte bunun için, Hak Sübhânehü&#x27;nun rahmet etmesi, her bir ism-i ilâhi ile suâl olunur. Böyle olunca Allah ona rahmet eder.” Konuk açıyor: her isim kendi mazharına ve dâisine kendi hakîkatinin verdiği rahmetle rahmet eder; sâil Hakk&#x27;ın hangi ismiyle rahmet taleb etmişse Allah ona o isimle rahmet eder. Hasta “Yâ Şâfî, irhamnî” (Ey şifâ verici, bana rahmet et), aç “Yâ Rezzâk, irhamnî”, fakir “Yâ Ganî, irhamnî”, günâhkâr “Yâ Gaffâr, irhamnî” diye duâ eder; Hak da Şâfî, Rezzâk, Ganî ve Gaffâr isimlerinin iktizâsına göre tecelli buyurup ona rahmet eder. “Benim rahmetim her şeyi kaplamıştır” (A&#x27;râf 7/156) âyetinde mütekellimden kinâye olan zamire muzâf rahmet, vücûden ve hükmen bütün eşyâya vâsi&#x27; olan rahmettir; zamir-i mütekellim her şeye vâsi&#x27; olan rahmete ve zâta delâlet eder, çünkü Hakk&#x27;ın rahmeti zâtının ayn&#x27;ıdır. (s. 1152)</p><p>Konuk, rahmetin birçok şu&#x27;besi olduğunu ve bunların esmâ-i ilâhiyyenin çokluğuyla çoğaldığını belirtiyor. Füsûs metni: “Yâ Rab bana rahmet et!” diyenin sözü bu ism-i hâssa nisbetle âmm olmaz; esmâdan bunun gayrıyla, hattâ Müntakim ismiyle de “Yâ Müntakim bana rahmet et!” demek vardır. Konuk açıyor: “Yâ Rabb, irham!” denildiğinde Hak&#x27;tan kemâlâtla mevsûf kılınmak kastedildiği için bu talep husûsî bir rahmet olur; “Yâ Settâr, irhamnî” (Ey günahları pek çok örtücü, bana rahmet et) diyen Settâr isminin hazinesindeki ahvâli istemiş olur. Müntakim ismiyle duâ eden de “kendisine zulmeden zâlimden ahz-ı intikâmı ve bu sûretle azâbın tahaffüfünü murâd eder. Bu da kezâlik bir rahmet-i hâssadır.” (s. 1152-1153)</p></section><section><h3>Esmânın İki Medlûlü: Zât ve Ma&#x27;nâ-yı Hâs</h3><p>Füsûs metni: “İşte bu budur. Zirâ muhakkak bu esmâ-i ilâhiyye zât-ı müsemmâya delâlet eder; ve esmâ dahi hakâyıkıyla muhtelif ma&#x27;nâlara delâlet eder. İmdi o dâl rahmet hakkında, gayrı haysiyetiyle ve onunla gayrısından munfasıl ve mütemeyyiz olan bir ismin medlûlünün i&#x27;tâ ettiği şeyle değil, esmânın bu isimle müsemmâ olan zâta delâleti haysiyetinden o isimlerle duâ eder.” Konuk açıyor: “Yâ Rezzâk, irhamnî” ve “Yâ Şâfî, irhamnî” gibi isimlerle rahmet taleb eden dâî, bu isimleri müsemmâ olan zâta delâleti cihetinden zikreder; bir ismin sâir isimlerden ayrılan medlûlünün verdiği ma&#x27;nâ-yı husûsîyle duâ etmez. Rezzâk&#x27;tan şifâ itâsı sûretiyle rahmet taleb olunmaz. Ne kadar esmâ varsa zâta delâlette hepsi müttehiddir, kendi ma&#x27;nâ-yı husûsîlerine delâlette müttehid değildir: “Şu hâlde her bir ismin iki medlûlü olmuş olur: Birisi zât, diğeri sâir esmâdan infisâl ve temeyyüz eylediği ma&#x27;nâ-yı hâstır.” (s. 1153-1154)</p><p>Füsûs metni: “Çünkü herhangi lafız ile olursa olsun, mustalahun-aleyh, kendi zâtıyla kendisinin gayrısından mütemeyyiz bir hakîkattir. Her ne kadar esmânın hepsi, ayn-ı vâhideye delâlet etmek için vaz&#x27;olundu ise de… İmdi onda hilâf yoktur ki, her bir isim için, başkası için olmayan bir hüküm vardır.” Konuk açıyor: Arapça, Türkçe, Fârisî, hangi lafız olursa olsun bir ma&#x27;nâyı anlatmak için ıstılâh vaz&#x27;edilir; esmâ-i melfûza-i ilâhiyye birtakım hakâyık-ı ilâhiyyeyi anlatmak için vaz&#x27;edilmiş ıstılâhlardır. Misâl: Alîm ismi ayn-ı ilim ile Kâdir isminden, Kâdir ismi ayn-ı kudret ile Alîm isminden ayrılır; Hakk&#x27;ın zâtına delâlette aralarında fark yoktur. İnsan misâli: “insan” mefhûmu ayn-ı vâhidedir, ama gülme, ağlama, söyleme, yazma, okuma gibi nisbetleri vardır; her kavim bu ma&#x27;nâları anlatmak için isim vaz&#x27;etmiştir (gülen, ağlayan, söyleyen, yazan, okuyan). Bu isimlerin hepsi insana mahsûs nisebdir ve ayn-ı vâhide olan mefhûma delâlet için vaz&#x27;edilmiştir; fakat delâlet ettikleri ma&#x27;nâlar arasında fark olduğundan biri diğerine delâlet etmez: “Nitekim gülme ağlamanın ‘ayn’ı değildir.” (s. 1154-1155)</p><p>Konuk bundan duâ eden için sonuç çıkarıyor: sâil “Yâ Ganî”, “Yâ Kerîm”, “Yâ Latîf” gibi isimleri zâta delâlet ederek zikrettiği gibi, “Yâ Allah”, “Yâ Rahmân” diye duâ ettiğinde de muhtâc olduğu şey hangi ismin eliyle ihsân olunacaksa o ismin hükmünü nazar-ı i&#x27;tibâra almak lâzımdır: “zirâ atâyâ-yı ilâhiyye hademe-i esmâdan bir hâdimin iki eli üzerine vâki&#x27; olur.” Hasta, şifâyı ulaştıracak olan “Şâfî” ismini; aç, “Rezzâk” ismini nazar-ı i&#x27;tibâra almalıdır. Konuk atâyâ-yı esmâiyyenin tafsilâtının Fass-ı Şîsî&#x27;de geçtiğini hatırlatıyor. (s. 1155)</p><p>Füsûs metni Ebü&#x27;l-Kâsım bin Kasî&#x27;yi anıyor: “Muhakkak her bir ism-i ilâhi, infirâdı üzere, hepsi cemi&#x27;-i esmâ-i ilâhiyye ile müsemmâdır. Zikirde onu takdim ettiğin vakit, onu cemi&#x27;-i esmâ ile vasfedersin.” Metin bunu esmânın ayn-ı vâhide üzerine delâletine bağlıyor; esmâ ayn-ı vâhide üzerine çok ve hakâyıkı muhtelif olsa da. Konuk, esmâdan her birinin kendi hakîkatine delâlet etmeleri bakımından muhtelif, ayn-ı ahadiyyette müttehid olduğunu; herhangi bir ismi münferiden zikreden kimsenin o ismi esmâ-i ilâhiyyenin kâffesi ile vasfetmiş olacağını söylüyor. Konuk bu bâbdaki tafsilâtın misâl yoluyla Fass-ı Süleymânî&#x27;de geçtiğini hatırlatıyor. (s. 1155-1156)</p></section><section><h3>Rahmete Nâil Olunan İki Tarîk: Vücûb ve İmtinân</h3><p>Füsûs metni: “Ba&#x27;dehü muhakkak rahmete iki tarik üzere nâil olunur. Birisi tarik-i vücûbdur. O da Hakk&#x27;ın ‘Ben rahmeti ittikâ edenler ve zekât verenler için farz kıldım’ (A&#x27;râf 7/156) kavlidir. Ve onları sıfât-ı ilmiyye ve ameliyyeden onunla takyid eylediği şeydir.” Konuk bu iki tarîk için “rahmet-i vücûb”, yâni “rahmet-i hâssa” ve “rahmet-i imtinân”, yâni “rahmet-i âmme” adlarını kullanıyor. Tarîk-i vücûbun A&#x27;râf 7/156&#x27;dan müstefâd olduğunu, Hakk&#x27;ın “O kendi zâtı üzerine rahmeti yazmıştır” (En&#x27;âm 6/12) âyetinde belirttiği rahmeti müttakiler için kendi üzerine vâcib kıldığını söylüyor. Bu rahmet, namaz, oruç, hac, zekât gibi sıfât-ı ameliyyeden ve ma&#x27;rifet-i Hak gibi sıfât-ı ilmiyyeden o müttakileri takyid ettiği şey mukâbilinde onlara vâsıl olur; Fass-ı Süleymânî&#x27;de tafsil edildiği üzere rahmet-i vücûb, vücûddan sonra isti&#x27;dâdın muktezâsıyla sâdır olan amel mukâbilinde vâki&#x27; olur. (s. 1156)</p><p>Konuk, bir kimsenin Hakk&#x27;ın Resûl&#x27;üne imân edip şeriatına tevessül ederek sâlih ameller işlemesi ve ma&#x27;rifet-i ilâhiyye tahsil etmesi hâlinde Hakk&#x27;ın kendi üzerine vâcib kıldığı bu rahmet-i hâssaya nâil olacağını söylüyor; fakat “bu rahmet-i vücûb, rahmet-i imtinândandır”: hükmü hâss olan Rahîm ismi, duhûl-i tazammun ile hükmü âmm olan Rahmân isminin tahtına dâhil olur. Hak ezelî hubbi eseri olarak bazı hakâyık hakkında inâyet-i mahsûsasını önceden göstermiştir; bunlar enbiyâ, evliyâ ve bilcümle mü&#x27;minlerin a&#x27;yân-ı sâbiteleridir. Mezâhirleri vücûd âlemine geldiğinde bu inâyet-i ezeliyye hasebiyle onlardan a&#x27;mâl-i sâliha zâhir oldu ve Hak amelleri mukâbilinde onlara kendi üzerine vâcib kıldığı rahmetle tecelli etti. Konuk bir Mesnevî tercümesi getiriyor: “Belki şart-ı kâbiliyyet O&#x27;nun atâsıdır. Atâ iç, ve kâbiliyet kabuk gibidir.” Bundan abdin sâlih amelleri yapmaya muvaffak olmasının da Hakk&#x27;ın atâsı ve fazl-ı ihsânı olduğunu, bu yüzden abdin ameliyle övünmesi kadar kendisi için hicâb ve utanç sebebi olacak bir şey bulunmadığını çıkarıyor. (s. 1157)</p><p>Füsûs metni ikinci tarîki bildiriyor: “Ve tarik-i âhar, ki bu rahmete onunla nâil olunur, tarik-i imtinân-ı ilâhidir ki, bir amel ona mukterin değildir. O da Hak Teâlâ&#x27;nın ‘Benim rahmetim her şeyi kaplamıştır’ (A&#x27;râf 7/156) kavlidir. Ve ‘Tâ ki Allah Teâlâ senin geçmiş ve gelecek günâhını mağfiret ede!’ (Fetih 48/2) denilmesi ondandır. Hak Teâlâ&#x27;nın ‘Ne istersen yap, muhakkak ben senin zünûbunu mağfiret ettim!’ kavli dahi ondandır.” Konuk, rahmet-i imtinânı şöyle açıyor: zât-ı ahadiyyede mündemic bilcümle esmânın Hakk&#x27;ın kendi zâtında, kendi zâtına, kendi zâtıyla tecellisi ile ilminde peydâ kılınmasıdır; hakâyık-ı eşyâ olan bu sûver-i ilmiyyenin sübûtu için onların hiçbir amel ve hizmeti sebketmemiştir, bu mahz-ı ihsândır. Bu rahmet vücûdun kâffesine şâmildir ve hiçbir şey ondan hâlî değildir; esmâ mertebe-i ahadiyyette zâtın ayn&#x27;ı olduğu için zât-ı Hakk&#x27;a da şâmildir. Hiçbir amel mukâbilinde olmayıp zâtın muktezâsı bulunduğu için “rahmet-i imtinân” denildi. (s. 1157-1158)</p><p>Konuk, Fetih sûresindeki hitâp ve “Ne istersen yap” sözü gibi hubb-i ezelî eseri olan rahmet-i hâssa için iki vecih sayıyor. Birincisi: bu zât fenâ-fillâh ve bekâ-billâh makâmında kâim olup sıfât-ı beşeriyyeden taarri etmiştir ve artık bu sıfâta rücû&#x27; mümkin olmaz; fiili Hakk&#x27;ın fiili olduğu için, Hızır&#x27;ın gulâmı katletmesi ve gemiyi delmesi gibi sûret-i zâhirede şer&#x27;e muhâlif görünen amellerinden muâheze olunmaz; “Ne yaparsa yapsın ma&#x27;zûr ve me&#x27;mûrdur.” İkincisi: abd henüz sıfât-ı beşeriyyesinden fânî olmamıştır ve sâika-i nefs ile ondan bazı muhâlefet sudûr eder, bunlar zünûb-i sarîhtir; fakat hakkında inâyet-i ezeliyye sebkettiği ve Gaffâr isminin mazharı düştüğü için Hak hubb-i ezelîsi eseri olarak onun zünûbunu setr ve mağfiret eder. Hadîs-i şerîf: “Eğer siz günâh işlememiş olsanız Allah Teâlâ sizi giderir ve bir kavim getirir ki, onlar günâh işleyip Allâh&#x27;a istiğfâr ederler ve Hak dahi onları mağfiret eder.” Konuk: “İşte sırr-ı mağfiret budur.” (s. 1158-1159)</p></section><section><h3>İki Rahmet Yolu ve Mevlânâ&#x27;nın İki Köle Meseli</h3><p>Konuk, rahmete ulaşmanın iki yolunu ayırıyor: tarîk-i vücûb (amel karşılığı gelen rahmet) ve tarîk-i imtinân (hiçbir amel şartı olmadan, salt lütuf). Vücûb yoluyla gelen rahmetin bile aslında imtinân rahmetinin içine dahil olduğunu söylüyor — çünkü kulun ameli yapabilmesi zaten Hakk&#x27;ın önceden bahşettiği bir tevfiktir.</p><p>Bu bahsi kapatan Mevlânâ alıntısı, mağfiretin akılla hesaplanamayacağını, tamamen ezelî bir muhabbetin eseri olduğunu, iki kölenin meseliyle anlatıyor: biri çok hizmet eder, öteki tembeldir, ama Hak tembel köleyi daha çok sever. &#x27;Sonunda görüyorum ki senin tembel köleye, o hizmetkâr köleden ziyade muhabbetin vardır... İnayete hükmetmek mümkin değildir.&#x27;</p></section><section><h3>Mağfiretin Sırrı, İstiğfâr ve Fassın Kapanışı</h3><p>Konuk&#x27;un Fîhi Mâ Fîh&#x27;ten aktardığı Mevlânâ sözünün devamında sağ göz ve sol göz ile cuma günü örnekleri geçiyor: “Bu sağ göz ve sol gözün zâhirde her ikisi de birdir. Acabâ o sağ göz ne hizmet etti ki sol göz olmadı? Yevm-i cum&#x27;a dahi böylece eyyâm-ı mütebâkıyeden efdal oldu.” Mevlânâ&#x27;ya göre Allah&#x27;ın rızıklardan başka rızıkları olduğu levhde yazılıdır ve o rızıklar cuma günü taleb edilir: “Şimdi bu cuma eyyâm-ı sâirenin etmediği ne hizmetleri etti? Velâkin Hak Teâlâ, inâyeti ve teşrif-i mahsûsu ona etti.” (s. 1159-1160)</p><p>Mevlânâ&#x27;nın sözünün ardından Konuk şunu yazıyor: “İmdi bu inâyet erbâbı mestûrdur. Hakk&#x27;ın kimi mağfiret edeceği ve kimi etmeyeceği bilinmez. Binâenaleyh ibâda lâzım olan terk-i maâsî ve iştigal-bi&#x27;t-tââttır.” Beşeriyet icâbı ma&#x27;siyet sudûrunda âh u enin ile istiğfâr lâzımdır; âh u enin kalbde nedâmet husûlüyle olur ve nedâmet-i kalbiyye olmaksızın lisânen istiğfâr müsmir değildir. Hak Gaffâru&#x27;z-zünûbdur diyerek bir ma&#x27;siyeti işleyip diğerine niyet etmek inâyet alâmeti değil, neûzü billâh bu&#x27;d ve şekâvet alâmetidir. “İşte sırr-ı mağfiret, ezelde sebketmiş olan muhabbet-i ilâhiyyeden ibârettir.” Konuk bunun da rahmet-i imtinân kabilinden olduğunu söylüyor, çünkü bî-illet olan inâyet-i ilâhiyyenin o kimseye taallukudur. (s. 1160)</p><p>Konuk fassı kısa bir beyit tercümesiyle bitiriyor: Allah&#x27;a hamdolsun, O Vâhid ve Ferd&#x27;dir; O&#x27;nun gufrân ve mağfireti günâhları yok eder. Şerhin başlangıç ve bitiş tarihlerini de kaydediyor: 13 Mayıs 1917 (Rumî 1333; 22 Recep 1335) Pazar günü ve 30 Haziran 1917 (10 Ramazan 1335) Cumartesi. (s. 1160)</p></section></article><nav aria-label="Gezinme"><p><a href="./">Dost Arabî</a> › <a href="fusus/">Füsûsu&#x27;l-Hikem</a></p><p><a rel="prev" href="fusus/fs20/">← Kelime-i Yahyâviyye</a> · <a href="dizin/fusus/">Dizin</a> · <a rel="next" href="fusus/fs22/">Kelime-i İlyâsiyye →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

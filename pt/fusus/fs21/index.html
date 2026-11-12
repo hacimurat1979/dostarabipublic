@@ -2,63 +2,14 @@
 <html lang="pt-BR" data-dost-lang="pt">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-WMdz6jyoX1Et7EfIh/hyjXkDhr0ErRNaFZV/Gc1y2qM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-WMdz6jyoX1Et7EfIh/hyjXkDhr0ErRNaFZV/Gc1y2qM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/pt/fusus/fs21/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>A Palavra de Zacarias</h2><p>Este engaste parte de Zacarias e dedica quase toda a sua extensão à natureza da misericórdia. O nome &#x27;Soberano&#x27; (Malik) manifesta-se tanto num filho concedido na velhice quanto no martírio por uma serra.</p><article aria-label="Texto desta parte" lang="pt-BR"><section><h3>O Nome que Governa Zacarias: Soberano</h3><p>O engaste abre nomeando o nome especial que governa Zacarias: “O nome especial que governa Zacarias é o nobre nome ‘Soberano’.” Konuk diz que os estados pertencentes a esse nome apareceram no ser de Zacarias, e que Zacarias foi sustentado, como exige esse nome, com poder completo e resolução eficaz; pois “‘Soberano’ deriva de ‘soberania’ (mulk), que significa intensidade e força; e ‘soberania’ também significa poder e disposição.” Segundo Konuk, o nobre ser de Zacarias tornou-se como o “Dia do Juízo”: porque a soberania perfeita do Real aparece no Dia do Juízo, no sentido de Ressurreição, Deus disse na Sura da Abertura “Soberano do Dia do Juízo” (Fatiha 1/4); como Zacarias estava realizado nos estados do Dia do Juízo na aparição da misericórdia e da retribuição, ele estava na posição do Dia do Juízo. Naquele dia o Real ora mostra misericórdia, ora castiga, e Sua soberania se torna manifesta por esses dois estados; assim como Ele é “Soberano do Dia do Juízo”, tornou-se “Soberano de Zacarias”. (p. 1133)</p></section><section><h3>Dois Estados: Um Filho na Velhice, um Martírio pela Serra</h3><p>Os dois estados de Zacarias dão forma concreta à leitura do engaste sobre &#x27;Soberano&#x27;. A face da misericórdia: enquanto sua esposa era estéril e ele próprio muito velho, ele pediu a Deus, &#x27;concede-me de Ti um herdeiro&#x27; (Maryam 19/5); Deus atendeu sua oração e concedeu João — mas João aqui é definido não como riqueza, mas como &#x27;herdeiro do conhecimento divino, dos segredos senhoriais e do caráter louvável&#x27;. A face da retribuição é seu martírio: descrentes o serraram ao meio, e ele não pediu a Deus para aliviar essa aflição, porque isso é exigido pelo nome especial ao qual ele estava sujeito.</p><p>O versículo popularmente associado a Zacarias — &#x27;Meu Senhor, não me deixes sozinho, e Tu és o melhor dos herdeiros&#x27; (Anbiya 21/89) — não aparece diretamente neste engaste. Konuk cita apenas Maryam 19/5 e usa a palavra &#x27;herdeiro&#x27; no contexto de João herdar um legado espiritual.</p></section><section><h3>A Atribuição da Sabedoria da Soberania e um Dístico do Masnavi</h3><p>Depois de descrever como Zacarias, conforme exigia o nome especial que ele manifestava, não pediu ao Real que removesse a aflição da serra, Konuk liga a razão da atribuição assim: “É por esta razão que a ‘sabedoria da soberania’ foi atribuída à Palavra de Zacarias.” Em seguida dá uma tradução de um dístico do Masnavi: “Agora sê a Ressurreição, vê a Ressurreição; esta é a condição para ver tudo. Se te tornares intelecto, conhecerás o intelecto em sua perfeição. Se te tornares amor, verás o amor em sua beleza.” (p. 1134)</p></section><section><h3>A Misericórdia Abarca Tudo em Existência e em Juízo</h3><p>O texto dos Fusus (na tradução de Konuk) expõe a tese do engaste: “Sabe que a misericórdia de Deus abarcou tudo em existência e em juízo; e que a existência da ira é ela própria da misericórdia de Deus para com a ira; assim Sua misericórdia precedeu Sua ira. Isto é, a relação da misericórdia com Ele precedeu a relação da ira com Ele.” Konuk recorda que, como detalhado no Engaste de Salomão, a misericórdia é de duas espécies, uma da essência e outra dos atributos, e que estas se dividem ainda por particularidade e generalidade; a misericórdia que abarca tudo é “a misericórdia abrangente da essência”, que é o que a essência do Real exige, “porque o Real é, em Si mesmo, o Generoso.” Por essa misericórdia as relações e estados ocultos na essência da unicidade foram estabelecidos em Seu conhecimento pela automanifestação do Real dentro de Sua própria essência para Sua própria essência; o Real, dando alívio a Seus nomes que estavam em aperto na essência da unicidade por meio do Sopro do Misericordioso e dando-lhes existência no conhecimento, libertou-os desse aperto. (p. 1134)</p><p>Konuk diz que as formas das entidades fixas estabelecidas no conhecimento aparecem, dentro da esfera de seus próprios juízos, com as formas das entidades engendradas, e que por isso a misericórdia da essência abarcou tudo em existência também neste presente mundo do testemunho. Quando a misericórdia inclui todas as relações e as entidades fixas e externas, inclui também “a ira, que consiste em relações inexistentes”; a existência da ira também é da misericórdia divina para com a ira. A relação da ira com o Real, porém, vem depois da relação da misericórdia, porque a ira é acidental em relação à misericórdia: “Por exemplo, o estado natural da água é fluir; seu congelar é acidental. Do mesmo modo, o estado natural do homem não é a ira; sua ira é um atributo acidental que aparece sob uma causa.” Konuk diz que, como detalhado no Engaste de Esdras, a ira divina recai sobre uma coisa por sua total incapacidade, ou deficiência de capacidade, para a perfeição e a felicidade; que a ira é mal e desgraça apenas em relação àquele sobre quem recai, ao passo que a ira, em relação ao Real, é ela própria objeto de misericórdia, porque veio à existência pela manifestação do Misericordioso, e tudo o que existe é objeto de misericórdia pela manifestação do Misericordioso. (p. 1135)</p></section><section><h3>Toda ‘Entidade’ Pede a Deus a Existência</h3><p>O texto dos Fusus: “Quando houve existência para toda ‘entidade’, ela por isso a pede a Deus. Por isso Sua misericórdia tornou-se geral para tudo; pois o Real, por essa misericórdia com a qual teve misericórdia de tudo, viu aquela coisa aceitar Sua misericórdia em sua existência entitativa. Assim o Real fez aquela coisa vir à existência.” A nota de rodapé da edição observa que as edições dos Fusus trazem aqui “entidade” (ayn), ao passo que Konuk escreve “coisa” (shay&#x27;). Konuk explica: o Real tem nomes da essência demasiados para contar, chamados “as chaves do oculto”; esses nomes, existentes em potência na essência da unicidade, pedem para aparecer em ato, e o Real, retirando-os do aperto da inexistência e dando-lhes alívio pelo Sopro do Misericordioso, torna-os manifestos no nível do conhecimento: “Este dar alívio é misericórdia para com os nomes.” Essas formas sutis que surgem no conhecimento do Real são chamadas entidades fixas; são as realidades das formas densas do mundo desta vida, e sua existência é “existência em juízo”; a existência das formas densas do mundo, que são sua sombra, é “existência entitativa”. (pp. 1135-1136)</p><p>Konuk reúne toda questão em três aspectos: o primeiro é “existência pura”, que nem eternamente nem perpetuamente admite a inexistência, como a existência real do Real; o segundo é “possibilidade pura”, que eternamente e perpetuamente admite a existência por uma causa, como a existência relativa das entidades; o terceiro é “inexistência pura”, que nem eternamente nem perpetuamente admite a existência, como um associado do Criador ou duas existências infinitas. A existência relativa do mundo situa-se entre a existência pura e a inexistência pura; um lado seu olha para a inexistência e o outro para a existência. As entidades fixas são a sombra dos nomes divinos, e as entidades engendradas são a sombra das entidades fixas, e pedem a Deus o aparecimento de suas existências-sombra; e como Deus tem misericórdia dos nomes “em juízo” no nível do conhecimento pela emanação santíssima, e “em existência” no nível das entidades pela emanação santa, “Sua misericórdia tornou-se geral com respeito a tudo. Portanto, nesta consideração, tudo é objeto de misericórdia; e Iblis também está incluído nessa misericórdia.” (p. 1136)</p></section><section><h3>Os Nomes Também Estão entre as Coisas: o que a Misericórdia Abarcou Primeiro</h3><p>O texto dos Fusus: “E os nomes divinos estão entre as coisas; e, contudo, os nomes divinos retornam à entidade una. Assim a primeira coisa que a misericórdia de Deus abarcou é a coisidade dessa ‘entidade’, que é a misericórdia que faz vir à existência por misericórdia.” Konuk diz que, quando se diz “a misericórdia de Deus abarca tudo”, os nomes divinos também entram na expressão “tudo”; os nomes retornam à entidade una, que é a realidade do nome o Misericordioso, e o nome o Misericordioso é o nome abrangente, de modo que cada nome tem sua parte e porção da misericórdia. Konuk explica que o Real é unicidade da essência e unidade de nomes e atributos, que na essência do Ser chamado “Deus” não há multiplicidade em aspecto algum, que essa essência tem aspectos infinitos, e que a divindade, que exige os nomes e atributos, reúne esses aspectos; a coisidade dessa entidade una, que é o total em relação aos nomes e atributos, faz vir à existência a misericórdia da essência e a misericórdia dos nomes. Konuk recorda que essa discussão é detalhada no Engaste de Shu&#x27;ayb. (p. 1137)</p><p>O texto dos Fusus continua: “Assim a primeira coisa que a misericórdia abarcou é ela própria. Depois a coisidade há pouco mencionada. Depois a coisidade de todo existente que vem à existência sem fim, neste mundo ou no outro, seja acidente, seja substância composta ou simples.” Konuk explica essa ordem. A primeira é o próprio eu da misericórdia, porque é preciso uma entidade à qual a misericórdia possa estar relacionada. A segunda é a coisidade da entidade una, que é a origem e a raiz de todas as entidades e é “a realidade muhammadiana”. Konuk diz que Deus a fez vir à existência como misericórdia para os mundos, e cita Anbiya 21/107 (“Não te enviamos senão como misericórdia para os mundos”) e a seguinte palavra, que ele cita como hadith qudsi: “Ó meu Amado, criei-te da luz do Meu ser e criei as coisas da tua luz.” Acrescenta que esse nível é a descida do Real do nível da essência da unicidade ao nível da unidade. A terceira é a coisidade de todo existente relativo que vem à existência sem fim, neste mundo e no outro, seja acidente ou substância, composta ou simples. (pp. 1137-1138)</p><p>Konuk diz que somente a inexistência pura não tem coisidade estabelecida; a coisidade está estabelecida para a existência pura e para os nomes e atributos (as relações inexistentes da existência pura, que existem em potência e não são manifestas em ato), e as coisas cuja coisidade está estabelecida têm aparição. Como a misericórdia é uma relação entre as relações inexistentes do ser do Real, ela abarcou também a si mesma. Levanta então uma pergunta: como a misericórdia divina inclui tudo em existência e em juízo, como pode tudo ser objeto de misericórdia quando há tantas coisas objeto de ira? A frase seguinte dos Fusus é a resposta a essa pergunta. (p. 1138)</p></section><section><h3>Finalidade e Conformidade ao Temperamento Não São Consideradas</h3><p>O texto dos Fusus: “E a ocorrência de uma finalidade nas coisas — ou na misericórdia — e a conformidade ao temperamento não são consideradas; antes, a misericórdia divina abarca em existência tudo o que é conforme e tudo o que não é conforme.” A nota de rodapé da edição observa que a expressão “ou na misericórdia” não está no texto dos Fusus e foi acrescentada por Konuk (provavelmente com base em Bosnevi). Konuk explica: o objetivo de fazer as coisas virem à existência é o aparecimento em ato, segundo suas capacidades, das relações que existem em potência no ser absoluto do Real, e isso se dá por meio do dar alívio pelo Sopro do Misericordioso. Portanto, no âmbito da misericórdia, não se consideram uma finalidade particular nem o que é conforme ao temperamento: “Qualquer que seja a capacidade eterna de cada coisa, com a descida dessa misericórdia vêm sobre ela certos estados — conformes ao temperamento, como a fé, a guia, a bênção, o prazer e o conforto; e não conformes ao temperamento, como a descrença, o desvio, a retribuição, a dor e o desconforto.” Como a misericórdia divina dá a existência de modo puro, tanto o conforme como o não conforme estão incluídos nela. (p. 1139)</p></section><section><h3>A Parábola da Chuva: Uma Misericórdia, Frutos Diferentes</h3><p>&#x27;A queda da chuva não é para que toda vegetação na terra produza rosas ou frutos saudáveis... do roseiral vem uma rosa, do espinheiro um espinho, da árvore venenosa seu veneno. No entanto, a misericórdia que é a causa da manifestação de todos eles é uma só. A diferença nos frutos vem da diferença nas capacidades das árvores.&#x27;</p></section><section><h3>Diferença de Capacidade: um Dístico, Mulk 67/3, o Guia e o Que Desvia</h3><p>Depois do exemplo da chuva, Konuk cita um dístico (do Divan de Mehmed Emin Belig, segundo a nota de rodapé da edição): “Os efeitos da efusão dependem da capacidade da criação: da nuvem de abril a ostra toma uma pérola, a serpente toma veneno.” Diz que a misericórdia abrangente da essência chega por igual aos nomes ocultos na essência da unicidade, e recorda o versículo “Não verás nenhuma desproporção na criação do Misericordioso” (Mulk 67/3): não há desproporção na difusão da misericórdia do Misericordioso sobre cada nome; a desproporção está apenas nas capacidades dos nomes divinos. No transbordar da misericórdia do Misericordioso, a forma da guia aparece na entidade que é o local de manifestação do nome o Guia, e a forma do desvio na entidade que é o local de manifestação do nome o Que Desvia. (p. 1140)</p></section><section><h3>O Efeito É para o Não-Existente: A Demanda Silenciosa da Criação</h3><p>Segundo esta discussão, que Konuk abre duas vezes com referência ao Futuhat, o &#x27;efeito&#x27; ocorre não para o que existe, mas para o não-existente. Deus realmente criar algo é uma resposta a uma &#x27;demanda&#x27; carregada por essa coisa enquanto ainda não existe. Konuk explica isso com o exemplo de um arquiteto: o atributo de &#x27;arquitetura&#x27; presente na essência do arquiteto demanda uma forma de edifício ainda não realizada; o arquiteto, afetado por essa demanda, constrói o edifício.</p><p>Ele sustenta isso com exemplos como o medo de uma criança de um bicho-papão, ou uma pessoa inventando uma doença através da imaginação — a &#x27;imaginação&#x27; (vehm, o não-existente agindo sobre a mente) é apresentada aqui como o reflexo cotidiano de um princípio metafísico.</p></section><section><h3>O Efeito Ser para o Inexistente: o Texto dos Fusus e a Explicação de Konuk</h3><p>O texto dos Fusus (na tradução de Konuk) coloca esta discussão assim: “E, na verdade, mencionamos nos Futuhat que o ‘efeito’ ocorre não para o existente mas somente para o inexistente; e, embora seja para o existente, é em razão do juízo do inexistente; e este conhecimento é estranho e uma questão rara; e somente os possuidores de imaginações conhecem sua realidade. Este conhecimento vem a eles pelo gosto; mas aquele em quem a imaginação não tem efeito está distante desta questão.” Konuk indica os lugares citados: no capítulo setenta e três dos Futuhat, as respostas às vigésima segunda, vigésima terceira e vigésima quarta perguntas, e o capítulo quinhentos e cinquenta e oito. O efeito ocorre para as entidades fixas inexistentes que atuam sobre o ser do Real, não para o ser do Real. (p. 1140)</p><p>Konuk explica: o que o ser do Real exige é conceder a existência segundo as capacidades e receptividades das entidades. Os nomes, que são relações divinas, estando em estado de inexistência na essência da unicidade, determinam que o Real, a quem pertencem como nomeado, lhes dê a existência; e o Real, que é o existente verdadeiro, é afetado por Suas relações inexistentes e volta-se para lhes dar a existência: “Assim o efeito aparece primeiro no existente em favor do inexistente; depois fica estabelecido para o ser do Real em razão do juízo e da demanda da relação inexistente.” No exemplo do arquiteto, Konuk acrescenta: o ser do arquiteto existe, mas o atributo da arquitetura, que é sua relação, era inexistente porque estava oculto e consumido em seu ser; para atender à demanda desse atributo o arquiteto imagina em sua mente a forma de um edifício, e “essa forma é uma ‘entidade’ que surge no nível do conhecimento.” O que se exige do ser do arquiteto é construir o edifício no exterior, segundo a receptividade da forma-edifício em sua mente. (pp. 1140-1141)</p><p>Konuk diz que esse conhecimento é muito estranho e uma questão muito rara, e que os que compreendem a realidade do efeito do inexistente sobre o existente são os possuidores de imaginações: embora a imaginação seja uma coisa inexistente, ela atua sobre sua existência, eles fazem vir à existência coisas imaginadas em sua faculdade imaginativa e são muito afetados por essas formas. Enumera exemplos: as crianças são assustadas com “o bicho-papão vem aí”, e a criança, fazendo surgir em sua imaginação uma forma temível que nunca viu, tem medo dessa forma imaginada; muitas pessoas não conseguem ficar numa casa solitária à noite e, embora saibam que não há ninguém na casa, são afetadas pelas formas temíveis que sua imaginação fez surgir; algumas pessoas, sem vestígio de doença no corpo, fazem surgir em si uma doença imaginada, e se não conseguem livrar-se dela, seu corpo é afetado e elas perecem. Aqueles em quem a imaginação não tem efeito não podem conhecer verdadeiramente e pelo gosto o modo do efeito do inexistente sobre o existente. Konuk recorda que a discussão sobre cada ser humano criar, em sua faculdade imaginativa, o que não tem existência foi tratada no Engaste de Isaac. (pp. 1141-1142)</p></section><section><h3>A Misericórdia Flui pelos Seres Engendrados, pelas Essências e pelas Entidades</h3><p>O texto dos Fusus: “Assim a misericórdia de Deus flui pelos seres engendrados; corre pelas essências e pelas entidades.” Konuk explica: a misericórdia do Misericordioso flui pelos seres engendrados porque manifestou no nível do conhecimento as relações do Real ocultas na essência da unicidade, e as entidades engendradas que vêm a ser no exterior são as formas das entidades fixas que surgiram no nível do conhecimento. “Em outras palavras, o fazer vir à existência é o ocultamento da identidade divina (huwiyya) nas formas engendradas densas; como o ocultamento do vapor sutil no gelo.” As coisas passaram a existir somente pela misericórdia do Misericordioso; embora no nível da unidade a misericórdia seja outra que não essa identidade, por ser uma relação entre as relações inexistentes do ser do Real, ela é sua ‘entidade’ no nível da unicidade. A misericórdia divina corre pelas essências, isto é, pelas coisidades das relações inexistentes, e pelas entidades, isto é, pelas entidades fixas que são as formas dessas relações; e, quanto ao ocultamento da identidade divina nas formas densas da criação, flui por todos os seres engendrados. (p. 1142)</p><p>O texto dos Fusus: “O nível da misericórdia mais excelente, quando é conhecido pelo testemunho, está acima dos pensamentos.” Konuk diz que “muslâ” (com damma no mim) significa “fudla”, o feminino de “afdal”; quando o nível da misericórdia muito transbordante é conhecido pelo caminho do testemunho, está acima da apreensão dos pensamentos: “Pois no testemunho a dualidade é removida, e o testemunho, a testemunha e o testemunhado tornam-se uma só coisa; portanto o pensamento não tem entrada ali. Ora, o pensamento é um véu; seu juízo corre onde há dualidade.” (p. 1142)</p></section><section><h3>A Menção das Coisas pela Misericórdia É o seu Trazer à Existência: Todo Existente Recebe Misericórdia</h3><p>O texto dos Fusus: “Assim, todo aquele que a misericórdia menciona tornou-se certamente bem-aventurado; e, no entanto, na existência não há outro além daquele que a misericórdia menciona; e a menção das coisas pela misericórdia é a própria ‘entidade’ de seu trazer à existência. Assim, toda coisa que existe recebe misericórdia.” Konuk explica: antes de o Sopro do Misericordioso lhes dar alívio, as coisas não eram coisas mencionadas; com o dar alívio tornaram-se coisas mencionadas; portanto, a menção delas pela misericórdia é o próprio ato de trazê-las à existência. Os que gozam de bênçãos e os aflitos neste mundo, e as pessoas da bem-aventurança e as pessoas do castigo no outro, estão todos incluídos em receber misericórdia por esta misericórdia da existência, porque vieram, pelo Sopro do Misericordioso, do ocultamento da inexistência ao campo da existência. (p. 1143)</p><p>O texto dos Fusus adverte o leitor: “Ó meu amigo, não sejas velado da percepção do que mencionamos pelo que vês das pessoas da aflição, e pelas dores do outro mundo, que não são tiradas daquele com quem subsistem, nas quais crês.” Konuk toma isso como dito para afastar a objeção que se levantaria à afirmação “todo existente recebe misericórdia”: que as dores que vês neste mundo e a tua crença nas dores do outro não te façam dizer “Como pode a misericórdia ser geral, se os afligidos neste mundo e as pessoas do castigo no outro estão em aflição?”; pois no âmbito da misericórdia não se consideram uma finalidade particular para as coisas nem a conformidade ao temperamento, e a misericórdia divina inclui tudo porque concede a existência de modo puro. (pp. 1143-1144)</p></section><section><h3>O Efeito da Misericórdia em Si e o Deus Criado nas Crenças</h3><p>O texto dos Fusus afirma que a misericórdia tem dois aspectos de efeito: “Primeiro, sabe que a misericórdia é geral somente no trazer à existência. Assim Ele fez vir à existência as dores por Sua misericórdia para com as dores. Depois, sabe que a misericórdia tem um ‘efeito’ de duas maneiras. Um é o efeito em si; e esse é o Seu fazer vir à existência toda entidade existente. E ela não olha para a finalidade nem para a ausência de finalidade, nem para o conforme nem para o não conforme.” Konuk explica: a misericórdia fez vir à existência as entidades fixas e externas de modo geral, e a dor também é uma das entidades; o Real teve misericórdia das dores e as fez vir à existência. O efeito em si é o trazer à existência, pela misericórdia, toda entidade existente, sem olhar para uma finalidade particular nem para o que é não conforme. (p. 1144)</p><p>O texto dos Fusus continua: “Por isso viu o Deus criado nas crenças como uma entidade fixa entre as entidades fixas. Assim a misericórdia do Real para consigo mesmo é por meio do trazer à existência.” Konuk registra que uma palavra da passagem é lida de modo diferente nos comentários: nos comentários de Bosnevi e Ya&#x27;qub Khan é dada como forma do passado com o sentido “aceitou”, e nos comentários que incluem o de Bali Efendi recebe o sentido “primeiro”; em ambos os casos a intenção é mostrar que a misericórdia olha para o estado de estabelecimento da entidade de cada existente no conhecimento divino. Como a misericórdia faz vir à existência olhando para a entidade estabelecida no conhecimento divino, ela viu o Deus criado imaginalmente pelas pessoas das crenças como uma entidade fixa entre as suas entidades fixas. (p. 1145)</p><p>Konuk prossegue dizendo que tudo o que está na potência da entidade fixa de cada pessoa aparece nessa pessoa sensível e imaginalmente; que, quando as entidades fixas recebem misericórdia pela misericórdia da essência, seus estados também recebem misericórdia; e que o “Deus da crença” é um dos estados das entidades fixas dos detentores de crenças. Por mais seres humanos que haja no mundo, cada um tem uma crença particular sobre o Real que não se parece com a de outro; essas crenças são, cada uma, um dos estados divinos e aparecem pelo trazer à existência. A misericórdia tem misericórdia de si mesma por meio desse trazer à existência: “Isto é, a misericórdia, ao trazer as entidades fixas à existência, teve misericórdia primeiro de si mesma; depois teve misericórdia do Deus criado, que é um estado das entidades fixas.” (p. 1145)</p></section><section><h3>A Misericórdia pela Súplica: as Pessoas do Véu e as Pessoas do Desvelamento</h3><p>O texto dos Fusus: “E para a misericórdia há outro efeito, por meio da súplica. Os que estão velados pedem ao Deus de sua crença que lhes mostre misericórdia. Já as pessoas do desvelamento pedem que a misericórdia de Deus subsista nelas próprias. Assim suplicam a misericórdia pelo nome ‘Deus’. Sendo assim, dizem ‘Ó Deus, tem misericórdia de nós!’; e Ele lhes mostra misericórdia somente pela subsistência da misericórdia neles.” Konuk explica: as pessoas do véu pedem o perdão e a remissão de seus pecados ao Real delimitado, por seu anseio pelo Paraíso e seu temor do Inferno, ao Deus que criaram em sua imaginação e mantêm em crença. As pessoas do desvelamento, porém, suplicam a subsistência da misericórdia nelas próprias não ao deus delimitado mas ao deus absoluto, pelo nome “Deus”; não são detentoras de uma crença particular sobre o Real, e testemunham o Absoluto em todas as coisas delimitadas. (p. 1146)</p><p>Konuk prossegue dizendo que um juízo só se estabelece para um sentido que subsiste num local na realidade: “Por exemplo, cada forma entre as formas do mundo é um local de manifestação de um nome divino; o juízo desse nome subsiste com essa forma, que é seu lugar de automanifestação; e essa forma está sob o juízo desse nome. Como, depois que essa forma é destruída, não resta local, o juízo desse nome deixa essa forma.” Na realidade o misericordioso é somente o sentido; mesmo que o local em que a misericórdia subsiste seja chamado ‘misericordioso’, o misericordioso é o sentido de misericórdia que governa esse local. Deus tem misericórdia de Seus servos do desvelamento pela subsistência da misericórdia neles; quando a misericórdia subsiste neles, eles testemunham o juízo da misericórdia em si mesmos pelo gosto. (p. 1147)</p></section><section><h3>O Misericordioso e o que Recebe Misericórdia: Estado, o Exemplo do Sábio e a Finalidade do Trazer à Existência da Misericórdia</h3><p>O texto dos Fusus: “E o particípio ativo é rahîm e râhim; e o juízo não é descrito pela criação; pois é um assunto que os sentidos exigem para suas próprias essências. Assim os estados não são existentes; tampouco são inexistentes.” Konuk diz que, embora rahîm e râhim sejam particípios ativos, o que neles governa é a misericórdia; que o juízo da misericórdia não é descrito pela condição de criado, porque não tem existência entitativa no exterior, sendo um assunto de sentido conhecido e concebido apenas na mente. Os estados não são existentes (não se pode apontá-los como “eis a sua existência”) e não são inexistentes (são um efeito que aparece sobre a existência entitativa). O exemplo do sábio: antes do estudo, a essência da pessoa existe, mas ela ainda não é sábia; se “sábio” fosse a ‘entidade’ da essência, num tempo em que ela não é chamada sábia sua essência teria de ser inexistente. Tampouco o sábio é a ‘entidade’ do conhecimento, pois o conceito de conhecimento existe mesmo quando a pessoa ainda não é sábia. O ser sábio do sábio é um estado, e um estado é originado. (pp. 1147-1148)</p><p>O texto dos Fusus: “E na realidade a misericórdia é uma relação da parte de ‘aquele que tem misericórdia’ e é o que exige esse juízo; sendo assim, é misericórdia. E aquele que fez vir à existência a misericórdia naquele que recebe misericórdia não a fez vir à existência para lhe mostrar misericórdia. Fez vir à existência a misericórdia somente naquele em quem a misericórdia subsiste, para que ele seja misericordioso por essa misericórdia.” Konuk explica: a misericórdia é uma relação entre as relações daquele que tem misericórdia, a relação que exige seu juízo sobre o seu possuidor. Aquele que faz vir à existência não fez vir à existência esta misericórdia naquele que recebe misericórdia somente para lhe mostrar misericórdia; fê-la vir à existência para que também o que recebe misericórdia a mostre com ela, como aquele que tem misericórdia: o trazer à existência da misericórdia naquele que recebe misericórdia, primeiro pela misericórdia do Misericordioso e depois, quando alcança a perfeição adequada ao seu estado após a existência, pela misericórdia do Compassivo, é para que, depois de receber misericórdia por essas duas misericórdias, seja misericordioso para com os outros. Nesse estado o servo é descrito pelo atributo de seu Senhor e é misericordioso para com aqueles em quem a misericórdia subsiste. Konuk faz uma comparação: se o Real desse a um de Seus servos o atributo do poder, que está entre os atributos do ato, dele proviriam rupturas do costume, muitas espécies de milagres e maravilhas; a misericórdia, porém, é a origem de todos os atributos do ato, porque suas entidades existem em razão da misericórdia. (p. 1149)</p></section><section><h3>O Real É a ‘Entidade’ da Misericórdia; Essência e Atributo</h3><p>O texto dos Fusus: “E o Real, glorificado seja, não é local de coisas originadas. Sendo assim, Ele não é local para o trazer à existência da misericórdia em Si mesmo; e, no entanto, Ele é Aquele que tem misericórdia (Râhim), e quem tem misericórdia só a tem pela subsistência da misericórdia nele. Assim fica estabelecido que Ele é a ‘entidade’ da misericórdia.” Konuk explica: o Real não é local de coisas originadas, de modo que a misericórdia não se origina em Sua essência como atributo adicional; contudo o Real tem misericórdia de todos os nomes, atributos, entidades e seres engendrados, porque é Aquele que tem misericórdia. A subsistência do Real com a misericórdia significa Sua subsistência com Sua própria relação de essência; e a relação é a ‘entidade’ da essência, não outra que ela. Portanto “o Real é a ‘entidade’ da misericórdia.” (pp. 1149-1150)</p><p>O texto dos Fusus: “E aquele que não prova este assunto e não tem nele um pé firme não ousou dizer que o Real é a ‘entidade’ da misericórdia ou a ‘entidade’ do atributo. Disse que o Real não é a ‘entidade’ do atributo, nem é outro que ele.” Konuk entende aquele que não tem pé firme no caminho neste assunto como os maturidis e os asharitas: neles prevalece a imaginação da dualidade, e temem não ter declarado o Real perfeitamente transcendente. Segundo eles, os atributos do Real “não são Ele nem outro que Ele”, isto é, “o atributo não é a identidade do Real nem outro que o Real.” Como razão Konuk diz: essa pessoa não é capaz de negar o atributo da essência, e, como o atributo existe para ela, estaria estabelecendo a existência de um outro; tampouco pode fazer do atributo a ‘entidade’ da essência, porque a essência é julgada pela absolutidade e o atributo pela delimitação. (pp. 1150-1151)</p><p>O texto dos Fusus indica que outra expressão é mais adequada do que esta: “E as entidades dos atributos são somente relações e referências entre o descrito e elas, e entre elas e suas entidades inteligíveis.” Konuk explica: na suposição de identidade, a essência seria delimitada pelo atributo; na suposição de alteridade, duas existências seriam estabelecidas e a essência seria deficiente em si mesma. Por isso a expressão que os Fusus preferem é mais adequada à própria coisa e remove mais a dificuldade. Os atributos do Real não são independentemente existentes no exterior; no intelecto existem como adicionais à essência do Real, ao passo que sua existência no exterior é a própria essência do Real. Konuk diz que esta é a palavra do conhecedor de Deus verificador; embora muitos dos filósofos e os mutazilitas também tenham falado assim, essa palavra não proveio deles pelo gosto, mas foi escolhida pela reflexão racional. A palavra do conhecedor verificador, que sabe pelo gosto que a misericórdia, que é atributo do Real, subsiste nele, assenta-se no testemunho, e assim não há possibilidade de desviar-se da própria coisa. (p. 1151)</p></section><section><h3>A Abrangência da Misericórdia e o Pedido de Misericórdia por Cada Nome</h3><p>O texto dos Fusus diz que a misericórdia difere em relação a cada nome divino: “[…] a misericórdia é abrangente. Portanto a misericórdia difere em relação a cada nome divino. Por isso, o ter misericórdia do Real, glorificado seja, é pedido por cada nome divino. Sendo assim, Deus tem misericórdia dele.” Konuk explica: cada nome tem misericórdia de seu local de manifestação e de quem o invoca com a misericórdia que sua própria realidade dá; por qualquer nome do Real que o suplicante peça misericórdia, Deus lhe mostra misericórdia por esse nome. O doente reza “Ó Curador, tem misericórdia de mim!”, o faminto “Ó Provedor, tem misericórdia de mim!”, o pobre “Ó Auto-Suficiente, tem misericórdia de mim!”, o pecador “Ó Perdoador, tem misericórdia de mim!”; e o Real, manifestando-Se conforme o que exigem os nomes Curador, Provedor, Auto-Suficiente e Perdoador, tem misericórdia dele. No versículo “Minha misericórdia abarca tudo” (A&#x27;raf 7/156), a misericórdia ligada ao pronome que representa quem fala é a misericórdia que abarca todas as coisas em existência e em juízo; o pronome de quem fala aponta para a misericórdia que abarca tudo e para a essência, porque a misericórdia do Real é a ‘entidade’ de Sua essência. (p. 1152)</p><p>Konuk observa que a misericórdia tem muitos ramos e que se multiplicam com a multiplicidade dos nomes divinos. O texto dos Fusus: a palavra de quem diz “Ó Senhor, tem misericórdia de mim!” não é geral em relação a este nome especial; com outros nomes que não este, mesmo com o nome o Vingador, há o dizer “Ó Vingador, tem misericórdia de mim!” Konuk explica: quando se diz “Ó Senhor, tem misericórdia!”, como se quer ser descrito por perfeições pelo Real, esse pedido torna-se uma misericórdia particular; quem diz “Ó Encobridor, tem misericórdia de mim!” (Ó Encobridor dos pecados, tem misericórdia de mim) pediu os estados que estão no tesouro do nome o Encobridor. Quem reza pelo nome o Vingador “tem em vista que se tome retribuição do injusto que o oprime e com isso o abrandamento do castigo. Isto também é igualmente uma misericórdia particular.” (pp. 1152-1153)</p></section><section><h3>Os Dois Referentes dos Nomes: a Essência e o Sentido Particular</h3><p>O texto dos Fusus: “É assim. Pois estes nomes divinos apontam para a essência do nomeado, e os nomes, por suas realidades, também apontam para sentidos diferentes. Assim o suplicante, quanto à misericórdia, suplica por esses nomes não com o que o referente de um nome dá enquanto outro que os demais e enquanto separado e distinguido por ele dos demais, mas enquanto os nomes apontam para a essência nomeada por esse nome.” Konuk explica: o suplicante que pede misericórdia com nomes como “Ó Provedor, tem misericórdia de mim!” e “Ó Curador, tem misericórdia de mim!” menciona esses nomes enquanto apontam para a essência nomeada; não suplica com o sentido particular dado pelo referente de um nome que se separa dos outros nomes. Não se pede misericórdia ao Provedor por meio de dar cura. Todos os nomes são unidos em apontar para a essência, mas não são unidos em apontar para seus sentidos particulares: “Assim cada nome tem dois referentes: um é a essência, e o outro é o sentido particular pelo qual se separa e se distingue dos demais nomes.” (pp. 1153-1154)</p><p>O texto dos Fusus: “Pois seja qual for a expressão, o designado é uma realidade distinguida por si mesma do que é outro que ela. Embora todos os nomes tenham sido estabelecidos para apontar para a entidade una… Assim não há desacordo de que cada nome tem um juízo que nenhum outro tem.” Konuk explica: seja qual for a expressão, árabe, turca ou persa, estabelece-se uma convenção para transmitir um sentido; os nomes divinos proferidos são convenções estabelecidas para transmitir certas realidades divinas. Exemplo: o nome o Conhecedor distingue-se do nome o Poderoso pela entidade do conhecimento, e o nome o Poderoso do nome o Conhecedor pela entidade do poder; em apontar para a essência do Real não há diferença entre eles. O exemplo do ser humano: o conceito “humano” é uma entidade una, mas tem relações como rir, chorar, falar, escrever e ler; cada povo estabeleceu nomes para transmitir esses sentidos (o que ri, o que chora, o que fala, o que escreve, o que lê). Todos esses nomes são relações particulares do ser humano e foram estabelecidos para apontar para o conceito que é a entidade una; mas, como há diferença entre os sentidos para que apontam, um não aponta para o outro: “Assim como rir não é a ‘entidade’ de chorar.” (pp. 1154-1155)</p><p>Konuk tira daí uma conclusão para quem reza: assim como o suplicante menciona nomes como “Ó Auto-Suficiente”, “Ó Generoso”, “Ó Sutil” como apontando para a essência, quando reza “Ó Deus”, “Ó Misericordioso”, deve levar em consideração o juízo de qualquer nome por meio do qual lhe será dada a coisa de que precisa: “pois os dons divinos ocorrem nas duas mãos de um dos servidores dos nomes.” O doente deve levar em consideração o nome “Curador”, que entregará a cura, e o faminto o nome “Provedor”. Konuk recorda que os detalhes dos dons dos nomes foram tratados no Engaste de Set. (p. 1155)</p><p>O texto dos Fusus cita Abu&#x27;l-Qasim ibn Qasi: “Todo nome divino, tomado isoladamente, é nomeado por todos os nomes divinos. Quando o pões em primeiro lugar na lembrança, descreves por todos os nomes divinos.” O texto liga isso ao apontar dos nomes para a entidade una, ainda que os nomes sejam muitos em relação à entidade una e suas realidades difiram. Konuk diz que cada um dos nomes difere enquanto aponta para sua própria realidade e é unido na entidade da unicidade; quem mencionar qualquer nome isoladamente terá descrito esse nome com todos os nomes divinos. Konuk recorda que os detalhes sobre esse assunto foram dados por meio de exemplo no Engaste de Salomão. (pp. 1155-1156)</p></section><section><h3>Os Dois Caminhos pelos Quais se Alcança a Misericórdia: Mérito e Gratuidade</h3><p>O texto dos Fusus: “Depois, a misericórdia é alcançada por dois caminhos. Um é o caminho do mérito. Esse é o dito do Real ‘Decretei-a para os que temem a Deus e dão o tributo’ (A&#x27;raf 7/156). E é aquilo a que os vinculou, com ela, entre os atributos do conhecimento e da ação.” Para os dois caminhos Konuk usa os nomes “misericórdia do mérito”, isto é, “misericórdia particular”, e “misericórdia da gratuidade”, isto é, “misericórdia geral”. Diz que o caminho do mérito se entende de A&#x27;raf 7/156, e que o Real tornou obrigatória para Si mesmo, para os que temem a Deus, a misericórdia que mencionou no versículo “Ele escreveu a misericórdia sobre Si mesmo” (An&#x27;am 6/12). Essa misericórdia chega a eles em troca daquilo que vincula os que temem a Deus entre os atributos da ação, como a oração, o jejum, a peregrinação e a esmola, e entre os atributos do conhecimento, como o conhecimento do Real; como detalhado no Engaste de Salomão, a misericórdia do mérito ocorre, depois da existência, em troca do ato que provém conforme o que a capacidade exige. (p. 1156)</p><p>Konuk diz que, se uma pessoa crê no Mensageiro do Real, recorre à Sua lei, pratica boas obras e adquire o conhecimento divino, ela alcança essa misericórdia particular que o Real tornou obrigatória para Si mesmo; mas “essa misericórdia do mérito é da misericórdia da gratuidade”: o nome o Compassivo, cujo juízo é particular, entra sob o nome o Misericordioso, cujo juízo é geral, por inclusão de implicação. Em consequência de Seu amor eterno, o Real havia mostrado antes Seu cuidado especial para com certas realidades; estas são as entidades fixas dos profetas, dos amigos de Deus e de todos os crentes. Quando seus locais de manifestação vieram ao mundo da existência, boas obras apareceram deles em razão desse cuidado eterno, e o Real manifestou-Se a eles, em troca de suas obras, com a misericórdia que tornou obrigatória para Si mesmo. Konuk traz uma tradução do Masnavi: “Antes, a condição da receptividade é Sua dádiva. A dádiva é o miolo, e a receptividade é como a casca.” Disso conclui que o servo ser capacitado a praticar boas obras é também dádiva e generosidade do Real, e que por isso não há nada que seja causa de véu e de vergonha para o servo tanto quanto o gabar-se de sua obra. (p. 1157)</p><p>O texto dos Fusus enuncia o segundo caminho: “E o outro caminho, pelo qual esta misericórdia é alcançada, é o caminho da gratuidade divina, à qual nenhum ato se junta. Esse é o dito do Real Exaltado ‘Minha misericórdia abarca tudo’ (A&#x27;raf 7/156). E o dito ‘para que Deus te perdoe os pecados passados e futuros’ (Fath 48/2) é dela. O dito do Real Exaltado ‘Faze o que quiseres, pois perdoei os teus pecados!’ também é dela.” Konuk explica a misericórdia da gratuidade: é o fazer surgir em Seu conhecimento todos os nomes contidos na essência da unicidade, pela automanifestação do Real dentro de Sua própria essência, para Sua própria essência, por Sua própria essência; nenhum ato ou serviço deles precedeu o estabelecimento dessas formas de conhecimento, que são as realidades das coisas; é pura generosidade. Essa misericórdia inclui toda a existência e nada está sem ela; como os nomes são a ‘entidade’ da essência no nível da unicidade, inclui também a essência do Real. Foi chamada “misericórdia da gratuidade” porque não é em troca de nenhum ato e é exigida pela essência. (pp. 1157-1158)</p><p>Konuk enumera dois aspectos para a misericórdia particular que é efeito do amor eterno, como o chamado na Sura da Vitória e o dito “Faze o que quiseres”. O primeiro: essa pessoa está na estação da aniquilação em Deus e da subsistência em Deus e despojou-se dos atributos humanos, e um retorno a esses atributos já não é possível; como seu ato é o ato do Real, não é censurada por obras que parecem exteriormente contrárias à lei, como Khidr matar o menino e furar o navio; “faça o que fizer, está desculpada e comissionada.” O segundo: o servo ainda não foi aniquilado de seus atributos humanos e dele provém alguma desobediência pelo impulso do eu; são pecados claros; mas, como o cuidado eterno o precedeu e ele veio a ser o local de manifestação do nome o Perdoador, o Real, como efeito de Seu amor eterno, cobre e perdoa seus pecados. O nobre hadith: “Se não tivésseis pecado, Deus vos levaria e traria um povo que pecaria e pediria perdão a Deus, e o Real os perdoaria.” Konuk: “Este é o segredo do perdão.” (pp. 1158-1159)</p></section><section><h3>Dois Caminhos da Misericórdia e a Parábola de Rumi dos Dois Escravos</h3><p>Konuk distingue dois caminhos para a misericórdia: o caminho do mérito (misericórdia vinda em troca de atos) e o caminho da gratuidade (pura graça, sem condição de atos). Ele diz que mesmo a misericórdia vinda pelo caminho do mérito está, de fato, incluída dentro da misericórdia gratuita — porque a própria capacidade do servo de realizar o ato já é uma habilitação divina concedida de antemão.</p><p>A citação de Rumi que encerra esta discussão conta, através da parábola de dois escravos, que o perdão não pode ser calculado pela razão, mas é inteiramente obra de um amor eterno: um escravo serve muito, o outro é preguiçoso, mas Deus ama mais o escravo preguiçoso. &#x27;No final vejo que Tens mais amor pelo escravo preguiçoso do que pelo diligente... Não é possível julgar a graça.&#x27;</p></section><section><h3>O Segredo do Perdão, o Pedir Perdão e o Encerramento do Engaste</h3><p>Na continuação das palavras de Rumi que Konuk cita do Fihi Ma Fih, aparecem os exemplos do olho direito e do olho esquerdo e da sexta-feira: “Estes olho direito e olho esquerdo são na aparência ambos um só. Que serviço prestou aquele olho direito que o olho esquerdo não prestou? A sexta-feira igualmente tornou-se mais excelente do que os demais dias.” Segundo Rumi, está escrito na tábua que Deus tem provisões além das provisões, e essas provisões se pedem na sexta-feira: “Agora, que serviços prestou esta sexta-feira que os outros dias não prestaram? Antes, o Real lhe concedeu Seu cuidado e Sua honra especial.” (pp. 1159-1160)</p><p>Depois das palavras de Rumi, Konuk escreve: “Ora, as pessoas deste cuidado são ocultas. Não se sabe a quem o Real perdoará e a quem não perdoará. Portanto o que é necessário aos servos é abandonar a desobediência e ocupar-se da obediência.” Quando a desobediência provém da natureza humana, é necessário pedir perdão com suspiros e gemidos; os suspiros e gemidos vêm do arrependimento que surge no coração, e sem o arrependimento do coração o pedir perdão pela língua não dá fruto. Cometer uma desobediência e ter a intenção de outra, dizendo que o Real é o Perdoador dos pecados, não é sinal de cuidado mas, que Deus nos livre, sinal de distância e de desgraça. “Este é o segredo do perdão: consiste no amor divino que precedeu na eternidade.” Konuk diz que isso também pertence à misericórdia da gratuidade, porque é a relação de um cuidado divino sem causa com aquela pessoa. (p. 1160)</p><p>Konuk encerra o engaste com a tradução de um breve dístico: louvado seja Deus, que é o Uno e o Único; Seu perdão e Sua remissão eliminam os pecados. Registra também as datas de início e conclusão do comentário: domingo, 13 de maio de 1917 (ano fiscal otomano 1333; 22 de Rajab de 1335) e sábado, 30 de junho de 1917 (10 de Ramadã de 1335). (p. 1160)</p></section></article><nav aria-label="Navegação"><p><a href="pt/">Dost Arabî</a> › <a href="pt/fusus/">Fusus al-Hikam</a></p><p><a rel="prev" href="pt/fusus/fs20/">← A Palavra de João</a> · <a href="dizin/fusus/">Índice</a> · <a rel="next" href="pt/fusus/fs22/">A Palavra de Elias →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

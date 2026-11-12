@@ -2,63 +2,14 @@
 <html lang="en" data-dost-lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-fB0e8ZB149mAU9ux3/kMlBX6XzdyYbgOoVM1+RcfXAs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-fB0e8ZB149mAU9ux3/kMlBX6XzdyYbgOoVM1+RcfXAs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/en/fusus/fs21/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>The Word of Zachariah</h2><p>This bezel starts from Zachariah and devotes almost its entire bulk to the nature of mercy. The name &#x27;Sovereign&#x27; (Malik) manifests both in a child bestowed in old age and in martyrdom by a saw.</p><article aria-label="Text of this part" lang="en"><section><h3>The Name That Governs Zachariah: Sovereign</h3><p>The bezel opens by naming the special name that governs Zachariah: “The special name that governs Zachariah is the noble name ‘Sovereign’.” Konuk says that the states belonging to this name appeared in Zachariah&#x27;s being, and that Zachariah was supported, as required by this name, with complete power and effective resolve; for “‘Sovereign’ is derived from ‘sovereignty’ (mulk), which means intensity and strength; and ‘sovereignty’ also means power and disposal.” According to Konuk, Zachariah&#x27;s noble being became like the “Day of Judgment”: because the Real&#x27;s perfect sovereignty appears on the Day of Judgment, in the sense of the Resurrection, God said in the Surah of the Opening “Sovereign of the Day of Judgment” (Fatiha 1/4); since Zachariah was realized in the states of the Day of Judgment in the appearance of mercy and retribution, he stood in the position of the Day of Judgment. On that day the Real sometimes shows mercy and sometimes punishes, and His sovereignty becomes manifest through these two states; just as He is “Sovereign of the Day of Judgment”, He became “Sovereign of Zachariah”. (p. 1133)</p></section><section><h3>Two States: A Child in Old Age, a Martyrdom by Saw</h3><p>Zachariah&#x27;s two states give concrete form to the fass&#x27;s reading of &#x27;Sovereign.&#x27; The face of mercy: while his wife was barren and he himself very old, he asked God, &#x27;grant me from Yourself an heir&#x27; (Maryam 19/5); God answered his prayer and bestowed John — but John here is defined not as wealth but as &#x27;heir to divine knowledge, lordly secrets, and praiseworthy character.&#x27; The face of retribution is his martyrdom: disbelievers sawed him in two, and he did not ask God to lift this affliction, because this is required by the special name to which he was subject.</p><p>The verse popularly associated with Zachariah — &#x27;My Lord, do not leave me alone, and You are the best of inheritors&#x27; (Anbiya 21/89) — does not appear directly in this bezel. Konuk cites only Maryam 19/5 and uses the word &#x27;heir&#x27; in the context of John inheriting a spiritual legacy.</p></section><section><h3>The Assignment of the Wisdom of Sovereignty and a Couplet from the Masnavi</h3><p>After describing how Zachariah, as required by the special name he manifested, did not ask the Real to lift the affliction of the saw, Konuk ties the reason for the assignment as follows: “It is for this reason that the ‘wisdom of sovereignty’ was assigned to the Word of Zachariah.” He then gives a translation of a couplet from the Masnavi: “Now be the Resurrection, see the Resurrection; this is the condition for seeing everything. If you become intellect, you will know the intellect in its perfection. If you become love, you will see love in its beauty.” (p. 1134)</p></section><section><h3>Mercy Encompasses Everything in Existence and in Ruling</h3><p>The text of the Fusus (in Konuk&#x27;s translation) sets out the thesis of the bezel: “Know that God&#x27;s mercy encompassed everything in existence and in ruling; and that the existence of wrath is itself among God&#x27;s mercy toward wrath; thus His mercy preceded His wrath. That is, the relation of mercy to Him preceded the relation of wrath to Him.” Konuk recalls that, as detailed in the Bezel of Solomon, mercy is of two kinds, one of the essence and one of the attributes, and that these are again divided by particularity and generality; the mercy that encompasses everything is “the all-embracing mercy of the essence”, which is what the Real&#x27;s essence requires, “because the Real is, in Himself, the Generous.” Through this mercy the relations and states hidden in the essence of oneness were established in His knowledge by the Real&#x27;s self-manifestation within His own essence to His own essence; the Real, giving relief to His names that were in distress in the essence of oneness through the Breath of the Merciful, and giving them existence in knowledge, freed them from this distress. (p. 1134)</p><p>Konuk says that the forms of the fixed entities established in knowledge appear, within the sphere of their own rulings, with the forms of the engendered entities, and that for this reason the mercy of the essence also encompassed everything in existence in this present world of witnessing. When mercy includes all relations and the fixed and external entities, it also includes “wrath, which consists of non-existent relations”; the existence of wrath too is from divine mercy toward wrath. The relation of wrath to the Real, however, comes after the relation of mercy, because wrath is accidental in relation to mercy: “For example, the natural state of water is flowing; its freezing is accidental. Likewise the natural state of man is not wrath; his wrath is an accidental attribute that appears under a cause.” Konuk says that, as detailed in the Bezel of Ezra, divine wrath falls upon a thing from its total incapacity, or its deficiency of capacity, for perfection and happiness; that wrath is evil and wretchedness only in relation to the one upon whom it falls, whereas wrath, in relation to the Real, is itself shown mercy, because it came into existence through the Merciful&#x27;s manifestation, and everything that exists is shown mercy through the Merciful&#x27;s manifestation. (p. 1135)</p></section><section><h3>Every ‘Entity’ Asks God for Existence</h3><p>The text of the Fusus: “When there was existence for every ‘entity’, it therefore asks God for it. For this reason His mercy became general to everything; for the Real, by that mercy with which He showed mercy to everything, saw that thing accept His mercy in its entitative existence. Thus the Real brought that thing into being.” The footnote of the edition notes that editions of the Fusus read “entity” (ayn) here, whereas Konuk writes “thing” (shay&#x27;). Konuk explains: the Real has names of the essence too many to count, called “the keys of the unseen”; these names, existing in potency in the essence of oneness, ask to appear in act, and the Real, bringing them out of the narrowness of non-existence and giving them relief by the Breath of the Merciful, makes them manifest at the level of knowledge: “This giving of relief is mercy toward the names.” These subtle forms that arise in the Real&#x27;s knowledge are called the fixed entities; they are the realities of the dense forms in the world of this life, and their existence is “existence in ruling”; the existence of the dense forms of the world, which are their shadow, is “entitative existence”. (pp. 1135-1136)</p><p>Konuk gathers every matter into three aspects: the first is “pure existence”, which neither eternally nor everlastingly admits non-existence, like the real existence of the Real; the second is “pure possibility”, which eternally and everlastingly admits existence through a cause, like the relative existence of the entities; the third is “pure non-existence”, which neither eternally nor everlastingly admits existence, like a partner of the Creator or two infinite existences. The relative existence of the world lies between pure existence and pure non-existence; one side of it looks toward non-existence and the other toward existence. The fixed entities are the shadow of the divine names, and the engendered entities are the shadow of the fixed entities, and they ask God for the appearance of their shadow-existences; and since God shows mercy to the names “in ruling” at the level of knowledge through the most holy emanation, and “in existence” at the level of the entities through the holy emanation, “His mercy became general with respect to everything. Therefore, in this consideration, everything is shown mercy; and Iblis too is included in this mercy.” (p. 1136)</p></section><section><h3>The Names Are Also among Things: What Mercy Encompassed First</h3><p>The text of the Fusus: “And the divine names are among things; and yet the divine names return to the one entity. So the first thing that God&#x27;s mercy encompassed is the thingness of that ‘entity’, which is the mercy that brings into being by mercy.” Konuk says that when it is said “God&#x27;s mercy encompasses everything”, the divine names too come under the expression “everything”; the names return to the one entity, which is the reality of the name the Merciful, and the name the Merciful is the comprehensive name, so each name has its share and portion of mercy. Konuk explains that the Real is oneness of the essence and unity of names and attributes, that in the essence of the Being called “God” there is no multiplicity in any respect, that this essence has infinite aspects, and that divinity, which requires the names and attributes, gathers these aspects; the thingness of this one entity, which is the total sum in relation to names and attributes, brings into being the mercy of the essence and the mercy of the names. Konuk recalls that this discussion is detailed in the Bezel of Shu&#x27;ayb. (p. 1137)</p><p>The text of the Fusus continues: “So the first thing that mercy encompassed is itself. Then the thingness just mentioned. Then the thingness of every existent that comes into existence endlessly, in this world or the next, whether accident, or composite or simple substance.” Konuk explains this order. The first is mercy&#x27;s own self, because an entity is needed to which mercy can be related. The second is the thingness of the one entity, which is the origin and root of all entities and is “the Muhammadan reality”. Konuk says that God brought it into being as a mercy to the worlds, and cites Anbiya 21/107 (“We have sent you only as a mercy to the worlds”) and the following saying, which he cites as a hadith qudsi: “O my Beloved, I created you from the light of My being and created things from your light.” He adds that this level is the Real&#x27;s descent from the level of the essence of oneness to the level of unity. The third is the thingness of every relative existent that comes into existence without end, in this world and the next, whether accident or substance, composite or simple. (pp. 1137-1138)</p><p>Konuk says that only pure non-existence has no established thingness; thingness is established for pure existence and for the names and attributes (the non-existent relations of pure existence, which exist in potency and are not manifest in act), and things whose thingness is established have an appearance. Since mercy is a relation among the non-existent relations of the Real&#x27;s being, it encompassed itself too. He then raises a question: since divine mercy includes everything in existence and in ruling, how can everything be shown mercy when so many things are objects of wrath? The next sentence of the Fusus is the answer to this question. (p. 1138)</p></section><section><h3>Purpose and Agreeableness to Temperament Are Not Considered</h3><p>The text of the Fusus: “And the occurrence of a purpose in things—or in mercy—and agreeableness to temperament are not considered; rather, divine mercy encompasses in existence all that is agreeable and all that is not agreeable.” The footnote of the edition notes that the phrase “or in mercy” is not in the text of the Fusus and was added by Konuk (probably on the basis of Bosnevi). Konuk explains: the aim in bringing things into being is the appearance in act, according to their capacities, of the relations that exist in potency in the Real&#x27;s absolute being, and this takes place through the giving of relief by the Breath of the Merciful. Therefore, within the scope of mercy, a particular purpose and what is agreeable to temperament are not considered: “Whatever the eternal capacity of each thing is, with the descent of this mercy certain states come upon that thing—agreeable to temperament, such as faith, guidance, blessing, pleasure and comfort; and not agreeable to temperament, such as unbelief, misguidance, retribution, pain and discomfort.” Because divine mercy gives existence purely, both the agreeable and the disagreeable are included in it. (p. 1139)</p></section><section><h3>The Parable of the Rain: One Mercy, Different Fruits</h3><p>&#x27;The falling of rain is not so that all vegetation on earth might bear roses or wholesome fruit... from the rose bush comes a rose, from the thorn bush a thorn, from the poison tree its poison. Yet the mercy that is the cause of manifestation for all of them is one. The difference in fruits comes from the difference in the capacities of the trees.&#x27;</p></section><section><h3>Difference of Capacity: A Couplet, Mulk 67/3, the Guide and the Misleader</h3><p>After the example of the rain, Konuk cites a couplet (from the Divan of Mehmed Emin Belig, according to the footnote of the edition): “The effects of the outpouring depend on the capacity of creation: from the April cloud the oyster takes a pearl, the snake takes poison.” He says that the all-embracing mercy of the essence reaches the names hidden in the essence of oneness equally, and recalls the verse “You will not see any disparity in the creation of the Merciful” (Mulk 67/3): there is no disparity in the spreading of the Merciful&#x27;s mercy over each name; disparity is only in the capacities of the divine names. In the overflowing of the Merciful&#x27;s mercy, the form of guidance appears in the entity that is the locus of manifestation of the name the Guide, and the form of misguidance in the entity that is the locus of manifestation of the name the Misleader. (p. 1140)</p></section><section><h3>The Effect Is for the Non-Existent: Creation&#x27;s Silent Demand</h3><p>According to this discussion, which Konuk opens twice with reference to the Futuhat, the &#x27;effect&#x27; occurs not for what exists but for the non-existent. God&#x27;s actually creating something is a response to a &#x27;demand&#x27; carried by that thing while it is still not-existing. Konuk explains this with the example of an architect: the attribute of &#x27;architecture&#x27; present in the architect&#x27;s essence demands a building-form not yet realized; the architect, affected by this demand, builds the building.</p><p>He supports this with examples such as a child&#x27;s fear of a bogeyman, or a person inventing an illness through imagination — &#x27;imagination&#x27; (vehm, the non-existent acting upon the mind) is presented here as the everyday reflection of a metaphysical principle.</p></section><section><h3>The Effect Being for the Non-Existent: The Text of the Fusus and Konuk&#x27;s Explanation</h3><p>The text of the Fusus (in Konuk&#x27;s translation) puts this discussion as follows: “And in truth we have mentioned in the Futuhat that the ‘effect’ occurs not for the existent but only for the non-existent; and although it is for the existent, it is by reason of the ruling of the non-existent; and this knowledge is strange and a rare question; and only the possessors of imaginings know its reality. This knowledge comes to them by taste; but one in whom imagination has no effect is far from this question.” Konuk points to the places cited: in the seventy-third chapter of the Futuhat, the answers to the twenty-second, twenty-third and twenty-fourth questions, and the five hundred and fifty-eighth chapter. The effect takes place for the non-existent fixed entities that act upon the being of the Real, not for the Real&#x27;s being. (p. 1140)</p><p>Konuk explains: what the being of the Real requires is to bestow existence according to the capacities and receptivities of the entities. The names, which are divine relations, while in a state of non-existence in the essence of oneness, rule that the Real, to whom they belong as named, give them existence; and the Real, who is the true existent, is affected by His non-existent relations and turns toward giving them existence: “Thus the effect first appears in the existent for the sake of the non-existent; afterwards it is established for the being of the Real by reason of the ruling and demand of the non-existent relation.” In the example of the architect Konuk adds: the architect&#x27;s being exists, but the attribute of architecture, which is his relation, was non-existent because it was hidden and consumed in his being; to fulfill the demand of that attribute the architect imagines in his mind the form of a building, and “this form is an ‘entity’ that arises at the level of knowledge.” What is required of the architect&#x27;s being is to construct the building outside, according to the receptivity of the building-form in his mind. (pp. 1140-1141)</p><p>Konuk says that this knowledge is very strange and a very rare question, and that those who understand the reality of the non-existent&#x27;s effect upon the existent are the possessors of imaginings: although imagination is a non-existent matter, it acts upon their existence, they bring into being imagined things in their imaginative faculty, and they are greatly affected by these forms. He lists examples: children are frightened with “the bogeyman is coming”, and the child, bringing into being in his imagination a fearsome form he has never seen, is afraid of this imagined form; many people cannot stay in a lonely house at night, and although they know no one is in the house, they are affected by the fearful forms their imagination has brought into being; some people, with no trace of illness in their bodies, bring into being in themselves an imagined illness, and if they cannot be rid of it, their bodies are affected and they perish. Those in whom imagination has no effect cannot truly and by taste know the manner of the non-existent&#x27;s effect upon the existent. Konuk recalls that the discussion of every human being creating, in his imaginative faculty, what has no existence was taken up in the Bezel of Isaac. (pp. 1141-1142)</p></section><section><h3>Mercy Flows through the Engendered, the Essences and the Entities</h3><p>The text of the Fusus: “So God&#x27;s mercy flows through the engendered; it runs through the essences and the entities.” Konuk explains: the Merciful&#x27;s mercy flows through the engendered because it manifested at the level of knowledge the Real&#x27;s relations hidden in the essence of oneness, and the engendered entities that come to be outside are the forms of the fixed entities that arose at the level of knowledge. “In other words, bringing into being is the concealment of the divine identity (huwiyya) in the dense engendered forms; like the concealment of subtle vapor in ice.” Things came to exist only through the Merciful&#x27;s mercy; although at the level of unity mercy is other than this identity, because it is a relation among the non-existent relations of the Real&#x27;s being, it is its ‘entity’ at the level of oneness. Divine mercy runs through the essences, that is, the thingnesses of the non-existent relations, and through the entities, that is, the fixed entities that are the forms of these relations; and, with respect to the concealment of the divine identity in the dense forms of creation, it flows through all the engendered. (p. 1142)</p><p>The text of the Fusus: “The level of the most excellent mercy, when it is known by witnessing, is above thoughts.” Konuk says that “muslâ” (with a damma on the mim) means “fudla”, the feminine of “afdal”; when the level of mercy that is greatly overflowing is known by way of witnessing, it is above the grasp of thoughts: “For in witnessing duality is lifted, and witnessing, witness and witnessed become one thing; therefore thought has no entrance there. Yet thought is a veil; its ruling runs where there is duality.” (p. 1142)</p></section><section><h3>Mercy&#x27;s Mention of Things Is Their Bringing into Being: Every Existent Is Shown Mercy</h3><p>The text of the Fusus: “So everyone whom mercy mentions has surely become fortunate; and yet in existence there is none other than the one whom mercy mentions; and mercy&#x27;s mention of things is the very ‘entity’ of their being brought into being. So every thing that exists is shown mercy.” Konuk explains: before the Breath of the Merciful gave them relief, things were not mentioned things; with the giving of relief they became mentioned things; therefore mercy&#x27;s mention of them is the very act of bringing them into being. Those who enjoy blessings and those afflicted in this world, and the people of bliss and the people of punishment in the next, are all included in being shown mercy by this mercy of existence, because they came by the Breath of the Merciful from the concealment of non-existence into the field of existence. (p. 1143)</p><p>The text of the Fusus warns the reader: “O my friend, do not be veiled from perceiving what we have mentioned by what you see of the people of affliction, and by the pains of the next world, which are not taken away from the one with whom they subsist, in which you believe.” Konuk takes this as said to ward off the objection that would be raised to the statement “every existent is shown mercy”: let the pains you see in this world and your belief in the pains of the next not make you say “How can mercy be general, when the afflicted in this world and the people of punishment in the next are in distress?”; for in the scope of mercy, a particular purpose for things and agreeableness to temperament are not considered, and divine mercy includes everything because it purely bestows existence. (pp. 1143-1144)</p></section><section><h3>Mercy&#x27;s Effect in Itself and the God Created in Beliefs</h3><p>The text of the Fusus states that mercy has two aspects of effect: “First know that mercy is general only in bringing into being. So He brought pains into being by His mercy toward pains. Then know that mercy has an ‘effect’ in two ways. One is the effect in itself; and that is His bringing into being every existent entity. And it does not look at purpose or the absence of purpose, at the agreeable or the disagreeable.” Konuk explains: mercy brought the fixed and external entities into being in a general manner, and pain too is one of the entities; the Real showed mercy to pains and brought them into being. The effect in itself is mercy&#x27;s bringing every existent entity into being without looking at a particular purpose or at what is disagreeable. (p. 1144)</p><p>The text of the Fusus continues: “For this reason it saw the God created in beliefs as a fixed entity among the fixed entities. So the Real&#x27;s mercy to Himself is by bringing into being.” Konuk records that a word in the passage is read differently in the commentaries: in the commentaries of Bosnevi and Ya&#x27;qub Khan it is given as a past-tense form with the meaning “accepted”, and in the commentaries that include that of Bali Efendi it is given the meaning “first”; in both cases the intention is to show that mercy looks at each existent&#x27;s state of the establishment of its entity in divine knowledge. Because mercy brings into being by looking at the entity established in divine knowledge, it saw the God imaginally created by the people of beliefs as a fixed entity among their fixed entities. (p. 1145)</p><p>Konuk goes on to say that whatever is in the potency of each person&#x27;s fixed entity appears in that person sensibly and imaginally; that when the fixed entities are shown mercy by the mercy of the essence, their states are also shown mercy; and that the “God of belief” is one of the states of the fixed entities of the holders of beliefs. However many human beings there are in the world, each has a particular belief about the Real that is unlike another&#x27;s; these beliefs are each one of the divine states and appear through bringing into being. Mercy shows mercy to itself through this bringing into being: “That is, mercy, by bringing the fixed entities into being, first showed mercy to itself; after that it showed mercy to the created God, who is one state of the fixed entities.” (p. 1145)</p></section><section><h3>Mercy through Petition: The People of the Veil and the People of Unveiling</h3><p>The text of the Fusus: “And for mercy there is another effect, by way of petition. Those who are veiled ask the God in their belief to show them mercy. The people of unveiling, however, ask that God&#x27;s mercy subsist in themselves. So they petition for mercy by the name ‘God’. That being so, they say ‘O God, show us mercy!’; and He shows them mercy only through the subsistence of mercy in them.” Konuk explains: the people of the veil ask for the pardon and forgiveness of their sins from the bound Real, because of their longing for Paradise and their fear of Hell, from the God they created in their imagination and hold in belief. The people of unveiling, however, petition for the subsistence of mercy in themselves not from the bound god but from the absolute god, by the name “God”; they are not holders of a particular belief about the Real, and they witness the Absolute in all bound things. (p. 1146)</p><p>Konuk goes on to say that a ruling is established only for a meaning subsisting in a locus in reality: “For example, each form among the forms of the world is a locus of manifestation of a divine name; the ruling of that name subsists with that form, which is its place of self-manifestation; and that form is under the ruling of that name. Since, after this form is destroyed, no locus remains, the ruling of that name departs from that form.” In reality the one who shows mercy is only the meaning; even if the locus in which mercy subsists is called ‘merciful’, the merciful is the meaning of mercy that rules that locus. God shows mercy to His servants of unveiling through the subsistence of mercy in them; when mercy subsists in them, they witness the ruling of mercy in themselves by taste. (p. 1147)</p></section><section><h3>The Merciful and the One Shown Mercy: State, the Example of the Knower, and the Aim of Mercy&#x27;s Bringing into Being</h3><p>The text of the Fusus: “And the active participle is rahîm and râhim; and the ruling is not described by creation; for it is a matter that meanings require for their own essences. So states are not existent; nor are they non-existent.” Konuk says that although rahîm and râhim are active participles, what rules in them is mercy; that the ruling of mercy is not described by createdness, because it has no entitative existence outside, being a matter of meaning known and conceived only in the mind. States are not existent (one cannot point to them as “this is its existence”) and are not non-existent (they are an effect that appears upon entitative existence). The example of the knower: before study, the person&#x27;s essence exists but he is not yet a knower; if “knower” were the ‘entity’ of the essence, then at a time when he is not called a knower his essence would have to be non-existent. Nor is the knower the ‘entity’ of knowledge, since the concept of knowledge exists even when the person is not yet a knower. The knower&#x27;s being a knower is a state, and a state is originated. (pp. 1147-1148)</p><p>The text of the Fusus: “And in reality mercy is a relation on the part of the ‘one who shows mercy’ and is what requires that ruling; that being so, it is mercy. And the one who brought mercy into being in the one shown mercy did not bring that mercy into being so that He might show mercy to him. He brought mercy into being only in the one in whom mercy subsists, so that he might be merciful by that mercy.” Konuk explains: mercy is a relation among the relations of the one who shows mercy, the relation that requires its ruling upon its possessor. The one who brings into being did not bring this mercy into being in the one shown mercy only to show mercy to him; He brought it into being so that the one shown mercy too might show mercy with it, like the one who shows mercy: the bringing of mercy into being in one shown mercy first by the mercy of the Merciful, and then, when he reaches the perfection suited to his state after existence, by the mercy of the Compassionate, is so that, after being shown mercy by these two mercies, he may be merciful to others. In this state the servant is described by his Lord&#x27;s attribute and is merciful to those in whom mercy subsists. Konuk makes a comparison: if the Real gave one of His servants the attribute of power, which is among the attributes of act, there would issue from him breaches of custom, many kinds of miracles and marvels; mercy, however, is the origin of all the attributes of act, because their entities exist by reason of mercy. (p. 1149)</p></section><section><h3>The Real Is the ‘Entity’ of Mercy; Essence and Attribute</h3><p>The text of the Fusus: “And the Real, glory be to Him, is not a locus for originated things. That being so, He is not a locus for the bringing into being of mercy in Himself; and yet He is the one who shows mercy (Râhim), and the one who shows mercy shows mercy only by the subsistence of mercy in him. So it is established that He is the ‘entity’ of mercy.” Konuk explains: the Real is not a locus of originated things, so mercy does not originate upon His essence as an additional attribute; yet the Real shows mercy to all names, attributes, entities and engendered things, because He is the one who shows mercy. The Real&#x27;s subsistence with mercy means His subsistence with His own relation of essence; and relation is the ‘entity’ of the essence, not other than it. Therefore “the Real is the ‘entity’ of mercy.” (pp. 1149-1150)</p><p>The text of the Fusus: “And the one who does not taste this matter and has no foothold in it did not dare to say that the Real is the ‘entity’ of mercy or the ‘entity’ of the attribute. He said that the Real is not the ‘entity’ of the attribute, nor is He other than it.” Konuk understands the one who has no foothold on the path in this matter to be like the Maturidis and the Ash&#x27;aris: the imagination of duality prevails in them, and they fear not having declared the Real perfectly transcendent. According to them the attributes of the Real are “neither He nor other than He”, that is, “the attribute is neither the identity of the Real nor other than the Real.” As the reason Konuk says: that person is not able to negate the attribute from the essence, and since the attribute exists for him, he would be establishing the existence of an other; nor can he make the attribute the ‘entity’ of the essence, because the essence is judged by absoluteness and the attribute by delimitation. (pp. 1150-1151)</p><p>The text of the Fusus indicates that another expression is more fitting than this one: “And the entities of the attributes are only relations and references between the one described and them, and between them and their intelligible entities.” Konuk explains: on the supposition of identity, the essence would be delimited by the attribute; on the supposition of otherness, two existences would be established and the essence would be deficient in itself. Therefore the expression the Fusus prefers is more fitting to the matter itself and removes the difficulty more. The attributes of the Real are not independently existent outside; in the intellect they exist as additional to the essence of the Real, while their existence outside is the very essence of the Real. Konuk says that this is the statement of the verifying knower of God; although many of the philosophers and the Mu&#x27;tazila have spoken in this way too, this statement did not issue from them by taste but was chosen by rational reflection. The statement of the verifying knower, who knows by taste that the mercy that is an attribute of the Real subsists in him, rests on witnessing, and so there is no possibility of straying from the matter itself. (p. 1151)</p></section><section><h3>The Comprehensiveness of Mercy and Asking for Mercy by Each Name</h3><p>The text of the Fusus says that mercy differs in relation to each divine name: “[…] mercy is comprehensive. Therefore mercy differs in relation to each divine name. For this reason, the Real&#x27;s, glory be to Him, showing mercy is asked for by each divine name. That being so, God shows mercy to him.” Konuk explains: each name shows mercy to its locus of manifestation and to the one who calls upon it with the mercy that its own reality gives; by whichever name of the Real the petitioner asks for mercy, God shows him mercy by that name. The sick person prays “O Healer, show me mercy!”, the hungry “O Provider, show me mercy!”, the poor “O Self-Sufficient, show me mercy!”, the sinner “O Forgiver, show me mercy!”; and the Real, manifesting Himself according to what the names Healer, Provider, Self-Sufficient and Forgiver require, shows him mercy. In the verse “My mercy encompasses everything” (A&#x27;raf 7/156), the mercy attached to the pronoun standing for the speaker is the mercy that encompasses all things in existence and in ruling; the pronoun of the speaker points to the mercy that encompasses everything and to the essence, because the Real&#x27;s mercy is the ‘entity’ of His essence. (p. 1152)</p><p>Konuk notes that mercy has many branches and that they multiply with the multiplicity of the divine names. The text of the Fusus: the word of one who says “O Lord, show me mercy!” is not general in relation to this special name; with other names than this, even with the name the Avenger, there is the saying “O Avenger, show me mercy!” Konuk explains: when “O Lord, show mercy!” is said, since what is meant is being described by perfections by the Real, this request becomes a particular mercy; one who says “O Concealer, show me mercy!” (O Concealer of sins, show me mercy) has asked for the states in the treasury of the name the Concealer. The one who prays by the name the Avenger “intends that retribution be taken from the wrongdoer who wrongs him and thereby a lightening of punishment. This too is likewise a particular mercy.” (pp. 1152-1153)</p></section><section><h3>The Two Referents of the Names: The Essence and the Particular Meaning</h3><p>The text of the Fusus: “This is how it is. For these divine names point to the essence of the one named, and the names, by their realities, also point to different meanings. So the petitioner, concerning mercy, petitions by those names not with what the referent of a name gives in respect of being other than the others and being separated and distinguished by it from the others, but in respect of the names&#x27; pointing to the essence named by this name.” Konuk explains: the petitioner who asks for mercy with names such as “O Provider, show me mercy!” and “O Healer, show me mercy!” mentions these names in respect of their pointing to the essence named; he does not petition with the particular meaning given by the referent of a name that is separate from other names. Mercy is not asked from the Provider by way of giving healing. All the names are united in pointing to the essence, but are not united in pointing to their particular meanings: “Thus each name has two referents: one is the essence, and the other is the particular meaning by which it is separated and distinguished from the other names.” (pp. 1153-1154)</p><p>The text of the Fusus: “For whatever the expression, what is designated is a reality distinguished by itself from what is other than it. Although all the names were set down to point to the one entity… So there is no disagreement that each name has a ruling that no other has.” Konuk explains: whatever the expression, Arabic, Turkish or Persian, a convention is set down to convey a meaning; the uttered divine names are conventions set down to convey certain divine realities. Example: the name the Knowing is distinguished from the name the Powerful by the entity of knowledge, and the name the Powerful from the name the Knowing by the entity of power; in pointing to the essence of the Real there is no difference between them. The example of the human being: the concept “human” is one entity, but it has relations such as laughing, weeping, speaking, writing and reading; each people has set down names to convey these meanings (one who laughs, one who weeps, one who speaks, one who writes, one who reads). All these names are relations particular to the human being and are set down to point to the concept that is the one entity; but because there is a difference between the meanings they point to, one does not point to the other: “Just as laughing is not the ‘entity’ of weeping.” (pp. 1154-1155)</p><p>Konuk draws a conclusion from this for the one who prays: just as the petitioner mentions names such as “O Self-Sufficient”, “O Generous”, “O Subtle” as pointing to the essence, so when he prays “O God”, “O Merciful”, he must take into consideration the ruling of whichever name the thing he needs will be given through: “for divine gifts take place on the two hands of one of the servants of the names.” The sick person must take into consideration the name “Healer”, which will deliver the healing, and the hungry person the name “Provider”. Konuk recalls that the details of the gifts of the names were treated in the Bezel of Seth. (p. 1155)</p><p>The text of the Fusus cites Abu&#x27;l-Qasim ibn Qasi: “Every divine name, taken singly, is named by all the divine names. When you put it first in remembrance, you describe it by all the divine names.” The text ties this to the names&#x27; pointing to the one entity, even though the names are many in relation to the one entity and their realities differ. Konuk says that each of the names differs in respect of pointing to its own reality and is united in the entity of oneness; whoever mentions any name singly will have described that name with all the divine names. Konuk recalls that the details on this matter were given by way of example in the Bezel of Solomon. (pp. 1155-1156)</p></section><section><h3>The Two Paths by Which Mercy Is Attained: Merit and Gratuity</h3><p>The text of the Fusus: “Then mercy is attained by two paths. One is the path of merit. That is the Real&#x27;s saying ‘I have decreed it for those who are godfearing and give the alms-tax’ (A&#x27;raf 7/156). And it is what He bound them to, with it, among the attributes of knowledge and of action.” For the two paths Konuk uses the names “mercy of merit”, that is, “particular mercy”, and “mercy of gratuity”, that is, “general mercy”. He says that the path of merit is understood from A&#x27;raf 7/156, and that the Real made incumbent on Himself, for the godfearing, the mercy He mentioned in the verse “He has written mercy upon Himself” (An&#x27;am 6/12). This mercy reaches them in return for what binds the godfearing among the attributes of action, such as prayer, fasting, pilgrimage and almsgiving, and among the attributes of knowledge, such as knowledge of the Real; as detailed in the Bezel of Solomon, the mercy of merit takes place, after existence, in return for the deed that issues according to what capacity requires. (p. 1156)</p><p>Konuk says that if a person believes in the Messenger of the Real, resorts to his law, does righteous deeds and acquires divine knowledge, he attains this particular mercy that the Real made incumbent on Himself; but “this mercy of merit is of the mercy of gratuity”: the name the Compassionate, whose ruling is particular, enters under the name the Merciful, whose ruling is general, by inclusion of implication. In consequence of His eternal love, the Real had earlier shown His special care toward certain realities; these are the fixed entities of prophets, friends of God and all believers. When their loci of manifestation came to the world of existence, righteous deeds appeared from them by reason of this eternal care, and the Real manifested Himself to them, in return for their deeds, with the mercy He made incumbent upon Himself. Konuk brings a translation from the Masnavi: “Rather the condition of receptivity is His gift. The gift is the kernel, and receptivity is like the shell.” From this he concludes that the servant&#x27;s being enabled to do righteous deeds is also the Real&#x27;s gift and bounty, and that therefore there is nothing that would be a cause of veiling and shame for the servant as much as his boasting of his deed. (p. 1157)</p><p>The text of the Fusus states the second path: “And the other path, by which this mercy is attained, is the path of divine gratuity, with which no deed is joined. That is the saying of the Exalted Real ‘My mercy encompasses everything’ (A&#x27;raf 7/156). And the saying ‘that God may forgive you your sins, past and future’ (Fath 48/2) is of it. The saying of the Exalted Real ‘Do what you will, for I have forgiven your sins!’ is also of it.” Konuk explains the mercy of gratuity: it is the bringing forth in His knowledge of all the names contained in the essence of oneness, by the Real&#x27;s self-manifestation within His own essence, to His own essence, by His own essence; no deed or service of theirs preceded the establishment of these forms of knowledge, which are the realities of things; it is pure bounty. This mercy includes the whole of existence and nothing is without it; since the names are the ‘entity’ of the essence at the level of oneness, it includes the essence of the Real too. It was called the “mercy of gratuity” because it is not in return for any deed and is required by the essence. (pp. 1157-1158)</p><p>Konuk lists two aspects for the particular mercy that is an effect of eternal love, such as the address in the Surah of Victory and the saying “Do what you will”. The first: this person stands at the station of annihilation in God and subsistence in God and has stripped himself of human attributes, and a return to these attributes is no longer possible; since his act is the Real&#x27;s act, he is not blamed for deeds that seem outwardly contrary to the law, such as Khidr&#x27;s killing the boy and making a hole in the ship; “whatever he does, he is excused and commanded.” The second: the servant has not yet been annihilated from his human attributes, and some disobedience issues from him through the impulse of the self; these are clear sins; but because eternal care has preceded concerning him and he has fallen to be the locus of manifestation of the name the Forgiver, the Real, as an effect of His eternal love, covers and forgives his sins. The noble hadith: “If you had not sinned, God would take you away and bring a people who would sin and ask God&#x27;s forgiveness, and the Real would forgive them.” Konuk: “This is the secret of forgiveness.” (pp. 1158-1159)</p></section><section><h3>Two Paths of Mercy and Rumi&#x27;s Parable of the Two Slaves</h3><p>Konuk distinguishes two paths to mercy: the path of merit (mercy coming in return for deeds) and the path of gratuity (pure grace, with no condition of deeds). He says that even mercy coming through the path of merit is, in fact, included within gratuitous mercy — because the servant&#x27;s very capacity to perform the deed is already a divine enabling granted beforehand.</p><p>The Rumi quotation that closes this discussion tells, through the parable of two slaves, that forgiveness cannot be calculated by reason but is entirely the work of an eternal love: one slave serves much, the other is lazy, yet God loves the lazy slave more. &#x27;In the end I see that You have more love for the lazy slave than for the diligent one... It is not possible to pass judgment on grace.&#x27;</p></section><section><h3>The Secret of Forgiveness, Seeking Forgiveness and the Close of the Bezel</h3><p>In the continuation of the words of Rumi that Konuk quotes from the Fihi Ma Fih, the examples of the right eye and the left eye and of Friday appear: “These right eye and left eye are in appearance both one. What service did that right eye perform that the left eye did not? Friday likewise became more excellent than the remaining days.” According to Rumi, it is written on the tablet that God has provisions other than the provisions, and those provisions are asked for on Friday: “Now what services did this Friday perform that the other days did not? Rather, the Real bestowed His care and special honoring upon it.” (pp. 1159-1160)</p><p>After Rumi&#x27;s words Konuk writes: “Now the people of this care are hidden. It is not known whom the Real will forgive and whom He will not. Therefore what is necessary for servants is to abandon disobedience and to occupy themselves with obedience.” When disobedience issues by human nature, seeking forgiveness with sighs and groans is necessary; sighs and groans come about through regret arising in the heart, and without regret of the heart, seeking forgiveness by the tongue is not fruitful. To commit one disobedience and intend another, saying the Real is the Forgiver of sins, is not a sign of care but, God forbid, a sign of distance and wretchedness. “This is the secret of forgiveness: it consists of the divine love that preceded in eternity.” Konuk says that this too belongs to the mercy of gratuity, because it is the relation of a divine care without cause to that person. (p. 1160)</p><p>Konuk closes the bezel with the translation of a short couplet: praise be to God, who is the One and the Unique; His forgiveness and pardon do away with sins. He also records the dates of beginning and completion of the commentary: Sunday, 13 May 1917 (Ottoman fiscal year 1333; 22 Rajab 1335) and Saturday, 30 June 1917 (10 Ramadan 1335). (p. 1160)</p></section></article><nav aria-label="Navigation"><p><a href="en/">Dost Arabî</a> › <a href="en/fusus/">Fusus al-Hikam</a></p><p><a rel="prev" href="en/fusus/fs20/">← The Word of John</a> · <a href="dizin/fusus/">Index</a> · <a rel="next" href="en/fusus/fs22/">The Word of Elias →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

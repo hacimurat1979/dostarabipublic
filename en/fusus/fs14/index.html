@@ -2,63 +2,14 @@
 <html lang="en" data-dost-lang="en">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-uPHlEFe1p9Zet1nANwoU4skrAm5wbi3K2pBfpCYkr9o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-uPHlEFe1p9Zet1nANwoU4skrAm5wbi3K2pBfpCYkr9o='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,75 +91,8 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
   <a class="skip-link" href="/en/fusus/fs14/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Fate — What You Said About Yourself in Eternity</h2><p>This bezel opens with the distinction between kazā and qadar: kazā is God&#x27;s eternal ruling over things, qadar is the deployment of that ruling at appointed times. That ruling is not a decision God imposes from outside — it originates in the fixed essences (a&#x27;yān-i sābita), in the things&#x27; own eternal cores. God rules over things as He knows them; He knows them according to their own capacities. No one&#x27;s capacity was created by God: &quot;istiʿdād ghayr maʿjūl.&quot; The person who truly knows the secret of fate finds both rest and suffering at once — for they see that the source of everything that befell them is their own eternal essence.</p><article aria-label="Text of this part" lang="en"><section><h3>The Subject of the Bezel and Its Place in the Sequence</h3><p>At the opening of the bezel Konuk states that the “wisdom of fate” (hikmet-i kaderiyye) is specific to the Word of Ezra: “For the requirement of Ezra&#x27;s reality was this, and he inclined toward knowledge of the secret of fate.” Ezra had marveled at how power attaches to what is within its power and found it unlikely that the village of Khirba would be restored to what it had been, and had said, “How will God bring this ruin back to life after its present state?” (Baqara 2:259). Because of his marveling and finding it unlikely, the Real showed him kinds of forms of restoration and of the rulings of power, that is, made him die for a hundred years and then brought him back to life. The reason for the sequence: since intensity and power belong to the Real and to the divine names, and awareness of the secret of fate is specific to the Real, this wisdom of fate follows the wisdom of melk; and Ezra too came to know the secret of fate after being made to die and brought back to life. A footnote states that “Khirba” is not the name of a village but, according to Islamic sources, a word indicating the state of Bayt al-Maqdis after it was destroyed by the Babylonian king Nebuchadnezzar.</p></section><section><h3>Kazā and Qadar: Eternal Ruling, Timed Manifestation</h3><p>The bezel opens with the distinction between two concepts. Kazā is God&#x27;s eternal ruling over things — this ruling consists of what is fixed in God&#x27;s knowledge; it has no temporal dimension. Qadar is the coming into being of that eternal ruling at appointed times and in appointed forms. Between them there is no delay, no addition — what is in kazā is what qadar brings to the stage, nothing more, nothing less.</p><p>The bezel then says: &quot;God&#x27;s knowledge of things is bounded by what the known-things themselves, fixed in their own essences, give to God.&quot; So God&#x27;s knowledge is not a mold He imposes from outside — it is what things&#x27; own eternal essences give to God. Kazā is not God&#x27;s decision; it is what the fixed essences, through their own capacities, cause God to receive.</p></section><section><h3>Decree and Measure: Konuk&#x27;s Commentary and the Architect Example</h3><p>Konuk opens the Fuṣūṣ&#x27;s definition of decree (kazâ) as follows: when the Real willed the appearance, from potentiality to act, of all the attributes and names contained in His Essence of oneness, the forms of the loci of manifestation of the names came to be in divine knowledge through the Breath of the All-Merciful, each became determinate in knowledge and each was distinguished from the others. Each form came to have the capacity and property of the name it follows; in whichever form things became determinate with respect to felicity and wretchedness, faith and unbelief, advance and retreat, perfection and deficiency, the Real ruled over them accordingly. Konuk: “So the ruling of the Real over the things known is within the bound of what those things gave the Real through their essential capacities. This is ‘decree’ (kazâ); and in this ruling there is no timing.” (s. 820) The reason: this ruling concerns things that are non-existent in themselves in divine knowledge, which is the very self of the Essence of the Real, and “at that level there is neither time nor place.” (s. 820)</p><p>Measure (kader) is, according to the Fuṣūṣ, the timing of the ruling, without addition, over what is fixed in the very self of things. Konuk: “measure is to carry out and show, at the appointed time and the measured moment, the ruling and the states that things gave in keeping with the requirement of their ‘entity’ in divine knowledge.” In this way measure becomes the detailing of decree: whatever decree has ruled, measure measures out according to its times, without lack or excess (s. 820). The Fuṣūṣ says “the divine decree ruled over things only through things”; Konuk opens this as meaning that the Real does not rule over any individual by something from outside, that each individual gives the Real a ruling through its essential capacity, and that it rules over the Real&#x27;s ruling over it with that ruling. Example: when an architect builds a house he chooses the floor and paneling boards according to their capacity; the floorboard says to the architect in the language of state, “I am not fit to be used in the paneling of the building; use me for the floor!” Konuk: “The architect did not take this ruling from outside, but took it from the essence of the board.” (s. 821)</p></section><section><h3>Istiʿdād ghayr maʿjūl: Non-Created Capacity</h3><p>Here the bezel treats the concept of istiʿdād ghayr maʿjūl — non-created capacity. God does not determine the characteristics and capacities of things and then write a ruling according to them. The capacities are eternally fixed in the fixed essences (a&#x27;yān-i sābita), in divine knowledge; God knows them as they are. Hence a saying attributed to Ibn ʿArabī: &quot;The ruler is the prisoner of the ruled&quot; — the one who rules is in the hands of the one ruled. That is, God rules subject to the things&#x27; own capacities; but this subjection is not a voluntary one — it is the necessary consequence of eternal knowledge.</p><p>Konuk here opens up the Quranic phrase &quot;hujja bāligha&quot; (An&#x27;ām 6:149): God&#x27;s proof is complete, perfect — it cannot be refuted. And this completeness comes from this: God does not hold a person responsible for something contrary to their own capacity; everyone does exactly what their own essence requires and receives its consequence. The complete answer to &quot;why am I this way?&quot;: because this is the capacity of your fixed essence, your eternal core. God ruled over you as He knew you; and He knew you as you are.</p></section><section><h3>The Conclusive Argument: The Exchange Between God and the People of Punishment</h3><p>The Fuṣūṣ&#x27;s sentence “So the conclusive argument belongs to God” (An&#x27;am 6:149) is opened by Konuk through an exchange that will take place on the Day of Recompense. God tells His servants who were unbelievers, disobedient and ignorant to bear the punishment He has arranged for them according to their works. The people of punishment say: Lord, You decreed unbelief, disobedience and ignorance over us in eternity; would it not be wrong against us for You now to hold us to account, and to ask of us what is beyond our capacity? The answer of the Lord of Glory in Konuk&#x27;s pen is: “My decree and My measure follow My knowledge” (s. 822); and His knowledge follows the capacity of the known. In eternity you said, “This is our particular capacity; we ask a ruling from You according to this capacity”; I ruled accordingly and, pouring out existence upon what lay hidden in your essence, I brought it into being and showed it. “So I did not wrong you. You only wronged yourselves; and I gave you nothing beyond what you asked.” (s. 822)</p><p>The people of punishment ask a second question: who gave our essence that capacity, and who established it in divine knowledge? The answer: the capacity in the eternal known things “is not created. For My ‘knowledge’ is My essential attribute.” (s. 822) God&#x27;s attributes are eternal together with His Essence, and there is no precedent of bringing into being in eternity; He only poured out existence upon what was in His eternal knowledge and brought them from the treasury of the unseen into the realm of appearance. “There is no stinginess in My overflowing hand. You asked, and I gave.” (s. 822) I am not asked about My act; you are the ones asked. Konuk: “In this way the conclusive argument is established for God.” For His ruling is in keeping with His divine knowledge and wisdom and the requirement of His Essence, and the fixity of the entities in the state of non-existence rests on their uncreated capacities; the meaning of Anbiya 21:23 should be considered in the light of this reality (s. 822-823).</p><p>Konuk adds one more question and answer. Question: the entities are in the state of non-existence and yet are fixed; how can what does not exist be fixed? Answer: “What is meant by ‘non-existence’ here is not absolute non-existence. For nothing comes out of absolute non-existence.” (s. 823) What exists in potentiality and has not yet put on the garment of determination is also in the state of non-existence. Example: when we take a plum stone in our hand, we know that a branching plum tree is in it, and although the tree is not in view it is fixed within the stone, that is, it exists in potentiality. We take this judgment not from outside the stone but from what it has in its state of non-existence; this fixity too rests on the stone&#x27;s capacity, since it is not the stone of an apricot, a grape, a date or a peach. Were a gardener to plant the stone and raise it, and the tree to say, “Why did you judge me to be a plum tree?”, the gardener would answer, “I judged according to what your ‘entity’, fixed in the state of non-existence, was.” (s. 823)</p></section><section><h3>Uncreated Capacity: What the Names Require</h3><p>Konuk opens uncreated capacity from the level of the names. While the absolute existence of the Real was at the level of oneness, all His attributes and names lay hidden and latent in His Essence, and none was distinguished from another; the sacred saying “I was a hidden treasure” indicates this level. When the names asked, in the language of state, that their named be made to appear, the Real self-disclosed by His Essence, in His Essence, to His Essence, and the entities, the shadows of the names, became fixed in divine knowledge; at this level the names were distinguished from one another. Konuk: “Since none of the states that the names require is created, the capacities of the fixed entities, which are their shadows, are not created either.” (s. 824) Example: the name the Harmer requires harm, the Benefactor benefit, the Misleader misguidance, the Guide guidance; their entities are in those states and their capacities consist of those states. The realities of things in this world of witnessing are the fixed entities; the ruling of the Real is according to what the capacity of the entities requires (s. 824). Konuk relays from the Mathnawī the couplet “We were not, and our demand was not; Your kindness heard what we had not said”, and the couplets of Mawlānā that say “There was no earth, there were no spheres. You heard my request” (s. 824-825).</p></section><section><h3>The Ruler and the Ruled-Over; the Intensity of the Secret of Fate&#x27;s Appearance</h3><p>The Fuṣūṣ says that the ruler in reality follows the very self of the case, while the one ruled over rules over the ruler by what is in him. Konuk: the decree and measure of God, the Wise Ruler, over a thing are only according to what the receptivity of that thing requires. The receptivity and capacity of the one ruled over says to the ruler: “This is what the requirement of my receptivity and capacity is. I ask a ruling from you about me according to this requirement.” (s. 825) The Fuṣūṣ also says, “whoever the ruler is, every ruler is ruled over by what he rules with and in what he rules.” Konuk: whether the ruler is the Real or a creature, he rules only according to what the reality of the thing requires; “So the one ruled makes the ruler, first, the one ruled over by the ruling he will give.” (s. 826) Having become, in this way, the one ruled over, the ruler gives his ruling, and the one on whom the ruling falls becomes ruled over second: “Just as the ruling of the Real is so, so too are the rulings of prophets, of sultans and of judges in court.” (s. 826)</p><p>The Fuṣūṣ goes on to say that the secret of fate remained unknown only because of the intensity of its appearance, and that although requests and importunings for it were frequent among the prophets, it was not known. Konuk opens the intensity of its appearance as follows: “Nothing takes place unless there is a command and a ruling of the Real”, and the ruling of the Real falls on a thing only according to how the essence of that ruled-over thing ruled (s. 826). That this reality is unknown is an unknownness among the people of gnosis; the people of ignorance and rebellion are not taken into account here, being like the animals of A&#x27;raf 7:179. According to Konuk, the reason the prophets asked so often to be made aware of the secret of fate is this: the prophets, charged with calling everyone, knowing that some of the people have the receptivity for guidance and some do not, ask to be made aware of the secret of fate so that they may call those who are fit and not take vain trouble over those who are not. But since the recompense of servants runs in answer to their works and to faith and unbelief, and since the two groups must be separated, “the prophets (peace be upon them) were veiled from the secret of fate at the time of calling.” (s. 826)</p></section><section><h3>The Three Aspects of the Messengers and Their Ranking</h3><p>Konuk says that the messengers, not in respect of being friends of God and knowers but in respect of being messengers, are at the levels of their communities&#x27; states, so that of the knowledge sent down they have only as much as their communities need, without addition or deficiency; and he lists three aspects. The first is the aspect of messengership: they convey the rulings that require the welfare of their communities&#x27; affairs in this world and the next, and these rulings are neither more nor less than what is needed. The second: “the aspect of friendship (walāya), which is those messengers&#x27; levels of passing away in God, in their being annihilated in the attributes of the Real with their attributes and in the Essence of the Real with their essences […] those messengers&#x27; levels of passing away in God.” (s. 827) The third is the aspect of prophethood: each prophet reports from God as much as he is provided with of divine knowledge according to his original capacity and essential receptivity; “this aspect is the outer of the aspect of friendship, and the aspect of friendship is its inner.” (s. 827) Konuk opens ranking in two ways: the messengers&#x27; excess in the knowledge of the mission is as much as their communities&#x27; excess in capacity (Baqara 2:253); since prophethood is the outer of friendship and friendship the inner of prophethood, the prophets&#x27; ranking is according to their ranking in friendship, that is, the breadth and inclusiveness of their fixed entities (Isra 17:55) (s. 828).</p></section><section><h3>Provision, the Known Measure and Timing</h3><p>Resting on Nahl 16:71 (“God has favored some of you over others in provision”) and Taha 20:50 (“He gave everything its creation”), the Fuṣūṣ says that provision comes down with the “known measure”. Konuk: “The ruling decreed about that thing in keeping with the requirement of its capacity is the ‘known measure’.” (s. 829) Each thing asks of the Real a ruling according to the capacity of its fixed entity; since capacities differ, the provisions that come down differ too. The Real gave each thing its due at once in eternity, but after it entered the presence of existence, “He sent down, gradually, sensory nourishment from the treasuries of the heavens and the earth, and spiritual nourishment from the treasuries of the heavens of realities and spirits and the earth of souls and phantoms.” (s. 829) Konuk gives this example for timing: “For instance, the food that a person with a life of seventy years eats from the day he is born until his death did not come to him all at once, but came down gradually at appointed times.” (s. 830) The same holds for the acts that issue from him and for knowledge and gnosis; all came down according to the time and amount that the fixed entity known in the Real&#x27;s eternal knowledge asked for in the language of capacity. The Fuṣūṣ says “timing is in origin for the known; knowledge, will and volition follow measure”; Konuk recalls the saying in the bezel of Jacob, “the will of the Real follows His knowledge, and His knowledge follows the known” (s. 830), and relays the translation of a quatrain: “Your entity became your first book / The secrets of eternity are explained in that book / Since the rulings of measure were written in it / With that book of yours the Real acted.” (s. 831)</p></section><section><h3>The Paradox of Fate&#x27;s Secret: Both Rest and Suffering</h3><p>Here the bezel takes up what happens to the one who knows the secret of fate. Konuk says: &quot;To the one who truly attains awareness of this secret, both rest and suffering are realized.&quot; Two feelings arise simultaneously from the same knowledge. Rest from this: everything that happened to me comes from my own essence — there is no power outside crushing me, no injustice; everything is what my a&#x27;yān&#x27;s capacity requires. Suffering from precisely this: seeing that the essence determined itself this way, realizing that escape is impossible.</p><p>Knowledge received through words is ʿilm al-yaqīn — based on report. Acquiring it through experience is ʿayn al-yaqīn. But living it from within is ḥaqq al-yaqīn. God did not tell the prophet Ezra the secret of fate — He made him live it by causing him to die for a hundred years and then bringing him back to life.</p></section><section><h3>Rest and Suffering, Wrath and Satisfaction: Konuk&#x27;s Explanation</h3><p>The Fuṣūṣ says that knowledge of the secret of fate gives its possessor both complete rest and suffering. Konuk opens the rest thus: since this person knows that what befalls him is only what his fixed entity gave to the Real, “he is saved from the toil of running after what is decreed for him; and knowing that no matter how long one runs after what is not decreed it is empty, he gives up asking for it.” (s. 831) If he knows that the fruit is decreed on condition of seeking, he is moderate in seeking; he plants the stone and waters it because he knows that without that no fruit will come, but he does not burden himself. Konuk: “The ignorant are not like this. For the attainment of one hope they resort to a thousand means; none of them bears fruit.” (s. 831) He describes the suffering thus: the possessor of this knowledge sees perfection in the capacity of some entities, while knowing that he himself has no essential capacity for the appearance of every perfection and is deficient in the perfection of servanthood and of being a locus of manifestation; he suffers from the deficiency of his capacity, and sometimes, seeing that he is commanded to do something he has no capacity to perform, falls into distress. Even so, according to Konuk, “this person&#x27;s state is better than that of one veiled from the secret of fate; and it is closer to the satisfaction of the Real.” (s. 832)</p><p>The Fuṣūṣ says that for this reason the Real described Himself with wrath and satisfaction (Fath 48:6, Maida 5:119) and that the names are opposed to one another. Konuk: “Divine wrath falls on a thing because of its lack of receptivity to perfection and felicity, or the deficiency of its receptivity.” (s. 832) Satisfaction too arises from a thing&#x27;s receptivity to felicity and perfection and its capacity to accept mercy; in both, the known fixed entity gives the Real wrath or satisfaction. Example: of the ten students of a teacher, five grasp his aim quickly through their capacity and intelligence, and the teacher is satisfied and favors them; when the other five do not understand he becomes wrathful and shows harshness, but since successive punishments do not change the lack of capacity, in the end he takes pity on them. Konuk: “So what makes the teacher satisfied or wrathful is only the capacity of these students.” (s. 833) On the opposition of the names Konuk says: some of the entities, being receptive to perfections, ask for the names of beauty such as the Gentle, the Beautiful, the Benefactor and the Guide; others, from lack of capacity, ask for the names of majesty such as the Subduer, the Majestic, the Avenger and the Misleader, and become their loci of manifestation. “So the opposition of the names arose from knowledge of the secret of fate.” (s. 833) Setting the entities aside, the names are in the Essence of oneness in a single mode and free from opposition (s. 833-834).</p></section><section><h3>The Transitive and Intransitive Ruling</h3><p>The Fuṣūṣ says that one reality rules in the absolute existent and in the bound existent, and that since its ruling is general, transitive and intransitive, nothing could be more perfect or greater than it. Konuk distinguishes four cases. In relation to existent entities, the transitive ruling is, at the time of things&#x27; acting on one another, “things such as acting and being acted upon, teaching and learning, love and enmity” (s. 834); the intransitive ruling is things such as perfections, attributes, properties, character, knowledge, ignorance, shape and form, which stay in the entities themselves and do not pass to another. In relation to the fixed entities, the transitive ruling is the ruling that goes from the entities to the Real through their essential capacities; the intransitive is the entities&#x27; ruling over their own essences, since a thing is ruled only by what its own essence gives. In relation to the Real, the transitive ruling is the effect and ruling of the Real that appears in the entities in the world of witnessing after their appearance (s. 835); the intransitive ruling is the ruling of absolute existence, since it returns to itself and there is no other: “What we call ‘other’ is the essential relation of the Real.” (s. 835) From these Konuk concludes that the secret of fate rules over both absolute existence and bound existence (s. 835).</p></section><section><h3>The Prophets, the View of Reason and Perception by Taste</h3><p>The Fuṣūṣ says that the prophets took their knowledge only through the particular divine revelation and, knowing that reason falls short of grasping things as they truly are, their hearts are free of the view of reason; and reporting what is reached by taste also falls short. Konuk ties this to following revelation being among the characteristics of prophethood and messengership (Ahqaf 46:9): “And the awareness of the realities of knowledge and of the fixed entities by way of divine taste and lordly unveiling, which arises without intermediaries, is not among the characteristics of prophethood.” (s. 836) For this reason, in reporting the secret of fate and the forms of the entities in the state of non-existence, the tongue of the messenger and prophet falls short. According to the Fuṣūṣ, perfect knowledge remains only in the self-disclosure in which the Real lifts the covering from the eyes of insight and sight. Konuk tells a story: in the time of ʿAbd al-Qādir al-Jīlānī a man went about saying “I witness the Real with the eyes of my head”; the scholars summoned him before the law, the man insisted, and they consulted al-Jīlānī. Al-Jīlānī said: “This man is truthful in his claim. But he is deficient in gnosis. For the Real has lifted the veil from his outer and inner eye, and has united the light of his insight with the light of his sight.” (s. 837) His witnessing is with the eye of the spirit, but he supposes he sees with the eye of the body; the scholars were reassured by this explanation.</p></section><section><h3>Ezra&#x27;s Question and the Three Levels of Certainty</h3><p>The Quran, at Baqara 2:259, narrates that Ezra — or another believing servant — passing through a ruined city asked: &quot;How will God bring this city back to life after its death?&quot; Konuk moves this question onto different ground: the real question here is about the secret of fate. Ezra was made to die for a hundred years — even the bones of his donkey decomposed. Then he was revived and God asked: &quot;How long did you remain?&quot; Ezra said: &quot;A day or part of a day.&quot; God said: &quot;No, you remained a hundred years.&quot;</p><p>The bezel here foregrounds the three levels of certainty. ʿIlm al-yaqīn: learning something from report. ʿAyn al-yaqīn: observing it, seeing it. Ḥaqq al-yaqīn: being inside it oneself. Ezra had asked about the secret of fate at the level of ʿilm al-yaqīn; he received ḥaqq al-yaqīn as the answer — by dying and being revived. According to Konuk&#x27;s reading, God did not answer Ezra&#x27;s question in words but in the language of state: living through death and resurrection was to understand beyond words the question &quot;how does God revive?&quot;</p></section><section><h3>The Reasons for the Reproach to Ezra, Abraham&#x27;s Words and the Three Certainties</h3><p>Konuk says that Ezra&#x27;s inclination toward the secret of fate and his finding the restoration of the village of Khirba great arose from the requirement of his uncreated reality (s. 837). The Fuṣūṣ reports that, since his request followed a special path, reproach came upon him; Konuk relays that the Real revealed to him, “If you do not give up this request, I will erase your name from the register of prophethood,” and lists three reasons. “First: Ezra (peace be upon him) was a prophet charged with calling the people. He asked for the knowledge of the secret of fate, which is contrary to calling the people.” “Second: His question was contrary to the requirement of the station of prophethood, which consists of command and prohibition.” (s. 838) In his question there was a sense of finding God&#x27;s power unlikely and great, whereas the due of the station of prophethood is to deem everything great small beside divine power. Third: since what he sought was the secret of fate and the attachment of power to what is within its power, “this path is the path of divine taste and divine awareness.” (s. 838) The Fuṣūṣ says that had Ezra asked for unveiling, reproach would for the most part not have come upon him; Konuk recalls the Messenger of God&#x27;s prayer, “O God, show us things as they are” (s. 838-839). A source footnote states that this report appears in al-Iṣfahānī, al-Bayhaqī and Ibn ʿAsākir.</p><p>The Fuṣūṣ says that the form in Ezra&#x27;s words is like the form in Abraham&#x27;s “My Lord, show me how You give life to the dead” (Baqara 2:260); a footnote states that this sentence is in the Fuṣūṣ text but is absent from the copy of Ahmed Avni Bey and from the copies made from it, and was added on the basis of the account in the commentary section (s. 839). Konuk: Baqara 2:259 has in some respects been taken in the sense of finding it surprising and great; according to the Shaykh, however, Ezra&#x27;s aim “consists in asking to witness by taste the attachment of power to what is within its power, in keeping with divine taste and divine awareness; and this request was made in order to find calm.” (s. 839) Taste has three levels: “‘to know’, ‘to see’, ‘to be’. That is, ‘ʿilm al-yaqīn’, ‘ʿayn al-yaqīn’ and ‘ḥaqq al-yaqīn’.” (s. 840) To know that fire burns is ilme&#x27;l-yakin, to see it burn something is ayne&#x27;l-yakin, and fire&#x27;s burning our own body is hakka&#x27;l-yakin. Ezra knew that the Real would give life to the dead (ilme&#x27;l-yakin) and wanted to see how they are given life (ayne&#x27;l-yakin); the Real gave the answer to his question in his own self, in act, and gave him the taste of hakka&#x27;l-yakin (s. 840). The Fuṣūṣ: “So this secret of fate was not given; for this knowledge of fate is among the characteristics of divine awareness.” (s. 841) Konuk relays that Ezra was shown in his own self how the restoration takes place and his own fixed entity, but was not shown how the people of the village were restored, and says: “It is not possible for the bound to encompass the absolute.” (s. 841)</p></section><section><h3>The Prophet&#x27;s Three Aspects and the Keys of the Unseen</h3><p>Toward the end of the bezel, Ibn ʿArabī describes how a prophet possesses knowledge from three different aspects. First aspect: as prophet — he knows to the extent of what he received through revelation, he transmits what he heard. Second aspect: as walī — he knows to the extent of his fixed essence&#x27;s own capacity; this knowledge is not limited to revelation, it is open to unveiling and witnessing. Third aspect: as his particular Lord — he knows as the manifestation of the divine name that is the special Lord of each being.</p><p>The bezel closes with the concept of mafātīḥ al-ghayb: &quot;The keys of the unseen are with God; none knows them except He&quot; (An&#x27;ām 6:59). Konuk says these keys are the fixed essences (a&#x27;yān-i sābita) — the eternal cores of beings, which determine their potentials and therefore have the decisive say in what they will be. These keys are only in God&#x27;s knowledge — because only God knows the a&#x27;yān; the a&#x27;yān do not even know themselves, they are only fixed in God&#x27;s knowledge.</p></section><section><h3>The Keys of the Unseen, the State of Opening and the Attachment of Power</h3><p>The Fuṣūṣ says that it is impossible for anyone other than God to know fate, because the entities are the keys of the unseen, and that God lets whom He wills of His servants become aware of some of it (An&#x27;am 6:59; Jinn 72:26-27). Konuk gives the aspect in which the entities are keys of the unseen: “the divine names that are hidden and latent in the Essence of the Real appear in these entities through the expansion of the Breath of the All-Merciful over the non-existent entities.” (s. 842) In this way the non-existent entities become “first keys” for the divine names; moreover, the Essence of the Real is a divine name with each entity, and each name is the key of the treasury of the unseen in His Essence, and all the keys are in the Real&#x27;s hand. Those made aware are few; of the perfect human Konuk says: “For the knowledge of the Real is the perfect human&#x27;s knowledge; and His Essence is, without indwelling or union, the perfect human&#x27;s essence.” (s. 842) The Fuṣūṣ goes on to say that the “keys” are called keys only in the state of opening, that the state of opening is the state of the attachment of being-brought-into-being to things or of power to what is within its power, and that in this no one other than God has taste (s. 843). Konuk: “Because what we call ‘other’ is bound. And the bound is incapable.” (s. 843) For this reason, in that state, no self-disclosure or unveiling takes place for anyone.</p><p>After seeing the reproach to Ezra, the Fuṣūṣ says that he asked for a power attached to what is within its power for himself, and that this is required only of one for whom absolute existence is established (s. 844). Konuk notes that witnessing by taste the attachment of power to what is within its power belongs only to the Powerful who witnesses his own oneness in what is within his power, and that power to bring into being is among the characteristics of divinity. Objection: Jesus said, “By God&#x27;s leave I heal the one born blind and the leper, and I give life to the dead” (Al ʿImran 3:49). Answer: “The perfect, such as Jesus and the like, are characterized by power to bring into being and to annul occasionally and in relation to some entities; and this characterization by power is because no otherness remains between them and the Real.” (s. 844) Konuk says that this union is not the joining of two different things but means that the determination, which is a considered existence, is annihilated in the absolute existence of the Real, and adds the translation of a couplet: “If there is power in us to do something, it is not from us. For in any case He appeared with us.” (s. 844) He also relays a quatrain of Mawlānā: “Unless the servant is absolutely annihilated / his declaration of oneness is surely not valid / Oneness is not indwelling, it is your passing away / it is not true with dry words.” (s. 845) He explains that taste is a quality with the example of honey: “For instance, it is not possible to explain honey by description to someone who has not eaten honey in his whole lifetime.” (s. 845)</p></section><section><h3>The Meaning of “I Will Erase Your Name from the Register of Prophethood”</h3><p>To the report that it was revealed to Ezra, “If you do not give up this request, I will erase your name from the register of prophethood,” the Fuṣūṣ adds an explanation (in Konuk&#x27;s translation): I remove from you the path of report and give you things by self-disclosure; the self-disclosure will come to you only according to what your capacity is; when you do not see in it what you asked for, you will know that you have no capacity for it and that it is among the characteristics of divinity (s. 846). Konuk says that the outward sense of this address is understood as the removal of prophethood from Ezra and his being cast away from nearness, but that the prophets&#x27; rank is too high for that: once their essential capacities are such that their names are fixed in the register of prophethood and they are protected by divine protection, they must not fall from their level. According to Konuk, the Shaykh explains not the outward sense that mars the rank of prophethood but “the inner meaning, which is the divine intent” (s. 847): the address is a promise of being given knowledge by unveiling and self-disclosure. The upshot of this discussion: “No prophet or friend of God can possibly know the realities of all the entities in the manner of encompassing. For this knowledge is among the characteristics of divinity.” (s. 847) The Fuṣūṣ says “This is a favor to Ezra from God; the one who knew, knew, and the one who did not, did not”; Konuk: “In sum, this report was in reality a promise, not a threat.” (s. 848)</p></section><section><h3>Friendship, Prophethood and Messengership</h3><p>The Fuṣūṣ says that friendship (walāya) is the “all-encompassing sphere”, that for this reason it was not cut off, and that there is a “general announcing” for friendship; whereas legislative prophethood and messengership are cut off, and were cut off in Muhammad. Konuk opens this: since friendship is a divine attribute through which divine unveiling arises, it is the all-encompassing sphere, comprising all the levels of the messengers, prophets and friends of God; since friendship is the inner of prophethood, it includes the prophets who have a law and the friends of God who are not authorized to call. “Jesus&#x27; (peace be upon him) coming at the end of time will be by way of friendship, not by way of prophethood and messengership, and so he is not counted a lawgiving messenger.” (s. 848) The Fuṣūṣ states that the saying “There is no prophet after me” reduced the appearance of friends of God, since it includes the cutting off of the taste of complete servanthood (s. 849); Konuk opens this as meaning that for the friends of God the door of being called “prophet” is now closed and no level other than friendship remains. As the reason he explains the Fuṣūṣ&#x27;s saying that “the servant does not wish to share a name with his Lord, who is God” through the example of iron and fire: “If the iron came to speech and said ‘I am fire’, it would be truthful in its words. But iron is not fire; this state is an incidental matter in it.” (s. 849)</p><p>The Fuṣūṣ says that God is named not by the names “prophet” and “messenger” but by the name “Friend” (Baqara 2:257; Shura 42:28) and that this name runs over the servants of God in this world and the next. Konuk: “prophet” and “messenger” belong to the names of creation; the Lord “is not named by the name ‘messenger’ and ‘prophet’; but He is named by the name ‘Friend’.” (s. 849-850) Since prophethood and messengership are cut off, no name remains that a servant could bear without sharing in the Real&#x27;s name; God, in kindness to His servants, “kept for them the general prophethood in which there is no legislation.” Konuk opens general prophethood as follows: “it is, for the knower, report from God about the attributes, names and acts of the Real with the perfection of unitary and comprehensive capacity; and for the scholars it is legislation in juristic reasoning.” (s. 850) According to the Fuṣūṣ, God kept for His servants legislation in juristic reasoning in the fixity of rulings, and inheritance through the saying “the scholars are the heirs of the prophets.” Konuk: “For this reason the jurists say that juristic reasoning is ‘hidden revelation’.” The scholars who exercise juristic reasoning are heirs of the prophets in the outer; the knowing scholars, because they take divine knowledge from the Real without intermediary, are heirs of the prophets in the inner (s. 851). He also divides the bearing of the name Friend into three: assimilation (tahalluk) is the passing away of the servant&#x27;s attributes in the divine attributes, realization (tahakkuk) is the servant&#x27;s passing away in the Essence of the Real, and attachment (taalluk) is in the state of subsistence, the station of inheritance (s. 854).</p><p>The Fuṣūṣ says that when you see a prophet speaking apart from legislation, he speaks in respect of being a knowing friend of God, and that this station is more perfect and complete than the station of being a messenger or a lawgiver; if you hear from one of the people of God “Friendship is higher than prophethood”, this is what is meant. Konuk: “A prophet&#x27;s speaking apart from legislation is his speaking of the knowledge of oneness. For the knowledge of oneness relates to the Real.” (s. 851) The law, however, is directed to the people, and the people require duality. The Fuṣūṣ understands the saying “the friend is above the prophet and the messenger” as concerning one person: “Otherwise the friend who follows a prophet is not higher than the prophet.” (s. 852) The recourse of the prophet, as messenger and lawgiver, is friendship and knowledge: God commanded the Messenger to ask for more knowledge (Taha 20:114). Konuk: “So increase in prophethood and messengership is as much as the community&#x27;s capacity.” (s. 853) When capacity has appeared in the perfection proper to it, no increase remains in prophethood and messengership (Maida 5:3, “Today I have perfected your religion for you”); but increase of the divine attributes is not commanded, because there is no end to self-disclosures and no repetition in self-disclosure. Since the law belongs to this world and to works, it is cut off, whereas friendship is not: Konuk cites Yusuf 12:101 (“You are my Friend in this world and the next”) and says that when the level of messenger and prophet is lifted, their recourse is friendship and divine knowledge (s. 854).</p></section><section><h3>The Address to Ezra as a Promise, and the Law in the Hereafter</h3><p>According to the Fuṣūṣ, the address to Ezra “I will erase your name” means that the matter will come to you by unveiling and self-disclosure and the name prophet and messenger will cease from you; his friendship remains. Konuk opens this: “‘Friendship’ is a divine attribute, and the Real is the friend of His servants with this attribute eternally and everlastingly. Prophethood and messengership, on the other hand, are, in the this-worldly mode of being, an incidental attribute in those friends of God who are prophets and a particular level within the circle of friendship.” (s. 855) Without friendship prophethood is not realized, but without prophethood friendship is; prophethood and messengership are lifted with the messenger&#x27;s departure from this world, while his friendship continues in the intermediate realms of the hereafter. “Friendship is more general than prophethood and messengership. For just as every messenger is a prophet, every prophet is a friend of God. But not every friend of God is a messenger, nor a prophet.” (s. 856) The Fuṣūṣ says that the prophet is a special friend of God, that he will not press for what the Real dislikes to have appear from him or whose attainment is impossible, and that therefore Ezra&#x27;s question was accepted (s. 856-857). One who knows these states takes the address, in his own view, as a promise, and the address becomes a report pointing to the level that remains after the lifting of prophethood, namely friendship; this level is “the level that remains in the abode of the hereafter for the prophets and messengers.” (s. 857)</p><p>The Fuṣūṣ notes that it said the law is absent in the hereafter only for the time after entering the Garden and the Fire; for on the Day of Resurrection a law is laid down for the people of the interval between messengers, for young children and for the insane. Konuk opens these three classes: “One of them is the people of the interval between messengers. For since the law of the prophet who came before them had lapsed, they could not act by it” (s. 859); the prophet to come after that prophet did not come for them to act by his law. The second are children who died before maturity, the age of obligation; the third are the insane, who died in this world with their minds veiled. Konuk: “It is not justice to put into the Fire someone without fault and into the Garden someone without the reward of works.” (s. 859) According to the Fuṣūṣ, on that day a prophet, the best among them, is sent to them and a fire is made to appear; the prophet says, “I am the Real&#x27;s messenger sent to you; throw yourselves into this fire.” The one who obeys finds the fire cool and safe, the one who disobeys enters the fire (s. 858-859). The verse in Qalam 68:42, “They are called to prostrate, but they cannot”, is also proof of obligation in the hereafter. Konuk ties the reason together thus: the division of the people into two (Shura 42:7) is not possible without the establishment of justice, “and so that the effect of the name the Just and the name the Judge may appear!” (s. 860) Konuk ended this part with the date Monday morning, 17 January 1916.</p></section><section><h3>Appendix: Consent to Unbelief and Consent to Decree (Mathnawī Commentary)</h3><p>Konuk says that he has added at the end of the bezel, because of its relation to the discussion of decree, the commentary on a couplet in the third volume of the Mathnawī: “Because of its relation to the discussion of decree contained in this subtle bezel, it was found fitting to insert here, together with its commentary, the following noble passage in the third volume of the Mathnawī-i Maʿnawī.” (s. 861) The matter is the apparent contradiction between two sayings: “Consent to unbelief is unbelief” and “Whoever does not consent to My decree and be patient in My trial, let him seek a lord other than Me” (a footnote gives sources for the attribution of the first to Ibn ʿAbbās and its recording as a hadith). Konuk poses the question: “According to the creeds of theology, all the acts of servants are the will and decree of the Real. Therefore unbelief too would be His decree.” (s. 862) With consent to decree obligatory and consent to unbelief unbelief, the servant who consents to unbelief, which is the Real&#x27;s decree, becomes an unbeliever, and if he does not consent, he has abandoned an obligation. Mawlānā&#x27;s answer, in Konuk&#x27;s translation: “This unbelief is the decreed, not the decree; it is right that this unbelief is an effect of decree.” In his commentary Konuk says: “The unbelief in the noble hadith ‘Consent to unbelief is unbelief’ is, in the form of the passive participle, the decreed, and an effect of decree; it is not the very decree. For ‘decree’ is one thing and ‘the decreed’ another.” (s. 862) He also relays this from the Futūḥāt: “Decree is other than the decreed; and decree consists of bringing into being and rulings in keeping with the measure that goes back to the capacity of the fixed entities.” (s. 862)</p><p>Konuk draws the conclusion thus: since decree is the Real&#x27;s ruling over things, and this ruling is the ruling that the fixed entities ask of the Real, the servant has no recourse but to consent to the divine decree. Example: if two people ask a sultan, one for one gold coin and the other for a thousand, and the sultan gives each what he asked, “the one who received one gold coin cannot complain: ‘Although the sultan gave my companion a thousand gold coins, he gave me one!’ For the sultan gave them what they asked.” (s. 863) That he himself received one gold coin is the decreed and an effect of decree; not to consent to it is natural, and the servant should blame and censure himself, since the request is his. Konuk also opens Mawlānā&#x27;s couplet “Know the decree from the decreed”: the Real&#x27;s decree follows His knowledge, and His knowledge follows the known capacities of the entities; the entities first rule over the Real by their requests, and then the Real&#x27;s ruling falls on them. In unbelief there are two aspects: the essence of unbelief and its relation to decree; as unbelief it is not at all pleasing, but in its relation to decree it is pleasing. Example: “For instance, if a highly skilled painter were to paint the portrait of a very ugly person in a form true to the original, one would say that this depiction is very beautiful in respect of craft; yet there is no doubt that the form would be called very ugly. So the depiction is good and the form ugly.” (s. 864) Konuk says that calling unbelief “unbelief” in relation to the Real would require calling the Real an unbeliever, which is not permissible (s. 864).</p><p>Konuk opens Mawlānā&#x27;s couplet “Unbelief is ignorance; and the decree of unbelief is knowledge. When will the two words ‘ḥilm’ and ‘ḥilm’ ever become one?” relying on the Indian commentators Walī Muḥammad Akbarābādī and Baḥr al-ʿUlūm ʿAbd al-ʿAlī: they give “ḥilm” with a kasra on the first letter as “wrath and anger” and “ḥilm” with a kasra on the second as “gentleness”. Konuk says that he found no explanation in Ankaravī or in the Indian commentators of what resemblance these two words bear, and states the meaning he himself understood: the two words sound alike in pronunciation and are opposite in meaning. The unbelief that is decreed arises from a kind of knowledge; the deniers, seeing that the prophet ate and drank like themselves, said “What is the matter with this Messenger, who eats food?” (Furqan 25:7) and reached denial by an unprofitable knowledge they had acquired (Jathiya 45:24; Rum 30:7; Najm 53:29-30). Konuk: “But this knowledge, though knowledge in appearance, is ignorance in reality.” (s. 866) The decree of unbelief, on the other hand, is pure knowledge. He also opens Mawlānā&#x27;s example of the painter: “If a painter makes an ugly picture, that ugliness belongs to the picture, not to the painter.” (s. 866) The Real brings good and evil into being in order to be the locus of manifestation of His names, but He is satisfied with the good and not with the evil; a physician wills people&#x27;s disease but is not satisfied with disease, and likewise the baker hunger and the teacher ignorance (s. 866-867). Noting that opening the discussion of decree and the decreed along the lines of theologians would lengthen question and answer and produce bewilderment, Konuk says that the discussion arrives at the proposition “knowledge follows the known” and was set out in the bezel of Ezra (s. 867). According to the note at the end, he began the commentary on 30 December 1915 and finished it on the night of Sunday 23 January 1916.</p></section></article><nav aria-label="Navigation"><p><a href="en/">Dost Arabî</a> › <a href="en/fusus/">Fusus al-Hikam</a></p><p><a rel="prev" href="en/fusus/fs13/">← Power Is Incidental — Origin Is Weakness</a> · <a href="dizin/fusus/">Index</a> · <a rel="next" href="en/fusus/fs15/">Rühullah — Born of the Divine Breath →</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>

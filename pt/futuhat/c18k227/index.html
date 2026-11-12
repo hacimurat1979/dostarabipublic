@@ -2,63 +2,14 @@
 <html lang="pt-BR" data-dost-lang="pt">
 <head>
 <meta charset="UTF-8">
-<!-- 2026-08-15: site yalnız kendi origin'inden (SRI'lı) + gtag/clarity'den
-     script yüklüyor (bkz. aşağıdaki analitik bloğu) -- bu politika
-     escape-at-output bulgularının (crosslink-preview.js, search.js)
-     gelecekteki bir kaçağının başka bir DOMAIN'den script/veri yükleme
-     etkisini sınırlar. Ürün denetimi G1 (2026-09-02): CSP'nin
-     script-src yönergesindeki "unsafe-inline" izni kaldırıldı -- yerine
-     her satır-içi <script>'in SHA-256 özeti yazılıyor
-     (scripts/sri-guncelle.py; yeni bir satır-içi script eklenirse bu
-     betik yeniden çalıştırılmalı, yoksa tarayıcı onu sessizce
-     reddeder). CSS tarafında (style="" öznitelikleri, SVG stop-color)
-     aynı kısıtlama henüz uygulanmadı -- kapsamı ayrı, daha büyük bir
-     iş. -->
-<!-- frame-ancestors/report-uri/sandbox <meta> ile ÇALIŞMIYOR (CSP spec'i
-     bunları yalnız gerçek HTTP başlığında tanıyor) -- GitHub Pages özel
-     başlık desteklemediği için bu üçü buraya yazılmıyor (yazılırsa sessizce
-     yok sayılır, tarayıcı konsoluna bir uyarı düşer, koruma sağlamaz). -->
-<!-- Clarity'nin yükleyicisi (aşağıdaki inline script) tek bir domain'den
-     çalışmıyor: paketi scripts.clarity.ms'ten çeker, izleme pikselini ise
-     kendi domain'inden değil c.bing.com'dan senkronlar (Clarity Microsoft'un
-     ürünü, Bing altyapısını kullanıyor). script-src/img-src bu yüzden
-     www.clarity.ms yerine *.clarity.ms joker'ini ve ayrıca c.bing.com'u
-     içeriyor -- connect-src'teki jokerle tutarlı. -->
-<!-- GA4 da tek taşıma biçimi kullanmıyor: isabetleri çoğu zaman connect-src
-     üzerinden (fetch/beacon) yolluyor ama koşullara göre googletagmanager'dan
-     bir GÖRÜNTÜ pikseline (/td?..., /a?...) düşebiliyor -- img-src'de bu iki
-     domain olmayınca o isabetler sessizce bloke oluyordu. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-qGakBToF/hfLPvq3i/dAhdChpNzdr4l/BxMMygKf068=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-wET/PpUMPmHB3+4ZJ2wJQaaRZNjwnjzu/thFF5YCglU=' 'sha256-+Gw9BB8PqZwOepCX5QN6HDZRG8ZoN+KiNDrwY3N+TMo=' 'sha256-w5I0HcTon0UyDXCqi2zPsTLeCmbj71kyGays6MqmUB8=' 'sha256-7HRdh9Ak615VGp5agXs3JWBBqjxv+FiqkGPDNV+lEP0=' 'sha256-wn0qZ7sGc9Rd6ZjtPXL9XMhPyCo5kwiZ4YVjqxgr8M0=' 'sha256-UlMdnIUSZxmTxjsmx2TsZYd3KoEBJPu/k4yI4QiBIh0=' 'sha256-CxbUn6LYrYl/xjUQvSqnRcXnh1bdRQRUNzaKunc4nsI=' 'sha256-ulu/i/N+zcm8cHdW5jq4x2E5IlVsgpKdjIimk+HJJjk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
-<!-- Gerçek path'lerle gezinme (bkz. 404.html) adres çubuğunu /futuhat/c1k9 gibi
-     köke bağlı olmayan derinliklere taşıyor; bu <base> olmadan o an sayfadaki
-     her bağıl fetch/asset yolu ("data/...", "assets/...") o yanlış dizine göre
-     çözülüp 404 verir. dostarabi.com kökten servis ediyor ("/"); önizleme
-     kopyası hacimurat1979.github.io/dost-onizleme/ altında olduğu için bu
-     satırı "/dost-onizleme/" yapar (bkz. scripts/sync-to-preview.py). -->
+
+
+
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://*.clarity.ms 'sha256-rvp+VhZ48BFadwb1gZ2/oo6w81zD/fzFs3AwfSJI0ro=' 'sha256-3qpOAhgoCkTGrcgfkBfXT459zvlhQBlNdRIbgvqP52c=' 'sha256-jVuNd9oeLP6Cw+c2mxSxcedq4LBmBHRyr01wEGwNvw8=' 'sha256-Yd0AjV1bCD5C06sRjCD+lQwlOyWaosKEEHgJ1deU/Y4=' 'sha256-7Q/9x2PMTaNq/TJawVl9zhRRVjtEOigJ1+24ttPT21k=' 'sha256-UQlNrM3j7sxIqWE2IG5TCDjSfP+IobKsJO83IxPpTos=' 'sha256-OAZAcGSTibJNjsBAg/BZjKhko+EOVH8xNBs7V6uEWqY=' 'sha256-cATLkYw0qIPpmPo608gngTbcspJciaA2ODBBG4eHAck=' 'sha256-WNJ0NS8KQoTF45F3DV/Uk8gCQTx4FaH6OKarFvnrIvw=' 'sha256-ulu/i/N+zcm8cHdW5jq4x2E5IlVsgpKdjIimk+HJJjk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.clarity.ms https://c.bing.com https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.workers.dev https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.clarity.ms; object-src 'none'; base-uri 'self'">
+
 <base href="/">
-<script>
-  // PF3-FUT-ONYUK (4. tur): okuma sayfası (Fütûhât/Füsûs/Mişkât) doğrudan açılınca metnin verisi ve stili, betikler (31 adet) yürütülürken
-  // beklemesin diye en başta istenir (zincir: betikler -> görünüm betiği -> indeks -> kısım dosyası). Yalnız adres desenine bakar, yeni içerik yazmaz;
-  // fetchJson ile AYNI adres (mutlak, base'e göre) ve crossorigin -> tarayıcı önbelleğinden alır. Bilinmeyen adreste hiçbir şey yapmaz.
-  (function () {
-    try {
-      var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-      var y = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-      var m = /^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(y);
-      if (!m || (navigator.connection && navigator.connection.saveData)) return;
-      var d = [], c = ["ortak", "okuma", "helix"], k = m[1];
-      if (k === "futuhat") { d.push("futuhat-atlas-index.json"); if (/^c\d+k\d+$/.test(m[2])) d.push("futuhat-parts/" + m[2] + ".json"); c.push("futuhat"); }
-      else if (k === "fusus") { d.push("fusus-atlas-index.json"); if (/^[a-z0-9-]+$/.test(m[2])) d.push("fusus-parts/" + m[2] + ".json"); c.push("fusus"); }
-      else { d.push("miskat-atlas.json"); c.push("miskat"); }
-      function on(href, as, cors) {
-        var l = document.createElement("link"); l.rel = "preload"; l.as = as; l.href = new URL(href, document.baseURI).href;
-        if (cors) l.setAttribute("crossorigin", ""); document.head.appendChild(l);
-      }
-      d.forEach(function (a) { on("data/ibn-arabi/" + a, "fetch", true); });
-      c.forEach(function (a) { on("assets/css/" + a + ".css", "style", false); });
-    } catch (e) { /* ipucu en iyi çabadır */ }
-  })();
-</script>
+<script>(function(){try{let u=function(s,f,h){var e=document.createElement("link");e.rel="preload",e.as=f,e.href=new URL(s,document.baseURI).href,h&&e.setAttribute("crossorigin",""),document.head.appendChild(e)};var c=u,o=new URL(document.baseURI).pathname.replace(/\/+$/,""),r=location.pathname.slice(o.length).replace(/^\/(en|pt)(?=\/|$)/,""),t=/^\/(futuhat|fusus|miskat)\/([^\/]+)\/?$/.exec(r);if(!t||navigator.connection&&navigator.connection.saveData)return;var a=[],n=["ortak","okuma","helix"],i=t[1];i==="futuhat"?(a.push("futuhat-atlas-index.json"),/^c\d+k\d+$/.test(t[2])&&a.push("futuhat-parts/"+t[2]+".json"),n.push("futuhat")):i==="fusus"?(a.push("fusus-atlas-index.json"),/^[a-z0-9-]+$/.test(t[2])&&a.push("fusus-parts/"+t[2]+".json"),n.push("fusus")):(a.push("miskat-atlas.json"),n.push("miskat")),a.forEach(function(s){u("data/ibn-arabi/"+s,"fetch",!0)}),n.forEach(function(s){u("assets/css/"+s+".css","style",!1)})}catch{}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="msvalidate.01" content="BF97329A7CA2473CF7A56F81A27183F4">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -129,58 +80,7 @@
 </script>
 
 
-<script>
-  (function () {
-    var KEY = "dost-analytics-consent";
-    function getConsent() {
-      try { return localStorage.getItem(KEY); } catch (e) { return null; }
-    }
-    // Android uygulaması (TWA, 2026-10-10): uygulama kendini ?kaynak=twa
-    // ile ya da android-app://com.dostarabi.app yönlendiricisiyle tanıtır;
-    // o oturumda hiçbir ölçüm yüklenmez, onam bandı da görünmez. İşaret
-    // sessionStorage'da tutulur -- uygulama içindeki sonraki sayfalar
-    // parametresiz açılır. (localStorage'a yazılmaz: TWA tarayıcının
-    // depolamasını paylaşır, web ziyaretlerini de susturmuş olurdu.)
-    window.__dostUygulama = (function () {
-      var A = "dost-uygulama";
-      var isaret = false;
-      try { isaret = /(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search); } catch (e) {}
-      try { isaret = isaret || String(document.referrer).indexOf("android-app://com.dostarabi.app") === 0; } catch (e) {}
-      if (isaret) { try { sessionStorage.setItem(A, "1"); } catch (e) {} return true; }
-      try { if (sessionStorage.getItem(A) === "1") return true; } catch (e) {}
-      try { if (localStorage.getItem(A) === "1") return true; } catch (e) {}
-      return false;
-    })();
-    window.__dostLoadAnalytics = function () {
-      // standalone (TWA) = uygulama: bayrak sessionStorage'da kaybolsa da (noopener
-      // pencere, 2026-10-20 taraması) ölçüm yüklenmez.
-      var tek = false;
-      try { tek = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
-      // 2026-11-12 (G2): sahibe özel kip açıkken (@revise / @share / geliştirici modu) ölçüm yüklenmez; bu ekranlarda çözülmüş özel veri durabilir.
-      var sahip = false;
-      try { sahip = localStorage.getItem("dost-gelistirici") === "1"; } catch (e) {}
-      if (window.__dostAnalyticsLoaded || window.__dostUygulama || tek || sahip) return;
-      window.__dostAnalyticsLoaded = true;
-      var ga = document.createElement("script");
-      ga.async = true;
-      ga.src = "https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT";
-      document.head.appendChild(ga);
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function () { dataLayer.push(arguments); };
-      gtag('js', new Date());
-      gtag('config', 'G-LGMR3QK3JT');
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "xpbj2z8nhz");
-    };
-    if (getConsent() === "granted") window.__dostLoadAnalytics();
-  })();
-  window.dostTrack = function (name, props) {
-    try { if (window.clarity) window.clarity("event", name, props || {}); } catch (e) {}
-  };
-</script>
+<script>(function(){var i="dost-analytics-consent";function c(){try{return localStorage.getItem(i)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostLoadAnalytics=function(){var t=!1;try{t=!!(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)}catch{}var e=!1;try{e=localStorage.getItem("dost-gelistirici")==="1"}catch{}if(!(window.__dostAnalyticsLoaded||window.__dostUygulama||t||e)){window.__dostAnalyticsLoaded=!0;var a=document.createElement("script");a.async=!0,a.src="https://www.googletagmanager.com/gtag/js?id=G-LGMR3QK3JT",document.head.appendChild(a),window.dataLayer=window.dataLayer||[],window.gtag=function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config","G-LGMR3QK3JT"),(function(n,d,r,w,g,o,s){n[r]=n[r]||function(){(n[r].q=n[r].q||[]).push(arguments)},o=d.createElement(w),o.async=1,o.src="https://www.clarity.ms/tag/"+g,s=d.getElementsByTagName(w)[0],s.parentNode.insertBefore(o,s)})(window,document,"clarity","script","xpbj2z8nhz")}},c()==="granted"&&window.__dostLoadAnalytics()})(),window.dostTrack=function(i,c){try{window.clarity&&window.clarity("event",i,c||{})}catch{}};</script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -191,76 +91,9 @@
 </head>
 <body class="viz-root">
   <noscript><p style="padding:1rem;font:16px/1.5 serif;max-width:40rem;margin:0 auto">Dost Arabî, İbn Arabî okumalarının özetidir ve çalışmak için JavaScript gerektirir. / Reading summaries of Ibn Arabi; JavaScript is required. / Resumos de leitura de Ibn Arabi; requer JavaScript. <a href="/sitemap.xml">Site haritası / Sitemap / Mapa do site</a></p></noscript>
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem("dost-theme");
-        var theme = (stored === "light" || stored === "dark")
-          ? stored
-          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.body.setAttribute("data-theme", theme);
-      } catch (e) {}
-      // Telefon / Android uygulaması kabuğu (assets/uygulama-kabugu.js): sınıf
-      // ilk boyamadan önce -- başlık 136 px'ten 57 px'e sıçramasın.
-      try {
-        if (window.__dostUygulama || matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches || matchMedia("(display-mode: standalone)").matches) {
-          document.documentElement.classList.add("dost-uygulama");
-        }
-      } catch (e) {}
-      // Kabuk V2 (2026-10-16): yeni mobil gezinme (Bölümler seçicisi, ⋮
-      // ayarlar, kaydırınca çekilen çubuklar) VARSAYILANDIR. Tek kill-switch:
-      // localStorage["dost-kabuk"] === "eski" ya da adreste ?kabuk=eski
-      // (oturum boyunca sessionStorage'da tutulur; ?kabuk=yeni geri alır).
-      // Eski kabuk kodu silinmedi; sınıf yoksa eski kurallar çalışır.
-      // Ayrıntı: ETKILESIM_DILI.md "Kabuk V2".
-      try {
-        var kabukV2 = true;
-        try {
-          if (/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)) sessionStorage.setItem("dost-kabuk", "eski");
-          else if (/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)) sessionStorage.removeItem("dost-kabuk");
-        } catch (e) {}
-        try { if (localStorage.getItem("dost-kabuk") === "eski" || sessionStorage.getItem("dost-kabuk") === "eski") kabukV2 = false; } catch (e) {}
-        window.__dostKabukV2 = kabukV2;
-        if (kabukV2 && document.documentElement.classList.contains("dost-uygulama")) document.documentElement.classList.add("uyg-v2");
-      } catch (e) {}
-      // Geliştirici modu (assets/view-loader.js): Yazdır ve Görsel kart düğmeleri
-      // yalnız bu sınıfla görünür; ilk boyamadan önce konur ki yanıp sönmesinler.
-      try {
-        var gm = /(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);
-        if (gm ? gm[1] === "1" : localStorage.getItem("dost-gelistirici") === "1") document.documentElement.classList.add("dost-gel");
-      } catch (e) {}
-    })();
-  </script>
-  <script>
-    // GitHub Pages'te gerçek path'lerle (/futuhat/c1k9 gibi) doğrudan
-    // gelindiğinde 404.html devreye girip isteği burada ?p= parametresiyle
-    // yeniden yazıyor; adres çubuğunu, JS routing'i çalışmadan önce
-    // tekrar temiz path'e döndürüyoruz (bkz. 404.html).
-    (function () {
-      try {
-        var params = new URLSearchParams(location.search);
-        var redirect = params.get("p");
-        // XSS-01/02 (uzman paneli denetimi, 2026-08-17): redirect burada
-        // tarayıcı adres çubuğundan geliyor, doğrulanmadan
-        // history.replaceState'e geçiyordu -- güven sınırı burası. Aynı
-        // kökene ait, "/" ile başlayan, "//" ile başlamayan (protokol-
-        // görece adres taklidi) ve HTML/URL özel karakteri taşımayan bir
-        // yol dışındaki her şey yok sayılıyor. (İkinci katman: ontology.js
-        // parseHashAndGo() bu yoldan çıkan id'yi ayrıca kendi kalıbıyla
-        // doğruluyor.)
-        // 2026-10-11 (grafik gezinme denetimi D3): sorgu dizgisi (?kaynak=twa,
-        // utm...) olan derin bağlantı yolu da reddediyordu -- kayda değil ana
-        // haritaya açılıyordu. Yol ve sorgu ayrı ayrı, aynı sıkılıkta sınanır.
-        var soru = redirect ? redirect.indexOf("?") : -1;
-        var hedefYol = soru < 0 ? redirect : redirect.slice(0, soru);
-        var hedefSorgu = soru < 0 ? "" : redirect.slice(soru);
-        if (redirect && /^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(hedefYol) && /^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(hedefSorgu)) {
-          history.replaceState(null, "", hedefYol + hedefSorgu);
-        }
-      } catch (e) {}
-    })();
-  </script>
-  <a class="skip-link" href="/pt/futuhat/c18k227/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Sifr 37 / Capítulo 560 e o Fim do Livro — Conselhos, Busca de Refúgio e Súplicas</h2><p>O último sifr das Futūḥāt al-Makkiyya e o encerramento do livro. Sem abrir um novo capítulo, o Trigésimo Sétimo Sifr prossegue os conselhos do Capítulo 560: Ibn Arabī enumera primeiro os seus próprios conselhos sobre a adoração e o trato e diz que o seu propósito é uma adoração &quot;completa e sem falha&quot;, fora das divergências dos sábios; transmite depois os conselhos do Profeta a ʿAlī e a Abū Hurayra, ditos de justos como Dhū&#x27;l-Nūn, Fuḍayl, Ḥasan al-Baṣrī e ʿUmar b. ʿAbd al-ʿAzīz, conselhos divinos do Corão, dos hadiths sagrados e da Torá, e conselhos aos governantes —incluindo as suas próprias cartas ao sultão Kaykāwūs. O Fim do Livro contém fórmulas de busca de refúgio e súplicas conhecidas, um sonho que teve em Meca em 599 e o cólofon que declara que o livro foi concluído no ano 636, na sua segunda cópia, de trinta e sete volumes.</p><article aria-label="Texto desta parte" lang="pt-BR"><section><h3>A Abertura do Sifr e os Conselhos do Próprio Ibn Arabī</h3><p>O Trigésimo Sétimo Sifr não abre um novo título de capítulo: depois da basmala começa diretamente com unidades intituladas “Conselho” e prossegue os conselhos do Capítulo 560; o sifr anterior havia terminado com a frase “O trigésimo sexto sifr das Futūḥāt al-Makkiyya chegou ao fim” (p. 320). Nas primeiras páginas Ibn Arabī dirige-se ao leitor na segunda pessoa do singular e enumera breves preceitos sobre a adoração, a conduta cotidiana e o trato com os outros: não ser tutor, enviado ou testemunha entre os governantes; não amaldiçoar o vento, pois “o vento vem do Sopro do Todo-Misericordioso” (p. 323); não declarar descrente nenhum pecador que se volta para a qibla; quando a comida e a oração estão prontas ao mesmo tempo, comer primeiro; ainda que o temor e a esperança sejam iguais, deixar que prevaleçam a esperança e a boa opinião sobre Deus (p. 324); guardar-se da dívida, do excesso de comida e da ira; seguir o imã e, sendo imã, considerar o mais fraco da congregação (p. 329); dar o zakāt com a intenção de entregar um direito ao representante do seu dono; dar à Gente da Casa um presente e não esmola (p. 326). Ibn Arabī diz que, nas questões em que os sábios divergem, indica o caminho que sai da divergência, e expõe o seu propósito: “Fazendo assim, a adoração que realizas torna-se completa e sem falha, de modo que não há divergência sobre ela. Este é o meu propósito nos conselhos.” (p. 331)</p><p>Entre esses preceitos Ibn Arabī insere breves relatos e experiências próprias. Um dos Abdāl, caminhando pelo ar com seus companheiros, quis descer a um jardim verde para fazer a ablução e orar; caiu do meio do grupo e desceu abaixo do grau deles; Ibn Arabī diz: “Vede que segredo importante há aqui!” (p. 325). Conta como um notável de uma cidade, com lepra, que os médicos haviam declarado incurável, foi curado untando-se com cominho-preto e mel por conselho de Saʿd al-Suʿūd, um estudioso do hadith de Ible (p. 327). Relata que certa noite, afastando o sono durante a oração, percebeu que dizia palavras más a si mesmo em vez de recitar, e então deixou a oração e dormiu (p. 331); e que, depois de recitar a súplica da parada, foi picado por vários escorpiões sem sentir dor, e que não sabe se isso veio da súplica, de dois pedaços de chumbo na sua roupa, ou de ambos (p. 332). Ao aconselhar lançar terra a quem nos elogia na cara, transmite que seu xeique ʿAbd al-Ḥalīm al-Ghammād disse de um homem montado: “Um pó montado sobre o pó” (p. 333). Expõe depois o conselho de tratar cada um segundo a sua posição e grau, numa longa lista que nomeia os seres um a um: Deus, cumprindo o pacto do senhorio; os animais, atendendo às suas necessidades por serem mudos; as árvores e as pedras, não as usando para um fim desnecessário; a terra, orando sobre ela; os nomes divinos, assumindo os seus traços de caráter. A lista chega à frase “Assim, trata todos os seres com conselho sincero” (p. 335) e ao princípio de que “a base da questão é entregar a cada titular o seu direito” (p. 336).</p></section><section><h3>Conselhos Proféticos: a ʿAlī e a Abū Hurayra</h3><p>Sob o título “Conselhos Proféticos” Ibn Arabī transmite o longo testamento que o Profeta dirigiu a ʿAlī b. Abī Ṭālib com as palavras “Ó ʿAlī!” (pp. 336–344). O testamento abre-se com séries de três sinais —três sinais cada um do crente, do afetado, do opressor, do que se exibe, do hipócrita e do preguiçoso— e, por comparações que seguem “Não há pobreza mais grave que a ignorância, nem riqueza mais generosa que o intelecto … nem adoração como a reflexão”, passa a uma série que nomeia o flagelo de cada coisa: “O flagelo da palavra é a mentira, o flagelo do conhecimento é o esquecimento, o flagelo da adoração é a ostentação” (p. 337). Seguem-se as suratas a recitar (as dez bênçãos de Yā Sīn, al-Dukhān, o Versículo do Trono, al-Ḥashr, Tabāraka, al-Sajda, al-Ikhlāṣ, al-Baqara), súplicas cotidianas desde comer até viajar e desde ver a lua nova até olhar-se ao espelho, a história das palavras com que Adão se arrependeu (p. 342) e as súplicas fúnebres para um homem, uma mulher e uma criança; enumera-se o que o servo crente ganha ao chegar aos quarenta, sessenta, setenta, oitenta, noventa e cem anos. O testamento termina com a frase “Ó ʿAlī! Escuta o meu conselho: tu estás sobre o Real, e o Real está contigo” (p. 344).</p><p>Ao passar aos conselhos do Profeta a Abū Hurayra, Ibn Arabī diz que mencionará deles “a parte que Deus ditou à minha pena, com a qual construo as letras que indicam os sentidos”, e insere um poema que escreveu dirigindo-se ao servo que lhe acendia a lâmpada: “Acende a lâmpada, talvez eu possa ver / e ordenar os sentidos escritos nas folhas” (pp. 352–353). Os conselhos começam por dizer “Bismillāh wa&#x27;l-ḥamdu lillāh” na ablução, nas refeições, ao montar um animal ou embarcar num navio e ao vestir uma roupa; prosseguem pela paciência diante do dano, por uma hora de justiça ser “melhor que dois anos de adoração passados em oração noturna e jejum diurno” (p. 354), por não persistir no pecado, pela oração noturna, por sugerir ao moribundo o testemunho de fé, por cuidar do órfão e da viúva, por guiar o desamparado e o cego, e por não divulgar a injustiça sofrida (pp. 354–362). Quando, ao conselho “Tem misericórdia de todas as criaturas de Deus”, Abū Hurayra responde “Tenho misericórdia até das moscas na água”, o Profeta diz três vezes: “Deus tem misericórdia de ti” (p. 361). Noutro conselho o Profeta descreve um povo que virá no fim dos tempos, que as pessoas tomarão por profetas ao ver os seus estados, que prefere a fome à saciedade e a sede à água, e chora de saudade deles (pp. 363–364). Ibn Arabī transmite, com uma longa cadeia que ouviu em Fez, mais um relato de Abū Hurayra: a boa vizinhança faz o muçulmano, a boa companhia o crente, o cumprimento das obrigações o adorador, e o contentamento com a partilha de Deus o asceta (pp. 372–373).</p></section><section><h3>Conselhos dos Justos, de Jesus e de Monges</h3><p>O título “Conselhos dos Justos” abre-se com ditos de Dhū&#x27;l-Nūn al-Miṣrī, que é também o justo mais citado ao longo do sifr: “Deves conviver com alguém que, ao vê-lo, te recorda Deus” (p. 345); “Não fiques, ocupando-te dos defeitos das pessoas, alheio aos teus” (p. 346); uma enumeração que segue “… não é inteligente” (pp. 350–351); conselhos dispostos de cinco em cinco a Ibrāhīm al-Akhmīmī (pp. 364–365); e a um jovem: “Cinge a arma da censura” (p. 372). Ibn Arabī conta que algo semelhante a um dito de Dhū&#x27;l-Nūn aconteceu no seu próprio círculo: quando o irmão falecido do seu amigo ʿAbd Allāh b. al-Ustādh disse em sonho “Só quem O conhece pode vê-Lo”, ʿAbd Allāh veio a Sevilha, disse “Vim a ti para que me faças conhecer Deus” e ficou com eles até alcançar o conhecimento “pela via do desvelamento e da contemplação —não pela via das provas racionais” (p. 344). Também neste conjunto estão o dito de Jesus que compara este mundo e o outro aos lugares onde o sol nasce e se põe (p. 345), o conselho de Luqmān ao filho, “Senta-te com os sábios e agarra-te aos seus joelhos” (p. 351), a explicação de um santo que vê a causa do pecado no primeiro olhar (pp. 351–352) e as palavras de Jesus aos sábios e juristas: “Voltastes-vos para o caminho da Outra Vida, mas não caminhais para ela” (p. 352).</p><p>Sob o título “Conselho de um Monge a um Gnóstico Muçulmano” conversam um monge recolhido no seu mosteiro e um gnóstico (pp. 347–350). O monge descreve a sua relação com o seu Senhor como “no pior estado possível”: os mandamentos são pesados, a recompensa adiada para depois da morte, “o caminho é longo, os seus espinhos são muitos, há perplexidade, há medo do desespero.” O gnóstico diz: “O nosso Senhor deu-nos um grande adiantamento antes de começarmos a agir”; relata a criação do homem a partir da terra e de uma gota e a sua dotação de sentidos, intelecto e fala, as bênçãos deste mundo misturadas com opostos como a luz e a treva, a noite e o dia, e a criação da Outra Vida como “uma criação que não segue nenhum modelo”; e diz que contam a adoração como “uma bênção, uma graça, um orgulho e uma honra.” Também entre os conselhos transmitidos estão um monge perto de Damasco que diz conselhos e poemas a um viajante em várias manhãs seguidas e por fim diz “Afastaste-me da adoração do meu Senhor” (pp. 374–376); ʿAbd Allāh al-Mughāwir de Niebla, que, diante da mulher que buscara a sua proteção, apertou o seu desejo entre duas pedras e disse “Ó minha alma! De um lado o Fogo, do outro a vergonha!”, e os seus cinco conselhos a Abū&#x27;l-Ḥasan al-Ishbīlī (p. 370); um sábio do caminho que diz que o amigo mais sincero de uma pessoa é aquele que não a deixa dizer “farei, hei de; espero, talvez, será” (pp. 376–377); e ʿAlī b. Khaṭṭāb al-Jazarī, que viu o Real em sonho e ouviu que é aceita a gratidão de “quem responde com bondade a quem lhe fez mal” (p. 378).</p></section><section><h3>Conselhos Divinos: o Corão, os Hadiths Sagrados, a Torá</h3><p>Ibn Arabī define um conselho como “conselhos divinos benéficos e verdadeiros, que consistem nos mandamentos e proibições do Real dirigidos aos Seus servos” no Corão, e enumera alguns deles “para recordar, para despertar os corações descuidados e para colher bênção da Sua palavra” (p. 378): começando pela surata al-Baqara, versículos na forma de mandamento e proibição são alinhados um após outro (pp. 378–381). Conta também como “um conselho de Deus” o fato de Deus mencionar no Seu Livro as qualidades que louva e que censura (p. 381), e explica-as: os que creem no invisível; o descrente cujo coração e ouvido estão selados; o hipócrita que mostra um rosto aos crentes e outro aos descrentes; os que pediram os legumes que a terra produz em vez do maná e das codornizes, descendo do alto para o baixo pela ordem “Descei a uma cidade”; corações mais duros que a pedra, pois de algumas pedras brotam rios e algumas rolam por temor a Deus (pp. 381–383). Conta ainda o perdão na retaliação, o legado testamentário e não interpretar os versículos ambíguos segundo o pensamento especulativo entre os conselhos divinos que têm texto explícito (pp. 384–385).</p><p>Os conselhos divinos reunidos de hadiths sagrados abrem-se com as palavras “Eu sou o que mais prescinde de que Me associem” (p. 385). Entre eles estão o hadith em que, na Ressurreição, Deus mostra ao servo que exige o seu direito ao irmão cidades de prata e palácios de ouro e diz que se possuem “perdoando o teu irmão” (pp. 385–386); as doze frases que Kaʿb al-Aḥbār encontrou na Torá e pendurou ao pescoço —“Enquanto tudo te quer para si, Eu quero-te para ti, e tu foges de Mim” (p. 386)—; a palavra de Deus a Moisés, “Eu sento-Me com quem Me recorda” (p. 387); e as palavras repetidas três vezes: “Eu não sou um Senhor que causa aflição” (p. 390). Um homem inspirado nas antigas eras da profecia suplica, dizendo que foi criado sem ser consultado e deixado entre forças opostas; a resposta de Deus é “Dei-te ordens apenas para que soubesses que tens um Senhor e um Deus”, e Ele ensina ao servo que palavras de que profeta dizer em cada situação: lā ḥawla quando oprimido, as palavras do retorno na calamidade, as de Adão e sua esposa ao resvalar no pecado, as de Abraão na dificuldade, as de Moisés no erro, as de José ao afastar-se do pecado, as de David na provação, as de Jesus ao ver os pecadores (pp. 393–396). Também fazem parte destes conselhos a resposta de Deus, a cada versículo, ao servo que recita al-Fātiḥa (p. 406), o cartão com o testemunho de fé que pesa mais na balança que noventa e nove registros de pecados (p. 408) e o hadith sobre o memorizador do Corão, o rico e o mártir: “Estes três são os primeiros a ser lançados no Fogo no Dia da Ressurreição” (p. 409).</p></section><section><h3>Conselho aos Governantes e as Cartas a Kaykāwūs</h3><p>Um longo trecho do sifr transmite conselhos dados aos governantes. Fuḍayl b. ʿIyāḍ lembra a Hārūn al-Rashīd, que viera à sua porta de noite, que ʿUmar b. ʿAbd al-ʿAzīz considerava o califado uma provação, transmite o conselho de Sālim b. ʿAbd Allāh “Jejua deste mundo, e que a tua quebra do jejum seja a morte” e recusa os cem dinares que o califa oferece, dizendo “Mostro-te o caminho da salvação, e respondes-me assim” (pp. 366–369). Ḥasan al-Baṣrī diz a Ibn Hubayra, governador do Iraque: “Se temes a Deus, Deus te protegerá de Yazīd b. ʿAbd al-Malik; mas Yazīd b. ʿAbd al-Malik não te pode proteger de Deus” (p. 401); ʿAbd Allāh al-ʿUmarī diz a Hārūn em al-Ṣafā que cada um da multidão prestará contas por si, mas ele por todos (pp. 402–403); um homem na circunvolução descreve a al-Manṣūr como, sob um governante que fecha as portas e põe um véu entre si e o oprimido, a opressão se multiplica em cadeia pelos seus funcionários, e diz “Califa! O Islão não pode perdurar assim” (pp. 403–404); ʿUmar b. ʿAbd al-ʿAzīz conta, ao voltar de um funeral, que o túmulo o chamou e lhe disse o que faz aos mortos (pp. 410–412).</p><p>Ibn Arabī insere também entre estes conselhos os seus próprios escritos. A ʿIzz al-Dīn Kaykāwūs, sultão das terras de Rūm, escreveu uma resposta em verso a uma das suas cartas: “Ó ʿIzz al-Dīn, que tornas poderosa a religião de Deus, ouve-nos / Poucos são os reis que escutam o conselho” (p. 401). Sob o título “Testamento e Conselho” transmite a sua resposta a uma carta que Kaykāwūs escreveu no ano 609: a resposta declara que a carta do sultão chegou a “seu pai (espiritual) que ora por ele, Muḥammad b. ʿArabī” e abre com o hadith “A religião é conselho sincero” (p. 435). Ibn Arabī lembra ao sultão que Deus o fez Seu representante nas Suas terras, que ele é “a Sua sombra estendida sobre a terra”, e que a justiça é a favor dele e dos seus súditos, ao passo que a opressão é contra ele; conta o levantamento das condições que ʿUmar b. al-Khaṭṭāb impôs aos povos protegidos —não construir novas igrejas e mosteiros, tocar os sinos baixo, não se assemelhar aos muçulmanos no traje e nos nomes, e semelhantes— como a coisa mais dura para o Islão e os muçulmanos, e diz ao sultão que reflita bem sobre a carta que enumera essas condições (pp. 436–437). O poema no fim da carta é construído sobre o título do sultão: se exaltar a religião será, como o seu nome, ʿIzz al-Dīn; se não, “Muzill al-Dīn (o que rebaixa a religião)” (pp. 437–438). Ibn Arabī conta ainda que numa sessão apresentou ao senhor de Alepo, Ghāzī filho de al-Malik al-Nāṣir Ṣalāḥ al-Dīn, cento e dezoito necessidades de pessoas, todas atendidas, e que pediu perdão para um homem cuja execução fora decidida, dizendo “Deus sabe que não conheço no mundo pecado algum que possa resistir ao meu perdão … e tu és a fonte da aspiração”, e o homem foi perdoado (p. 416).</p></section><section><h3>As Memórias de Ibn Arabī e as Últimas Páginas do Sifr</h3><p>No último trecho do sifr Ibn Arabī relata mais algumas memórias. Certa noite do ano 592 em Sevilha, quando pernoitaram em casa de Abū&#x27;l-Ḥusayn b. Abī ʿAmr b. al-Ṭufayl e os convidados se tinham retesado e calado por respeito, recomendou ao anfitrião o seu próprio livro al-Irshād fī Kharq al-Adab al-Mukhtār, estendeu os pés para ele e disse: “Esfrega-me um pouco os pés”; todos perceberam o que queria e descontraíram-se (p. 415). Numa memória que começa com “no meu tempo de ignorância”, diz que, viajando com o pai entre Carmona e Palma, uma manada de asnos selvagens que decidira não caçar não levantou a cabeça até ele chegar junto deles, e que só compreendeu a razão ao entrar “neste caminho, isto é, no caminho de Deus”: “O propósito que eu guardava de não fazer mal aos animais tinha passado para os animais” (pp. 417–418). De si mesmo diz “Nunca castiguei, estando irado, ninguém que precisasse de ser educado”, e descreve como agia ao emprestar dinheiro (p. 417). Relata que em Ceuta, ao conselho de um justo “Deves ser brando”, respondeu “Enquanto o capital estiver a salvo não há problema”, entendendo por capital a religião (p. 419). Transmite também que o seu xeique Abū Madyan mandou dizer a Abū&#x27;l-Ḥasan b. al-Daqqāq, que deixara de frequentar as suas reuniões: “O meu demônio é adversário do teu demônio, mas somos amigos como antes … Não deixes que os nossos egos se metam entre nós!” (p. 398), e os versos que o seu mestre de leitura do Corão, Abū Bakr Muḥammad b. Khalaf al-Lakhmī, costumava recitar na sua mesquita em Sevilha (p. 442).</p><p>As últimas páginas do sifr consistem sobretudo em conselhos proféticos intitulados e giram em torno do mundo, da morte e da preparação: “Sê neste mundo como um viajante ou um hóspede, e conta-te entre os mortos” (p. 425); este mundo como um dia de ação sem ajuste de contas, “e amanhã estareis num dia de ajuste de contas sem ação” (p. 430); as três classes da comunidade segundo a sua relação com a riqueza (p. 427); o anjo da morte que se detém à porta de cada casa cinco vezes por dia (p. 430). Seguem-se o dito de Shiblī “Se queres olhar o mundo com toda a sua imundície, olha para a lixeira” (p. 431); a história em que Moisés, entre uma pomba que se refugiou no seu ombro e a ave que a perseguia, decide cortar carne da própria coxa e a ave se revela mensageira do seu Senhor (pp. 431–432); o relato de Junayd entrando em êxtase no Monte Sinai e de um monge que se tornou muçulmano pelas suas respostas (pp. 439–440); ʿĀʾisha enumerando os dez traços nobres de caráter e dizendo “A cabeça deles é o pudor” (p. 441); e a história de um viajante espiritual que fala do anjo da provisão que lhe traz pão todos os dias (pp. 442–443). O sifr termina com dois versos que Ibn Arabī introduz com “Também nós dissemos estes versos”: “Todas as pessoas são, na verdade, cada uma uma palavra / Seja então essa palavra a mais bela que se ouve” (p. 444).</p></section><section><h3>O Fim do Livro: Fórmulas de Busca de Refúgio e Súplicas Conhecidas</h3><p>Sob o título “Fim do Capítulo / Fim do Livro” Ibn Arabī compila “Algumas Fórmulas de Busca de Refúgio (em Deus) e Súplicas Conhecidas” (pp. 445–450). Primeiro vêm as súplicas dos estados cotidianos: um momento de aflição, entrar e sair da mesquita, entrar e sair da latrina, o fim da refeição, espirrar, deitar-se na cama e acordar do sono, manhã e tarde, levantar-se de uma reunião. Depois da súplica do sono Ibn Arabī põe o sono ao lado da morte: “Assim, o sono é uma pequena morte. O lugar para onde se passa depois da morte e o lugar para onde se passa no sono são o mesmo”; o grau é o mesmo, “e esse é o grau do barzakh”; “Acordar é como ressuscitar no Dia da Ressurreição”, e “levantar-se da cama é o mesmo que levantar-se dos túmulos” (pp. 445–446). Diz que ouviu a súplica dos últimos versículos da surata al-Baqara (“Senhor nosso, não nos castigues se esquecermos ou errarmos…”) do Profeta num sonho: viu o sonho em 599 em Meca, entre a porta de Ajyād e a porta dada como Ḥazwara (OCR “Haruze”); o recitador Muḥammad b. Khālid al-Ṣadafī al-Tilimsānī recitara esta súplica depois de lhe ler o Ṣaḥīḥ de al-Bukhārī. No mesmo sonho pergunta sobre o divórcio triplo pronunciado numa só fórmula; o Profeta diz que conta como três e, dos sábios que o contam como um, diz: “Julgaram pelo relato que lhes chegou, e acertaram”; Ibn Arabī escreve que entendeu disto que se devem confirmar os juízos de todos os mujtahids: “Todo mujtahid acerta.” Diz-se que quem objetou no sonho em voz alta era Iblīs. Noutro sonho no mesmo ano pergunta se a palavra qurūʾ do versículo significa menstruação ou pureza; o Profeta repete a sua resposta três vezes (pp. 446–447).</p><p>Depois, dizendo “Voltando ao nosso assunto, a questão da súplica”, Ibn Arabī passa a uma longa súplica de busca de refúgio (p. 448): o perdão dos erros e da ignorância, a retificação da religião, deste mundo e do outro; o refúgio em Deus contra a provação do túmulo, contra o Anticristo, contra a incapacidade e a preguiça, contra a dívida, contra a fome e a traição, contra o mau companheiro; e “Ó Deus! Busco refúgio em Ti contra Ti. Não consigo contar os louvores que Te são devidos. Tu és como Te louvaste a Ti mesmo” (p. 448). A súplica alarga-se num pedido de misericórdia que inclui os seus pais, a família, os parentes, os vizinhos, todos os muçulmanos que o conhecem e que não o conhecem, e “os que pensam bem de mim e os que não”; Ibn Arabī diz “Ó Deus! Dei em caridade aos Teus servos os meus bens, a minha honra e o meu sangue. Nestas coisas não lhes reclamo direito algum, nem neste mundo nem no outro”, invoca bênçãos sobre o Profeta e alinha uma após outra as súplicas corânicas “Senhor nosso” —incluindo as de Abraão, Zacarias, Job, Jonas e Noé (pp. 449–450). A última súplica do livro é esta: “Ó Deus! Puxa para Ti as rédeas dos nossos corações, faz-nos estar entre os que confiam em Ti em todos os seus assuntos … Faz-nos estar entre os que são guiados e são meio de guia; não nos faças estar entre os que se extraviam e extraviam” (p. 450).</p></section><section><h3>O Cólofon: o Ano 636 e Trinta e Sete Sifrs</h3><p>O livro termina com um cólofon: “Este capítulo chegou ao fim, da forma mais concisa e resumida, pela mão do seu autor, com o fim do livro. Esta cópia é a segunda cópia que tenho em mãos.” Segundo o registro, o capítulo que é o fim do livro foi concluído no ano seiscentos e trinta e seis, no vigésimo quarto dia do mês de Rabīʿ al-Awwal, cedo na manhã de quarta-feira; o autor Muḥammad b. ʿAlī b. Muḥammad Ibn al-ʿArabī al-Ṭāʾī al-Ḥātimī escreveu-o pelo seu próprio punho. O registro diz “Esta cópia tem trinta e sete volumes” e declara que esta cópia contém alguns acréscimos em relação à primeira; Ibn Arabī escreve que doou em fundação pia a primeira cópia ao seu filho Muḥammad al-Kabīr (“A sua mãe é Fāṭima bint Yūnus b. Yūsuf —que é o emir dos Dois Santuários—”), e acrescenta que a doou também aos filhos dele e a “todos os crentes no oriente e no ocidente, em terra e no mar.” O registro fecha com bênçãos sobre Muḥammad, a sua família e todos os seus companheiros (p. 450).</p></section></article><nav aria-label="Navegação"><p><a href="pt/">Dost Arabî</a> › <a href="pt/futuhat/">al-Futuhat al-Makkiyya</a> › <a href="dizin/futuhat/#cilt-18">Volume XVIII</a></p><p><a rel="prev" href="pt/futuhat/c18k226/">← Sifr 36 / Capítulo 560 — Conselhos para o Viajante Espiritual</a> · <a href="dizin/futuhat/">Índice</a></p></nav></noscript>
+  <script>(function(){try{var e=localStorage.getItem("dost-theme"),o=e==="light"||e==="dark"?e:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.setAttribute("data-theme",o)}catch{}try{(window.__dostUygulama||matchMedia("(max-width: 640px), (pointer: coarse) and (max-height: 520px)").matches||matchMedia("(display-mode: standalone)").matches)&&document.documentElement.classList.add("dost-uygulama")}catch{}try{var a=!0;try{/(?:^|[?&])kabuk=eski(?:&|$)/.test(location.search)?sessionStorage.setItem("dost-kabuk","eski"):/(?:^|[?&])kabuk=yeni(?:&|$)/.test(location.search)&&sessionStorage.removeItem("dost-kabuk")}catch{}try{(localStorage.getItem("dost-kabuk")==="eski"||sessionStorage.getItem("dost-kabuk")==="eski")&&(a=!1)}catch{}window.__dostKabukV2=a,a&&document.documentElement.classList.contains("dost-uygulama")&&document.documentElement.classList.add("uyg-v2")}catch{}try{var s=/(?:^|[?&])gelistirici=([01])(?:&|$)/.exec(location.search);(s?s[1]==="1":localStorage.getItem("dost-gelistirici")==="1")&&document.documentElement.classList.add("dost-gel")}catch{}})();</script>
+  <script>(function(){try{var v=new URLSearchParams(location.search),a=v.get("p"),t=a?a.indexOf("?"):-1,n=t<0?a:a.slice(0,t),l=t<0?"":a.slice(t);a&&/^\/(?!\/)[a-zA-Z0-9\-_./%]*$/.test(n)&&/^(\?[a-zA-Z0-9\-_.%=&+]*)?$/.test(l)&&history.replaceState(null,"",n+l)}catch{}})();</script>
+  <a class="skip-link" href="/pt/futuhat/c18k227/#main-content" data-tr="İçeriğe atla" data-en="Skip to content" data-pt="Pular para o conteúdo">İçeriğe atla</a><noscript><h2>Sifr 37 / Capítulo 560 e o Fim do Livro — Conselhos, Busca de Refúgio e Súplicas</h2><p>O último sifr das Futūḥāt al-Makkiyya e o encerramento do livro. Sem abrir um novo capítulo, o Trigésimo Sétimo Sifr prossegue os conselhos do Capítulo 560: Ibn Arabī enumera primeiro os seus próprios conselhos sobre a adoração e o trato e diz que o seu propósito é uma adoração &quot;completa e sem falha&quot;, fora das divergências dos sábios; transmite depois os conselhos do Profeta a ʿAlī e a Abū Hurayra, ditos de justos como Dhū&#x27;l-Nūn, Fuḍayl, Ḥasan al-Baṣrī e ʿUmar b. ʿAbd al-ʿAzīz, conselhos divinos do Corão, dos hadiths sagrados e da Torá, e conselhos aos governantes —incluindo as suas próprias cartas ao sultão Kaykāwūs. O Fim do Livro contém fórmulas de busca de refúgio e súplicas conhecidas, um sonho que teve em Meca em 599 e o cólofon que declara que o livro foi concluído no ano 636, na sua segunda cópia, de trinta e sete volumes.</p><article aria-label="Texto desta parte" lang="pt-BR"><section><h3>A Abertura do Sifr e os Conselhos do Próprio Ibn Arabī</h3><p>O Trigésimo Sétimo Sifr não abre um novo título de capítulo: depois da basmala começa diretamente com unidades intituladas “Conselho” e prossegue os conselhos do Capítulo 560; o sifr anterior havia terminado com a frase “O trigésimo sexto sifr das Futūḥāt al-Makkiyya chegou ao fim” (p. 320). Nas primeiras páginas Ibn Arabī dirige-se ao leitor na segunda pessoa do singular e enumera breves preceitos sobre a adoração, a conduta cotidiana e o trato com os outros: não ser tutor, enviado ou testemunha entre os governantes; não amaldiçoar o vento, pois “o vento vem do Sopro do Todo-Misericordioso” (p. 323); não declarar descrente nenhum pecador que se volta para a qibla; quando a comida e a oração estão prontas ao mesmo tempo, comer primeiro; ainda que o temor e a esperança sejam iguais, deixar que prevaleçam a esperança e a boa opinião sobre Deus (p. 324); guardar-se da dívida, do excesso de comida e da ira; seguir o imã e, sendo imã, considerar o mais fraco da congregação (p. 329); dar o zakāt com a intenção de entregar um direito ao representante do seu dono; dar à Gente da Casa um presente e não esmola (p. 326). Ibn Arabī diz que, nas questões em que os sábios divergem, indica o caminho que sai da divergência, e expõe o seu propósito: “Fazendo assim, a adoração que realizas torna-se completa e sem falha, de modo que não há divergência sobre ela. Este é o meu propósito nos conselhos.” (p. 331)</p><p>Entre esses preceitos Ibn Arabī insere breves relatos e experiências próprias. Um dos Abdāl, caminhando pelo ar com seus companheiros, quis descer a um jardim verde para fazer a ablução e orar; caiu do meio do grupo e desceu abaixo do grau deles; Ibn Arabī diz: “Vede que segredo importante há aqui!” (p. 325). Conta como um notável de uma cidade, com lepra, que os médicos haviam declarado incurável, foi curado untando-se com cominho-preto e mel por conselho de Saʿd al-Suʿūd, um estudioso do hadith de Ible (p. 327). Relata que certa noite, afastando o sono durante a oração, percebeu que dizia palavras más a si mesmo em vez de recitar, e então deixou a oração e dormiu (p. 331); e que, depois de recitar a súplica da parada, foi picado por vários escorpiões sem sentir dor, e que não sabe se isso veio da súplica, de dois pedaços de chumbo na sua roupa, ou de ambos (p. 332). Ao aconselhar lançar terra a quem nos elogia na cara, transmite que seu xeique ʿAbd al-Ḥalīm al-Ghammād disse de um homem montado: “Um pó montado sobre o pó” (p. 333). Expõe depois o conselho de tratar cada um segundo a sua posição e grau, numa longa lista que nomeia os seres um a um: Deus, cumprindo o pacto do senhorio; os animais, atendendo às suas necessidades por serem mudos; as árvores e as pedras, não as usando para um fim desnecessário; a terra, orando sobre ela; os nomes divinos, assumindo os seus traços de caráter. A lista chega à frase “Assim, trata todos os seres com conselho sincero” (p. 335) e ao princípio de que “a base da questão é entregar a cada titular o seu direito” (p. 336).</p></section><section><h3>Conselhos Proféticos: a ʿAlī e a Abū Hurayra</h3><p>Sob o título “Conselhos Proféticos” Ibn Arabī transmite o longo testamento que o Profeta dirigiu a ʿAlī b. Abī Ṭālib com as palavras “Ó ʿAlī!” (pp. 336–344). O testamento abre-se com séries de três sinais —três sinais cada um do crente, do afetado, do opressor, do que se exibe, do hipócrita e do preguiçoso— e, por comparações que seguem “Não há pobreza mais grave que a ignorância, nem riqueza mais generosa que o intelecto … nem adoração como a reflexão”, passa a uma série que nomeia o flagelo de cada coisa: “O flagelo da palavra é a mentira, o flagelo do conhecimento é o esquecimento, o flagelo da adoração é a ostentação” (p. 337). Seguem-se as suratas a recitar (as dez bênçãos de Yā Sīn, al-Dukhān, o Versículo do Trono, al-Ḥashr, Tabāraka, al-Sajda, al-Ikhlāṣ, al-Baqara), súplicas cotidianas desde comer até viajar e desde ver a lua nova até olhar-se ao espelho, a história das palavras com que Adão se arrependeu (p. 342) e as súplicas fúnebres para um homem, uma mulher e uma criança; enumera-se o que o servo crente ganha ao chegar aos quarenta, sessenta, setenta, oitenta, noventa e cem anos. O testamento termina com a frase “Ó ʿAlī! Escuta o meu conselho: tu estás sobre o Real, e o Real está contigo” (p. 344).</p><p>Ao passar aos conselhos do Profeta a Abū Hurayra, Ibn Arabī diz que mencionará deles “a parte que Deus ditou à minha pena, com a qual construo as letras que indicam os sentidos”, e insere um poema que escreveu dirigindo-se ao servo que lhe acendia a lâmpada: “Acende a lâmpada, talvez eu possa ver / e ordenar os sentidos escritos nas folhas” (pp. 352–353). Os conselhos começam por dizer “Bismillāh wa&#x27;l-ḥamdu lillāh” na ablução, nas refeições, ao montar um animal ou embarcar num navio e ao vestir uma roupa; prosseguem pela paciência diante do dano, por uma hora de justiça ser “melhor que dois anos de adoração passados em oração noturna e jejum diurno” (p. 354), por não persistir no pecado, pela oração noturna, por sugerir ao moribundo o testemunho de fé, por cuidar do órfão e da viúva, por guiar o desamparado e o cego, e por não divulgar a injustiça sofrida (pp. 354–362). Quando, ao conselho “Tem misericórdia de todas as criaturas de Deus”, Abū Hurayra responde “Tenho misericórdia até das moscas na água”, o Profeta diz três vezes: “Deus tem misericórdia de ti” (p. 361). Noutro conselho o Profeta descreve um povo que virá no fim dos tempos, que as pessoas tomarão por profetas ao ver os seus estados, que prefere a fome à saciedade e a sede à água, e chora de saudade deles (pp. 363–364). Ibn Arabī transmite, com uma longa cadeia que ouviu em Fez, mais um relato de Abū Hurayra: a boa vizinhança faz o muçulmano, a boa companhia o crente, o cumprimento das obrigações o adorador, e o contentamento com a partilha de Deus o asceta (pp. 372–373).</p></section><section><h3>Conselhos dos Justos, de Jesus e de Monges</h3><p>O título “Conselhos dos Justos” abre-se com ditos de Dhū&#x27;l-Nūn al-Miṣrī, que é também o justo mais citado ao longo do sifr: “Deves conviver com alguém que, ao vê-lo, te recorda Deus” (p. 345); “Não fiques, ocupando-te dos defeitos das pessoas, alheio aos teus” (p. 346); uma enumeração que segue “… não é inteligente” (pp. 350–351); conselhos dispostos de cinco em cinco a Ibrāhīm al-Akhmīmī (pp. 364–365); e a um jovem: “Cinge a arma da censura” (p. 372). Ibn Arabī conta que algo semelhante a um dito de Dhū&#x27;l-Nūn aconteceu no seu próprio círculo: quando o irmão falecido do seu amigo ʿAbd Allāh b. al-Ustādh disse em sonho “Só quem O conhece pode vê-Lo”, ʿAbd Allāh veio a Sevilha, disse “Vim a ti para que me faças conhecer Deus” e ficou com eles até alcançar o conhecimento “pela via do desvelamento e da contemplação —não pela via das provas racionais” (p. 344). Também neste conjunto estão o dito de Jesus que compara este mundo e o outro aos lugares onde o sol nasce e se põe (p. 345), o conselho de Luqmān ao filho, “Senta-te com os sábios e agarra-te aos seus joelhos” (p. 351), a explicação de um santo que vê a causa do pecado no primeiro olhar (pp. 351–352) e as palavras de Jesus aos sábios e juristas: “Voltastes-vos para o caminho da Outra Vida, mas não caminhais para ela” (p. 352).</p><p>Sob o título “Conselho de um Monge a um Gnóstico Muçulmano” conversam um monge recolhido no seu mosteiro e um gnóstico (pp. 347–350). O monge descreve a sua relação com o seu Senhor como “no pior estado possível”: os mandamentos são pesados, a recompensa adiada para depois da morte, “o caminho é longo, os seus espinhos são muitos, há perplexidade, há medo do desespero.” O gnóstico diz: “O nosso Senhor deu-nos um grande adiantamento antes de começarmos a agir”; relata a criação do homem a partir da terra e de uma gota e a sua dotação de sentidos, intelecto e fala, as bênçãos deste mundo misturadas com opostos como a luz e a treva, a noite e o dia, e a criação da Outra Vida como “uma criação que não segue nenhum modelo”; e diz que contam a adoração como “uma bênção, uma graça, um orgulho e uma honra.” Também entre os conselhos transmitidos estão um monge perto de Damasco que diz conselhos e poemas a um viajante em várias manhãs seguidas e por fim diz “Afastaste-me da adoração do meu Senhor” (pp. 374–376); ʿAbd Allāh al-Mughāwir de Niebla, que, diante da mulher que buscara a sua proteção, apertou o seu desejo entre duas pedras e disse “Ó minha alma! De um lado o Fogo, do outro a vergonha!”, e os seus cinco conselhos a Abū&#x27;l-Ḥasan al-Ishbīlī (p. 370); um sábio do caminho que diz que o amigo mais sincero de uma pessoa é aquele que não a deixa dizer “farei, hei de; espero, talvez, será” (pp. 376–377); e ʿAlī b. Khaṭṭāb al-Jazarī, que viu o Real em sonho e ouviu que é aceita a gratidão de “quem responde com bondade a quem lhe fez mal” (p. 378).</p></section><section><h3>Conselhos Divinos: o Corão, os Hadiths Sagrados, a Torá</h3><p>Ibn Arabī define um conselho como “conselhos divinos benéficos e verdadeiros, que consistem nos mandamentos e proibições do Real dirigidos aos Seus servos” no Corão, e enumera alguns deles “para recordar, para despertar os corações descuidados e para colher bênção da Sua palavra” (p. 378): começando pela surata al-Baqara, versículos na forma de mandamento e proibição são alinhados um após outro (pp. 378–381). Conta também como “um conselho de Deus” o fato de Deus mencionar no Seu Livro as qualidades que louva e que censura (p. 381), e explica-as: os que creem no invisível; o descrente cujo coração e ouvido estão selados; o hipócrita que mostra um rosto aos crentes e outro aos descrentes; os que pediram os legumes que a terra produz em vez do maná e das codornizes, descendo do alto para o baixo pela ordem “Descei a uma cidade”; corações mais duros que a pedra, pois de algumas pedras brotam rios e algumas rolam por temor a Deus (pp. 381–383). Conta ainda o perdão na retaliação, o legado testamentário e não interpretar os versículos ambíguos segundo o pensamento especulativo entre os conselhos divinos que têm texto explícito (pp. 384–385).</p><p>Os conselhos divinos reunidos de hadiths sagrados abrem-se com as palavras “Eu sou o que mais prescinde de que Me associem” (p. 385). Entre eles estão o hadith em que, na Ressurreição, Deus mostra ao servo que exige o seu direito ao irmão cidades de prata e palácios de ouro e diz que se possuem “perdoando o teu irmão” (pp. 385–386); as doze frases que Kaʿb al-Aḥbār encontrou na Torá e pendurou ao pescoço —“Enquanto tudo te quer para si, Eu quero-te para ti, e tu foges de Mim” (p. 386)—; a palavra de Deus a Moisés, “Eu sento-Me com quem Me recorda” (p. 387); e as palavras repetidas três vezes: “Eu não sou um Senhor que causa aflição” (p. 390). Um homem inspirado nas antigas eras da profecia suplica, dizendo que foi criado sem ser consultado e deixado entre forças opostas; a resposta de Deus é “Dei-te ordens apenas para que soubesses que tens um Senhor e um Deus”, e Ele ensina ao servo que palavras de que profeta dizer em cada situação: lā ḥawla quando oprimido, as palavras do retorno na calamidade, as de Adão e sua esposa ao resvalar no pecado, as de Abraão na dificuldade, as de Moisés no erro, as de José ao afastar-se do pecado, as de David na provação, as de Jesus ao ver os pecadores (pp. 393–396). Também fazem parte destes conselhos a resposta de Deus, a cada versículo, ao servo que recita al-Fātiḥa (p. 406), o cartão com o testemunho de fé que pesa mais na balança que noventa e nove registros de pecados (p. 408) e o hadith sobre o memorizador do Corão, o rico e o mártir: “Estes três são os primeiros a ser lançados no Fogo no Dia da Ressurreição” (p. 409).</p></section><section><h3>Conselho aos Governantes e as Cartas a Kaykāwūs</h3><p>Um longo trecho do sifr transmite conselhos dados aos governantes. Fuḍayl b. ʿIyāḍ lembra a Hārūn al-Rashīd, que viera à sua porta de noite, que ʿUmar b. ʿAbd al-ʿAzīz considerava o califado uma provação, transmite o conselho de Sālim b. ʿAbd Allāh “Jejua deste mundo, e que a tua quebra do jejum seja a morte” e recusa os cem dinares que o califa oferece, dizendo “Mostro-te o caminho da salvação, e respondes-me assim” (pp. 366–369). Ḥasan al-Baṣrī diz a Ibn Hubayra, governador do Iraque: “Se temes a Deus, Deus te protegerá de Yazīd b. ʿAbd al-Malik; mas Yazīd b. ʿAbd al-Malik não te pode proteger de Deus” (p. 401); ʿAbd Allāh al-ʿUmarī diz a Hārūn em al-Ṣafā que cada um da multidão prestará contas por si, mas ele por todos (pp. 402–403); um homem na circunvolução descreve a al-Manṣūr como, sob um governante que fecha as portas e põe um véu entre si e o oprimido, a opressão se multiplica em cadeia pelos seus funcionários, e diz “Califa! O Islão não pode perdurar assim” (pp. 403–404); ʿUmar b. ʿAbd al-ʿAzīz conta, ao voltar de um funeral, que o túmulo o chamou e lhe disse o que faz aos mortos (pp. 410–412).</p><p>Ibn Arabī insere também entre estes conselhos os seus próprios escritos. A ʿIzz al-Dīn Kaykāwūs, sultão das terras de Rūm, escreveu uma resposta em verso a uma das suas cartas: “Ó ʿIzz al-Dīn, que tornas poderosa a religião de Deus, ouve-nos / Poucos são os reis que escutam o conselho” (p. 401). Sob o título “Testamento e Conselho” transmite a sua resposta a uma carta que Kaykāwūs escreveu no ano 609: a resposta declara que a carta do sultão chegou a “seu pai (espiritual) que ora por ele, Muḥammad b. ʿArabī” e abre com o hadith “A religião é conselho sincero” (p. 435). Ibn Arabī lembra ao sultão que Deus o fez Seu representante nas Suas terras, que ele é “a Sua sombra estendida sobre a terra”, e que a justiça é a favor dele e dos seus súditos, ao passo que a opressão é contra ele; conta o levantamento das condições que ʿUmar b. al-Khaṭṭāb impôs aos povos protegidos —não construir novas igrejas e mosteiros, tocar os sinos baixo, não se assemelhar aos muçulmanos no traje e nos nomes, e semelhantes— como a coisa mais dura para o Islão e os muçulmanos, e diz ao sultão que reflita bem sobre a carta que enumera essas condições (pp. 436–437). O poema no fim da carta é construído sobre o título do sultão: se exaltar a religião será, como o seu nome, ʿIzz al-Dīn; se não, “Muzill al-Dīn (o que rebaixa a religião)” (pp. 437–438). Ibn Arabī conta ainda que numa sessão apresentou ao senhor de Alepo, Ghāzī filho de al-Malik al-Nāṣir Ṣalāḥ al-Dīn, cento e dezoito necessidades de pessoas, todas atendidas, e que pediu perdão para um homem cuja execução fora decidida, dizendo “Deus sabe que não conheço no mundo pecado algum que possa resistir ao meu perdão … e tu és a fonte da aspiração”, e o homem foi perdoado (p. 416).</p></section><section><h3>As Memórias de Ibn Arabī e as Últimas Páginas do Sifr</h3><p>No último trecho do sifr Ibn Arabī relata mais algumas memórias. Certa noite do ano 592 em Sevilha, quando pernoitaram em casa de Abū&#x27;l-Ḥusayn b. Abī ʿAmr b. al-Ṭufayl e os convidados se tinham retesado e calado por respeito, recomendou ao anfitrião o seu próprio livro al-Irshād fī Kharq al-Adab al-Mukhtār, estendeu os pés para ele e disse: “Esfrega-me um pouco os pés”; todos perceberam o que queria e descontraíram-se (p. 415). Numa memória que começa com “no meu tempo de ignorância”, diz que, viajando com o pai entre Carmona e Palma, uma manada de asnos selvagens que decidira não caçar não levantou a cabeça até ele chegar junto deles, e que só compreendeu a razão ao entrar “neste caminho, isto é, no caminho de Deus”: “O propósito que eu guardava de não fazer mal aos animais tinha passado para os animais” (pp. 417–418). De si mesmo diz “Nunca castiguei, estando irado, ninguém que precisasse de ser educado”, e descreve como agia ao emprestar dinheiro (p. 417). Relata que em Ceuta, ao conselho de um justo “Deves ser brando”, respondeu “Enquanto o capital estiver a salvo não há problema”, entendendo por capital a religião (p. 419). Transmite também que o seu xeique Abū Madyan mandou dizer a Abū&#x27;l-Ḥasan b. al-Daqqāq, que deixara de frequentar as suas reuniões: “O meu demônio é adversário do teu demônio, mas somos amigos como antes … Não deixes que os nossos egos se metam entre nós!” (p. 398), e os versos que o seu mestre de leitura do Corão, Abū Bakr Muḥammad b. Khalaf al-Lakhmī, costumava recitar na sua mesquita em Sevilha (p. 442).</p><p>As últimas páginas do sifr consistem sobretudo em conselhos proféticos intitulados e giram em torno do mundo, da morte e da preparação: “Sê neste mundo como um viajante ou um hóspede, e conta-te entre os mortos” (p. 425); este mundo como um dia de ação sem ajuste de contas, “e amanhã estareis num dia de ajuste de contas sem ação” (p. 430); as três classes da comunidade segundo a sua relação com a riqueza (p. 427); o anjo da morte que se detém à porta de cada casa cinco vezes por dia (p. 430). Seguem-se o dito de Shiblī “Se queres olhar o mundo com toda a sua imundície, olha para a lixeira” (p. 431); a história em que Moisés, entre uma pomba que se refugiou no seu ombro e a ave que a perseguia, decide cortar carne da própria coxa e a ave se revela mensageira do seu Senhor (pp. 431–432); o relato de Junayd entrando em êxtase no Monte Sinai e de um monge que se tornou muçulmano pelas suas respostas (pp. 439–440); ʿĀʾisha enumerando os dez traços nobres de caráter e dizendo “A cabeça deles é o pudor” (p. 441); e a história de um viajante espiritual que fala do anjo da provisão que lhe traz pão todos os dias (pp. 442–443). O sifr termina com dois versos que Ibn Arabī introduz com “Também nós dissemos estes versos”: “Todas as pessoas são, na verdade, cada uma uma palavra / Seja então essa palavra a mais bela que se ouve” (p. 444).</p></section><section><h3>O Fim do Livro: Fórmulas de Busca de Refúgio e Súplicas Conhecidas</h3><p>Sob o título “Fim do Capítulo / Fim do Livro” Ibn Arabī compila “Algumas Fórmulas de Busca de Refúgio (em Deus) e Súplicas Conhecidas” (pp. 445–450). Primeiro vêm as súplicas dos estados cotidianos: um momento de aflição, entrar e sair da mesquita, entrar e sair da latrina, o fim da refeição, espirrar, deitar-se na cama e acordar do sono, manhã e tarde, levantar-se de uma reunião. Depois da súplica do sono Ibn Arabī põe o sono ao lado da morte: “Assim, o sono é uma pequena morte. O lugar para onde se passa depois da morte e o lugar para onde se passa no sono são o mesmo”; o grau é o mesmo, “e esse é o grau do barzakh”; “Acordar é como ressuscitar no Dia da Ressurreição”, e “levantar-se da cama é o mesmo que levantar-se dos túmulos” (pp. 445–446). Diz que ouviu a súplica dos últimos versículos da surata al-Baqara (“Senhor nosso, não nos castigues se esquecermos ou errarmos…”) do Profeta num sonho: viu o sonho em 599 em Meca, entre a porta de Ajyād e a porta dada como Ḥazwara (OCR “Haruze”); o recitador Muḥammad b. Khālid al-Ṣadafī al-Tilimsānī recitara esta súplica depois de lhe ler o Ṣaḥīḥ de al-Bukhārī. No mesmo sonho pergunta sobre o divórcio triplo pronunciado numa só fórmula; o Profeta diz que conta como três e, dos sábios que o contam como um, diz: “Julgaram pelo relato que lhes chegou, e acertaram”; Ibn Arabī escreve que entendeu disto que se devem confirmar os juízos de todos os mujtahids: “Todo mujtahid acerta.” Diz-se que quem objetou no sonho em voz alta era Iblīs. Noutro sonho no mesmo ano pergunta se a palavra qurūʾ do versículo significa menstruação ou pureza; o Profeta repete a sua resposta três vezes (pp. 446–447).</p><p>Depois, dizendo “Voltando ao nosso assunto, a questão da súplica”, Ibn Arabī passa a uma longa súplica de busca de refúgio (p. 448): o perdão dos erros e da ignorância, a retificação da religião, deste mundo e do outro; o refúgio em Deus contra a provação do túmulo, contra o Anticristo, contra a incapacidade e a preguiça, contra a dívida, contra a fome e a traição, contra o mau companheiro; e “Ó Deus! Busco refúgio em Ti contra Ti. Não consigo contar os louvores que Te são devidos. Tu és como Te louvaste a Ti mesmo” (p. 448). A súplica alarga-se num pedido de misericórdia que inclui os seus pais, a família, os parentes, os vizinhos, todos os muçulmanos que o conhecem e que não o conhecem, e “os que pensam bem de mim e os que não”; Ibn Arabī diz “Ó Deus! Dei em caridade aos Teus servos os meus bens, a minha honra e o meu sangue. Nestas coisas não lhes reclamo direito algum, nem neste mundo nem no outro”, invoca bênçãos sobre o Profeta e alinha uma após outra as súplicas corânicas “Senhor nosso” —incluindo as de Abraão, Zacarias, Job, Jonas e Noé (pp. 449–450). A última súplica do livro é esta: “Ó Deus! Puxa para Ti as rédeas dos nossos corações, faz-nos estar entre os que confiam em Ti em todos os seus assuntos … Faz-nos estar entre os que são guiados e são meio de guia; não nos faças estar entre os que se extraviam e extraviam” (p. 450).</p></section><section><h3>O Cólofon: o Ano 636 e Trinta e Sete Sifrs</h3><p>O livro termina com um cólofon: “Este capítulo chegou ao fim, da forma mais concisa e resumida, pela mão do seu autor, com o fim do livro. Esta cópia é a segunda cópia que tenho em mãos.” Segundo o registro, o capítulo que é o fim do livro foi concluído no ano seiscentos e trinta e seis, no vigésimo quarto dia do mês de Rabīʿ al-Awwal, cedo na manhã de quarta-feira; Dost Muḥammad b. ʿAlī b. Muḥammad Ibn al-ʿArabī al-Ṭāʾī al-Ḥātimī escreveu-o pelo seu próprio punho. O registro diz “Esta cópia tem trinta e sete volumes” e declara que esta cópia contém alguns acréscimos em relação à primeira; Ibn Arabī escreve que doou em fundação pia a primeira cópia ao seu filho Muḥammad al-Kabīr (“A sua mãe é Fāṭima bint Yūnus b. Yūsuf —que é o emir dos Dois Santuários—”), e acrescenta que a doou também aos filhos dele e a “todos os crentes no oriente e no ocidente, em terra e no mar.” O registro fecha com bênçãos sobre Muḥammad, a sua família e todos os seus companheiros (p. 450).</p></section></article><nav aria-label="Navegação"><p><a href="pt/">Dost Arabî</a> › <a href="pt/futuhat/">al-Futuhat al-Makkiyya</a> › <a href="dizin/futuhat/#cilt-18">Volume XVIII</a></p><p><a rel="prev" href="pt/futuhat/c18k226/">← Sifr 36 / Capítulo 560 — Conselhos para o Viajante Espiritual</a> · <a href="dizin/futuhat/">Índice</a></p></nav></noscript>
   <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
     <defs>
       <radialGradient id="node-sheen" cx="34%" cy="28%" r="72%">
@@ -331,7 +164,7 @@
       <button type="button" class="welcome-screen__dil" data-dil-sec="pt" lang="pt-BR" aria-label="Português (Brasil)" aria-pressed="false">PT</button>
     </div>
   </div>
-  <link rel="preload" href="assets/kabuk.ce5483d8fb.js" as="script" integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
+  <link rel="preload" href="assets/kabuk.76e820e07c.js" as="script" integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"><script src="assets/welcome.js" integrity="sha384-iEg/MoZiOrK78wc8m/CRD8gtECkhCS2iqHsSCv25bTxMdQXKSQa7kY6LH9e5mPcS"></script>
   <div class="consent-banner" id="consent-banner" role="region" aria-label="Çerez onamı / Cookie consent / Consentimento de cookies" hidden>
     <p class="consent-banner__yazi"><span data-tr="Ziyaret ölçümü yalnız onayınızla yapılır; reddederseniz ölçüm betiği yüklenmez."
           data-en="Visit measurement only with your consent; if you decline, no measurement script loads."
@@ -343,102 +176,7 @@
       <button type="button" class="btn-ghost" id="consent-accept" data-tr="Kabul et" data-en="Accept" data-pt="Aceitar">Kabul et</button>
     </div>
   </div>
-  <script>
-    (function () {
-      var KEY = "dost-analytics-consent";
-      var HTML = document.documentElement;
-      var banner = document.getElementById("consent-banner");
-      if (!banner) return;
-      var stored = null;
-      try { stored = localStorage.getItem(KEY); } catch (e) {}
-      // S-CONSENT / ERI-02 (2026-11-08): şerit DOM'da atlama bağlantısından hemen sonradır (klavyede Tab 2-4'te ulaşılır); görünüşü CSS'te
-      // alta sabit tek satırdır. Karar verilmemişse gösterilir, KAYITLI karar (granted / denied) değişmeden geçerlidir.
-      if (!stored && !window.__dostUygulama) {
-        // ERI-03: kök adreste ilk açılış kartı gelecekse şerit baştan KARTTAN SONRA beklenir (eskiden 1-2 sn görünüp kayboluyor, kart kapanınca dönüyordu).
-        // Bekleme bayrağını start-hint.js her durumda kaldırır; o yüklenmezse 4 sn sonra kendiliğinden kalkar.
-        try {
-          var bt = document.querySelector("base"), bp = "";
-          if (bt) { try { bp = new URL(bt.getAttribute("href"), location.origin).pathname.replace(/\/+$/, ""); } catch (e2) {} }
-          var yol = location.pathname.replace(/\/+$/, "");
-          if (!localStorage.getItem("dost-start-hint-seen") && (yol === bp || yol === bp + "/en" || yol === bp + "/pt")) {
-            HTML.classList.add("ilk-kart-bekle");
-            setTimeout(function () { HTML.classList.remove("ilk-kart-bekle"); }, 4000);
-          }
-        } catch (e) {}
-        banner.hidden = false;
-      }
-      // Şeridin kapladığı alan --onay-yuk'a yazılır: telefon kabuğunda Grafik/Liste çubuğu, lejant ve Okuma araçları halkası şeridin üstüne çıkar;
-      // masaüstünde sayfa sonuna aynı kadar boşluk eklenir (altta kalan içerik kaydırılıp görülebilsin).
-      function yukYaz() {
-        var gor = !banner.hidden && banner.offsetHeight > 0 && getComputedStyle(banner).display !== "none";
-        // PF3-LOOP-1: aynı değer yeniden yazılmaz (kök <html style> yazımı stil yeniden hesaplatır); gözlemciler class değişimiyle çağırır.
-        var yuk = gor ? (banner.offsetHeight + 8) + "px" : "0px";
-        var alt = gor ? Math.max(0, Math.round(window.innerHeight - banner.getBoundingClientRect().top) + 8) + "px" : "0px";
-        if (HTML.style.getPropertyValue("--onay-yuk") !== yuk) HTML.style.setProperty("--onay-yuk", yuk);
-        if (HTML.style.getPropertyValue("--onay-alt") !== alt) HTML.style.setProperty("--onay-alt", alt);
-        if (gor !== HTML.classList.contains("onay-acik")) HTML.classList.toggle("onay-acik", gor);
-      }
-      if (window.ResizeObserver) new ResizeObserver(yukYaz).observe(banner);
-      new MutationObserver(yukYaz).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      new MutationObserver(yukYaz).observe(HTML, { attributes: true, attributeFilter: ["class"] });
-      window.addEventListener("resize", yukYaz);
-      yukYaz();
-      function decide(value) {
-        var odakta = banner.contains(document.activeElement);
-        try { localStorage.setItem(KEY, value); } catch (e) {}
-        banner.hidden = true;
-        // Odak kapanan şeritte kalıp gövdeye düşmesin: ana içeriğe verilir.
-        if (odakta) {
-          var ana = document.getElementById("main-content");
-          if (ana) { if (!ana.hasAttribute("tabindex")) ana.setAttribute("tabindex", "-1"); try { ana.focus({ preventScroll: true }); } catch (e) {} }
-        }
-        if (value === "granted" && window.__dostLoadAnalytics) window.__dostLoadAnalytics();
-      }
-      // KALAN-MD-07 (2026-11-09): açık seçim ZORUNLU kalır; ama şerit seçim yapılmadan 20 sn (kısa/dar telefonda 8 sn) durursa içeriği örtmeyen küçük
-      // "Ölçüm tercihi" çipine iner, tek dokunuşla (ya da Enter) genişler. Etkileşim (odak/hover/dokunuş) sayacı erteler; karar yoksa hiçbir şey yüklenmez.
-      var cip = document.getElementById("consent-ac");
-      var minZaman = null;
-      function minYap() {
-        if (banner.hidden || banner.contains(document.activeElement) && !banner.classList.contains("consent-banner--mini")) { minPlan(); return; }
-        banner.classList.add("consent-banner--mini");
-        if (cip) { cip.hidden = false; cip.setAttribute("aria-expanded", "false"); }
-        yukYaz();
-      }
-      function minPlan() {
-        clearTimeout(minZaman);
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        var kisa = false;
-        try { kisa = window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches; } catch (e) {}
-        minZaman = setTimeout(minYap, kisa ? 8000 : 20000);
-      }
-      function genislet() {
-        banner.classList.remove("consent-banner--mini");
-        if (cip) { cip.hidden = true; cip.setAttribute("aria-expanded", "true"); }
-        yukYaz();
-        var kb = document.getElementById("consent-decline");
-        if (kb) { try { kb.focus({ preventScroll: true }); } catch (e) {} }
-      }
-      if (cip) cip.addEventListener("click", genislet);
-      ["focusin", "pointerenter", "pointerdown"].forEach(function (a) { banner.addEventListener(a, function () { if (!banner.classList.contains("consent-banner--mini")) minPlan(); }); });
-      new MutationObserver(minPlan).observe(banner, { attributes: true, attributeFilter: ["hidden"] });
-      // Karşılama / ilk açılış kartı sürerken şerit görünmez; sayaç şerit gerçekten görününce başlar (hidden=false olsa bile CSS gizler: görünürlük yoklanır).
-      setInterval(function () {
-        if (banner.hidden || banner.classList.contains("consent-banner--mini")) return;
-        if (getComputedStyle(banner).display === "none") minPlan();
-      }, 2000);
-      minPlan();
-      var accept = document.getElementById("consent-accept");
-      var decline = document.getElementById("consent-decline");
-      if (accept) accept.addEventListener("click", function () { decide("granted"); });
-      if (decline) decline.addEventListener("click", function () { decide("denied"); });
-      // Esc = Reddet YALNIZ odak şeridin içindeyken (sayfadaki Esc'in başka işleri — panel/adım geri — ile çakışmaz).
-      banner.addEventListener("keydown", function (e) {
-        if (e.key !== "Escape" || e.defaultPrevented || banner.classList.contains("consent-banner--mini")) return;
-        e.preventDefault(); e.stopPropagation();
-        decide("denied");
-      });
-    })();
-  </script>
+  <script>(function(){var u="dost-analytics-consent",n=document.documentElement,e=document.getElementById("consent-banner");if(!e)return;var f=null;try{f=localStorage.getItem(u)}catch{}if(!f&&!window.__dostUygulama){try{var m=document.querySelector("base"),c="";if(m)try{c=new URL(m.getAttribute("href"),location.origin).pathname.replace(/\/+$/,"")}catch{}var d=location.pathname.replace(/\/+$/,"");!localStorage.getItem("dost-start-hint-seen")&&(d===c||d===c+"/en"||d===c+"/pt")&&(n.classList.add("ilk-kart-bekle"),setTimeout(function(){n.classList.remove("ilk-kart-bekle")},4e3))}catch{}e.hidden=!1}function a(){var t=!e.hidden&&e.offsetHeight>0&&getComputedStyle(e).display!=="none",s=t?e.offsetHeight+8+"px":"0px",r=t?Math.max(0,Math.round(window.innerHeight-e.getBoundingClientRect().top)+8)+"px":"0px";n.style.getPropertyValue("--onay-yuk")!==s&&n.style.setProperty("--onay-yuk",s),n.style.getPropertyValue("--onay-alt")!==r&&n.style.setProperty("--onay-alt",r),t!==n.classList.contains("onay-acik")&&n.classList.toggle("onay-acik",t)}window.ResizeObserver&&new ResizeObserver(a).observe(e),new MutationObserver(a).observe(e,{attributes:!0,attributeFilter:["hidden"]}),new MutationObserver(a).observe(n,{attributes:!0,attributeFilter:["class"]}),window.addEventListener("resize",a),a();function l(t){var s=e.contains(document.activeElement);try{localStorage.setItem(u,t)}catch{}if(e.hidden=!0,s){var r=document.getElementById("main-content");if(r){r.hasAttribute("tabindex")||r.setAttribute("tabindex","-1");try{r.focus({preventScroll:!0})}catch{}}}t==="granted"&&window.__dostLoadAnalytics&&window.__dostLoadAnalytics()}var i=document.getElementById("consent-ac"),v=null;function b(){if(e.hidden||e.contains(document.activeElement)&&!e.classList.contains("consent-banner--mini")){o();return}e.classList.add("consent-banner--mini"),i&&(i.hidden=!1,i.setAttribute("aria-expanded","false")),a()}function o(){if(clearTimeout(v),!(e.hidden||e.classList.contains("consent-banner--mini"))){var t=!1;try{t=window.matchMedia("(max-height: 640px) and (max-width: 640px)").matches}catch{}v=setTimeout(b,t?8e3:2e4)}}function g(){e.classList.remove("consent-banner--mini"),i&&(i.hidden=!0,i.setAttribute("aria-expanded","true")),a();var t=document.getElementById("consent-decline");if(t)try{t.focus({preventScroll:!0})}catch{}}i&&i.addEventListener("click",g),["focusin","pointerenter","pointerdown"].forEach(function(t){e.addEventListener(t,function(){e.classList.contains("consent-banner--mini")||o()})}),new MutationObserver(o).observe(e,{attributes:!0,attributeFilter:["hidden"]}),setInterval(function(){e.hidden||e.classList.contains("consent-banner--mini")||getComputedStyle(e).display==="none"&&o()},2e3),o();var y=document.getElementById("consent-accept"),h=document.getElementById("consent-decline");y&&y.addEventListener("click",function(){l("granted")}),h&&h.addEventListener("click",function(){l("denied")}),e.addEventListener("keydown",function(t){t.key!=="Escape"||t.defaultPrevented||e.classList.contains("consent-banner--mini")||(t.preventDefault(),t.stopPropagation(),l("denied"))})})();</script>
 
   <header class="app-header">
     <div class="app-header__controls">
@@ -579,124 +317,13 @@
     </p>
     <button type="button" class="view-status__retry app-fallback__yenile" id="app-fallback-yenile">Yenile / Reload / Recarregar</button>
   </div>
-  <script>
-    (function () {
-      var shown = false;
-      function showFallback() {
-        if (shown || window.__dostAppReady) return;
-        shown = true;
-        var el = document.getElementById("app-fallback");
-        if (el) el.hidden = false;
-      }
-      window.addEventListener("error", showFallback);
-      window.addEventListener("unhandledrejection", showFallback);
-      setTimeout(showFallback, 8000);
-      // PF3-SRI-1 (4. tur): dağıtım penceresinde eski HTML + yeni betik (integrity uyuşmazlığı) ölü ekran bırakıyordu. Güvenli kurtarma: BİR kez
-      // otomatik yenile (sessionStorage damgası, 2 dk içinde ikinci kez asla: döngü yok); yenilemek işe yaramazsa örtüdeki "Yenile" düğmesi kalır.
-      // Yalnız betik DOSYASI sunucudan alınabiliyorsa (200) yenilenir: uyuşmazlık demektir; ağ kesikse (çevrimdışı) yenileme boşuna olurdu.
-      function yenile() {
-        try {
-          var t = +sessionStorage.getItem("dost-surum-yenile") || 0;
-          if (Date.now() - t < 120000) return false;
-          sessionStorage.setItem("dost-surum-yenile", String(Date.now()));
-        } catch (e) { return false; }
-        location.reload();
-        return true;
-      }
-      window.__dostSurumKurtar = function (src) {
-        if (!window.fetch || navigator.onLine === false) return Promise.resolve(false);
-        return fetch(src, { cache: "no-store" }).then(function (r) { return r.ok ? yenile() : false; }, function () { return false; });
-      };
-      window.addEventListener("error", function (e) {
-        var t = e && e.target;
-        if (!t || t === window || t.tagName !== "SCRIPT" || !t.src || window.__dostAppReady) return;
-        window.__dostSurumKurtar(t.src).then(function (ok) { if (!ok) showFallback(); });
-      }, true);
-      var yb = document.getElementById("app-fallback-yenile");
-      if (yb) yb.addEventListener("click", function () { location.reload(); });
-    })();
-  </script>
-  <script>
-    // PF3-GECIS-1 (4. tur): okuma rotası (Fütûhât/Füsûs/Mişkât kısmı) doğrudan açılınca, JS rotayı çözene kadar (yavaş telefonda 4-5 sn) ekranda
-    // boş bir Ontoloji kartı ve "Yükleniyor…" kalıyordu. Rota sayfasının KENDİ başlığı ve meta açıklaması (zaten sayfada yazılı; yeni metin
-    // yok) hedef görünümde iskelet olarak gösterilir; görünüm kısmı çizince (innerHTML) iskelet kendiliğinden gider, ontology.js rota çözümünde
-    // görünürlüğü zaten kendisi yazar. Ekran okuyucuya gizlidir (sayfada sr-only h1 var).
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var m = /^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, ""));
-        if (!m) return;
-        var a = document.getElementById(m[1] + "-article"), w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!a || !w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "okuma-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        a.appendChild(k);
-        o.hidden = true;
-        w.hidden = false;
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-    // F6-10 (2026-11-09): aynı iskelet derin görünüm rotalarında da (/esma/, /hal/, /sirlar/, /kavram/esma/adl/ …): rota sayfasının kendi başlığı
-    // ve meta açıklaması (yeni metin yok), görünüm kabının ilk çocuğu olarak; görünüm kabı gerçek içeriğini kurunca (ya da en geç 15 sn sonra)
-    // kendiliğinden kalkar. Okuma rotaları yukarıdaki kendi iskeletini kullanır; harita rotalarında ilk-ziyaret kartı yine kendi kuralıyla çıkar.
-    (function () {
-      try {
-        var kok = new URL(document.baseURI).pathname.replace(/\/+$/, "");
-        var yol = location.pathname.slice(kok.length).replace(/^\/(en|pt)(?=\/|$)/, "");
-        var m = /^\/([a-z0-9-]+)(?:\/.*)?$/.exec(yol);
-        if (!m || /^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(m[1])) return;
-        var w = document.getElementById(m[1] + "-wrap"), o = document.getElementById("ontology-wrap");
-        if (!w || !o) return;
-        var ad = (document.title || "").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/, "");
-        var d = document.querySelector('meta[name="description"]');
-        var k = document.createElement("div");
-        k.className = "rota-iskelet";
-        k.setAttribute("aria-hidden", "true");
-        k.style.cssText = "max-width:46rem;margin:0 auto;padding:28px 20px";
-        var h = document.createElement("p");
-        h.style.cssText = "margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)";
-        h.textContent = ad;
-        k.appendChild(h);
-        if (d && d.content) {
-          var p = document.createElement("p");
-          p.style.cssText = "margin:0;line-height:1.6;color:var(--text-secondary)";
-          p.textContent = d.content;
-          k.appendChild(p);
-        }
-        w.insertBefore(k, w.firstChild);
-        o.hidden = true;
-        w.hidden = false;
-        // Görünüm kabı gerçek içeriğini kurunca (çizim ≥ 60 öğe ya da iskelet dışı ≥ 300 karakter metin) ya da en geç 15 sn sonra kalkar.
-        var sayac = 0, zaman = setInterval(function () {
-          sayac++;
-          var hazir = false;
-          try {
-            hazir = w.querySelectorAll("svg circle, svg path, svg text, svg line").length >= 60
-              || ((w.innerText || "").length - (k.innerText || "").length) > 300;
-          } catch (e) { hazir = true; }
-          if (hazir || sayac > 100 || !k.parentNode) { clearInterval(zaman); if (k.parentNode) k.parentNode.removeChild(k); }
-        }, 150);
-      } catch (e) { /* iskelet en iyi çabadır */ }
-    })();
-  </script>
-  <script src="assets/kabuk.ce5483d8fb.js" defer integrity="sha384-ASxy7ZCpjZ1/p0fEF0RczgEyqvVAcgiVMirAIQ6lw3LsHkn9UP5i7/sfOtY9r6d4"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
+  <script>(function(){var r=!1;function t(){if(!(r||window.__dostAppReady)){r=!0;var e=document.getElementById("app-fallback");e&&(e.hidden=!1)}}window.addEventListener("error",t),window.addEventListener("unhandledrejection",t),setTimeout(t,8e3);function a(){try{var e=+sessionStorage.getItem("dost-surum-yenile")||0;if(Date.now()-e<12e4)return!1;sessionStorage.setItem("dost-surum-yenile",String(Date.now()))}catch{return!1}return location.reload(),!0}window.__dostSurumKurtar=function(e){return!window.fetch||navigator.onLine===!1?Promise.resolve(!1):fetch(e,{cache:"no-store"}).then(function(n){return n.ok?a():!1},function(){return!1})},window.addEventListener("error",function(e){var n=e&&e.target;!n||n===window||n.tagName!=="SCRIPT"||!n.src||window.__dostAppReady||window.__dostSurumKurtar(n.src).then(function(i){i||t()})},!0);var o=document.getElementById("app-fallback-yenile");o&&o.addEventListener("click",function(){location.reload()})})();</script>
+  <script>(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=/^\/(futuhat|fusus|miskat)\/[^\/]+\/?$/.exec(location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""));if(!l)return;var i=document.getElementById(l[1]+"-article"),t=document.getElementById(l[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!i||!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="okuma-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}i.appendChild(e),o.hidden=!0,t.hidden=!1}catch{}})(),(function(){try{var s=new URL(document.baseURI).pathname.replace(/\/+$/,""),l=location.pathname.slice(s.length).replace(/^\/(en|pt)(?=\/|$)/,""),i=/^\/([a-z0-9-]+)(?:\/.*)?$/.exec(l);if(!i||/^(futuhat|fusus|miskat|ontoloji|gonul|yan-yana|dizin|gizlilik|iletisim|yenilikler|tasiyicilar|bilmiyoruz)$/.test(i[1]))return;var t=document.getElementById(i[1]+"-wrap"),o=document.getElementById("ontology-wrap");if(!t||!o)return;var d=(document.title||"").replace(/\s+[\u2014-]\s+Dost Arab\u00ee$/,""),n=document.querySelector('meta[name="description"]'),e=document.createElement("div");e.className="rota-iskelet",e.setAttribute("aria-hidden","true"),e.style.cssText="max-width:46rem;margin:0 auto;padding:28px 20px";var a=document.createElement("p");if(a.style.cssText="margin:0 0 14px;font-family:var(--font-display);font-size:1.35rem;line-height:1.3;color:var(--text-primary)",a.textContent=d,e.appendChild(a),n&&n.content){var r=document.createElement("p");r.style.cssText="margin:0;line-height:1.6;color:var(--text-secondary)",r.textContent=n.content,e.appendChild(r)}t.insertBefore(e,t.firstChild),o.hidden=!0,t.hidden=!1;var m=0,u=setInterval(function(){m++;var c=!1;try{c=t.querySelectorAll("svg circle, svg path, svg text, svg line").length>=60||(t.innerText||"").length-(e.innerText||"").length>300}catch{c=!0}(c||m>100||!e.parentNode)&&(clearInterval(u),e.parentNode&&e.parentNode.removeChild(e))},150)}catch{}})();</script>
+  <script src="assets/kabuk.76e820e07c.js" defer integrity="sha384-ARdVdxvVYSf4Nu+yYSWsm06D81eMGRmoEK5Fr3BEHmD2TDEwJ2yQKkHVy8Fg7tAH"></script><script src="assets/theme.js" defer integrity="sha384-dH8IVbqfa4g6NVQOo1dPBIfxrEGiKIO4slt6hJoBRSCKWes+yAqyFy6DykaVj1d/"></script>
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-euLG+y7qI36/AgTomvkUKksrvv7cP2GwNNL1BN4doJ+KozKDpY2HgI+SA5L642yH"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-5yd73gEiX6uHBFYhlBoCTxQre5fwyqiYi6B37yg1X5OZnfCh+7ctbooHUHZe4pS2"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-7LQhpJUOVk7vfjCMI2BCIhKu7qHjipqRbwi/+nvrNiadhYbM5kg5aMOB/Lr06tZU"></script>
   <script src="assets/view-status.js" defer integrity="sha384-SPhBhfK5wr8etV3qKR0CoabAKDU5QO/WT+tGKMw8tdhY42ccsAyzBjOtj01gE49B"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-gGFFv0FYqQP2U/8b74dTyokSl2YTlqrufC3FUUD5Il25DqqfdukkDXXKcYU8a0ky"></script>
   
@@ -711,13 +338,7 @@
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
   <script src="assets/anlamsal-yakin.js" defer integrity="sha384-cC2FA+K8gkvmcACNOyARMVcQBvxw6H6Mg//Uws+sJmcuOkPaVYalHfyu5R8km5qL"></script>
-  <!-- esma/hal/terimler/sorular/menziller/futuhat/cizimler/tasiyicilar/
-       fusus/miskat: assets/view-loader.js'in VIEWS haritasında tembel
-       yükleniyor (2026-08-15, son dördü 2026-08-26'da katıldı -- eskiden
-       registerCrossLinkTerm() bağımlılığı yüzünden dışarıda bırakılmıştı,
-       ama o bağımlılık derleme-zamanı çapraz-bağlantı indeksine taşınalı
-       (2026-08-03) kalkmıştı, sadece fark edilmemişti), o yüzden burada
-       static <script> etiketi yok. -->
+  
   <script src="assets/ontology.js" defer integrity="sha384-ym+TWRxtouL6b200zNTO8KQPn46CtYRemTdqaL2UU6o1m9q8Qtkyfu4grqateFI6"></script>
   <script src="assets/hareket.js" defer integrity="sha384-u1UEvRbL0zozsAkW+kCLtfy3D9FcuL7F9GTcLKwKKEttBuQXVX5x7UdGXgcaa0/U"></script>
   <script src="assets/harita-erisim.js" defer integrity="sha384-UGW1aqqCTAx6GszZcM+3Vz/wirm5MFQGF+y7MxHfE6ysklOCd1CsW8g6DE4PF4HH"></script>
@@ -732,34 +353,6 @@
   
   <script src="assets/cevrimdisi.js" defer integrity="sha384-X32+mdj5I/+vu8gH8jBWTKKaJS+vGQnSXdqU+yhZ0wNpnlnKvLzWbhSHARc0ne9M"></script>
   <script src="assets/kavram-defteri.js" defer integrity="sha384-WrhdnwQIDEa0FVSZTjdgdKE3Ls7AXySuK/fiblNNsvTDgn9H1V8EtkvsiaedPSpt"></script>
-  <script>
-    // B1: çevrimdışı destek. document.baseURI'ye göre çözülüyor ki bu script
-    // hangi rota kopyasından (futuhat/c1kN/index.html dahil) çalışırsa
-    // çalışsın, hem canlıda hem önizlemenin /dost-onizleme/ alt yolunda
-    // doğru mutlak URL'e (site kökündeki sw.js'e) kaydolsun.
-    if ("serviceWorker" in navigator) {
-      // F9 (2026-11-07): kayıt ilk etkileşime (dokunma, tuş, kaydırma) ertelenir; ilk açılışta kurulum indirmeleri sayfanın
-      // kendi yüküyle yarışmasın. Hiç etkileşim olmasa da yükten sonra ilk boşta (en geç 5 sn) kaydolur. Zaten kayıtlı (güncelleme denetimi) cihazda
-      // beklenmez: yükte hemen kaydolur.
-      const kaydol = () => {
-        // updateViaCache:"none" olmadan tarayıcı sw.js'in kendisini de HTTP
-        // önbelleğinden (max-age=600) okuyabilir -- yeni bir sw.js push edilse
-        // bile fark sessizce gecikir. Bu, sw.js her ziyarette ağdan bayt bayt
-        // karşılaştırılsın diye eklendi.
-        navigator.serviceWorker
-          .register(new URL("sw.js", document.baseURI).href, { updateViaCache: "none" })
-          .catch(() => {});
-      };
-      window.addEventListener("load", () => {
-        if (navigator.serviceWorker.controller) { kaydol(); return; }
-        let bitti = false;
-        const bir = () => { if (bitti) return; bitti = true; ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => removeEventListener(o, bir, true)); kaydol(); };
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach((o) => addEventListener(o, bir, { capture: true, passive: true }));
-        // AYR-18/SW-1 (2026-11-08): 20 sn bekleme kısa ziyareti çevrimdışı bırakıyordu; yükten sonra ilk boşta (en geç 5 sn)
-        // kaydolur -- yine sayfanın kendi yüküyle yarışmaz.
-        if ("requestIdleCallback" in window) requestIdleCallback(bir, { timeout: 5000 }); else setTimeout(bir, 5000);
-      });
-    }
-  </script>
+  <script>if("serviceWorker"in navigator){const t=()=>{navigator.serviceWorker.register(new URL("sw.js",document.baseURI).href,{updateViaCache:"none"}).catch(()=>{})};window.addEventListener("load",()=>{if(navigator.serviceWorker.controller){t();return}let o=!1;const e=()=>{o||(o=!0,["pointerdown","keydown","scroll","touchstart"].forEach(r=>removeEventListener(r,e,!0)),t())};["pointerdown","keydown","scroll","touchstart"].forEach(r=>addEventListener(r,e,{capture:!0,passive:!0})),"requestIdleCallback"in window?requestIdleCallback(e,{timeout:5e3}):setTimeout(e,5e3)})}</script>
 </body>
 </html>
