@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-7c35619f3043";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-41d4722fd4ab";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -86,6 +86,7 @@ const SHELL_SONRA = [
   "./assets/css/kuran-dokusu.css",
   "./assets/css/menziller.css",
   "./assets/css/miskat.css",
+  "./assets/css/okuma-yolum.css",
   "./assets/css/okuma.css",
   "./assets/css/ortak.css",
   "./assets/css/paralel.css",
