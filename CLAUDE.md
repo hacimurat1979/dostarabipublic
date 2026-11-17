@@ -109,6 +109,9 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-10).
   alıntı paragrafına kaydırıp yumuşak vurgu verir. "İçeriğe atla" bağlantısı alt sayfalarda sayfada kalır; detay panellerinde
   klavye odağı takılmaz; @revise düğmesi sabit öğeleri örtmez. Kaynak özel repoda; burada elle değişiklik yapılmaz.
 
+- **Kur'an-ı Kerim ve Hadis-i Şerifler (2026-11-17, kullanıcı devri):** `/kuran/` (3 dil, 114 sûre) ve `/hadis/` (3 dil, 15 konu) kaynak metin taşır, yorum taşımaz. Arapça ayet: Tanzil (CC BY 3.0, değiştirilmeden); mealler QuranEnc (değiştirilmeden, çevirmen+sürüm görünür); hadisler HadeethEnc seçkisi (768 hadis, tam koleksiyon değil; derece HadeethEnc'in kendi değerlendirmesidir). Dostarabi bağlantısı yalnız sitenin kendi ayet dizininden ("doğrudan atıf"; tefsir değil); hadis↔konu ilişkileri üç ayrı rozetle (kaynaklı / editoryal / araştırma önerisi). Üçüncü taraf API'ye çalışma anında istek yoktur. Sayfalar özel repoda `scripts/kuran-uret.py` ve `scripts/hadis-uret.py` ile üretilir; burada elle değişiklik yapılmaz.
+- **Akademik Kaynaklar ve paragraf araçları (2026-11-17):** `/akademik-kaynaklar/` OpenAlex üstverisinden künye listesidir (derece/özet yok, içerik okunmadı). Okuma görünümlerinde her paragrafın altında ¶ halkası (öteki dilde metin, düzeltme öner); @revise açıkken kapalıdır.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.
