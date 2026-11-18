@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-d0c5a3b67319";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-5047eca5cfd5";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -24,7 +24,7 @@ const SHELL_URLS = [
   "./assets/favicon.svg",
   "./assets/fonts/Fraunces-Regular-static.woff2",
   "./assets/welcome.js",
-  "./assets/kabuk.731973adc8.js",
+  "./assets/kabuk.583c241b11.js",
   "./assets/theme.js",
   "./assets/i18n.js",
   "./assets/view-loader.js",
@@ -317,6 +317,46 @@ self.addEventListener("fetch", (event) => {
   // sunucuya doğrulanır), ama değişmeyen dosya 304 ile döner: kontrollü
   // sayfada her açılışta kabuğu (~430 KB) baştan indirmek yerine yalnız
   // başlıklar iner.
+  // K2-038 (tarama 2, 2026-11-18): integrity taşıyan betik isteği (index.html'deki <script integrity>, view-loader'ın tembel
+  // betikleri) önbellekteki kopyanın özeti sayfanın istediği özetle AYNIYSA doğrudan önbellekten verilir: içerik bayt bayt
+  // sayfanın beklediğidir, ağa sormanın (her açılışta ≈30 koşullu istek) yeni bir şey getirmesi mümkün değil. Özet tutmazsa
+  // (yeni yayın: HTML önce ağdan geldiği için yeni özeti taşır) ya da kopya yoksa bugünkü ağ-önce yol aynen işler; tarayıcı
+  // eski kopyayı hiç görmez, "Failed to find a valid digest" doğmaz. integrity taşımayan istek (stil dosyaları, CSS içi
+  // import) ve sayfa isteği değişmedi: önce ağ.
+  if (req.destination === "script" && req.integrity && /sha(256|384|512)-/.test(req.integrity)) {
+    event.respondWith(ozetliOnbellek(req).then((r) => r || agOnceYanit(req)));
+    return;
+  }
+  event.respondWith(agOnceYanit(req));
+});
+
+const SRI_SIRA = { sha256: 1, sha384: 2, sha512: 3 };
+const SRI_AD = { sha256: "SHA-256", sha384: "SHA-384", sha512: "SHA-512" };
+function ozetliOnbellek(req) {
+  // SRI kuralı: yalnız en güçlü algoritmanın özetleri sayılır; biri tutarsa yeter.
+  const parca = String(req.integrity).trim().split(/\s+/)
+    .map((x) => /^(sha256|sha384|sha512)-([A-Za-z0-9+/]+={0,2})/.exec(x)).filter(Boolean);
+  if (!parca.length || !self.crypto || !self.crypto.subtle) return Promise.resolve(null);
+  const enGuclu = Math.max.apply(null, parca.map((p) => SRI_SIRA[p[1]]));
+  const aday = parca.filter((p) => SRI_SIRA[p[1]] === enGuclu);
+  const alg = aday[0][1];
+  return caches.open(CACHE_VERSION)
+    .then((cache) => cache.match(req))
+    .then((m) => {
+      if (!m || !m.ok) return null;
+      return m.arrayBuffer().then((buf) => self.crypto.subtle.digest(SRI_AD[alg], buf).then((ozet) => {
+        const b = new Uint8Array(ozet);
+        let ikili = "";
+        for (let i = 0; i < b.length; i++) ikili += String.fromCharCode(b[i]);
+        const b64 = btoa(ikili);
+        if (!aday.some((p) => p[2] === b64)) return null;
+        return new Response(buf, { status: m.status, statusText: m.statusText, headers: m.headers });
+      }));
+    })
+    .catch(() => null);
+}
+
+function agOnceYanit(req) {
   const isNavOrAsset = req.destination === "script" || req.destination === "style" || req.mode === "navigate";
   // Y1 (2026-11-07): ağ ~4 sn içinde yanıt vermezse (zayıf bağlantı) ve
   // önbellekte kopya varsa onu ver; ağ isteği arka planda sürer ve önbelleği tazeler.
@@ -327,7 +367,7 @@ self.addEventListener("fetch", (event) => {
         new Promise((coz) => setTimeout(() => coz(null), 4000)),
       ]).then((r) => r || caches.match(req).then((c) => c || ag))
     : ag;
-  event.respondWith(
+  return (
     bekle
       .then((resp) => {
         if (resp.ok && (req.destination === "script" || req.destination === "style" || req.mode === "navigate")) {
@@ -347,7 +387,7 @@ self.addEventListener("fetch", (event) => {
       })
       .catch(() => (req.mode === "navigate" ? cevrimdisiSayfa(req) : cevrimdisiKaynak(req)))
   );
-});
+}
 
 // --- Tembel görünüm betiklerinin çevrimdışı önbelleği (2026-10-15, S-01) -----
 // Görünüm betikleri (assets/esma.js, hal.js, ...) sayfa açılışında değil, bölüm
