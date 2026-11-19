@@ -112,6 +112,10 @@ Bu dosya yalnız onun özetidir (son güncelleme: 2026-11-10).
 - **Kur'an-ı Kerim ve Hadis-i Şerifler (2026-11-17, kullanıcı devri):** `/kuran/` (3 dil, 114 sûre) ve `/hadis/` (3 dil, 15 konu) kaynak metin taşır, yorum taşımaz. Arapça ayet: Tanzil (CC BY 3.0, değiştirilmeden); mealler QuranEnc (değiştirilmeden, çevirmen+sürüm görünür); hadisler HadeethEnc seçkisi (768 hadis, tam koleksiyon değil; derece HadeethEnc'in kendi değerlendirmesidir). Dostarabi bağlantısı yalnız sitenin kendi ayet dizininden ("doğrudan atıf"; tefsir değil); hadis↔konu ilişkileri üç ayrı rozetle (kaynaklı / editoryal / araştırma önerisi). Üçüncü taraf API'ye çalışma anında istek yoktur. Sayfalar özel repoda `scripts/kuran-uret.py` ve `scripts/hadis-uret.py` ile üretilir; burada elle değişiklik yapılmaz.
 - **Akademik Kaynaklar ve paragraf araçları (2026-11-17):** `/akademik-kaynaklar/` OpenAlex üstverisinden künye listesidir (derece/özet yok, içerik okunmadı). Okuma görünümlerinde her paragrafın altında ¶ halkası (öteki dilde metin, düzeltme öner); @revise açıkken kapalıdır.
 
+- **Çizimler Şemalar'a katıldı (2026-11-18, kullanıcı kararı):** `/cizimler/` görünümü kaldırıldı; 12 şekil ve 371. Bab'ın dokuz haritası `/semalar/` içinde (Dost'un eli); eski `/cizimler/…` adresleri Şemalar'a yönlenir.
+  Kaynak özel repoda; burada elle değişiklik yapılmaz.
+- **Derin Tarama 2 ve 3 (2026-11-18/19, kullanıcı onayı):** arama dizini ve INP, düz sayfa erişilebilirliği ve CSP, servis çalışanı/çevrimdışı davranışı, Kur'an/Hadis meal eşitleme (QuranEnc, değiştirilmeden), sitemap/JSON-LD, yayın hattı ve CI düzeltmeleri. Kaynak özel repoda.
+
 ## Yayın akışı (2026-10-06)
 
 Önizleme adımı kaldırıldı.

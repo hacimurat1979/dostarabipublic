@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-5047eca5cfd5";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-380411cbe280";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -24,7 +24,7 @@ const SHELL_URLS = [
   "./assets/favicon.svg",
   "./assets/fonts/Fraunces-Regular-static.woff2",
   "./assets/welcome.js",
-  "./assets/kabuk.583c241b11.js",
+  "./assets/kabuk.994b1292a8.js",
   "./assets/theme.js",
   "./assets/i18n.js",
   "./assets/view-loader.js",
@@ -70,7 +70,6 @@ const SHELL_SONRA = [
   "./assets/ek-paket-c.css",
   "./assets/css/ayet-hadis.css",
   "./assets/css/bilmiyoruz.css",
-  "./assets/css/cizimler.css",
   "./assets/css/daphne.css",
   "./assets/css/duzenle.css",
   "./assets/css/elestiri.css",
@@ -92,6 +91,7 @@ const SHELL_SONRA = [
   "./assets/css/okuma.css",
   "./assets/css/ortak.css",
   "./assets/css/paralel.css",
+  "./assets/css/semalar-cizim.css",
   "./assets/css/semalar.css",
   "./assets/css/seyahat-atlasi.css",
   "./assets/css/share.css",
@@ -116,6 +116,18 @@ const SHELL_SONRA = [
 //    indirmenin JS'leriyle tutarlı -- SRI özetleri birbirini tutar), yoksa
 //    önbellekteki sayfa, o da yoksa kabuk, o da yoksa offline.html; hiçbiri
 //    yoksa küçük bir yedek sayfa. Hepsi HTTP 200 (TWA 200 dışını çökme sayar).
+// Tarama 3 tasarımı (T3B1-002/003/010/011, T3B2-007/022/024, T3F2-001/023): üç önbellek.
+//  - CACHE_VERSION: kabuk + betik + stil + kabuk sayfaları (sürüme bağlı; SRI tutarlılığı için yeni sürümde silinir).
+//  - GEZILEN (sürümsüz): okurun gezerek biriktirdiği veri (/data/) ve düz sayfalar (Kur'an, Hadis, Yan Yana...). Yayın silmez;
+//    girdi tavanlı (veri 120, sayfa 60). Yanıtlar yazıldığı sürümün damgasını taşır (SURUM_BASLIGI): damga güncel sürümle
+//    aynı değilse veri önbellekten HEMEN verilmez, önce ağ denenir (yeni kod eski veriyle çalışmasın).
+//  - ICERIK_CACHE: "indir" ile gelen paket (sürümden bağımsız).
+const GEZILEN = "dost-gezilen";
+const SURUM_BASLIGI = "X-Dost-Sw-Surum";
+const TAVAN = { veri: 120, sayfa: 60 };
+// scripts/sri-guncelle.py yazar: kökteki düz (uygulama kabuğu taşımayan) bölümler -- çevrimdışıyken kabuk (index.html) verilmez.
+const DUZ_BOLUMLER = ["akademik-kaynaklar", "arastirma", "berzah-ve-otesi", "cizimler", "dizin", "gizlilik", "hadis", "iletisim", "kuran", "nasil-okunur", "vahdet-ilkeleri", "yan-yana", "yenilikler"];
+const DUZ_RE = new RegExp("^/(?:" + DUZ_BOLUMLER.concat(["gonul", "arastirma", ".well-known"]).map((a) => a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(/|$)");
 const ICERIK_CACHE = "dost-cevrimdisi";
 const ICERIK_DURUM = "./__cevrimdisi-durum.json"; // indirmenin künyesi: { surum, tamam, dosyalar }
 const OFFLINE_URL = "./offline.html";
@@ -152,12 +164,33 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_VERSION && k !== ICERIK_CACHE).map((k) => caches.delete(k)))
-    )
+    caches.keys().then((keys) => {
+      const eskiler = keys.filter((k) => k !== CACHE_VERSION && k !== ICERIK_CACHE && k !== GEZILEN);
+      return tasiEskiGezilenler(keys.filter((k) => /^dost-sw-/.test(k)))
+        .catch(() => {})
+        .then(() => Promise.all(eskiler.map((k) => caches.delete(k))));
+    })
   );
   self.clients.claim();
 });
+
+// Sürüm önbelleğinde (eski kurulumlarda) duran veri ve düz sayfalar yayınla birlikte silinmesin: GEZILEN'e kopyalanır (en çok 200, damgasız:
+// ilk istekte ağdan doğrulanır).
+function tasiEskiGezilenler(adlar) {
+  if (!adlar.length) return Promise.resolve();
+  return caches.open(GEZILEN).then((hedef) => hedef.keys().then((mevcut) => {
+    const var_ = new Set(mevcut.map((k) => k.url));
+    let kalan = 200;
+    return adlar.reduce((p, ad) => p.then(() => caches.open(ad).then((c) => c.keys().then((ks) => Promise.all(ks.map((rq) => {
+      let u;
+      try { u = new URL(rq.url); } catch (e) { return undefined; }
+      const sinif = girdiSinifi(u);
+      if (var_.has(rq.url) || kalan <= 0 || !(sinif === "veri" || (sinif === "sayfa" && !uygulamaAdresi(u)))) return undefined;
+      kalan--; var_.add(rq.url);
+      return c.match(rq).then((r) => r && hedef.put(rq, r)).catch(() => {});
+    }))))), Promise.resolve());
+  }));
+}
 
 function isDataRequest(url) {
   // 2026-08-26 genişletme: yalnız /data/ibn-arabi/ ve themes.json'u kapsıyordu;
@@ -188,45 +221,78 @@ function indirmeTamam() {
 function uygulamaAdresi(url) {
   const p = url.pathname;
   if (/\.[a-z0-9]+$/i.test(p) && !/\/index\.html$/.test(p)) return false;
-  return !/^\/(gizlilik|gonul|yan-yana|iletisim|dizin|arastirma|yenilikler|\.well-known)(\/|$)/.test(p);
+  return !DUZ_RE.test(p);
 }
 
-// Y3 (2026-11-07): veri önbelleği (stale-while-revalidate, isDataRequest) sınırsız büyüyordu (98 giriş, ≈4 MB ölçüldü). Basit giriş tavanı:
-// her 8. yazımda veri girdileri sayılır, VERI_TAVAN'ı aşan en eski girdiler silinir (kabuk dosyalarına dokunulmaz).
-const VERI_TAVAN = 120;
-let veriYazim = 0;
-function veriTavani(cache) {
-  if (++veriYazim % 8) return;
+// Girdi tavanı (Y3 + T3B1-011): her 8. yazımda veri ve sayfa girdileri ayrı ayrı sayılır, tavanı aşan EN ESKİLER silinir; kabuk dosyalarına dokunulmaz.
+function girdiSinifi(url) {
+  if (url.pathname.includes("/data/")) return "veri";
+  if (/\/$|\.html$/.test(url.pathname)) return "sayfa";
+  return "diger";
+}
+const KABUK_YOLLARI = new Set(SHELL_URLS.concat(SHELL_SONRA, [OFFLINE_URL]).map((u) => new URL(u, self.location.href).pathname));
+let yazimSayisi = 0;
+function tavanUygula(cache) {
+  if (++yazimSayisi % 8) return Promise.resolve();
   return cache.keys().then((keys) => {
-    const veri = keys.filter((k) => { try { return isDataRequest(new URL(k.url)); } catch (e) { return false; } });
-    const fazla = veri.length - VERI_TAVAN;
-    for (let i = 0; i < fazla; i++) cache.delete(veri[i]);
+    const g = { veri: [], sayfa: [] };
+    keys.forEach((k) => {
+      let u;
+      try { u = new URL(k.url); } catch (e) { return; }
+      if (KABUK_YOLLARI.has(u.pathname)) return;
+      const s = girdiSinifi(u);
+      if (g[s]) g[s].push(k);
+    });
+    return Promise.all(["veri", "sayfa"].map((s) => Promise.all(g[s].slice(0, Math.max(0, g[s].length - TAVAN[s])).map((k) => cache.delete(k)))));
   }).catch(() => {});
 }
 
+// Bir yanıtın kopyasını bu sürümün damgasıyla sarar (gövde akışı aynen geçer).
+function damgala(resp) {
+  const h = new Headers(resp.headers);
+  h.set(SURUM_BASLIGI, CACHE_VERSION);
+  return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers: h });
+}
+
+// Gezinme yanıtının ETag/Last-Modified'ı önbellektekinden farklıysa (yeni yayın ya da sayfa değişti) kısa bir süre veri ağ-önce okunur:
+// eski servis çalışanı yeni sayfayı açarken önbellekteki eski veriyi vermesin (T3B2-007).
+let veriAgOnceBitis = 0;
+function yayinSinyali(req, resp) {
+  const imza = (r) => r.headers.get("etag") || r.headers.get("last-modified") || "";
+  return caches.match(req).then((onceki) => {
+    if (onceki && imza(onceki) && imza(resp) && imza(onceki) !== imza(resp)) veriAgOnceBitis = Date.now() + 60000;
+  }).catch(() => {});
+}
+
+const SAYFA_YOLU_RE = /^\/(?:[a-z0-9-]+\/)+$/i;
 function yedekSayfa() {
-  // OFF-02/TD-02 (2026-11-09): boş "çevrimdışısın" sayfası yerine bu cihazda önbellekte olan okuma sayfalarının (en çok 6) bağlantıları verilir.
-  // Önbelleğin kendisi burada AÇILMAZ (caches.has ile bakılır): indirme hiç yapılmadıysa ICERIK_CACHE oluşmasın (bkz. yukarıdaki not).
-  const adlar = [CACHE_VERSION, ICERIK_CACHE];
-  return Promise.all(adlar.map((n) => caches.has(n).then((varMi) => (varMi ? caches.open(n).then((c) => c.keys()) : [])).catch(() => []))).then((listeler) => {
-    const gorulen = new Set(), baglar = [];
-    listeler.forEach((ks) => ks.forEach((rq) => {
+  // OFF-02/TD-02 + T3B2-024: bu cihazda önbellekte olan HER sayfa ailesinin (Fütûhât, Füsûs, Mişkât, Kur'an, Hadis, Yan Yana, Kavram...)
+  // son 6 sayfası, kendi <title>'ıyla listelenir. Önbelleğin kendisi burada AÇILMAZ (caches.has ile bakılır): indirme hiç yapılmadıysa
+  // ICERIK_CACHE oluşmasın (bkz. yukarıdaki not).
+  const adlar = [GEZILEN, CACHE_VERSION, ICERIK_CACHE];
+  return Promise.all(adlar.map((n) => caches.has(n).then((varMi) => (varMi ? caches.open(n).then((c) => c.keys().then((ks) => ks.map((rq) => ({ c, rq })))) : [])).catch(() => []))).then((listeler) => {
+    const gorulen = new Set(), adaylar = [];
+    listeler.forEach((ks) => ks.slice().reverse().forEach((a) => {
       try {
-        const p = new URL(rq.url).pathname;
-        const m = /^\/(?:(?:en|pt)\/)?(futuhat|fusus|miskat)\/([a-z0-9]+)\/$/.exec(p);
-        if (m && !gorulen.has(p) && baglar.length < 6) {
-          gorulen.add(p);
-          baglar.push('<li style="margin:6px 0"><a href="' + p + '">' + ({ futuhat: "Fütûhât", fusus: "Füsûs", miskat: "Mişkât" })[m[1]] + " · " + m[2] + "</a></li>");
-        }
+        const p = new URL(a.rq.url).pathname;
+        if (!SAYFA_YOLU_RE.test(p) || /^\/(assets|data|pagefind)\//.test(p) || gorulen.has(p) || adaylar.length >= 6) return;
+        gorulen.add(p);
+        adaylar.push({ c: a.c, rq: a.rq, p });
       } catch (e) { /* adres okunamazsa atlanır */ }
     }));
-    const html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'
-      + '<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dost Arabî</title></head>'
-      + '<body style="font-family:system-ui,sans-serif;max-width:34rem;margin:15vh auto;padding:0 16px;text-align:center">'
-      + '<p>Bağlantı yok: bu sayfa bu cihazda kayıtlı değil. · No connection: this page is not saved on this device. · Sem conexão: esta página não está salva neste dispositivo.</p>'
-      + (baglar.length ? '<p>Bu cihazda olanlar · Available here · Disponíveis aqui:</p><ul style="list-style:none;padding:0">' + baglar.join("") + "</ul>" : "")
-      + '<p><a href="/">Ana sayfa · Home · Início</a></p></body></html>';
-    return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+    return Promise.all(adaylar.map((a) => a.c.match(a.rq).then((r) => (r ? r.text() : "")).then((t) => {
+      const m = /<title>([^<]*)<\/title>/i.exec(t);
+      return { p: a.p, ad: (m ? m[1].replace(/\s*[—-]\s*Dost Arab[îi]\s*$/, "") : a.p).replace(/[<>]/g, "") || a.p };
+    }).catch(() => ({ p: a.p, ad: a.p })))).then((liste) => {
+      const baglar = liste.map((x) => '<li style="margin:6px 0"><a href="' + x.p + '">' + x.ad + "</a></li>");
+      const html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'
+        + '<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dost Arabî</title></head>'
+        + '<body style="font-family:system-ui,sans-serif;max-width:34rem;margin:15vh auto;padding:0 16px;text-align:center">'
+        + '<p>Bağlantı yok: bu sayfa bu cihazda kayıtlı değil. · No connection: this page is not saved on this device. · Sem conexão: esta página não está salva neste dispositivo.</p>'
+        + (baglar.length ? '<p>Bu cihazda olanlar · Available here · Disponíveis aqui:</p><ul style="list-style:none;padding:0">' + baglar.join("") + "</ul>" : "")
+        + '<p><a href="/">Ana sayfa · Home · Início</a></p></body></html>';
+      return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
+    });
   });
 }
 
@@ -234,8 +300,8 @@ function yedekSayfa() {
 // tam indirme (varsa), sonra sürüm önbelleği -- ya da tersi.
 function cevrimdisiKaynak(req) {
   return indirmeTamam().then((tam) => {
-    const sira = tam ? [ICERIK_CACHE, CACHE_VERSION] : [CACHE_VERSION, ICERIK_CACHE];
-    return onbellekte(req, sira[0]).then((r) => r || onbellekte(req, sira[1]));
+    const sira = tam ? [ICERIK_CACHE, GEZILEN, CACHE_VERSION] : [GEZILEN, CACHE_VERSION, ICERIK_CACHE];
+    return sira.reduce((p, ad) => p.then((r) => r || onbellekte(req, ad)), Promise.resolve(undefined));
   });
 }
 
@@ -246,6 +312,7 @@ function cevrimdisiSayfa(req) {
     const adimlar = [];
     if (tam && uygulama) adimlar.push(() => onbellekte("./index.html", ICERIK_CACHE));
     adimlar.push(() => onbellekte(req, CACHE_VERSION));
+    adimlar.push(() => onbellekte(req, GEZILEN));
     adimlar.push(() => onbellekte(req, ICERIK_CACHE));
     if (uygulama) {
       adimlar.push(() => onbellekte("./index.html", CACHE_VERSION));
@@ -279,31 +346,18 @@ self.addEventListener("fetch", (event) => {
     // (yeni parola reddedilirdi): önce ağ, yalnız çevrimdışıyken (ya da ağ hatasında) önbellek.
     event.respondWith(
       fetch(new Request(req, { cache: "no-cache" }))
-        .then((resp) => { if (resp.ok) caches.open(CACHE_VERSION).then((c) => c.put(req, resp.clone())).catch(() => {}); return resp; })
-        .catch(() => caches.open(CACHE_VERSION).then((c) => c.match(req)).then((m) => m || cevrimdisiKaynak(req)))
+        .then((resp) => {
+          // T3B1-003: clone() eşzamanlı alınır (then içinde, yanıt verildikten sonra çağrılınca "body already used" ile yazım hiç olmuyordu).
+          if (resp.ok) { const kopya = resp.clone(); caches.open(GEZILEN).then((c) => c.put(req, kopya).then(() => tavanUygula(c))).catch(() => {}); }
+          return resp;
+        })
+        .catch(() => caches.open(GEZILEN).then((c) => c.match(req)).then((m) => m || cevrimdisiKaynak(req)))
     );
     return;
   }
 
   if (isDataRequest(url)) {
-    // stale-while-revalidate: cache varsa hemen onu ver, arka planda tazele.
-    // Ağ da yoksa (çevrimdışı, hiç görülmemiş dosya) indirilmiş içerik.
-    event.respondWith(
-      caches.open(CACHE_VERSION).then((cache) =>
-        cache.match(req).then((cached) => {
-          const network = fetch(req)
-            .then((resp) => { if (resp.ok) cache.put(req, resp.clone()).then(() => veriTavani(cache)).catch(() => {}); return resp; })
-            .catch(() => cached || cevrimdisiKaynak(req));
-          if (cached) return cached;
-          // Fikir 15 (2026-11-07): önbellekte yok ve ağ ~10 sn yanıt vermiyorsa (lie-fi) indirilmiş çevrimdışı kopya varsa o verilir;
-          // yoksa ağ beklenmeye devam eder (ağ isteği arka planda sürer ve önbelleği tazeler).
-          return Promise.race([
-            network,
-            new Promise((coz) => setTimeout(() => coz(null), 10000)),
-          ]).then((r) => r || cevrimdisiKaynak(req).then((c) => c || network));
-        })
-      )
-    );
+    event.respondWith(veriYaniti(event, req));
     return;
   }
 
@@ -329,6 +383,27 @@ self.addEventListener("fetch", (event) => {
   }
   event.respondWith(agOnceYanit(req));
 });
+
+// Veri: stale-while-revalidate, GEZILEN önbelleğinde. Önbellek kopyası bu sürümün damgasını taşıyorsa hemen verilir, arka planda tazelenir.
+// Damga eski sürümse (ya da damgasızsa) ya da yeni yayın sinyali varsa (yayinSinyali) önce ağ denenir (3 sn), ağ yoksa önbellek.
+function veriYaniti(event, req) {
+  return caches.open(GEZILEN).then((cache) =>
+    cache.match(req).then((cached) => {
+      const network = fetch(req)
+        .then((resp) => { if (resp.ok) { const kopya = damgala(resp.clone()); cache.put(req, kopya).then(() => tavanUygula(cache)).catch(() => {}); } return resp; })
+        .catch(() => cached || cevrimdisiKaynak(req));
+      event.waitUntil(network.catch(() => {}));
+      if (cached) {
+        const taze = cached.headers.get(SURUM_BASLIGI) === CACHE_VERSION && Date.now() > veriAgOnceBitis;
+        if (taze) return cached;
+        return Promise.race([network, new Promise((coz) => setTimeout(() => coz(null), 3000))]).then((r) => r || cached);
+      }
+      // Fikir 15 (2026-11-07): önbellekte yok ve ağ ~10 sn yanıt vermiyorsa (lie-fi) indirilmiş çevrimdışı kopya varsa o verilir;
+      // yoksa ağ beklenmeye devam eder (ağ isteği arka planda sürer ve önbelleği tazeler).
+      return Promise.race([network, new Promise((coz) => setTimeout(() => coz(null), 10000))]).then((r) => r || cevrimdisiKaynak(req).then((c) => c || network));
+    })
+  );
+}
 
 const SRI_SIRA = { sha256: 1, sha384: 2, sha512: 3 };
 const SRI_AD = { sha256: "SHA-256", sha384: "SHA-384", sha512: "SHA-512" };
@@ -380,8 +455,11 @@ function agOnceYanit(req) {
           // önbelleği asla tazelenmiyor, "yeni sürüm görünmüyor" şikâyetinin
           // asıl kaynağı satır 62'deki ctrl+shift+r notundan FARKLI bir kusurmuş.
           const toCache = resp.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(req, toCache)).catch(() => {});
+          // Düz sayfalar (Kur'an, Hadis...) yayınla silinmeyen GEZILEN'e, kabuk sayfaları ve betikler/stiller sürüm önbelleğine (T3F2-023).
+          const hedefAd = req.mode === "navigate" && !uygulamaAdresi(new URL(req.url)) ? GEZILEN : CACHE_VERSION;
+          caches.open(hedefAd).then((cache) => cache.put(req, toCache).then(() => tavanUygula(cache))).catch(() => {});
         }
+        if (req.mode === "navigate" && resp.ok) return yayinSinyali(req, resp.clone()).then(() => resp);
         if (req.mode === "navigate" && resp.status === 404) return yumusat404(resp);
         return resp;
       })
