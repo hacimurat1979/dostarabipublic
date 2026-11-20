@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-b542fbf63c11";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-0a9c61ba8c51";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -24,7 +24,7 @@ const SHELL_URLS = [
   "./assets/favicon.svg",
   "./assets/fonts/Fraunces-Regular-static.woff2",
   "./assets/welcome.js",
-  "./assets/kabuk.994b1292a8.js",
+  "./assets/kabuk.33265f8a43.js",
   "./assets/theme.js",
   "./assets/i18n.js",
   "./assets/view-loader.js",
@@ -127,7 +127,7 @@ const GEZILEN = "dost-gezilen";
 const SURUM_BASLIGI = "X-Dost-Sw-Surum";
 const TAVAN = { veri: 120, sayfa: 60 };
 // scripts/sri-guncelle.py yazar: kökteki düz (uygulama kabuğu taşımayan) bölümler -- çevrimdışıyken kabuk (index.html) verilmez.
-const DUZ_BOLUMLER = ["akademik-kaynaklar", "arastirma", "berzah-ve-otesi", "cizimler", "dizin", "gizlilik", "hadis", "iletisim", "kuran", "nasil-okunur", "vahdet-ilkeleri", "yan-yana", "yenilikler"];
+const DUZ_BOLUMLER = ["akademik-kaynaklar", "arastirma", "berzah-ve-otesi", "cizimler", "dizin", "gizlilik", "hadis", "iletisim", "kuran", "nasil-okunur", "seyahat-atlasi", "vahdet-ilkeleri", "yan-yana", "yenilikler"];
 const DUZ_RE = new RegExp("^/(?:" + DUZ_BOLUMLER.concat(["gonul", "arastirma", ".well-known"]).map((a) => a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(/|$)");
 const ICERIK_CACHE = "dost-cevrimdisi";
 const ICERIK_DURUM = "./__cevrimdisi-durum.json"; // indirmenin künyesi: { surum, tamam, dosyalar }
