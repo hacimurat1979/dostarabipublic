@@ -57,8 +57,8 @@
       <a class="harita-erisim__atla futuhat-icerige-atla" href="#" role="button" data-icerige-atla="1">${r({tr:"K\u0131s\u0131m i\xE7eri\u011Fine ge\xE7",en:"Skip to the part's contents",pt:"Ir para o conte\xFAdo da parte"})}</a>
       <header class="futuhat-hero">
         <div class="futuhat-toolbar">
-          <button class="futuhat-toolbar__btn" id="futuhat-font-decrease" type="button" title="Yaz\u0131 boyutunu k\xFC\xE7\xFClt / Decrease font size / Diminuir tamanho da fonte" aria-label="Yaz\u0131y\u0131 k\xFC\xE7\xFClt (A\u2212) / Decrease text (A-) / Diminuir texto (A-)">A\u2212</button>
-          <button class="futuhat-toolbar__btn" id="futuhat-font-increase" type="button" title="Yaz\u0131 boyutunu b\xFCy\xFClt / Increase font size / Aumentar tamanho da fonte" aria-label="Yaz\u0131y\u0131 b\xFCy\xFCt (A+) / Increase text (A+) / Aumentar texto (A+)">A+</button>
+          <button class="futuhat-toolbar__btn" id="futuhat-font-decrease" type="button" title="Yaz\u0131 boyutunu k\xFC\xE7\xFClt / Decrease font size / Diminuir tamanho da fonte" aria-label="A\u2212: Yaz\u0131y\u0131 k\xFC\xE7\xFClt / A\u2212: Decrease text / A\u2212: Diminuir texto">A\u2212</button>
+          <button class="futuhat-toolbar__btn" id="futuhat-font-increase" type="button" title="Yaz\u0131 boyutunu b\xFCy\xFClt / Increase font size / Aumentar tamanho da fonte" aria-label="A+: Yaz\u0131y\u0131 b\xFCy\xFCt / A+: Increase text / A+: Aumentar texto">A+</button>
           <button class="futuhat-toolbar__btn" id="futuhat-uc-dil" type="button" aria-pressed="false" title="\xDC\xE7 dilde oku / Read in three languages / Ler em tr\xEAs idiomas" aria-label="TR\xB7EN\xB7PT: \xDC\xE7 dilde oku / TR\xB7EN\xB7PT: Read in three languages / TR\xB7EN\xB7PT: Ler em tr\xEAs idiomas">TR\xB7EN\xB7PT</button>
           <button class="futuhat-toolbar__btn futuhat-toolbar__btn--icon" id="futuhat-print" type="button" title="Yazd\u0131r / Print / Imprimir" aria-label="Yazd\u0131r / Print / Imprimir">
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="6" y="3" width="12" height="6" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="9" width="16" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="7" y="14" width="10" height="7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
@@ -82,7 +82,7 @@
 
       <section class="futuhat-maindiagram" data-diagram-id="main">
         <div class="futuhat-tree" id="futuhat-main-tree"></div>
-        ${window.DostGraphUtils.has3(t.mainDiagram.caption)?`<p class="futuhat-diagram-source" data-dost-alan="mainDiagram.caption" aria-hidden="true">${et(r(t.mainDiagram.caption))}</p>`:""}
+        ${window.DostGraphUtils.has3(t.mainDiagram.caption)?`<p class="futuhat-diagram-source" data-dost-alan="mainDiagram.caption">${et(r(t.mainDiagram.caption))}</p>`:""}
         ${Ya(t)}
       </section>
 
