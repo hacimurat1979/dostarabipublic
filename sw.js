@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-fab5296d7a1c";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-eec5c59b9baa";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -379,10 +379,10 @@ self.addEventListener("fetch", (event) => {
   // eski kopyayı hiç görmez, "Failed to find a valid digest" doğmaz. integrity taşımayan istek (stil dosyaları, CSS içi
   // import) ve sayfa isteği değişmedi: önce ağ.
   if (req.destination === "script" && req.integrity && /sha(256|384|512)-/.test(req.integrity)) {
-    event.respondWith(ozetliOnbellek(req).then((r) => r || agOnceYanit(req)));
+    event.respondWith(ozetliOnbellek(req).then((r) => r || agOnceYanit(event, req)));
     return;
   }
-  event.respondWith(agOnceYanit(req));
+  event.respondWith(agOnceYanit(event, req));
 });
 
 // Veri: stale-while-revalidate, GEZILEN önbelleğinde. Önbellek kopyası bu sürümün damgasını taşıyorsa hemen verilir, arka planda tazelenir.
@@ -432,11 +432,19 @@ function ozetliOnbellek(req) {
     .catch(() => null);
 }
 
-function agOnceYanit(req) {
+function agOnceYanit(event, req) {
   const isNavOrAsset = req.destination === "script" || req.destination === "style" || req.mode === "navigate";
   // Y1 (2026-11-07): ağ ~4 sn içinde yanıt vermezse (zayıf bağlantı) ve
   // önbellekte kopya varsa onu ver; ağ isteği arka planda sürer ve önbelleği tazeler.
   const ag = fetch(isNavOrAsset ? new Request(req, { cache: "no-cache" }) : req);
+  if (isNavOrAsset) {
+    event.waitUntil(ag.then((resp) => {
+      if (!resp.ok) return;
+      const kopya = resp.clone();
+      const hedef = req.mode === "navigate" && !uygulamaAdresi(new URL(req.url)) ? GEZILEN : CACHE_VERSION;
+      return caches.open(hedef).then((cache) => cache.put(req, kopya).then(() => tavanUygula(cache)));
+    }).catch(() => {}));
+  }
   const bekle = isNavOrAsset
     ? Promise.race([
         ag,
@@ -446,20 +454,6 @@ function agOnceYanit(req) {
   return (
     bekle
       .then((resp) => {
-        if (resp.ok && (req.destination === "script" || req.destination === "style" || req.mode === "navigate")) {
-          // clone() HEMEN burada, senkron olarak: caches.open() bekleyen bir
-          // await/then arasına düşerse, tarayıcı bu sırada return edilen
-          // resp'in gövdesini okumaya başlıyor ve sonra çağrılan clone()
-          // "Response body is already used" hatasıyla patlıyor -- konsolda
-          // her navigasyonda görülen TypeError (2026-08-06, kullanıcı
-          // bildirimi). Sonucu: cache.put() hiç tamamlanmıyor, SW'nin kendi
-          // önbelleği asla tazelenmiyor, "yeni sürüm görünmüyor" şikâyetinin
-          // asıl kaynağı satır 62'deki ctrl+shift+r notundan FARKLI bir kusurmuş.
-          const toCache = resp.clone();
-          // Düz sayfalar (Kur'an, Hadis...) yayınla silinmeyen GEZILEN'e, kabuk sayfaları ve betikler/stiller sürüm önbelleğine (T3F2-023).
-          const hedefAd = req.mode === "navigate" && !uygulamaAdresi(new URL(req.url)) ? GEZILEN : CACHE_VERSION;
-          caches.open(hedefAd).then((cache) => cache.put(req, toCache).then(() => tavanUygula(cache))).catch(() => {});
-        }
         if (req.mode === "navigate" && resp.ok) return yayinSinyali(req, resp.clone()).then(() => resp);
         if (req.mode === "navigate" && resp.status === 404) return yumusat404(resp);
         return resp;
