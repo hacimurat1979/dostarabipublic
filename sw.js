@@ -11,7 +11,7 @@
  */
 "use strict";
 
-const CACHE_VERSION = "dost-sw-d5f008bc6c39";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
+const CACHE_VERSION = "dost-sw-a974de9d79ba";  // scripts/sri-guncelle.py yazar (içerik özeti) -- elle değiştirme
 // F9 (2026-11-07): kurulumda yalnız ÇEKİRDEK önbelleğe girir (ilk ziyarette +924 KB yerine ≈ 0,5 MB, sayfanın zaten
 // indirdikleri); kabuğun geri kalanı (harita verisi/betiği, d3, sarmal, ek yazı tipleri) sayfa uygun bağlantıda ve
 // boştayken "kabuk-tamamla" mesajı gönderince iner (assets/view-loader.js). Veri tasarrufu / yavaş bağlantıda hiç inmez;
@@ -58,6 +58,7 @@ const SHELL_SONRA = [
   "./assets/seyr-kademe.js",
   "./assets/seyr-okuma.js",
   "./assets/seyr-dizin.js",
+  "./assets/seyr-harita.js",
   "./assets/graph-hint.js",
   "./assets/ipucu-yerlestir.js",
   "./assets/lightbox.js",
