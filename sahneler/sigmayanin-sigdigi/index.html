@@ -193,11 +193,19 @@
   .sahne-kontrol button:hover { border-color: var(--accent-interactive); }
   .sahne-kontrol input:focus-visible, .sahne-kontrol button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   body.reduced #replay { display: none; }
+  .sahne-nav { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 12px; }
+  .sahne-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; box-sizing: border-box; padding: 0 14px; font-size: 14px; line-height: 1.2; color: var(--text-secondary); text-decoration: none; border-radius: 999px; }
+  .sahne-nav a:hover { color: var(--text-primary); background: var(--surface-1); }
+  .sahne-nav a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; color: var(--text-primary); }
+  .sahne-nav .nav-dizin { margin: 0 auto; }
+  .sahne-nav .ok { font-size: 18px; line-height: 1; }
+  .sahne-nav .nav-once .ok { margin-right: 6px; } .sahne-nav .nav-sonra .ok { margin-left: 6px; }
+  @media (max-width: 480px) { .sahne-nav { padding: 0 4px; } .sahne-nav a { padding: 0 10px; font-size: 13px; } }
   /* Panel sahnenin üstünde (yarı saydam) yalnız tuval yeterince yüksekse durur; aksi hâlde nesnelerin tabanını örterdi: o zaman tuvalin altında akar. */
   @media (min-width: 641px) and (min-height: 900px) {
     .sahne-panel { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; }
   }
-  @media print { #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
+  @media print { .sahne-nav { display: none; } #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
 
   #stage { touch-action: none; cursor: crosshair; outline: none; }
   #stage:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: -4px; }
@@ -230,6 +238,11 @@
     </nav>
   </div>
   <h1 class="sr-only">Sığmayanın Sığdığı</h1>
+  <nav class="sahne-nav" aria-label="Sahneler arasında gezinme">
+    <a class="nav-once" rel="prev" href="/sahneler/ayni-ayet-iki-mertebe/" aria-label="Önceki sahne: Aynı Âyet, İki Mertebe"><span class="ok" aria-hidden="true">‹</span>Önceki</a>
+    <a class="nav-dizin" href="/sahneler/">Sahneler&#x27;e dön</a>
+    <a class="nav-sonra" rel="next" href="/sahneler/tavafta-karsilasma/" aria-label="Sonraki sahne: Tavafta Bir Karşılaşma">Sonraki<span class="ok" aria-hidden="true">›</span></a>
+  </nav>
   <div class="sahne-alan">
     <div id="stage" role="group" aria-label="Sığmayanın Sığdığı sahnesi; Tab ile bir açıklık seçin, sol/sağ ok kenarda yer seçer, yukarı/aşağı ok kenarı iter ya da çeker, Esc sıfırlar"><canvas id="cv" role="img" aria-label="Beş açıklık; her birinin içinde aynı ışık, o açıklığın biçiminde. Bir açıklık mat, ışık geçirmiyor. Açıklıklar büyüdüğünde ışığın ölçüsü büyümüyor, yalnız biçimi değişiyor."></canvas><button class="kalp" id="kalp0" data-i="0" type="button" aria-label="Açıklık 1 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp1" data-i="1" type="button" aria-label="Açıklık 2 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp2" data-i="2" type="button" aria-label="Açıklık 3 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp3" data-i="3" type="button" aria-label="Açıklık 4 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp4" data-i="4" type="button" aria-label="Açıklık 5 (mat) — Enter ya da yukarı ok matlığı siler, aşağı ok geri getirir"></button></div>
     <div class="sahne-panel">

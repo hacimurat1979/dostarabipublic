@@ -193,11 +193,19 @@
   .sahne-kontrol button:hover { border-color: var(--accent-interactive); }
   .sahne-kontrol input:focus-visible, .sahne-kontrol button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   body.reduced #replay { display: none; }
+  .sahne-nav { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 12px; }
+  .sahne-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; box-sizing: border-box; padding: 0 14px; font-size: 14px; line-height: 1.2; color: var(--text-secondary); text-decoration: none; border-radius: 999px; }
+  .sahne-nav a:hover { color: var(--text-primary); background: var(--surface-1); }
+  .sahne-nav a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; color: var(--text-primary); }
+  .sahne-nav .nav-dizin { margin: 0 auto; }
+  .sahne-nav .ok { font-size: 18px; line-height: 1; }
+  .sahne-nav .nav-once .ok { margin-right: 6px; } .sahne-nav .nav-sonra .ok { margin-left: 6px; }
+  @media (max-width: 480px) { .sahne-nav { padding: 0 4px; } .sahne-nav a { padding: 0 10px; font-size: 13px; } }
   /* Panel sahnenin üstünde (yarı saydam) yalnız tuval yeterince yüksekse durur; aksi hâlde nesnelerin tabanını örterdi: o zaman tuvalin altında akar. */
   @media (min-width: 641px) and (min-height: 900px) {
     .sahne-panel { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; }
   }
-  @media print { #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
+  @media print { .sahne-nav { display: none; } #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
   :root { --sahne-gold-rim: #d99a12; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sahne-gold-rim: #ffc233; } }
   :root[data-theme="dark"] { --sahne-gold-rim: #ffc233; }
@@ -223,13 +231,18 @@
     </nav>
   </div>
   <h1 class="sr-only">Onde Não Há Círculo</h1>
+  <nav class="sahne-nav" aria-label="Navegar entre as cenas">
+    <a class="nav-once" rel="prev" href="/sahneler/pt/ayna-metaforu/" aria-label="Cena anterior: A Metáfora do Espelho"><span class="ok" aria-hidden="true">‹</span>Anterior</a>
+    <a class="nav-dizin" href="/sahneler/pt/">Voltar às cenas</a>
+    <a class="nav-sonra" rel="next" href="/sahneler/pt/halk-i-cedid/" aria-label="Próxima cena: Criação Renovada (Khalq jadīd)">Próxima<span class="ok" aria-hidden="true">›</span></a>
+  </nav>
   <div class="sahne-alan">
-    <div id="stage"><canvas id="cv" role="img" aria-label="Um único ponto de luz gira. Devagar, vê-se só o ponto e um rastro curto atrás dele. Ao acelerar, o ponto some e surge um anel fechado. Ao desacelerar, o anel se desfaz: cada passagem chega não sobre a anterior, mas um pouco adiante; não há anel, só uma espiral que não se fecha." tabindex="0"></canvas></div>
+    <div id="stage"><canvas id="cv" role="img" aria-label="Há um círculo invisível; existem apenas posições igualmente espaçadas sobre ele. Um único ponto pisca numa posição e se apaga; depois o mesmo ponto pisca na posição seguinte do círculo. Terminada a volta, o ponto recomeça, mas os tempos entre aparecer e sumir ficam um pouco menores; cada volta é um pouco mais rápida. Nenhuma linha e nenhum círculo é desenhado em lugar algum: o que se vê é a pós-imagem tênue que cada piscada deixa no olho por um instante. Quando as voltas ficam rápidas o bastante, essas pós-imagens se sobrepõem e o círculo se torna visível só por essa impressão. O controle desliza a velocidade do piscar." tabindex="0"></canvas></div>
     <div class="sahne-panel" id="foot">
       <p id="quote" lang="pt-BR">«Isto é perceber um círculo onde não há círculo.»</p>
       <p id="cite">Futūḥāt al-Makkiyya, vol. 5, Sexagésima sexta seção, pp. 354–355 (tradução a partir do turco de Demirli)</p>
       <div class="sahne-kontrol">
-        <label for="spd" id="spdLabel">Velocidade de rotação</label>
+        <label for="spd" id="spdLabel">Velocidade do piscar</label>
         <input id="spd" type="range" min="0" max="100" step="1" value="20">
         <button id="replay" type="button">De novo</button>
       </div>

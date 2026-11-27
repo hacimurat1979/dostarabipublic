@@ -193,11 +193,19 @@
   .sahne-kontrol button:hover { border-color: var(--accent-interactive); }
   .sahne-kontrol input:focus-visible, .sahne-kontrol button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   body.reduced #replay { display: none; }
+  .sahne-nav { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 12px; }
+  .sahne-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; box-sizing: border-box; padding: 0 14px; font-size: 14px; line-height: 1.2; color: var(--text-secondary); text-decoration: none; border-radius: 999px; }
+  .sahne-nav a:hover { color: var(--text-primary); background: var(--surface-1); }
+  .sahne-nav a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; color: var(--text-primary); }
+  .sahne-nav .nav-dizin { margin: 0 auto; }
+  .sahne-nav .ok { font-size: 18px; line-height: 1; }
+  .sahne-nav .nav-once .ok { margin-right: 6px; } .sahne-nav .nav-sonra .ok { margin-left: 6px; }
+  @media (max-width: 480px) { .sahne-nav { padding: 0 4px; } .sahne-nav a { padding: 0 10px; font-size: 13px; } }
   /* Panel sahnenin üstünde (yarı saydam) yalnız tuval yeterince yüksekse durur; aksi hâlde nesnelerin tabanını örterdi: o zaman tuvalin altında akar. */
   @media (min-width: 641px) and (min-height: 900px) {
     .sahne-panel { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; }
   }
-  @media print { #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
+  @media print { .sahne-nav { display: none; } #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
 
   #cv { touch-action: pan-y; }
   #cite { color: var(--text-secondary); }
@@ -227,6 +235,11 @@
     </nav>
   </div>
   <h1 class="sr-only">Perde Zinciri</h1>
+  <nav class="sahne-nav" aria-label="Sahneler arasında gezinme">
+    <a class="nav-once" rel="prev" href="/sahneler/kandil/" aria-label="Önceki sahne: Kandil"><span class="ok" aria-hidden="true">‹</span>Önceki</a>
+    <a class="nav-dizin" href="/sahneler/">Sahneler&#x27;e dön</a>
+    <a class="nav-sonra" rel="next" href="/sahneler/ayna-metaforu/" aria-label="Sonraki sahne: Ayna Metaforu">Sonraki<span class="ok" aria-hidden="true">›</span></a>
+  </nav>
   <div class="sahne-alan">
     <div id="stage">
       <canvas id="cv" role="img" aria-label="Bir yüz. Perde kalınlaştıkça bulanıp kararıyor, inceldikçe netleşiyor; çok inceldiğinde ışıkta kenarları eriyor. Halkadaki tutamak perdenin kalınlığını ayarlar."></canvas>

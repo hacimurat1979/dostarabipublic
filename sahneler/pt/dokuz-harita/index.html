@@ -193,11 +193,19 @@
   .sahne-kontrol button:hover { border-color: var(--accent-interactive); }
   .sahne-kontrol input:focus-visible, .sahne-kontrol button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   body.reduced #replay { display: none; }
+  .sahne-nav { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 12px; }
+  .sahne-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; box-sizing: border-box; padding: 0 14px; font-size: 14px; line-height: 1.2; color: var(--text-secondary); text-decoration: none; border-radius: 999px; }
+  .sahne-nav a:hover { color: var(--text-primary); background: var(--surface-1); }
+  .sahne-nav a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; color: var(--text-primary); }
+  .sahne-nav .nav-dizin { margin: 0 auto; }
+  .sahne-nav .ok { font-size: 18px; line-height: 1; }
+  .sahne-nav .nav-once .ok { margin-right: 6px; } .sahne-nav .nav-sonra .ok { margin-left: 6px; }
+  @media (max-width: 480px) { .sahne-nav { padding: 0 4px; } .sahne-nav a { padding: 0 10px; font-size: 13px; } }
   /* Panel sahnenin üstünde (yarı saydam) yalnız tuval yeterince yüksekse durur; aksi hâlde nesnelerin tabanını örterdi: o zaman tuvalin altında akar. */
   @media (min-width: 641px) and (min-height: 900px) {
     .sahne-panel { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; }
   }
-  @media print { #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
+  @media print { .sahne-nav { display: none; } #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
 
   #cite { color: var(--text-secondary); }
   .menzil { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--text-secondary);
@@ -225,6 +233,11 @@
     </nav>
   </div>
   <h1 class="sr-only">Capítulo 371: Nove Mapas</h1>
+  <nav class="sahne-nav" aria-label="Navegar entre as cenas">
+    <a class="nav-once" rel="prev" href="/sahneler/pt/kendi-siirini-savunmak/" aria-label="Cena anterior: Defender o Próprio Poema"><span class="ok" aria-hidden="true">‹</span>Anterior</a>
+    <a class="nav-dizin" href="/sahneler/pt/">Voltar às cenas</a>
+    <a class="nav-sonra" rel="next" href="/sahneler/pt/karanligi-gormek/" aria-label="Próxima cena: Ver a Escuridão">Próxima<span class="ok" aria-hidden="true">›</span></a>
+  </nav>
   <div class="sahne-alan">
     <div id="stage" role="group" aria-label="Cena do capítulo 371; percorra os botões das estações com as setas, segure Enter para passar à estação seguinte"><canvas id="cv" role="img" aria-label="Uma só superfície com nove grupos de formas ao longo de uma espiral, cada um com um reflexo pálido. No início todos estão igualmente nítidos. Quando um observador aparece na estação mais baixa, as formas das estações acima se dispersam e esmaecem; só o grupo da própria estação do observador fica nítido e dourado. Quando o olhar se estende à estação seguinte, a superfície por um instante tenta se firmar e volta a se dispersar quando o olhar retorna. Quando uma estação é subida por uma volta, a luz passa ao grupo da nova estação e no centro surge um par do observador."></canvas>
       <button class="menzil" data-i="0" type="button"><span class="et">Crentes</span></button>

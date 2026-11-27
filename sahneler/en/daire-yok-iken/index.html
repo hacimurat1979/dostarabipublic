@@ -193,11 +193,19 @@
   .sahne-kontrol button:hover { border-color: var(--accent-interactive); }
   .sahne-kontrol input:focus-visible, .sahne-kontrol button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   body.reduced #replay { display: none; }
+  .sahne-nav { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 12px; }
+  .sahne-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; box-sizing: border-box; padding: 0 14px; font-size: 14px; line-height: 1.2; color: var(--text-secondary); text-decoration: none; border-radius: 999px; }
+  .sahne-nav a:hover { color: var(--text-primary); background: var(--surface-1); }
+  .sahne-nav a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; color: var(--text-primary); }
+  .sahne-nav .nav-dizin { margin: 0 auto; }
+  .sahne-nav .ok { font-size: 18px; line-height: 1; }
+  .sahne-nav .nav-once .ok { margin-right: 6px; } .sahne-nav .nav-sonra .ok { margin-left: 6px; }
+  @media (max-width: 480px) { .sahne-nav { padding: 0 4px; } .sahne-nav a { padding: 0 10px; font-size: 13px; } }
   /* Panel sahnenin üstünde (yarı saydam) yalnız tuval yeterince yüksekse durur; aksi hâlde nesnelerin tabanını örterdi: o zaman tuvalin altında akar. */
   @media (min-width: 641px) and (min-height: 900px) {
     .sahne-panel { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; }
   }
-  @media print { #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
+  @media print { .sahne-nav { display: none; } #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
   :root { --sahne-gold-rim: #d99a12; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sahne-gold-rim: #ffc233; } }
   :root[data-theme="dark"] { --sahne-gold-rim: #ffc233; }
@@ -223,13 +231,18 @@
     </nav>
   </div>
   <h1 class="sr-only">Where There Is No Circle</h1>
+  <nav class="sahne-nav" aria-label="Navigate between scenes">
+    <a class="nav-once" rel="prev" href="/sahneler/en/ayna-metaforu/" aria-label="Previous scene: The Mirror Metaphor"><span class="ok" aria-hidden="true">‹</span>Previous</a>
+    <a class="nav-dizin" href="/sahneler/en/">Back to scenes</a>
+    <a class="nav-sonra" rel="next" href="/sahneler/en/halk-i-cedid/" aria-label="Next scene: Renewed Creation (Khalq jadīd)">Next<span class="ok" aria-hidden="true">›</span></a>
+  </nav>
   <div class="sahne-alan">
-    <div id="stage"><canvas id="cv" role="img" aria-label="A single point of light turns. When slow, only the point and a short trace behind it are seen. As it speeds up the point vanishes and a closed ring appears. As it slows the ring comes apart: each pass lands not on the previous one but a little beyond it; there is no ring, only a spiral that never closes." tabindex="0"></canvas></div>
+    <div id="stage"><canvas id="cv" role="img" aria-label="There is an invisible circle; only equally spaced positions on it exist. A single point flashes at one position and goes out; then the same point flashes at the circle&#x27;s next position. When the round is done the point starts again, but the times between its appearing and vanishing are a little shorter; each round is a little faster. No line and no circle is drawn anywhere: what you see is the faint afterimage each flash leaves in the eye for a moment. When the rounds are fast enough these afterimages overlap and the circle becomes visible through that impression alone. The slider sets the flashing speed." tabindex="0"></canvas></div>
     <div class="sahne-panel" id="foot">
       <p id="quote" lang="en">«This is perceiving a circle where there is no circle.»</p>
       <p id="cite">Futūḥāt al-Makkiyya, vol. 5, Sixty-sixth Section, pp. 354–355 (transl. from Demirli&#x27;s Turkish)</p>
       <div class="sahne-kontrol">
-        <label for="spd" id="spdLabel">Rotation speed</label>
+        <label for="spd" id="spdLabel">Flashing speed</label>
         <input id="spd" type="range" min="0" max="100" step="1" value="20">
         <button id="replay" type="button">Again</button>
       </div>

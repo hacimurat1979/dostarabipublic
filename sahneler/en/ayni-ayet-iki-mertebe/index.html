@@ -193,11 +193,19 @@
   .sahne-kontrol button:hover { border-color: var(--accent-interactive); }
   .sahne-kontrol input:focus-visible, .sahne-kontrol button:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 3px; }
   body.reduced #replay { display: none; }
+  .sahne-nav { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; padding: 0 12px; }
+  .sahne-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; box-sizing: border-box; padding: 0 14px; font-size: 14px; line-height: 1.2; color: var(--text-secondary); text-decoration: none; border-radius: 999px; }
+  .sahne-nav a:hover { color: var(--text-primary); background: var(--surface-1); }
+  .sahne-nav a:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 2px; color: var(--text-primary); }
+  .sahne-nav .nav-dizin { margin: 0 auto; }
+  .sahne-nav .ok { font-size: 18px; line-height: 1; }
+  .sahne-nav .nav-once .ok { margin-right: 6px; } .sahne-nav .nav-sonra .ok { margin-left: 6px; }
+  @media (max-width: 480px) { .sahne-nav { padding: 0 4px; } .sahne-nav a { padding: 0 10px; font-size: 13px; } }
   /* Panel sahnenin üstünde (yarı saydam) yalnız tuval yeterince yüksekse durur; aksi hâlde nesnelerin tabanını örterdi: o zaman tuvalin altında akar. */
   @media (min-width: 641px) and (min-height: 900px) {
     .sahne-panel { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; }
   }
-  @media print { #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
+  @media print { .sahne-nav { display: none; } #cv { display: none; } .sahne-panel { position: static; transform: none; opacity: 1 !important; } #quote, #cite { opacity: 1 !important; } }
   :root { --sahne-iz: #2f8fa3; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sahne-iz: #5bc4dc; } }
   :root[data-theme="dark"] { --sahne-iz: #5bc4dc; }
@@ -228,6 +236,11 @@
     </nav>
   </div>
   <h1 class="sr-only">One Verse, Two Levels</h1>
+  <nav class="sahne-nav" aria-label="Navigate between scenes">
+    <a class="nav-once" rel="prev" href="/sahneler/en/karanligi-gormek/" aria-label="Previous scene: Seeing the Darkness"><span class="ok" aria-hidden="true">‹</span>Previous</a>
+    <a class="nav-dizin" href="/sahneler/en/">Back to scenes</a>
+    <a class="nav-sonra" rel="next" href="/sahneler/en/sigmayanin-sigdigi/" aria-label="Next scene: What Cannot Be Contained Is Contained">Next<span class="ok" aria-hidden="true">›</span></a>
+  </nav>
   <div class="sahne-alan">
     <div id="stage" tabindex="0" role="group" aria-label="Verse scene; move the position with the arrow keys, go to either end with Home and End"><canvas id="cv" role="img" aria-label="An Arabic phrase from a verse (A&#x27;râf 7:143) at the centre, under a fine, unchanging weave. At first the visitor&#x27;s trace gathers on the outer face of the weave; the writing is blurred and faint. As the position moves to the inner face the trace is wiped away and the writing sharpens. Then the trace comes back inside the letters of the writing. When the position returns to the outer face the writing half closes but stays legible; the trace stays both above and inside the letters. The position is changed by dragging sideways on the canvas or with the slider; moving the pointer or touching leaves a trace."></canvas><span id="ayet" lang="ar" dir="rtl">لَن تَرَىٰنِى</span></div>
     <div class="sahne-panel">
