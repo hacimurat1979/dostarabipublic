@@ -218,14 +218,8 @@
   @media (scripting: none) { #cv, .sahne-kontrol { display: none; } }
   @media (max-width: 480px) { #cite { font-size: 12px; } }
 
-  #stage { cursor: grab; }
-  #stage.tutuyor { cursor: grabbing; }
-  #rod { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; border-radius: 3px; cursor: grab; touch-action: none; outline: none; }
-  #rod[hidden] { display: none; }
-  #rod:focus-visible { outline: 3px solid var(--accent-interactive); outline-offset: 3px; }
-  .sahne-kontrol label { display: flex; flex-direction: column; align-items: stretch; }
-  .sahne-kontrol button[aria-pressed="true"] { background: var(--text-primary); color: var(--page-plane); border-color: var(--text-primary); }
-  @media (max-width: 480px) { .sahne-kontrol label { flex: 1 1 40%; } }
+  #stage { touch-action: pan-y; cursor: ew-resize; background: #d8cdb8; }
+  .sahne-kontrol label { white-space: normal; }
 </style>
 <link rel="stylesheet" href="/assets/mini-ust.css">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "Barzakh: No Line", "url": "https://dostarabi.com/sahneler/en/berzah/", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "Dost Arabî", "url": "https://dostarabi.com/en/"}, "description": "A sentence from the Futūḥāt al-Makkiyya (vol. 14, p. 192) and a short, interactive scene beside it.", "breadcrumb": {"@id": "https://dostarabi.com/sahneler/en/berzah/#kirinti"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dost Arabî", "item": "https://dostarabi.com/en/"}, {"@type": "ListItem", "position": 2, "name": "Scenes", "item": "https://dostarabi.com/sahneler/en/"}, {"@type": "ListItem", "position": 3, "name": "Barzakh: No Line", "item": "https://dostarabi.com/sahneler/en/berzah/"}], "@id": "https://dostarabi.com/sahneler/en/berzah/#kirinti"}]}</script>
@@ -249,14 +243,13 @@
     <a class="nav-sonra" rel="next" href="/sahneler/en/tek-tecelli-uc-kap/" aria-label="Next scene: One Theophany, Three Vessels">Next<span class="ok" aria-hidden="true">›</span></a>
   </nav>
   <div class="sahne-alan">
-    <div id="stage" tabindex="0" role="group" aria-label="Barzakh scene; move the light with the arrow keys, change closeness with plus and minus, place or remove the rod with R"><canvas id="cv" role="img" aria-label="A surface: one side lit, the other in shadow. No line or strip is drawn between them. At first a soft zone of transition shows between light and shadow; as the view approaches, this zone thins and disappears, and the two sides do not mix. Then the edge moves, and a rod resting on it appears half lit and half in shadow. It can be explored by dragging the light, changing the closeness and moving the rod."></canvas><div id="rod" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-label="Rod; move it with the arrow keys" hidden></div></div>
+    <div id="stage" tabindex="0" role="group" aria-label="Barzakh scene; change the balance of the two lights with the arrow keys"><canvas id="cv" role="img" aria-label="A single wide sheet of finely fibred paper fills the frame; its fibres never move. On the left a honey-coloured light falls, on the right a dull blue one. In the middle the colour passes from pale honey to neutral grey to soft blue; nowhere is there a line, a shadow, a strip or an object. At first the picture stays almost still; then the left light grows slightly and the warmth spreads toward the middle, then the right light grows and the weight reverses; in the last frame the two lights settle and both ends can still be told apart. Freeze any frame and the warm side and the cool side can be pointed to; exactly where one ends and the other begins cannot be shown. The balance of the two lights can be changed with the slider, the arrow keys or a horizontal drag."></canvas></div>
     <div class="sahne-panel">
       <p id="quote" lang="en">«In truth, what makes a barzakh a barzakh is that there is no barzakh in it.»</p>
       <p id="cite">Futūḥāt al-Makkiyya, vol. 14, p. 192 (page number inferred; transl. from Demirli&#x27;s Turkish)</p>
       <div class="sahne-kontrol">
-        <label for="isik"><span>Light</span><input id="isik" type="range" min="0" max="1000" step="1" value="500"></label>
-        <label for="yakin"><span>Closeness</span><input id="yakin" type="range" min="0" max="1000" step="1" value="1000"></label>
-        <button id="cubuk" type="button" aria-pressed="false">Rod</button>
+        <label for="denge" id="dengeL">Balance of the two lights</label>
+        <input id="denge" type="range" min="0" max="1000" step="1" value="500">
         <button id="replay" type="button">Again</button>
       </div>
     </div>

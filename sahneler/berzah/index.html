@@ -218,14 +218,8 @@
   @media (scripting: none) { #cv, .sahne-kontrol { display: none; } }
   @media (max-width: 480px) { #cite { font-size: 12px; } }
 
-  #stage { cursor: grab; }
-  #stage.tutuyor { cursor: grabbing; }
-  #rod { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; border-radius: 3px; cursor: grab; touch-action: none; outline: none; }
-  #rod[hidden] { display: none; }
-  #rod:focus-visible { outline: 3px solid var(--accent-interactive); outline-offset: 3px; }
-  .sahne-kontrol label { display: flex; flex-direction: column; align-items: stretch; }
-  .sahne-kontrol button[aria-pressed="true"] { background: var(--text-primary); color: var(--page-plane); border-color: var(--text-primary); }
-  @media (max-width: 480px) { .sahne-kontrol label { flex: 1 1 40%; } }
+  #stage { touch-action: pan-y; cursor: ew-resize; background: #d8cdb8; }
+  .sahne-kontrol label { white-space: normal; }
 </style>
 <link rel="stylesheet" href="/assets/mini-ust.css">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "Berzah: Çizgi Yok", "url": "https://dostarabi.com/sahneler/berzah/", "inLanguage": "tr", "isPartOf": {"@type": "WebSite", "name": "Dost Arabî", "url": "https://dostarabi.com/"}, "description": "Fütûhât-ı Mekkiyye'den (Cilt 14, s. 192) bir cümle ve yanında kısa, etkileşimli bir sahne.", "breadcrumb": {"@id": "https://dostarabi.com/sahneler/berzah/#kirinti"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dost Arabî", "item": "https://dostarabi.com/"}, {"@type": "ListItem", "position": 2, "name": "Sahneler", "item": "https://dostarabi.com/sahneler/"}, {"@type": "ListItem", "position": 3, "name": "Berzah: Çizgi Yok", "item": "https://dostarabi.com/sahneler/berzah/"}], "@id": "https://dostarabi.com/sahneler/berzah/#kirinti"}]}</script>
@@ -249,14 +243,13 @@
     <a class="nav-sonra" rel="next" href="/sahneler/tek-tecelli-uc-kap/" aria-label="Sonraki sahne: Tek Tecellî, Üç Kap">Sonraki<span class="ok" aria-hidden="true">›</span></a>
   </nav>
   <div class="sahne-alan">
-    <div id="stage" tabindex="0" role="group" aria-label="Berzah sahnesi; ok tuşlarıyla ışığı kaydırın, artı ve eksiyle yakınlaştırın, R ile çubuğu koyun ya da kaldırın"><canvas id="cv" role="img" aria-label="Bir yüzey: bir yanı aydınlık, bir yanı gölgede. İkisinin arasında çizgi ya da şerit çizilmemiş. Başta aydınlıkla gölge arasında yumuşak bir geçiş bölgesi görünür; yaklaştıkça bu bölge incelir ve yok olur, iki yan karışmaz. Sonra kenar yerinden oynar ve kenarda duran bir çubuğun bir yarısı aydınlık, öbür yarısı gölgeli görünür. Işığı sürükleyerek, yakınlığı değiştirerek ve çubuğu taşıyarak denenebilir."></canvas><div id="rod" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-label="Çubuk; ok tuşlarıyla taşınır" hidden></div></div>
+    <div id="stage" tabindex="0" role="group" aria-label="Berzah sahnesi; iki ışığın dengesini ok tuşlarıyla değiştirin"><canvas id="cv" role="img" aria-label="Tek bir geniş, ince lifli kâğıt kadrajı doldurur; lifleri hiç oynamaz. Sol tarafta bal rengi, sağ tarafta donuk mavi bir ışık vardır. Ortada renk önce solgun bale, sonra nötr griye, sonra yumuşak maviye döner; hiçbir yerde çizgi, gölge, şerit ya da nesne yoktur. Önce görüntü neredeyse sabit kalır; sonra sol ışık hafifçe güçlenir ve sıcaklık ortaya doğru yayılır, ardından sağ ışık güçlenir ve ağırlık tersine döner; son karede iki ışık yatışır ve iki uç hâlâ seçilir. Bir kareyi durdurunca sıcak ve serin taraf görünür; birinin tam nerede bitip ötekinin başladığı gösterilemez. Sürgüyle, ok tuşlarıyla ya da yatay sürüklemeyle iki ışığın dengesi değiştirilebilir."></canvas></div>
     <div class="sahne-panel">
       <p id="quote" lang="tr">«Gerçekte berzahı berzah yapan özellik, kendisinde berzah bulunmamasıdır.»</p>
       <p id="cite">Fütûhât-ı Mekkiyye, Cilt 14, s. 192 (sayfa numarası çıkarım; Ekrem Demirli çevirisi)</p>
       <div class="sahne-kontrol">
-        <label for="isik"><span>Işık</span><input id="isik" type="range" min="0" max="1000" step="1" value="500"></label>
-        <label for="yakin"><span>Yakınlık</span><input id="yakin" type="range" min="0" max="1000" step="1" value="1000"></label>
-        <button id="cubuk" type="button" aria-pressed="false">Çubuk</button>
+        <label for="denge" id="dengeL">İki ışığın dengesi</label>
+        <input id="denge" type="range" min="0" max="1000" step="1" value="500">
         <button id="replay" type="button">Baştan</button>
       </div>
     </div>

@@ -218,14 +218,8 @@
   @media (scripting: none) { #cv, .sahne-kontrol { display: none; } }
   @media (max-width: 480px) { #cite { font-size: 12px; } }
 
-  #stage { cursor: grab; }
-  #stage.tutuyor { cursor: grabbing; }
-  #rod { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; border-radius: 3px; cursor: grab; touch-action: none; outline: none; }
-  #rod[hidden] { display: none; }
-  #rod:focus-visible { outline: 3px solid var(--accent-interactive); outline-offset: 3px; }
-  .sahne-kontrol label { display: flex; flex-direction: column; align-items: stretch; }
-  .sahne-kontrol button[aria-pressed="true"] { background: var(--text-primary); color: var(--page-plane); border-color: var(--text-primary); }
-  @media (max-width: 480px) { .sahne-kontrol label { flex: 1 1 40%; } }
+  #stage { touch-action: pan-y; cursor: ew-resize; background: #d8cdb8; }
+  .sahne-kontrol label { white-space: normal; }
 </style>
 <link rel="stylesheet" href="/assets/mini-ust.css">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "Barzakh: Sem Linha", "url": "https://dostarabi.com/sahneler/pt/berzah/", "inLanguage": "pt-BR", "isPartOf": {"@type": "WebSite", "name": "Dost Arabî", "url": "https://dostarabi.com/pt/"}, "description": "Uma frase do Futūḥāt al-Makkiyya (vol. 14, p. 192) e uma cena curta e interativa ao lado.", "breadcrumb": {"@id": "https://dostarabi.com/sahneler/pt/berzah/#kirinti"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dost Arabî", "item": "https://dostarabi.com/pt/"}, {"@type": "ListItem", "position": 2, "name": "Cenas", "item": "https://dostarabi.com/sahneler/pt/"}, {"@type": "ListItem", "position": 3, "name": "Barzakh: Sem Linha", "item": "https://dostarabi.com/sahneler/pt/berzah/"}], "@id": "https://dostarabi.com/sahneler/pt/berzah/#kirinti"}]}</script>
@@ -249,14 +243,13 @@
     <a class="nav-sonra" rel="next" href="/sahneler/pt/tek-tecelli-uc-kap/" aria-label="Próxima cena: Uma Teofania, Três Vasos">Próxima<span class="ok" aria-hidden="true">›</span></a>
   </nav>
   <div class="sahne-alan">
-    <div id="stage" tabindex="0" role="group" aria-label="Cena do Barzakh; mova a luz com as setas, mude a proximidade com mais e menos, coloque ou retire a haste com R"><canvas id="cv" role="img" aria-label="Uma superfície: um lado iluminado, o outro na sombra. Nenhuma linha ou faixa foi desenhada entre eles. No início aparece uma zona suave de transição entre luz e sombra; ao se aproximar, essa zona afina e desaparece, e os dois lados não se misturam. Depois a borda se desloca, e uma haste sobre ela aparece metade iluminada e metade na sombra. Pode-se explorar arrastando a luz, mudando a proximidade e movendo a haste."></canvas><div id="rod" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-label="Haste; mova com as setas" hidden></div></div>
+    <div id="stage" tabindex="0" role="group" aria-label="Cena do Barzakh; mude o equilíbrio das duas luzes com as setas"><canvas id="cv" role="img" aria-label="Uma única folha larga de papel de fibras finas preenche o quadro; as fibras nunca se movem. À esquerda cai uma luz cor de mel, à direita uma azul fosca. No meio a cor passa de um mel pálido a um cinza neutro e a um azul suave; em lugar nenhum há linha, sombra, faixa ou objeto. No início a imagem fica quase parada; depois a luz da esquerda cresce um pouco e o calor se espalha em direção ao meio, em seguida a luz da direita cresce e o peso se inverte; no último quadro as duas luzes se acalmam e as duas pontas ainda se distinguem. Congelando qualquer quadro, o lado quente e o lado frio podem ser apontados; onde exatamente um termina e o outro começa não se pode mostrar. O equilíbrio das duas luzes pode ser mudado com o controle deslizante, as setas ou um arrastar horizontal."></canvas></div>
     <div class="sahne-panel">
       <p id="quote" lang="pt-BR">«Na verdade, o que faz do barzakh um barzakh é não haver barzakh nele mesmo.»</p>
       <p id="cite">Futūḥāt al-Makkiyya, vol. 14, p. 192 (número da página inferido; tradução a partir do turco de Demirli)</p>
       <div class="sahne-kontrol">
-        <label for="isik"><span>Luz</span><input id="isik" type="range" min="0" max="1000" step="1" value="500"></label>
-        <label for="yakin"><span>Proximidade</span><input id="yakin" type="range" min="0" max="1000" step="1" value="1000"></label>
-        <button id="cubuk" type="button" aria-pressed="false">Haste</button>
+        <label for="denge" id="dengeL">Equilíbrio das duas luzes</label>
+        <input id="denge" type="range" min="0" max="1000" step="1" value="500">
         <button id="replay" type="button">De novo</button>
       </div>
     </div>

@@ -215,12 +215,8 @@
   @media (scripting: none) { #cv, .sahne-kontrol { display: none; } }
   @media (max-width: 480px) { #cite { font-size: 12px; } }
 
-  #stage { touch-action: pan-y; cursor: default; }
-  .kalp { position: absolute; padding: 0; margin: 0; border: 0; background: transparent; border-radius: 50%; min-width: 44px; min-height: 44px;
-    cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; transform: translate(-50%, -50%); }
-  .kalp:active { cursor: grabbing; }
-  .kalp:focus { outline: none; }
-  .kalp:focus-visible { outline: 2px solid var(--accent-interactive); outline-offset: 4px; }
+  #stage { touch-action: pan-y; cursor: ew-resize; background: #05070b; }
+  .sahne-kontrol label { white-space: normal; }
 </style>
 <link rel="stylesheet" href="/assets/mini-ust.css">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "Sığmayanın Sığdığı", "url": "https://dostarabi.com/sahneler/sigmayanin-sigdigi/", "inLanguage": "tr", "isPartOf": {"@type": "WebSite", "name": "Dost Arabî", "url": "https://dostarabi.com/"}, "description": "Fütûhât-ı Mekkiyye'den (Cilt 9, s. 277) bir cümle ve yanında kısa, etkileşimli bir sahne.", "breadcrumb": {"@id": "https://dostarabi.com/sahneler/sigmayanin-sigdigi/#kirinti"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dost Arabî", "item": "https://dostarabi.com/"}, {"@type": "ListItem", "position": 2, "name": "Sahneler", "item": "https://dostarabi.com/sahneler/"}, {"@type": "ListItem", "position": 3, "name": "Sığmayanın Sığdığı", "item": "https://dostarabi.com/sahneler/sigmayanin-sigdigi/"}], "@id": "https://dostarabi.com/sahneler/sigmayanin-sigdigi/#kirinti"}]}</script>
@@ -244,11 +240,13 @@
     <a class="nav-sonra" rel="next" href="/sahneler/tavafta-karsilasma/" aria-label="Sonraki sahne: Tavafta Bir Karşılaşma">Sonraki<span class="ok" aria-hidden="true">›</span></a>
   </nav>
   <div class="sahne-alan">
-    <div id="stage" role="group" aria-label="Sığmayanın Sığdığı sahnesi; Tab ile bir açıklık seçin, sol/sağ ok kenarda yer seçer, yukarı/aşağı ok kenarı iter ya da çeker, Esc sıfırlar"><canvas id="cv" role="img" aria-label="Beş açıklık; her birinin içinde aynı ışık, o açıklığın biçiminde. Bir açıklık mat, ışık geçirmiyor. Açıklıklar büyüdüğünde ışığın ölçüsü büyümüyor, yalnız biçimi değişiyor."></canvas><button class="kalp" id="kalp0" data-i="0" type="button" aria-label="Açıklık 1 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp1" data-i="1" type="button" aria-label="Açıklık 2 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp2" data-i="2" type="button" aria-label="Açıklık 3 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp3" data-i="3" type="button" aria-label="Açıklık 4 — sol/sağ kenardaki yeri seçer, yukarı/aşağı kenarı iter ya da çeker"></button><button class="kalp" id="kalp4" data-i="4" type="button" aria-label="Açıklık 5 (mat) — Enter ya da yukarı ok matlığı siler, aşağı ok geri getirir"></button></div>
+    <div id="stage" tabindex="0" role="group" aria-label="Sığmayanın Sığdığı sahnesi; bakış yüksekliğini ok tuşlarıyla değiştirin, Enter suya bir damla düşürür"><canvas id="cv" role="img" aria-label="Gece. Pürüzlü, geniş bir taşın üzerinde avuç içi kadar, koyu sırlı sığ bir çanak; yanında boyut için tek kuru yaprak. Kadrajın üstünde gerçek göğün küçük bir kesiti ve birbirine yakın üç yıldız. Çanaktaki su neredeyse siyah, yalnız kenarında belli belirsiz bir parıltı var. Kamera çok yavaş yaklaşır ve alçalır: üç yıldızdan bazıları önce suyun kenarından içeri girer, sonra suyun yüzeyi büyür ve aynı üç yıldız ile çevresindeki soluk yıldızlar suyun üzerinde okunur; gök görüntüsü suyun sınırında kesilir. Suya iğne ucu kadar bir damla düşer, birkaç ince halka yansımayı bir an büker; çanağın kenarı ve gerçek gök yerinde kalır. Halkalar sönünce üç yıldız suyun üzerinde yeniden keskinleşir. Bakış yüksekliğini sürgüyle, ok tuşlarıyla ya da yatay sürükleyerek değiştirebilir, suya dokunarak ya da Enter ile yeni bir damla düşürebilirsiniz."></canvas></div>
     <div class="sahne-panel">
       <p id="quote" lang="tr">«Sonra Hakkın kendisine inanan herkesin inanç suretinde tecellisi gelir.»</p>
       <p id="cite">Fütûhât-ı Mekkiyye, Cilt 9, On Sekizinci Sifir, s. 277 (Ekrem Demirli çevirisi)</p>
       <div class="sahne-kontrol">
+        <label for="aci" id="aciL">Bakış yüksekliği</label>
+        <input id="aci" type="range" min="0" max="1000" step="1" value="327">
         <button id="replay" type="button">Baştan</button>
       </div>
     </div>
