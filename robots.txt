@@ -7,6 +7,17 @@ Allow: /
 # tarıyordu; taramayı boşa harcamasın.
 Disallow: /*?kisim=
 
+# Düz sayfalardaki yardımcı kısayollar (2026-11-27, Search Console: 17 Kasım'dan beri 1.893 "noindex'le hariç", 278 "yönlendirmeli", 389 "canonical'lı
+# alternatif" sayfa): Kur'ân/Hadis sayfalarındaki her âyetin "Hata bildir" bağlantısı (/iletisim/?hata=1&s=...) ve üst çubuktaki Menü/Ara/Defterim/Ayarlar
+# kısayolları (/?menu=1&don=..., /?ara&don=..., /?defter=1&don=..., /?ayar=1&don=...) gerçek <a href> olduğu için Google bunları sayfa sanıp tarıyordu.
+# Hepsi uygulama işlevi: içerik değil, arama sonucunda yeri yok. Bağlantılara ayrıca rel="nofollow" eklendi.
+Disallow: /*?hata=
+Disallow: /*?menu=
+Disallow: /*?ara
+Disallow: /*?defter=
+Disallow: /*?ayar=
+Disallow: /*?don=
+
 # sitemap.xml bir sitemap DİZİNİdir (2026-10-15): bölüm başına çocuk sitemap'ler
 # (sitemap-futuhat.xml, -fusus, -miskat, -kavram, -hub, -dizin, -dil, -diger)
 # scripts/sitemap-uret.py ile üretilir; Search Console'da bölüm bölüm görünür.

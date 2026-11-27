@@ -86,7 +86,7 @@
 
 
 <script>(function(){var a="dost-analytics-consent";function n(){try{return localStorage.getItem(a)}catch{return null}}window.__dostUygulama=(function(){var t="dost-uygulama",e=!1;try{e=/(?:^|[?&])kaynak=twa(?:&|$)/.test(location.search)}catch{}try{e=e||String(document.referrer).indexOf("android-app://com.dostarabi.app")===0}catch{}if(e){try{sessionStorage.setItem(t,"1")}catch{}return!0}try{if(sessionStorage.getItem(t)==="1")return!0}catch{}try{if(localStorage.getItem(t)==="1")return!0}catch{}return!1})(),window.__dostOlcumKuyruk=[],window.dostTrack=function(t,e){window.__dostOlcumKuyruk.push([t,e])}})();</script>
-<link rel="preload" href="assets/kabuk.132e13d94e.js" as="script" integrity="sha384-fqwclWml9OQxx4dqjLo6M6i6byUwDUwKtNGawB3I3LBQbh5qt1MMMvvH8jw/RQJ0"><script src="assets/kabuk.132e13d94e.js" defer integrity="sha384-fqwclWml9OQxx4dqjLo6M6i6byUwDUwKtNGawB3I3LBQbh5qt1MMMvvH8jw/RQJ0"></script><script src="assets/olcum.js" defer integrity="sha384-1Ga287Qdbz9J4RwLb7d5jQTB1QSmU9xWZa6uILP1fSk3a31iJ8JUt6HGWgRkt7my"></script>
+<link rel="preload" href="assets/kabuk.132e13d94e.js" as="script" integrity="sha384-fqwclWml9OQxx4dqjLo6M6i6byUwDUwKtNGawB3I3LBQbh5qt1MMMvvH8jw/RQJ0"><script src="assets/kabuk.132e13d94e.js" defer integrity="sha384-fqwclWml9OQxx4dqjLo6M6i6byUwDUwKtNGawB3I3LBQbh5qt1MMMvvH8jw/RQJ0"></script><script src="assets/olcum.js" defer integrity="sha384-ZFl7TGDmKzJnGM53QRXWipo3slGFifKpD/wtEDxRUTA41NZvbPIUz5cIVdxUXspx"></script>
 
 
 <link rel="preload" href="assets/fonts/SourceSans3-Regular-static.woff2" as="font" type="font/woff2" crossorigin>
@@ -94,6 +94,7 @@
 <script>(function(){try{var e=new URLSearchParams(location.search).get("seyr"),t=!1;try{e==="0"?sessionStorage.setItem("dost-seyr","0"):e==="1"&&sessionStorage.removeItem("dost-seyr"),t=sessionStorage.getItem("dost-seyr")==="0"}catch{t=e==="0"}t||document.documentElement.setAttribute("data-seyr","1")}catch{}})();</script>
 <link rel="stylesheet" href="assets/css/seyr.css">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/css/konum.css">
 <noscript><style>#welcome-screen,.app-header,.graph-wrap,#legend,.legend,.detail-panel,#ontology-recenter{display:none!important}</style></noscript>
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "DefinedTerm", "@id": "https://dostarabi.com/kavram/esma/tevvab/#kavram", "name": "et-Tevvâb", "url": "https://dostarabi.com/kavram/esma/tevvab/", "inDefinedTermSet": {"@type": "DefinedTermSet", "name": "Dost Arabî — Esmâü'l-Hüsnâ", "url": "https://dostarabi.com/esma/"}, "description": "Tövbe Mertebesi'nde İbn Arabî dönüşün çift yönlü ve sıralı olduğunu anlatıyor: 'İlk dönüş O'na aittir. Sonra dönsünler diye Allah kullarına döner. Binaenaleyh Allah kullara ancak onlar kendisine dönsün diye döner.' Kul döndüğünde ise ikinci bir dönüş gerçekleşir: 'Kul tövbe ederek Hakka döndüğünde,…"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dost Arabî", "item": "https://dostarabi.com/"}, {"@type": "ListItem", "position": 2, "name": "Kavramlar", "item": "https://dostarabi.com/kavram/"}, {"@type": "ListItem", "position": 3, "name": "et-Tevvâb", "item": "https://dostarabi.com/kavram/esma/tevvab/"}]}]}</script>
 </head>
@@ -338,7 +339,7 @@
   <script src="assets/vendor/d3-custom.min.js" defer integrity="sha384-k/birSUpT26+T+9Bq9AtcVVDxNlh8ThhBxqX2iTUj656KnoUaNO07aGmVEBBpbpM"></script>
   <script src="assets/i18n.js" defer integrity="sha384-rSOBSprIAP+fwxYa7tfJlRLT7gS8lIUbNWmscRmTVnQ9uf5EoEUEwSe8QRmqx4s0"></script>
   
-  <script src="assets/view-loader.js" defer integrity="sha384-PkUdnK5m4Btpi1+tqIsWOX9cMi/aZyrScQ8E73XqIsjqHxTlIsDessYs0EjQMkgH"></script>
+  <script src="assets/view-loader.js" defer integrity="sha384-gG2UacnNCG+qORJXrnxoh2GDPGgw3wPZzmBkqw4LkLXp7ibmXGrSvEbd+GsLFw+/"></script>
   <script src="assets/view-status.js" defer integrity="sha384-Nh3ZeI/JxPdZUDbYVYErhxSlk1CwTWAMU3393BRnEs94uAXa3ogmL7dX0hhEhQMj"></script>
   <script src="assets/graph-utils.js" defer integrity="sha384-se4d/GyBP5LsfLYfgvR6BsiIK+ChC2m384zQvwN6QXM84+3G+LwMJOdg/9JQ59zt"></script>
   
@@ -351,14 +352,15 @@
   <script src="assets/seyr-zaten.js" defer integrity="sha384-/UPQ79B/dQudMTGt0PrB76DecD6xaDzbgmfRhs1ath/u1ZtRCJaQn99aXSq4its+"></script>
   <script src="assets/seyr-dizin.js" defer integrity="sha384-/1oy9a3W2NL+WZ0Xkjqhcs4QV6VOQQHcgCURWzWD5MNmj5tOTpsfp/ZyRrQLlGUH"></script>
   <script src="assets/seyr-harita.js" defer integrity="sha384-IylLvrK0ILby2bEwkQvKVTn4L2nmesQz2yNDIco9bPMX63CqG/qumvXmOdvkpG94"></script>
-  <script src="assets/nav-drawer.js" defer integrity="sha384-vLvOP7Lyzk8NNUEKCS8Bdm2WIX0dJhyNt/TCJ8bL97cO1ZlvrFpv8sre4LFg6BEi"></script>
+  <script src="assets/nav-drawer.js" defer integrity="sha384-i2/On9NOMUN0rkaqURyZn3DFVEIcl5r/25c4QlhQu8JHo+x4nnlJoeCSDz4QsRgL"></script>
   <script src="assets/graph-hint.js" defer integrity="sha384-LdPjSW7UL5x/u945Ui9IXzy3zCyUZPF7Ll3mRc1a61nYeA3mQGekV7Fa4gCRSvQr"></script>
   <script src="assets/ipucu-yerlestir.js" defer integrity="sha384-CemSyW7shWoJOz9aFDo2xgPN/9AinoNTfvppXkEngLZfKTb2h3rUR1HAQoav5YYI"></script>
   <script src="assets/lightbox.js" defer integrity="sha384-UqAL6FLLFCQ/GOoXKYchPMCXK4H/MUr2w1FNrpgE5rs9AhDJhyjxDddCAv1eqEqm"></script>
   
   <script src="assets/kademe.js" defer integrity="sha384-pHPXqeCpal28UySB+/9nmbO0gpF/bP97VpAFPlRP5khCm4pDyvyj1et7nJrKrOq9"></script>
   <script src="assets/search.js" defer integrity="sha384-08h0rPOrk1aCADtsgJWQ/uLvsEjIc+TBQRnMdYIIUkMB8QSoo97BIoRG6oxyNZGI"></script>
-  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-qiklEymlvKPFtGxMzhp35oM9Msv6eQSAh1hWhpYM2r+Qs4OYoJ1Ombk4Ji8AL2Sc"></script>
+  <script src="assets/uygulama-kabugu.js" defer integrity="sha384-zbqbeeQt1j0Xnsvr+HvlD2qU/CP4rnOQxm7YWNLKWN3vC7yX1vVT2AW8TBea1/lD"></script>
+  <script src="assets/konum.js" defer integrity="sha384-1JZfdBK56hxJIMelNHko4FhduqYA2tpDiNgy53iE6uk3e2rn5o/WiweZXZpyi145"></script>
   <script src="assets/font-scale.js" defer integrity="sha384-7VhGcGMppxnhvm4GuWbsuChGD7pgPT7dVwFx3SDc5UN3ara12kx1oIm44j68N4hx"></script>
   <script src="assets/reading-mode.js" defer integrity="sha384-N0uCPcpOlRvcAxSWwHhO9NbyRFE9fRVMQloHeXbGOVsoIqUWsySJyFHPiCNqzPYv"></script>
   <script src="assets/honorifics.js" defer integrity="sha384-4pkOz7AhKz4hfayCjVwI0tC5sh9nK7UpMfHotTlHX3mZMHnNgeXPLaFRDrYQYoWq"></script>
